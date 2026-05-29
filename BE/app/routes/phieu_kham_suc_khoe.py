@@ -1,0 +1,5 @@
+from app.crud.phieu_kham_suc_khoe import phieu_kham_suc_khoe_crud
+from app.routes.base import create_crud_router
+
+
+router = create_crud_router(resource="phieu_kham_suc_khoe", crud=phieu_kham_suc_khoe_crud)

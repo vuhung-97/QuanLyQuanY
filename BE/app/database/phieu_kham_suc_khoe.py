@@ -1,0 +1,19 @@
+from datetime import date
+
+from sqlalchemy import Date, ForeignKey, String, Text
+from sqlalchemy.orm import Mapped, mapped_column
+
+from app.database.base import Base
+
+
+class PhieuKhamSucKhoe(Base):
+    __tablename__ = "phieu_kham_suc_khoe"
+
+    ma_phieu_kham: Mapped[str] = mapped_column(String(10), primary_key=True)
+    ma_quan_nhan: Mapped[str | None] = mapped_column(String(10), ForeignKey("quan_nhan.ma_quan_nhan", ondelete="CASCADE"))
+    ngay_nhap_ngu: Mapped[date | None] = mapped_column(Date)
+    tien_su_benh_tat: Mapped[str | None] = mapped_column(Text)
+    kham_lam_sang: Mapped[str | None] = mapped_column(Text)
+    kham_can_lam_sang: Mapped[str | None] = mapped_column(Text)
+    ket_luan: Mapped[str | None] = mapped_column(Text)
+    chi_dan_can_thiet: Mapped[str | None] = mapped_column(Text)
