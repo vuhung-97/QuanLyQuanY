@@ -83,20 +83,20 @@ def create_crud_router(
         db: Session = Depends(get_db),
         limit: int = Query(default=100, ge=1, le=500),
         offset: int = Query(default=0, ge=0),
-    ) -> list[dict[str, Any]]:
+    ) -> list[read_schema]:
         rows = _run_crud(lambda: crud.get_multi(db, limit=limit, offset=offset))
         return [serialize_row(row) for row in rows]
 
     @router.get("/{item_id}", response_model=read_schema)
-    def get_item(item_id: str, db: Session = Depends(get_db)) -> Any:
+    def get_item(item_id: str, db: Session = Depends(get_db)) -> read_schema:
         return serialize_row(_run_crud(lambda: crud.get(db, item_id)))
 
     @router.post("", status_code=status.HTTP_201_CREATED, response_model=read_schema)
-    def create_item(payload: create_schema, db: Session = Depends(get_db)) -> Any:
+    def create_item(payload: create_schema, db: Session = Depends(get_db)) -> read_schema:
         return serialize_row(_run_crud(lambda: crud.create(db, payload)))
 
     @router.patch("/{item_id}", response_model=read_schema)
-    def update_item(item_id: str, payload: patch_schema, db: Session = Depends(get_db)) -> Any:
+    def update_item(payload: patch_schema, item_id: str, db: Session = Depends(get_db)) -> read_schema:
         return serialize_row(_run_crud(lambda: crud.update(db, item_id, payload)))
 
     @router.delete("/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
