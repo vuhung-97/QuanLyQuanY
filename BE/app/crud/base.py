@@ -38,13 +38,27 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     def __init__(self, model: type[ModelType]) -> None:
         self.model = model
 
-    def get_multi(self, db: Session, *, limit: int = 100, offset: int = 0) -> list[ModelType]:
+    def get_multi(
+        self, db: Session, *,
+        limit: int = 100, offset: int = 0,
+        sort_by: str | None = None,
+        sort_desc: bool = False,
+    ) -> list[ModelType]:
         if limit < 1 or offset < 0:
             raise CRUDBadRequestError("Invalid pagination parameters")
 
-        primary_key = inspect(self.model).primary_key
-        statement = select(self.model).order_by(*primary_key).offset(offset).limit(limit)
-        return list(db.scalars(statement).all())
+        statement = select(self.model)
+
+        if sort_by:
+            if sort_by not in self._column_keys():
+                raise CRUDBadRequestError(f"Invalid sort field: {sort_by}")
+            sort_col = getattr(self.model, sort_by)
+            statement = statement.order_by(sort_col.desc() if sort_desc else sort_col.asc())
+        else:
+            primary_key = inspect(self.model).primary_key
+            statement = statement.order_by(*primary_key)
+
+        return list(db.scalars(statement.offset(offset).limit(limit)).all())
 
     def get(self, db: Session, item_id: str) -> ModelType:
         row = db.get(self.model, self._primary_key_value(item_id))

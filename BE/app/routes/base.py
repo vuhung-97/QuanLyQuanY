@@ -83,8 +83,10 @@ def create_crud_router(
         db: Session = Depends(get_db),
         limit: int = Query(default=100, ge=1, le=500),
         offset: int = Query(default=0, ge=0),
+        sort_by: str | None = Query(default=None),
+        sort_desc: bool = Query(default=False),
     ) -> list[read_schema]:
-        rows = _run_crud(lambda: crud.get_multi(db, limit=limit, offset=offset))
+        rows = _run_crud(lambda: crud.get_multi(db, limit=limit, offset=offset, sort_by=sort_by, sort_desc=sort_desc))
         return [serialize_row(row) for row in rows]
 
     @router.get("/{item_id}", response_model=read_schema)
