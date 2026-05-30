@@ -1,25 +1,30 @@
 from datetime import datetime
 
 from app.schemas.base import SchemaBase
+from pydantic import Field
 
 
 class PhieuChamSocBase(SchemaBase):
-    ma_phieu_cs: str
+    ma_benh_an: str | None = Field(default=None, max_length=10)
+    so_giuong: str | None = Field(default=None, max_length=50)
+    buong: str | None = Field(default=None, max_length=50)
+    thoi_gian: datetime | None = None
+    theo_doi_dien_bien: str | None = None
+    thuc_hien_y_lenh: str | None = None
+
+
+class PhieuChamSocCreate(PhieuChamSocBase):
+    ma_phieu_cs: str = Field(max_length=10)
+
+
+class PhieuChamSocUpdate(SchemaBase):
     ma_benh_an: str | None = None
     so_giuong: str | None = None
     buong: str | None = None
     thoi_gian: datetime | None = None
     theo_doi_dien_bien: str | None = None
     thuc_hien_y_lenh: str | None = None
-    
-
-class PhieuChamSocCreate(PhieuChamSocBase):
-    pass
-
-
-class PhieuChamSocUpdate(PhieuChamSocBase):
-    pass
 
 
 class PhieuChamSocRead(PhieuChamSocBase):
-    pass
+    ma_phieu_cs: str = Field(max_length=10)

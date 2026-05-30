@@ -1,19 +1,20 @@
 from app.schemas.base import SchemaBase
+from pydantic import Field
 
 
 class ChiTietDuTruBase(SchemaBase):
-    ma_phieu_du_tru: str
-    ma_thuoc_vtyt: str
     so_luong: int = 1
 
 
 class ChiTietDuTruCreate(ChiTietDuTruBase):
-    pass
+    ma_phieu_du_tru: str = Field(max_length=10)
+    ma_thuoc_vtyt: str = Field(max_length=10)
 
 
-class ChiTietDuTruUpdate(ChiTietDuTruBase):
-    pass
+class ChiTietDuTruUpdate(SchemaBase):
+    so_luong: int | None = None
 
 
 class ChiTietDuTruRead(ChiTietDuTruBase):
-    pass
+    ma_phieu_du_tru: str = Field(max_length=10)
+    ma_thuoc_vtyt: str = Field(max_length=10)

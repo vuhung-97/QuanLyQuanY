@@ -1,19 +1,20 @@
 from app.schemas.base import SchemaBase
+from pydantic import Field
 
 
 class ChiTietPhieuChamSocBase(SchemaBase):
-    ma_phieu_cs: str
-    ma_thuoc_vtyt: str
     so_luong: int = 1
-    
+
 
 class ChiTietPhieuChamSocCreate(ChiTietPhieuChamSocBase):
-    pass
+    ma_phieu_cs: str = Field(max_length=10)
+    ma_thuoc_vtyt: str = Field(max_length=10)
 
 
-class ChiTietPhieuChamSocUpdate(ChiTietPhieuChamSocBase):
-    pass
+class ChiTietPhieuChamSocUpdate(SchemaBase):
+    so_luong: int | None = None
 
 
 class ChiTietPhieuChamSocRead(ChiTietPhieuChamSocBase):
-    pass
+    ma_phieu_cs: str = Field(max_length=10)
+    ma_thuoc_vtyt: str = Field(max_length=10)

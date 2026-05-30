@@ -4,7 +4,6 @@ from typing import Any, TypeVar
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, create_model
-from sqlalchemy import inspect
 from sqlalchemy.orm import Session
 
 from app.crud.base import (
@@ -19,10 +18,6 @@ from app.database.session import get_db
 
 
 ResultType = TypeVar("ResultType")
-
-
-def serialize_row(row: Any) -> dict[str, Any]:
-    return {column.key: getattr(row, column.key) for column in inspect(row.__class__).columns}
 
 
 def _run_crud(operation: Callable[[], ResultType]) -> ResultType:
@@ -85,21 +80,20 @@ def create_crud_router(
         offset: int = Query(default=0, ge=0),
         sort_by: str | None = Query(default=None),
         sort_desc: bool = Query(default=False),
-    ) -> list[read_schema]:
-        rows = _run_crud(lambda: crud.get_multi(db, limit=limit, offset=offset, sort_by=sort_by, sort_desc=sort_desc))
-        return [serialize_row(row) for row in rows]
+    ) -> list[Any]:
+        return _run_crud(lambda: crud.get_multi(db, limit=limit, offset=offset, sort_by=sort_by, sort_desc=sort_desc))
 
     @router.get("/{item_id}", response_model=read_schema)
-    def get_item(item_id: str, db: Session = Depends(get_db)) -> read_schema:
-        return serialize_row(_run_crud(lambda: crud.get(db, item_id)))
+    def get_item(item_id: str, db: Session = Depends(get_db)) -> Any:
+        return _run_crud(lambda: crud.get(db, item_id))
 
     @router.post("", status_code=status.HTTP_201_CREATED, response_model=read_schema)
-    def create_item(payload: create_schema, db: Session = Depends(get_db)) -> read_schema:
-        return serialize_row(_run_crud(lambda: crud.create(db, payload)))
+    def create_item(payload: create_schema, db: Session = Depends(get_db)) -> Any:
+        return _run_crud(lambda: crud.create(db, payload))
 
     @router.patch("/{item_id}", response_model=read_schema)
-    def update_item(payload: patch_schema, item_id: str, db: Session = Depends(get_db)) -> read_schema:
-        return serialize_row(_run_crud(lambda: crud.update(db, item_id, payload)))
+    def update_item(payload: patch_schema, item_id: str, db: Session = Depends(get_db)) -> Any:
+        return _run_crud(lambda: crud.update(db, item_id, payload))
 
     @router.delete("/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
     def delete_item(item_id: str, db: Session = Depends(get_db)) -> None:
