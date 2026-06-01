@@ -41,6 +41,7 @@ RESOURCE_ROUTERS = [
     ra_benh_xa_router,
     so_nhap_xuat_router,
     thuoc_vtyt_router,
+    # Tạm chưa public các router security do chưa có auth/role guard.
 ]
 
 __all__ = ["RESOURCE_ROUTERS", "system_router"]

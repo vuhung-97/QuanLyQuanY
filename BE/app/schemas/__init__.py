@@ -10,14 +10,21 @@ from app.schemas.don_vi import DonViBase, DonViCreate, DonViUpdate, DonViRead
 from app.schemas.giay_gioi_thieu import GiayGioiThieuBase, GiayGioiThieuCreate, GiayGioiThieuUpdate, GiayGioiThieuRead
 from app.schemas.kham_benh import KhamBenhBase, KhamBenhCreate, KhamBenhUpdate, KhamBenhRead
 from app.schemas.lich_kham_sk_nam import LichKhamSkNamBase, LichKhamSkNamCreate, LichKhamSkNamUpdate, LichKhamSkNamRead
+from app.schemas.nguoi_dung import NguoiDungBase, NguoiDungCreate, NguoiDungUpdate, NguoiDungRead
+from app.schemas.nhat_ky_backup import NhatKyBackupBase, NhatKyBackupCreate, NhatKyBackupUpdate, NhatKyBackupRead
+from app.schemas.nhat_ky_dang_nhap import NhatKyDangNhapBase, NhatKyDangNhapCreate, NhatKyDangNhapUpdate, NhatKyDangNhapRead
+from app.schemas.nhat_ky_thao_tac import NhatKyThaoTacBase, NhatKyThaoTacCreate, NhatKyThaoTacUpdate, NhatKyThaoTacRead
 from app.schemas.phieu_cham_soc import PhieuChamSocBase, PhieuChamSocCreate, PhieuChamSocUpdate, PhieuChamSocRead
 from app.schemas.phieu_du_tru import PhieuDuTruBase, PhieuDuTruCreate, PhieuDuTruUpdate, PhieuDuTruRead
 from app.schemas.phieu_kham_suc_khoe import PhieuKhamSucKhoeBase, PhieuKhamSucKhoeCreate, PhieuKhamSucKhoeUpdate, PhieuKhamSucKhoeRead
 from app.schemas.phieu_xuat_kho import PhieuXuatKhoBase, PhieuXuatKhoCreate, PhieuXuatKhoUpdate, PhieuXuatKhoRead
+from app.schemas.quyen import QuyenBase, QuyenCreate, QuyenUpdate, QuyenRead
 from app.schemas.quan_nhan import QuanNhanBase, QuanNhanCreate, QuanNhanUpdate, QuanNhanRead
 from app.schemas.ra_benh_xa import RaBenhXaBase, RaBenhXaCreate, RaBenhXaUpdate, RaBenhXaRead
 from app.schemas.so_nhap_xuat import SoNhapXuatBase, SoNhapXuatCreate, SoNhapXuatUpdate, SoNhapXuatRead
 from app.schemas.thuoc_vtyt import ThuocVtytBase, ThuocVtytCreate, ThuocVtytUpdate, ThuocVtytRead
+from app.schemas.vai_tro import VaiTroBase, VaiTroCreate, VaiTroUpdate, VaiTroRead
+from app.schemas.vai_tro_quyen import VaiTroQuyenBase, VaiTroQuyenCreate, VaiTroQuyenUpdate, VaiTroQuyenRead
 
 __all__ = [
     "BenhAnBase", 
@@ -80,6 +87,26 @@ __all__ = [
     "LichKhamSkNamUpdate", 
     "LichKhamSkNamRead",
 
+    "NguoiDungBase",
+    "NguoiDungCreate",
+    "NguoiDungUpdate",
+    "NguoiDungRead",
+
+    "NhatKyBackupBase",
+    "NhatKyBackupCreate",
+    "NhatKyBackupUpdate",
+    "NhatKyBackupRead",
+
+    "NhatKyDangNhapBase",
+    "NhatKyDangNhapCreate",
+    "NhatKyDangNhapUpdate",
+    "NhatKyDangNhapRead",
+
+    "NhatKyThaoTacBase",
+    "NhatKyThaoTacCreate",
+    "NhatKyThaoTacUpdate",
+    "NhatKyThaoTacRead",
+
     "PhieuChamSocBase", 
     "PhieuChamSocCreate", 
     "PhieuChamSocUpdate", 
@@ -100,6 +127,11 @@ __all__ = [
     "PhieuXuatKhoUpdate", 
     "PhieuXuatKhoRead",
 
+    "QuyenBase",
+    "QuyenCreate",
+    "QuyenUpdate",
+    "QuyenRead",
+
     "QuanNhanBase", 
     "QuanNhanCreate", 
     "QuanNhanUpdate", 
@@ -119,4 +151,14 @@ __all__ = [
     "ThuocVtytCreate", 
     "ThuocVtytUpdate", 
     "ThuocVtytRead",
+
+    "VaiTroBase",
+    "VaiTroCreate",
+    "VaiTroUpdate",
+    "VaiTroRead",
+
+    "VaiTroQuyenBase",
+    "VaiTroQuyenCreate",
+    "VaiTroQuyenUpdate",
+    "VaiTroQuyenRead",
 ]

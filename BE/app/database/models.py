@@ -10,14 +10,21 @@ from app.database.don_vi import DonVi
 from app.database.giay_gioi_thieu import GiayGioiThieu
 from app.database.kham_benh import KhamBenh
 from app.database.lich_kham_sk_nam import LichKhamSkNam
+from app.database.nguoi_dung import NguoiDung
+from app.database.nhat_ky_backup import NhatKyBackup
+from app.database.nhat_ky_dang_nhap import NhatKyDangNhap
+from app.database.nhat_ky_thao_tac import NhatKyThaoTac
 from app.database.phieu_cham_soc import PhieuChamSoc
 from app.database.phieu_du_tru import PhieuDuTru
 from app.database.phieu_kham_suc_khoe import PhieuKhamSucKhoe
 from app.database.phieu_xuat_kho import PhieuXuatKho
+from app.database.quyen import Quyen
 from app.database.quan_nhan import QuanNhan
 from app.database.ra_benh_xa import RaBenhXa
 from app.database.so_nhap_xuat import SoNhapXuat
 from app.database.thuoc_vtyt import ThuocVtyt
+from app.database.vai_tro import VaiTro
+from app.database.vai_tro_quyen import VaiTroQuyen
 
 MODEL_REGISTRY = {
     "benh_an": BenhAn,
@@ -32,14 +39,21 @@ MODEL_REGISTRY = {
     "giay_gioi_thieu": GiayGioiThieu,
     "kham_benh": KhamBenh,
     "lich_kham_sk_nam": LichKhamSkNam,
+    "nguoi_dung": NguoiDung,
+    "nhat_ky_backup": NhatKyBackup,
+    "nhat_ky_dang_nhap": NhatKyDangNhap,
+    "nhat_ky_thao_tac": NhatKyThaoTac,
     "phieu_cham_soc": PhieuChamSoc,
     "phieu_du_tru": PhieuDuTru,
     "phieu_kham_suc_khoe": PhieuKhamSucKhoe,
     "phieu_xuat_kho": PhieuXuatKho,
+    "quyen": Quyen,
     "quan_nhan": QuanNhan,
     "ra_benh_xa": RaBenhXa,
     "so_nhap_xuat": SoNhapXuat,
     "thuoc_vtyt": ThuocVtyt,
+    "vai_tro": VaiTro,
+    "vai_tro_quyen": VaiTroQuyen,
 }
 
 __all__ = [
@@ -56,12 +70,19 @@ __all__ = [
     "KhamBenh",
     "LichKhamSkNam",
     "MODEL_REGISTRY",
+    "NguoiDung",
+    "NhatKyBackup",
+    "NhatKyDangNhap",
+    "NhatKyThaoTac",
     "PhieuChamSoc",
     "PhieuDuTru",
     "PhieuKhamSucKhoe",
     "PhieuXuatKho",
+    "Quyen",
     "QuanNhan",
     "RaBenhXa",
     "SoNhapXuat",
     "ThuocVtyt",
+    "VaiTro",
+    "VaiTroQuyen",
 ]
