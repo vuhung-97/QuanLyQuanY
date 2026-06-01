@@ -1,7 +1,7 @@
 import csv
 from typing import Generic, TypeVar
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 from sqlalchemy import inspect, select
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
@@ -79,6 +79,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             if field in self._primary_key_columns():
                 continue
             setattr(row, field, value)
+        self._validate_updated_row(db, row, type(payload))
         self._commit(db)
         db.refresh(row)
         return row
@@ -98,6 +99,13 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         values = payload.model_dump(exclude_unset=exclude_unset)
         column_keys = self._column_keys()
         return {field: value for field, value in values.items() if field in column_keys}
+
+    def _validate_updated_row(self, db: Session, row: ModelType, schema: type[BaseModel]) -> None:
+        try:
+            schema.model_validate(row)
+        except ValidationError as exc:
+            db.rollback()
+            raise CRUDBadRequestError("Invalid update data") from exc
 
     def _primary_key_value(self, item_id: str) -> object | tuple[object, ...]:
         pk_columns = list(inspect(self.model).primary_key)

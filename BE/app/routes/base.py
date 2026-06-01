@@ -3,7 +3,7 @@ from collections.abc import Callable
 from typing import Any, TypeVar
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from pydantic import BaseModel, create_model
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.crud.base import (
@@ -53,11 +53,6 @@ def _resolve_schema(resource: str, suffix: str) -> type[BaseModel]:
     return schema
 
 
-def _make_patch_schema(schema: type[BaseModel]) -> type[BaseModel]:
-    fields = {name: (field.annotation, None) for name, field in schema.model_fields.items()}
-    return create_model(f"{schema.__name__}Patch", __base__=BaseModel, **fields)
-
-
 def create_crud_router(
     *,
     resource: str,
@@ -69,7 +64,6 @@ def create_crud_router(
     create_schema = create_schema or _resolve_schema(resource, "Create")
     update_schema = update_schema or _resolve_schema(resource, "Update")
     read_schema = read_schema or _resolve_schema(resource, "Read")
-    patch_schema = _make_patch_schema(update_schema)
 
     router = APIRouter(prefix=f"/{resource}", tags=[resource])
 
@@ -92,7 +86,7 @@ def create_crud_router(
         return _run_crud(lambda: crud.create(db, payload))
 
     @router.patch("/{item_id}", response_model=read_schema)
-    def update_item(payload: patch_schema, item_id: str, db: Session = Depends(get_db)) -> Any:
+    def update_item(payload: update_schema, item_id: str, db: Session = Depends(get_db)) -> Any:
         return _run_crud(lambda: crud.update(db, item_id, payload))
 
     @router.delete("/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
