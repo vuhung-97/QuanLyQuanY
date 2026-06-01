@@ -1,20 +1,20 @@
 # DataMed Backend - Project Review
 
-> Lưu ý: File này được tạo tự động từ code review. Thứ tự ưu tiên: CRITICAL → HIGH → MEDIUM → LOW.
+> Lưu ý: File này được tạo tự động từ code review.
 
 ---
 
 ## 1. Tổng quan dự án
 
-| Thuộc tính | Giá trị |
-|------------|---------|
-| **Framework** | FastAPI 0.115.6 |
-| **ORM** | SQLAlchemy 2.0.36 (declarative, code-first) |
-| **Database** | PostgreSQL |
-| **Validation** | Pydantic v2 |
-| **Migrations** | Alembic |
-| **Tables** | 20 models |
-| **Architecture** | Routes → CRUD → Database |
+| Thuộc tính       | Giá trị                                     |
+| ---------------- | ------------------------------------------- |
+| **Framework**    | FastAPI 0.115.6                             |
+| **ORM**          | SQLAlchemy 2.0.36 (declarative, code-first) |
+| **Database**     | PostgreSQL                                  |
+| **Validation**   | Pydantic v2                                 |
+| **Migrations**   | Alembic                                     |
+| **Tables**       | 20 models                                   |
+| **Architecture** | Routes → CRUD → Database                    |
 
 ### Cấu trúc thư mục
 
@@ -51,371 +51,82 @@ BE/
 
 ---
 
-## 2. Điểm tốt ✅
+## 2. Các lỗi và rủi ro cần sửa
 
-| # | Tính năng | Ghi chú |
-|---|-----------|---------|
-| 1 | **Factory pattern cho routes** | `create_crud_router()` tạo 5 CRUD endpoints cho 20 resources mà không lặp code |
-| 2 | **Schema design DRY** | `Base` (data) → `Create`/`Read` (Base + PK) → `Update` (SchemaBase, all optional) |
-| 3 | **Generic CRUD base class** | `CRUDBase[Model, CreateSchema, UpdateSchema]` |
-| 4 | **CRUD error hierarchy** | `CRUDNotFoundError`, `CRUDBadRequestError`, `CRUDConflictError`, `CRUDDatabaseError` |
-| 5 | **Composite PK support** | `_split_primary_key()` parse comma-separated values (VD: `DT001,T001`) |
-| 6 | **Dynamic schema resolution** | `_resolve_schema(resource, "Create")` dùng `importlib` |
-| 7 | **`_make_patch_schema`** | Auto tạo Patch model với tất cả fields optional |
-| 8 | **Alembic migration** | Code-first: modify model → `alembic revision --autogenerate` → `alembic upgrade head` |
-| 9 | **`max_length` validation** | Tất cả string fields có `Field(max_length=N)` matching DB `String(N)` |
-| 10 | **`from_attributes=True`** | FastAPI auto-converts ORM → Pydantic on response |
-| 11 | **ORM direct return** | Routes trả ORM object trực tiếp, FastAPI handle serialization |
-| 12 | **Health check** | `/health` endpoint với DB connectivity test |
-| 13 | **`__all__` defined** | Proper exports ở `routes/__init__.py` và `schemas/__init__.py` |
-| 14 | **`.gitignore` đúng** | `.env`, `alembic.ini`, `venv/` được ignore |
+### 2.1. Mức độ cao
 
----
+| Vấn đề | Vị trí tham chiếu | Rủi ro | Hướng xử lý |
+| ------ | ---------------- | ------ | ----------- |
+| API CRUD chưa có authentication/authorization | `app/routes/base.py` | Bất kỳ client nào cũng có thể đọc, tạo, sửa hoặc xóa dữ liệu quân y. Đây là rủi ro bảo mật nghiêm trọng. | Thêm cơ chế đăng nhập JWT/OAuth2. Gắn `Depends(get_current_user)` ở cấp router hoặc từng endpoint. Phân quyền role cho các thao tác `POST`, `PATCH`, `DELETE`. |
+| CORS đang mở quá rộng | `app/core/config.py` | Cho phép origin không tin cậy gọi API, đặc biệt nguy hiểm nếu dùng credential/token trên trình duyệt. | Không dùng `allow_origins=["*"]` trong production. Đọc danh sách domain frontend từ biến môi trường như `FRONTEND_URLS`. |
+| Chưa có rate limiting | `app/routes/base.py` | Dễ bị brute force ID, scraping dữ liệu, spam request hoặc DoS mức ứng dụng. | Thêm `slowapi`, middleware Redis-based hoặc cấu hình Nginx/API Gateway. Giới hạn chặt hơn cho endpoint ghi dữ liệu. |
 
-## 3. Các lỗi cần khắc phục
+### 2.2. Mức độ trung bình
 
-### 🔴 CRITICAL - Sửa ngay
+| Vấn đề | Vị trí tham chiếu | Rủi ro | Hướng xử lý |
+| ------ | ---------------- | ------ | ----------- |
+| Schema update thiếu constraint so với schema create | `app/schemas/*.py` | Client có thể gửi chuỗi quá dài, số âm hoặc dữ liệu sai format. Lỗi có thể chỉ phát hiện ở database. | Giữ constraint trong schema update, ví dụ `Field(default=None, max_length=255)`, `Field(default=None, ge=0)`. |
+| Thiếu validation nghiệp vụ | `app/schemas/thuoc_vtyt.py`, `app/schemas/so_nhap_xuat.py`, `app/schemas/chi_tiet_don_thuoc.py`, `app/schemas/lich_kham_sk_nam.py`, `app/schemas/ra_benh_xa.py` | Dữ liệu tồn kho, điều trị hoặc lịch khám có thể sai như số lượng âm, ngày kết thúc trước ngày bắt đầu. | Thêm `Field(ge=0)`, giới hạn năm hợp lệ, dùng `@model_validator` để kiểm tra quan hệ ngày giờ. |
+| Tạo bảng database khi import app | `app/main.py`, `app/database/session.py` | Không phù hợp production, có thể tạo schema ngoài kiểm soát và che giấu lỗi migration. | Bỏ `create_all()` khỏi startup production. Dùng Alembic migration. Nếu cần cho dev, bọc bằng env flag rõ ràng. |
+| Tạo database URL bằng nối chuỗi | `app/database/session.py` | Username/password có ký tự đặc biệt như `@`, `:`, `/`, `%` có thể làm sai chuỗi kết nối. | Dùng `sqlalchemy.engine.URL.create(...)`. Validate các biến môi trường bắt buộc như host, port, user, password, db name. |
+| Thiếu logging lỗi server/database | `app/core/error_handlers.py` | Khó debug lỗi production, khó audit sự cố và truy vết incident bảo mật. | Dùng `logging.exception(...)` trong handler lỗi `SQLAlchemyError` và `Exception`. Có thể bổ sung request id/correlation id. |
 
-#### C1: Credentials thật trong `.env`
-**File**: `.env`  
-**Vấn đề**: File `.env` có credentials thật (`PGhunghp1997`). Dù `.gitignore` có `.env`, file đang tồn tại trong repo.
-**Khắc phục**:
-```bash
-# Tạo .env.example (template không có credentials thật)
-cp .env .env_backup  # backup trước
-# Xóa credentials thật, chỉ giữ placeholders
-```
+### 2.3. Mức độ thấp hoặc cải thiện chất lượng
 
-#### C2: Thứ tự khởi động sai
-**File**: `app/main.py:11,23`  
-**Vấn đề**: `create_db()` được gọi TRƯỚC `load_env()`. Dù chain import giải quyết được, thứ tự trong code gây nhầm lẫn.
-**Khắc phục**:
-```python
-# Sửa thứ tự trong main.py
-load_env()          # 1. Load env trước
-create_db()         # 2. Rồi mới tạo bảng
-register_error_handlers(api)  # 3. Handlers
-setup_cors(api)     # 4. CORS
-```
-
-#### C3: KHÔNG CÓ AUTHENTICATION 🔒
-**File**: Tất cả endpoints  
-**Vấn đề**: Đây là hệ thống y tế xử lý dữ liệu nhạy cảm. Tất cả 20 CRUD endpoints đều mở hoàn toàn. Bất kỳ ai có network access đều có thể đọc/ghi tất cả dữ liệu y tế.
-**Khắc phục**: Cần implement authentication (JWT minimum):
-```bash
-# Thêm vào requirements.txt
-python-jose[cryptography]==3.3.0
-passlib[bcrypt]==1.7.4
-python-multipart==0.0.20
-```
-Sau đó tạo:
-- `app/core/security.py` - JWT utilities, password hashing
-- `app/core/dependencies.py` - `get_current_user()`, `verify_token()`
-- Auth routes: `/auth/login`, `/auth/register`
-- Áp dụng `Depends(get_current_user)` cho tất cả resource routes
-
-#### C4: Alembic config hardcoded credentials
-**File**: `alembic.ini:5`  
-**Vấn đề**: `sqlalchemy.url = postgresql+psycopg://postgres:postgres@localhost:5432/data_med`  
-**Khắc phục**: Dùng environment variable:
-```ini
-# alembic.ini
-sqlalchemy.url = driver://user:pass@localhost/dbname
-# Hoặc đọc từ .env trong env.py
-```
+| Vấn đề | Vị trí tham chiếu | Rủi ro | Hướng xử lý |
+| ------ | ---------------- | ------ | ----------- |
+| Pagination chỉ có `limit`/`offset`, thiếu metadata | `app/routes/base.py` | Frontend không biết tổng số bản ghi, còn trang tiếp theo hay không. | Trả response dạng `{ items, total, limit, offset }`. Với bảng lớn có thể dùng cursor pagination. |
+| Endpoint list chưa có filter/search rõ ràng | `app/routes/base.py`, các route resource | Frontend khó tìm kiếm dữ liệu theo nghiệp vụ, phải tải nhiều dữ liệu rồi lọc client-side. | Thêm filter theo các trường quan trọng, ví dụ đơn vị, ngày khám, tên quân nhân, mã thuốc, trạng thái phiếu. |
+| Query/database stack đang synchronous | `app/database/session.py` | Vẫn chạy được với FastAPI nhưng khả năng scale thấp hơn khi tải cao. | Giữ sync nếu tải nhỏ. Nếu cần concurrency lớn, cân nhắc `AsyncSession`, `create_async_engine`, driver `asyncpg`. |
+| Chưa có caching | Các endpoint danh mục/list | Dashboard hoặc màn hình danh mục có thể gọi DB lặp lại nhiều lần. | Cache Redis cho dữ liệu ít thay đổi như đơn vị, thuốc/vật tư. Invalidate cache khi tạo/sửa/xóa. |
+| Error message còn chung chung | `app/crud/base.py`, `app/core/error_handlers.py` | Client khó hiển thị lỗi chính xác cho người dùng. | Map `IntegrityError` theo constraint name sang thông báo thân thiện, không trả raw SQL/database error. |
+| Swagger chưa mô tả rõ nghiệp vụ | `app/main.py`, `app/routes/base.py` | API docs đủ endpoint nhưng thiếu mô tả ý nghĩa tham số, response và use case. | Thêm `summary`, `description`, response model chi tiết và ví dụ request/response cho endpoint quan trọng. |
 
 ---
 
-### 🟠 HIGH - Sửa trước production
+## 3. Hướng phát triển đề xuất
 
-#### H1: PK skip fragile
-**File**: `crud/base.py:79`  
-**Vấn đề**: `if field in self._primary_key_columns()` - so sánh string names. Nếu rename PK column ở model nhưng không ở schema, PK update sẽ silent fail.
-**Khắc phục**:
-```python
-# Thay vì so sánh string, so sánh với column object
-pk_columns = self._primary_key_columns()
-for field, value in self._payload_values(payload, exclude_unset=True).items():
-    if field in pk_columns:
-        continue
-    setattr(row, field, value)
-```
-Hoặc so sánh `field in {col.key for col in pk_columns}` là đủ, nhưng nên check object equality để tránh rename issues.
+### 3.1. Bảo mật và phân quyền
 
-#### H2: `_commit` ẩn original error
-**File**: `crud/base.py:133-141`  
-**Vấn đề**: `raise CRUDDatabaseError("Database error") from exc` - message generic, không có context.
-**Khắc phục**:
-```python
-def _commit(self, db: Session) -> None:
-    try:
-        db.commit()
-    except IntegrityError as exc:
-        db.rollback()
-        # Log actual error
-        raise CRUDConflictError(f"Constraint violation: {exc.__cause__}") from exc
-    except SQLAlchemyError as exc:
-        db.rollback()
-        raise CRUDDatabaseError(f"Database error: {exc.__cause__}") from exc
-```
+1. Xây dựng module người dùng và đăng nhập.
+2. Dùng JWT access token, refresh token nếu frontend cần phiên đăng nhập dài.
+3. Phân quyền theo vai trò như `admin`, `quan_ly`, `bac_si`, `duoc_si`, `nhan_vien`.
+4. Giới hạn quyền thao tác theo module, ví dụ dược sĩ quản lý thuốc/kho, bác sĩ quản lý khám bệnh/đơn thuốc.
+5. Ghi audit log cho thao tác nhạy cảm như xóa bệnh án, sửa tồn kho, xuất kho.
 
-#### H3: Không có connection pooling
-**File**: `session.py:33-34`  
-**Vấn đề**: `create_engine()` không có `pool_size`, `max_overflow`, `pool_recycle`. Under load, connection exhaustion.
-**Khắc phục**:
-```python
-engine = create_engine(
-    build_database_url(),
-    pool_size=10,
-    max_overflow=20,
-    pool_recycle=3600,      # Recycle sau 1 giờ
-    pool_pre_ping=True,     # Check connection trước khi dùng
-)
-```
+### 3.2. Tính năng API nên bổ sung
 
-#### H4: Engine tạo lúc import
-**File**: `session.py:33`  
-**Vấn đề**: `engine = create_engine(build_database_url())` - chạy ngay khi import module. Nếu env sai, app crash ngay lập tức.
-**Khắc phục**: Lazy initialization:
-```python
-_engine = None
+1. Filter/search/sort nâng cao cho các danh sách chính.
+2. Export Excel/PDF cho báo cáo quân số, khám chữa bệnh, tồn kho, nhập xuất thuốc.
+3. Dashboard thống kê theo tháng/quý/năm.
+4. API cảnh báo thuốc sắp hết hạn hoặc tồn kho dưới ngưỡng.
+5. API lịch sử thay đổi hồ sơ bệnh án và tồn kho.
+6. Upload file đính kèm cho giấy giới thiệu, phiếu khám, kết quả xét nghiệm nếu nghiệp vụ cần.
 
-def get_engine():
-    global _engine
-    if _engine is None:
-        _engine = create_engine(build_database_url(), ...)
-    return _engine
+### 3.3. Chất lượng vận hành
 
-# Hoặc dùng lazyproperty decorator
-```
+1. Chuẩn hóa Alembic migration, không để app tự tạo bảng trong production.
+2. Thêm logging có cấu trúc, request id và log lỗi database.
+3. Thêm health check chi tiết cho database.
+4. Tách cấu hình theo môi trường `development`, `test`, `production`.
+5. Thêm test tự động cho CRUD, validation, auth và các luồng nghiệp vụ quan trọng.
 
-#### H5: `crud/__init__.py` trống
-**File**: `crud/__init__.py`  
-**Khắc phục**: Export CRUD instances:
-```python
-from app.crud.benh_an import benh_an_crud
-from app.crud.benh_nhan_ra_vao import benh_nhan_ra_vao_crud
-# ... all 20
+### 3.4. API contract và frontend integration
 
-__all__ = [
-    "benh_an_crud",
-    "benh_nhan_ra_vao_crud",
-    # ...
-]
-```
+1. Chuẩn hóa format response list: `{ items, total, limit, offset }`.
+2. Chuẩn hóa format lỗi: `{ code, message, details }`.
+3. Thêm OpenAPI examples cho request/response.
+4. Tạo enum/schema rõ ràng cho các trạng thái phiếu, loại khám, loại nhập xuất.
+5. Tránh để frontend phụ thuộc vào message lỗi thô từ database.
 
 ---
 
-### 🟡 MEDIUM - Nên cải thiện
+## 4. Thứ tự ưu tiên triển khai
 
-#### M1: CORS quá rộng
-**File**: `core/config.py:22`  
-**Vấn đề**: `allow_origins=["*"]` - mọi website đều có thể gọi API.
-**Khắc phục**:
-```python
-# config.py
-def setup_cors(app: FastAPI):
-    origins = os.getenv("FRONTEND_URLS", "").split(",")
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=[o.strip() for o in origins if o.strip()],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-```
-Và trong `.env`:
-```
-FRONTEND_URLS=http://localhost:5500,http://127.0.0.1:5500
-```
-
-#### M2: Không có pagination metadata
-**File**: `routes/base.py`  
-**Vấn đề**: List endpoint chỉ trả list, không có `total`, `has_next`, `has_previous`.
-**Khắc phục**: Tạo pagination response schema:
-```python
-class PaginatedResponse(BaseModel):
-    total: int
-    limit: int
-    offset: int
-    has_next: bool
-    has_prev: bool
-    data: list[ReadSchema]
-
-# Hoặc dùng generic:
-class PaginatedResponse(BaseModel, Generic[T]):
-    total: int
-    data: list[T]
-```
-
-#### M3: Dùng `print()` thay vì logging
-**File**: `app/main.py:11`, `session.py:39`  
-**Khắc phục**:
-```python
-import logging
-logger = logging.getLogger(__name__)
-
-logger.info("Tables created.")
-logger.warning("Database unavailable: %s", exc)
-```
-
-#### M4: Unused import
-**File**: `routes/system.py:1,18`  
-**Vấn đề**: `status` imported nhưng không dùng.  
-**Khắc phục**: Xóa `status` khỏi import.
-
-#### M5: Không có API versioning
-**File**: Tất cả routes  
-**Khắc phục**: Thêm prefix `/api/v1/`:
-```python
-api.include_router(router, prefix="/api/v1")
-# Hoặc
-router = APIRouter(prefix=f"/api/v1/{resource}")
-```
-
-#### M6: Không có rate limiting
-**File**: Tất cả routes  
-**Khắc phục**: Thêm slowapi:
-```bash
-pip install slowapi
-```
-```python
-from slowapi import Limiter
-limiter = Limiter(key_func=get_remote_address)
-api = FastAPI()
-api.state.limiter = limiter
-
-@router.get("/resource")
-@limiter.limit("100/minute")
-def list_items(...):
-    pass
-```
-
-#### M7: Không có request logging middleware
-**File**: `app/main.py`  
-**Khắc phục**:
-```python
-from fastapi import Request
-import time
-
-@app.middleware("http")
-async def log_requests(request: Request, call_next):
-    start = time.time()
-    response = await call_next(request)
-    duration = time.time() - start
-    logger.info(f"{request.method} {request.url.path} - {response.status_code} ({duration:.3f}s)")
-    return response
-```
-
----
-
-### 🟢 LOW - Cải thiện nếu có thời gian
-
-#### L1: Return type `Any`
-**File**: `routes/base.py:83,87,91,95`  
-**Vấn đề**: `-> list[Any]`, `-> Any`  
-**Khắc phục**:
-```python
-def list_items(...) -> list[read_schema]:  # read_schema từ closure
-def get_item(...) -> read_schema:
-def create_item(...) -> read_schema:
-def update_item(...) -> read_schema:
-```
-
-#### L2: Không có `__repr__` on models
-**File**: Các model files  
-**Khắc phục**:
-```python
-def __repr__(self):
-    return f"<{self.__class__.__name__}(ma_don_vi={self.ma_don_vi!r})>"
-```
-
-#### L3: Không có DB indexes
-**File**: Models  
-**Vấn đề**: Không có explicit `Index` trên các cột thường query (`ma_quan_nhan`, `ma_benh_an`).
-**Khắc phục**:
-```python
-from sqlalchemy import Index
-
-class BenhAn(Base):
-    __tablename__ = "benh_an"
-    # ...
-    __table_args__ = (
-        Index("ix_benh_an_ma_quan_nhan", "ma_quan_nhan"),
-        Index("ix_benh_an_ma_benh_an", "ma_benh_an"),
-    )
-```
-
-#### L4: Không có unique constraint
-**File**: `quan_nhan.py`  
-**Vấn đề**: `so_the_bhyt` nên là unique nhưng không enforce ở DB.
-**Khắc phục**:
-```python
-so_the_bhyt: Mapped[str | None] = mapped_column(
-    String(50), unique=True  # Thêm unique=True
-)
-```
-
----
-
-## 4. Security Assessment 🔒
-
-| Area | Status | Notes |
-|------|--------|-------|
-| **Authentication** | ❌ None | Tất cả endpoints đều mở |
-| **Authorization** | ❌ None | Không có row-level hoặc role-based access |
-| **CORS** | ⚠️ Too permissive | `allow_origins=["*"]` |
-| **SQL Injection** | ✅ Safe | SQLAlchemy ORM, parameterized queries |
-| **Pydantic validation** | ✅ Good | Types và `max_length` constraints |
-| **Credentials management** | ⚠️ Risk | `.env` tồn tại với credentials thật |
-
----
-
-## 5. Checklist theo thứ tự ưu tiên
-
-### Phase 1: Critical (Ngay lập tức)
-- [ ] **C1**: Xóa credentials thật khỏi `.env`, tạo `.env.example`
-- [ ] **C2**: Sửa startup order trong `main.py`
-- [ ] **C3**: Implement Authentication (JWT)
-- [ ] **C4**: Fix `alembic.ini` hardcoded credentials
-
-### Phase 2: High (Trước production)
-- [ ] **H1**: Cải thiện PK skip logic trong CRUD
-- [ ] **H2**: Include sanitized error details trong CRUD exceptions
-- [ ] **H3**: Thêm connection pooling config
-- [ ] **H4**: Lazy engine initialization
-- [ ] **H5**: Export CRUD instances từ `__init__.py`
-
-### Phase 3: Medium (Cải thiện)
-- [ ] **M1**: Restrict CORS
-- [ ] **M2**: Add pagination metadata
-- [ ] **M3**: Replace `print()` with logging
-- [ ] **M5**: Add API versioning (`/api/v1/`)
-- [ ] **M7**: Add request logging middleware
-
-### Phase 4: Low (Khi có thời gian)
-- [ ] **L1**: Fix return type annotations
-- [ ] **L2**: Add `__repr__` to models
-- [ ] **L3**: Add DB indexes
-- [ ] **L4**: Add unique constraints
-
----
-
-## 6. Kiến trúc tổng thể
-
-### Strengths
-- Clean separation: Routes → CRUD → Database
-- Factory pattern loại bỏ code duplication
-- Code-first với Alembic là đúng approach
-- Pydantic v2 with `from_attributes=True` được dùng đúng cách
-- Error handling hierarchy tốt
-
-### Weaknesses
-- **Không có auth** — vấn đề lớn nhất cho hệ thống y tế
-- **Không có middleware** — không logging, rate limiting, request ID
-- **Không có versioning strategy** — API sẽ khó evolve
-
----
-
-> Review generated: 2026-05-29
-> Project: DataMed Backend - API Quản lý quân y đơn vị
+1. Thêm authentication/authorization cho toàn bộ API.
+2. Sửa CORS production và bổ sung rate limiting.
+3. Bổ sung validation cho schema update và các trường nghiệp vụ quan trọng.
+4. Bỏ `create_all()` khỏi flow production, chuẩn hóa Alembic migration.
+5. Thêm logging lỗi server/database.
+6. Chuẩn hóa pagination response và error response.
+7. Phát triển filter/search/export/dashboard theo nhu cầu frontend.
