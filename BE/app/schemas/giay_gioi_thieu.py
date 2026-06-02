@@ -7,7 +7,7 @@ from pydantic import Field
 class GiayGioiThieuBase(SchemaBase):
     ma_quan_nhan: str | None = Field(default=None, max_length=10)
     ten_benh_vien: str | None = Field(default=None, max_length=255)
-    so_suc_khoe: str | None = Field(default=None, max_length=100)
+    so_suc_khoe: bool = Field(default=False)
     can_benh: str | None = None
     y_kien_de_nghi: str | None = None
     thoi_gian_den_benh_vien: datetime | None = None
@@ -22,7 +22,7 @@ class GiayGioiThieuCreate(GiayGioiThieuBase):
 class GiayGioiThieuUpdate(SchemaBase):
     ma_quan_nhan: str | None = None
     ten_benh_vien: str | None = None
-    so_suc_khoe: str | None = None
+    so_suc_khoe: bool | None = None
     can_benh: str | None = None
     y_kien_de_nghi: str | None = None
     thoi_gian_den_benh_vien: datetime | None = None

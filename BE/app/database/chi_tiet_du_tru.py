@@ -9,4 +9,4 @@ class ChiTietDuTru(Base):
 
     ma_phieu_du_tru: Mapped[str] = mapped_column(String(10), ForeignKey("phieu_du_tru.ma_phieu_du_tru", ondelete="CASCADE"), primary_key=True)
     ma_thuoc_vtyt: Mapped[str] = mapped_column(String(10), ForeignKey("thuoc_vtyt.ma_thuoc_vtyt", ondelete="CASCADE"), primary_key=True)
-    so_luong: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    so_luong: Mapped[int] = mapped_column(Integer, default=1)

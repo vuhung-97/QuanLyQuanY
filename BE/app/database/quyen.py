@@ -8,5 +8,5 @@ class Quyen(Base):
     __tablename__ = "quyen"
 
     id: Mapped[str] = mapped_column(String(100), primary_key=True)
-    ten_quyen: Mapped[str] = mapped_column(String(100), nullable=False)
+    ten_quyen: Mapped[str] = mapped_column(String(100))
     mo_ta: Mapped[str | None] = mapped_column(Text, nullable=True)

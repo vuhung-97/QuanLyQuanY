@@ -7,7 +7,7 @@ class NguoiDungBase(SchemaBase):
     ho_ten: str = Field(max_length=100)
     id_vai_tro: str | None = Field(default=None, max_length=20)
     id_quan_nhan: str | None = Field(default=None, max_length=20)
-    trang_thai: bool | None = None
+    trang_thai: bool = Field(default=False)
 
 
 class NguoiDungCreate(NguoiDungBase):

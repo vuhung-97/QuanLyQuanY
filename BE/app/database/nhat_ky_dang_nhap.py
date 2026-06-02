@@ -13,7 +13,8 @@ class NhatKyDangNhap(Base):
     id_nguoi_dung: Mapped[str | None] = mapped_column(
         String(20),
         ForeignKey("nguoi_dung.id", ondelete="SET NULL"),
+        nullable=True,
     )
-    thoi_gian: Mapped[datetime | None] = mapped_column(DateTime)
-    trang_thai_thanh_cong: Mapped[bool | None] = mapped_column(Boolean)
-    thiet_bi: Mapped[str | None] = mapped_column(Text)
+    thoi_gian: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    trang_thai_thanh_cong: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
+    thiet_bi: Mapped[str | None] = mapped_column(Text, nullable=True)

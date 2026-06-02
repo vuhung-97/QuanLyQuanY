@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 
 from app.schemas.base import SchemaBase
 from pydantic import Field, model_validator
@@ -6,8 +6,8 @@ from pydantic import Field, model_validator
 
 class LichKhamSkNamBase(SchemaBase):
     ma_don_vi: str | None = Field(default=None, max_length=10)
-    thoi_gian_bat_dau: datetime | None = None
-    thoi_gian_ket_thuc: datetime | None = None
+    thoi_gian_bat_dau: date | None = None
+    thoi_gian_ket_thuc: date | None = None
     dia_diem: str | None = None
 
     @model_validator(mode='after')
@@ -24,8 +24,8 @@ class LichKhamSkNamCreate(LichKhamSkNamBase):
 
 class LichKhamSkNamUpdate(SchemaBase):
     ma_don_vi: str | None = Field(default=None, max_length=10)
-    thoi_gian_bat_dau: datetime | None = None
-    thoi_gian_ket_thuc: datetime | None = None
+    thoi_gian_bat_dau: date | None = None
+    thoi_gian_ket_thuc: date | None = None
     dia_diem: str | None = None
 
     @model_validator(mode='after')
