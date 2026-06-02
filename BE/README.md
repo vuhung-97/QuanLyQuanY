@@ -1,69 +1,439 @@
-# DataMed Backend
+# Review API Backend DataMed
 
-API Python kết nối PostgreSQL. Schema được quản lý theo hướng code-first bằng SQLAlchemy models và Alembic migrations.
+Ngày review: 2026-06-02
 
-## Cài đặt
+Phạm vi review: cấu trúc FastAPI, cấu hình chạy, database/session, CRUD router, auth/JWT, RBAC permission guard, security routes và hướng dẫn sử dụng API hiện tại.
+
+## Tóm Tắt
+
+Backend hiện là API FastAPI dùng SQLAlchemy, PostgreSQL, Alembic, JWT Bearer token và RBAC qua các bảng `nguoi_dung`, `vai_tro`, `quyen`, `vai_tro_quyen`.
+
+Ứng dụng expose biến FastAPI là `api` tại `BE/main.py`, không phải `app`. Vì vậy lệnh chạy đúng hiện tại là:
+
+```powershell
+uvicorn app.main:api --reload
+```
+
+Các endpoint hiện đang được mount trực tiếp ở root, ví dụ `/don_vi`, `/nguoi_dung`, `/auth/login`, `/health`, `/resources`. Hiện không có prefix `/api` trong runtime.
+
+Swagger UI:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+OpenAPI JSON:
+
+```text
+http://127.0.0.1:8000/openapi.json
+```
+
+## Phát Hiện Quan Trọng
+
+7. `create_db()` chạy ngay khi import app.
+
+`app/main.py` gọi `create_db()` ở cấp module. Việc import app sẽ tự tạo bảng và in `Tables created.`. Điều này gây side effect khi test, khi generate OpenAPI và có thể làm lệch quy trình Alembic migration.
+
+8. CORS đang mở toàn bộ origin kèm credentials.
+
+`allow_origins=["*"]` và `allow_credentials=True` không phù hợp nếu frontend dùng cookie/credentials. Nên cấu hình origin cụ thể qua env khi triển khai thật.
+
+## Cài Đặt Và Chạy
+
+Chạy trong thư mục `BE`:
 
 ```powershell
 .\venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-## Cấu hình database
-
-Tạo file `.env` từ `.env.example` và sửa `DATABASE_URL` theo PostgreSQL của bạn.
-
-Ví dụ:
+File `.env` cần có các biến tối thiểu:
 
 ```env
-DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost:5432/data_med
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=data_med
+DB_USER=postgres
+DB_PASSWORD=postgres
+JWT_SECRET_KEY=change-this-secret
+JWT_ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=60
 ```
 
-Tạo database rỗng trong PostgreSQL trước, ví dụ tên `data_med`, rồi chạy migration để tạo bảng từ code:
+Áp migration:
 
 ```powershell
 alembic upgrade head
 ```
 
-Không cần import `database_do_an.sql` khi dùng code-first. File SQL chỉ còn vai trò tài liệu tham khảo ban đầu.
-
-## Quy trình code-first
-
-Khi cần thay đổi database:
-
-1. Sửa hoặc thêm model trong `app/database/<ten_bang>.py`.
-2. Tạo migration mới: `alembic revision --autogenerate -m "mo ta thay doi"`.
-3. Kiểm tra file migration được tạo trong `alembic/versions`.
-4. Áp dụng migration: `alembic upgrade head`.
-
-## Chạy API
+Chạy API:
 
 ```powershell
-uvicorn main:app --reload
+uvicorn main:api --reload
 ```
 
-Swagger UI: `http://127.0.0.1:8000/docs`
+Kiểm tra health:
 
-Health check: `http://127.0.0.1:8000/api/health`
+```powershell
+Invoke-RestMethod -Method GET http://127.0.0.1:8000/health
+```
 
-## Quy ước endpoint
+Liệt kê resource:
 
-Danh sách bảng hỗ trợ:
+```powershell
+Invoke-RestMethod -Method GET http://127.0.0.1:8000/resources
+```
+
+## Xác Thực
+
+Endpoint login:
 
 ```http
-GET /api/resources
+POST /auth/login
+Content-Type: application/x-www-form-urlencoded
 ```
 
-CRUD chung:
+Body dạng form OAuth2 password:
+
+```text
+username=<ten_dang_nhap>&password=<mat_khau>
+```
+
+Ví dụ PowerShell:
+
+```powershell
+$login = Invoke-RestMethod `
+  -Method POST `
+  -Uri http://127.0.0.1:8000/auth/login `
+  -ContentType "application/x-www-form-urlencoded" `
+  -Body "username=admin&password=admin123"
+
+$token = $login.access_token
+$headers = @{ Authorization = "Bearer $token" }
+```
+
+Response:
+
+```json
+{
+    "access_token": "<jwt>",
+    "token_type": "bearer"
+}
+```
+
+Gọi API protected:
+
+```powershell
+Invoke-RestMethod -Method GET http://127.0.0.1:8000/don_vi -Headers $headers
+```
+
+Quy ước lỗi auth:
+
+```text
+401: chưa đăng nhập, token thiếu hoặc token sai
+403: đã đăng nhập nhưng thiếu quyền hoặc tài khoản bị vô hiệu hóa
+```
+
+## RBAC Và Quyền
+
+Mô hình quyền hiện tại:
+
+```text
+nguoi_dung.id_vai_tro -> vai_tro.id
+vai_tro.id -> vai_tro_quyen.id_vai_tro
+vai_tro_quyen.id_quyen -> quyen.id
+```
+
+Mã quyền dùng chuẩn:
+
+```text
+resource:action
+```
+
+Ví dụ:
+
+```text
+nguoi_dung:read
+nguoi_dung:create
+nguoi_dung:update
+nguoi_dung:delete
+don_vi:read
+don_vi:create
+```
+
+Role `admin` hiện được hard-code bypass trong `require_permissions`. User có `id_vai_tro = "admin"` được xem như toàn quyền.
+
+Lưu ý vận hành: cần tạo trước role `admin`, user admin có password hash hợp lệ và quyền/role cần thiết bằng migration/script seed hoặc thao tác trực tiếp DB. API hiện chưa có endpoint bootstrap public.
+
+## Quy Ước CRUD Chung
+
+Với đa số resource, API có dạng:
 
 ```http
-GET /api/{resource}?limit=100&offset=0
-GET /api/{resource}/{item_id}
-POST /api/{resource}
-PATCH /api/{resource}/{item_id}
-DELETE /api/{resource}/{item_id}
+GET /{resource}?limit=100&offset=0&sort_by=<field>&sort_desc=false
+GET /{resource}/{item_id}
+POST /{resource}
+PATCH /{resource}/{item_id}
+DELETE /{resource}/{item_id}
 ```
 
-Với bảng có khóa chính ghép, truyền các giá trị theo thứ tự khóa chính, ngăn cách bằng dấu phẩy.
+Quyền tương ứng:
 
-Ví dụ: `GET /api/chi_tiet_don_thuoc/DT001,T001`.
+```text
+GET list/detail: {resource}:read
+POST: {resource}:create
+PATCH: {resource}:update
+DELETE: {resource}:delete
+```
+
+Tham số phân trang:
+
+```text
+limit: mặc định 100, min 1, max 500
+offset: mặc định 0, min 0
+sort_by: tên cột hợp lệ của model
+sort_desc: true/false
+```
+
+Với bảng khóa chính ghép, `{item_id}` truyền các giá trị theo đúng thứ tự khóa chính, ngăn cách bằng dấu phẩy.
+
+Ví dụ:
+
+```http
+GET /chi_tiet_don_thuoc/DT001,T001
+GET /vai_tro_quyen/admin,nguoi_dung:read
+```
+
+## Danh Sách Endpoint Hiện Tại
+
+System và auth:
+
+```text
+GET  /health
+GET  /resources
+POST /auth/login
+```
+
+CRUD business:
+
+```text
+/benh_an
+/benh_nhan_ra_vao
+/chi_tiet_don_thuoc
+/chi_tiet_du_tru
+/chi_tiet_phieu_cham_soc
+/chi_tiet_xuat_kho
+/di_tuyen_sau_dieu_tri
+/don_thuoc
+/don_vi
+/giay_gioi_thieu
+/kham_benh
+/lich_kham_sk_nam
+/phieu_cham_soc
+/phieu_du_tru
+/phieu_kham_suc_khoe
+/phieu_xuat_kho
+/quan_nhan
+/ra_benh_xa
+/so_nhap_xuat
+/thuoc_vtyt
+```
+
+Security/admin:
+
+```text
+/nguoi_dung
+/quyen
+/vai_tro
+/vai_tro_quyen
+```
+
+Audit log chỉ đọc:
+
+```text
+GET /nhat_ky_backup
+GET /nhat_ky_backup/{item_id}
+GET /nhat_ky_dang_nhap
+GET /nhat_ky_dang_nhap/{item_id}
+GET /nhat_ky_thao_tac
+GET /nhat_ky_thao_tac/{item_id}
+```
+
+Các endpoint audit log không expose `POST`, `PATCH`, `DELETE`. Nếu gọi sẽ nhận `405 Method Not Allowed`.
+
+## Ví Dụ Sử Dụng
+
+Tạo đơn vị:
+
+```powershell
+Invoke-RestMethod `
+  -Method POST `
+  -Uri http://127.0.0.1:8000/don_vi `
+  -Headers $headers `
+  -ContentType "application/json" `
+  -Body '{"ma_don_vi":"DV001","ten_don_vi":"Đơn vị 1"}'
+```
+
+Lấy danh sách đơn vị:
+
+```powershell
+Invoke-RestMethod `
+  -Method GET `
+  -Uri "http://127.0.0.1:8000/don_vi?limit=20&offset=0&sort_by=ma_don_vi" `
+  -Headers $headers
+```
+
+Cập nhật đơn vị:
+
+```powershell
+Invoke-RestMethod `
+  -Method PATCH `
+  -Uri http://127.0.0.1:8000/don_vi/DV001 `
+  -Headers $headers `
+  -ContentType "application/json" `
+  -Body '{"ten_don_vi":"Đơn vị 1 cập nhật"}'
+```
+
+Xóa đơn vị:
+
+```powershell
+Invoke-RestMethod `
+  -Method DELETE `
+  -Uri http://127.0.0.1:8000/don_vi/DV001 `
+  -Headers $headers
+```
+
+Tạo user:
+
+```powershell
+Invoke-RestMethod `
+  -Method POST `
+  -Uri http://127.0.0.1:8000/nguoi_dung `
+  -Headers $headers `
+  -ContentType "application/json" `
+  -Body '{"id":"u001","ten_dang_nhap":"bs01","mat_khau":"password123","ho_ten":"Bác sĩ 01","id_vai_tro":"bac_si","trang_thai":true}'
+```
+
+Response tạo user không trả `mat_khau` hoặc `mat_khau_hash`.
+
+Tạo quyền:
+
+```powershell
+Invoke-RestMethod `
+  -Method POST `
+  -Uri http://127.0.0.1:8000/quyen `
+  -Headers $headers `
+  -ContentType "application/json" `
+  -Body '{"id":"don_vi:read","ten_quyen":"Xem đơn vị","mo_ta":"Cho phép xem danh sách và chi tiết đơn vị"}'
+```
+
+Gán quyền cho vai trò:
+
+```powershell
+Invoke-RestMethod `
+  -Method POST `
+  -Uri http://127.0.0.1:8000/vai_tro_quyen `
+  -Headers $headers `
+  -ContentType "application/json" `
+  -Body '{"id_vai_tro":"bac_si","id_quyen":"don_vi:read"}'
+```
+
+## Field Chính Theo Resource
+
+Các field đầy đủ xem trực tiếp tại Swagger `/docs`. Tóm tắt field bắt buộc chính:
+
+```text
+benh_an: ma_benh_an
+benh_nhan_ra_vao: ma_ra_vao
+chi_tiet_don_thuoc: ma_don_thuoc, ma_thuoc_vtyt
+chi_tiet_du_tru: ma_phieu_du_tru, ma_thuoc_vtyt
+chi_tiet_phieu_cham_soc: ma_phieu_cs, ma_thuoc_vtyt
+chi_tiet_xuat_kho: ma_phieu_xuat, ma_thuoc_vtyt, so_luong
+di_tuyen_sau_dieu_tri: ma_chuyen_tuyen
+don_thuoc: ma_don_thuoc
+don_vi: ma_don_vi, ten_don_vi
+giay_gioi_thieu: ma_giay_gt
+kham_benh: ma_kham_benh
+lich_kham_sk_nam: ma_lich_kham
+nguoi_dung: id, ten_dang_nhap, mat_khau, ho_ten
+phieu_cham_soc: ma_phieu_cs
+phieu_du_tru: ma_phieu_du_tru
+phieu_kham_suc_khoe: ma_phieu_kham
+phieu_xuat_kho: ma_phieu_xuat
+quan_nhan: ma_quan_nhan, ho_ten
+quyen: id, ten_quyen
+ra_benh_xa: ma_ra_benh_xa
+so_nhap_xuat: ma_giao_dich
+thuoc_vtyt: ma_thuoc_vtyt, ten_thuoc_vtyt
+vai_tro: id, ten_vai_tro
+vai_tro_quyen: id_vai_tro, id_quyen
+```
+
+## Kiểm Thử Đã Chạy Khi Review
+
+Lệnh kiểm tra OpenAPI paths:
+
+```powershell
+python -c "from app.main import api; paths=sorted(api.openapi()['paths']); print(len(paths))"
+```
+
+Kết quả:
+
+```text
+57 paths
+```
+
+Lệnh liệt kê method theo path đã xác nhận:
+
+```text
+/auth/login: POST
+/health: GET
+/resources: GET
+/nguoi_dung: GET,POST
+/nguoi_dung/{item_id}: DELETE,GET,PATCH
+/nhat_ky_dang_nhap: GET
+/nhat_ky_dang_nhap/{item_id}: GET
+```
+
+Kiểm thử nhanh trước đó bằng `TestClient` đã xác nhận:
+
+```text
+Chưa login gọi /nguoi_dung -> 401
+User thiếu quyền gọi /vai_tro -> 403
+POST /nhat_ky_dang_nhap -> 405
+Admin tạo user -> 201 và response không chứa mat_khau/mat_khau_hash
+```
+
+## Đề Xuất Sửa Ưu Tiên
+
+1. Sửa README cho đúng runtime hiện tại.
+
+Đổi `uvicorn main:app --reload` thành `uvicorn main:api --reload`. Đổi endpoint mẫu từ `/api/...` thành root path hiện tại, hoặc nếu muốn giữ `/api`, cần sửa `app/main.py` để include routers với `prefix="/api"`.
+
+2. Thêm migration/seed RBAC.
+
+Nên tạo migration để tăng `quyen.id` và `vai_tro_quyen.id_quyen` lên `String(100)`, seed `admin`, seed danh sách quyền chuẩn và mapping `admin -> tất cả quyền`.
+
+3. Thêm bootstrap admin an toàn.
+
+Có thể dùng script CLI hoặc migration seed user admin từ env. Không nên tạo endpoint bootstrap public lâu dài.
+
+4. Kiểm tra `trang_thai` ngay tại login.
+
+Nếu user bị khóa, `/auth/login` nên trả `403` hoặc `401` thay vì cấp token.
+
+5. Loại bỏ `create_db()` khỏi import app khi đã dùng Alembic.
+
+Production nên dùng Alembic làm nguồn tạo schema, tránh tự động `Base.metadata.create_all()` khi start app.
+
+6. Cải thiện cấu hình.
+
+Dùng `pydantic-settings` để validate `.env`, có message rõ khi thiếu biến, và không để `JWT_SECRET_KEY` rỗng.
+
+7. Cấu hình CORS theo môi trường.
+
+Không dùng wildcard origin khi cần credentials. Nên đọc danh sách origin từ env.
+
+8. Bổ sung test tự động.
+
+Nên thêm test cho login, 401/403, CRUD permission, user password hash, audit read-only, composite primary key và OpenAPI route registration.
