@@ -10,15 +10,22 @@ from app.routes.don_vi import router as don_vi_router
 from app.routes.giay_gioi_thieu import router as giay_gioi_thieu_router
 from app.routes.kham_benh import router as kham_benh_router
 from app.routes.lich_kham_sk_nam import router as lich_kham_sk_nam_router
+from app.routes.nguoi_dung import router as nguoi_dung_router
+from app.routes.nhat_ky_backup import router as nhat_ky_backup_router
+from app.routes.nhat_ky_dang_nhap import router as nhat_ky_dang_nhap_router
+from app.routes.nhat_ky_thao_tac import router as nhat_ky_thao_tac_router
 from app.routes.phieu_cham_soc import router as phieu_cham_soc_router
 from app.routes.phieu_du_tru import router as phieu_du_tru_router
 from app.routes.phieu_kham_suc_khoe import router as phieu_kham_suc_khoe_router
 from app.routes.phieu_xuat_kho import router as phieu_xuat_kho_router
 from app.routes.quan_nhan import router as quan_nhan_router
+from app.routes.quyen import router as quyen_router
 from app.routes.ra_benh_xa import router as ra_benh_xa_router
 from app.routes.so_nhap_xuat import router as so_nhap_xuat_router
 from app.routes.system import router as system_router
 from app.routes.thuoc_vtyt import router as thuoc_vtyt_router
+from app.routes.vai_tro import router as vai_tro_router
+from app.routes.vai_tro_quyen import router as vai_tro_quyen_router
 
 RESOURCE_ROUTERS = [
     benh_an_router,
@@ -33,15 +40,21 @@ RESOURCE_ROUTERS = [
     giay_gioi_thieu_router,
     kham_benh_router,
     lich_kham_sk_nam_router,
+    nguoi_dung_router,
+    nhat_ky_backup_router,
+    nhat_ky_dang_nhap_router,
+    nhat_ky_thao_tac_router,
     phieu_cham_soc_router,
     phieu_du_tru_router,
     phieu_kham_suc_khoe_router,
     phieu_xuat_kho_router,
     quan_nhan_router,
+    quyen_router,
     ra_benh_xa_router,
     so_nhap_xuat_router,
     thuoc_vtyt_router,
-    # Tạm chưa public các router security do chưa có auth/role guard.
+    vai_tro_router,
+    vai_tro_quyen_router,
 ]
 
 __all__ = ["RESOURCE_ROUTERS", "system_router"]

@@ -15,6 +15,7 @@ from app.crud.base import (
     CRUDNotFoundError,
 )
 from app.database.session import get_db
+from app.core.dependencies import require_permissions
 
 
 ResultType = TypeVar("ResultType")
@@ -60,6 +61,13 @@ def create_crud_router(
     create_schema: type[BaseModel] | None = None,
     update_schema: type[BaseModel] | None = None,
     read_schema: type[BaseModel] | None = None,
+    read_permission: str | None = None,
+    create_permission: str | None = None,
+    update_permission: str | None = None,
+    delete_permission: str | None = None,
+    enable_create: bool = True,
+    enable_update: bool = True,
+    enable_delete: bool = True,
 ) -> APIRouter:
     create_schema = create_schema or _resolve_schema(resource, "Create")
     update_schema = update_schema or _resolve_schema(resource, "Update")
@@ -67,7 +75,12 @@ def create_crud_router(
 
     router = APIRouter(prefix=f"/{resource}", tags=[resource])
 
-    @router.get("", response_model=list[read_schema])
+    read_deps = [Depends(require_permissions(read_permission))] if read_permission else None
+    create_deps = [Depends(require_permissions(create_permission))] if create_permission else None
+    update_deps = [Depends(require_permissions(update_permission))] if update_permission else None
+    delete_deps = [Depends(require_permissions(delete_permission))] if delete_permission else None
+
+    @router.get("", dependencies=read_deps, response_model=list[read_schema])
     def list_items(
         db: Session = Depends(get_db),
         limit: int = Query(default=100, ge=1, le=500),
@@ -77,20 +90,23 @@ def create_crud_router(
     ) -> list[Any]:
         return _run_crud(lambda: crud.get_multi(db, limit=limit, offset=offset, sort_by=sort_by, sort_desc=sort_desc))
 
-    @router.get("/{item_id}", response_model=read_schema)
+    @router.get("/{item_id}", dependencies=read_deps, response_model=read_schema)
     def get_item(item_id: str, db: Session = Depends(get_db)) -> Any:
         return _run_crud(lambda: crud.get(db, item_id))
 
-    @router.post("", status_code=status.HTTP_201_CREATED, response_model=read_schema)
-    def create_item(payload: create_schema, db: Session = Depends(get_db)) -> Any:
-        return _run_crud(lambda: crud.create(db, payload))
+    if enable_create:
+        @router.post("", dependencies=create_deps, status_code=status.HTTP_201_CREATED, response_model=read_schema)
+        def create_item(payload: create_schema, db: Session = Depends(get_db)) -> Any:
+            return _run_crud(lambda: crud.create(db, payload))
 
-    @router.patch("/{item_id}", response_model=read_schema)
-    def update_item(payload: update_schema, item_id: str, db: Session = Depends(get_db)) -> Any:
-        return _run_crud(lambda: crud.update(db, item_id, payload))
+    if enable_update:
+        @router.patch("/{item_id}", dependencies=update_deps, response_model=read_schema)
+        def update_item(payload: update_schema, item_id: str, db: Session = Depends(get_db)) -> Any:
+            return _run_crud(lambda: crud.update(db, item_id, payload))
 
-    @router.delete("/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
-    def delete_item(item_id: str, db: Session = Depends(get_db)) -> None:
-        _run_crud(lambda: crud.delete(db, item_id))
+    if enable_delete:
+        @router.delete("/{item_id}", dependencies=delete_deps, status_code=status.HTTP_204_NO_CONTENT)
+        def delete_item(item_id: str, db: Session = Depends(get_db)) -> None:
+            _run_crud(lambda: crud.delete(db, item_id))
 
     return router

@@ -12,12 +12,12 @@ class NguoiDungBase(SchemaBase):
 
 class NguoiDungCreate(NguoiDungBase):
     id: str = Field(max_length=20)
-    mat_khau_hash: str
+    mat_khau: str = Field(min_length=8)
 
 
 class NguoiDungUpdate(SchemaBase):
     ten_dang_nhap: str | None = None
-    mat_khau_hash: str | None = None
+    mat_khau: str | None = Field(default=None, min_length=8)
     ho_ten: str | None = None
     id_vai_tro: str | None = None
     id_quan_nhan: str | None = None

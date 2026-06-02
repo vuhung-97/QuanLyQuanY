@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from .core.config import load_env, setup_cors
 from .core.error_handlers import register_error_handlers
 from .database.session import create_db
-from .routes import RESOURCE_ROUTERS, system_router
+from .routes import RESOURCE_ROUTERS, system_router, auth
 
 # Tạo bảng nếu chưa tồn tại
 create_db()
@@ -29,4 +29,5 @@ setup_cors(api)
 for router in RESOURCE_ROUTERS:
     api.include_router(router)
 api.include_router(system_router)
+api.include_router(auth.router, prefix="/auth", tags=["auth"])
 
