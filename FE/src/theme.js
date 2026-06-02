@@ -1,67 +1,84 @@
-import { createTheme } from '@mui/material/styles';
+import { createTheme } from "@mui/material/styles";
 
 export const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#0B3B60',
-      dark: '#06253D',
-    },
-    secondary: {
-      main: '#00B4D8',
-    },
-    success: {
-      main: '#10B981',
-    },
-    warning: {
-      main: '#F59E0B',
-    },
-    error: {
-      main: '#EF4444',
-    },
-    background: {
-      default: '#F4F7F9',
-      paper: '#FFFFFF',
-    },
-    text: {
-      primary: '#1A202C',
-      secondary: '#64748B',
-    },
-  },
-  typography: {
-    fontFamily: 'Inter, Arial, sans-serif',
-    h1: {
-      fontSize: 24,
-      fontWeight: 700,
-    },
-    h2: {
-      fontSize: 18,
-      fontWeight: 600,
-    },
-    body1: {
-      fontSize: 14,
-    },
-    caption: {
-      fontSize: 12,
-    },
-  },
-  shape: {
-    borderRadius: 12,
-  },
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: 10,
-          fontWeight: 600,
-          textTransform: 'none',
-          boxShadow: 'none',
+    palette: {
+        primary: {
+            main: "#0B3B60", // Primary Navy
+            dark: "#06253D",
         },
-      },
+        secondary: {
+            main: "#00B4D8", // Medical Teal
+        },
+        background: {
+            default: "#F4F7F9", // Background Light
+            paper: "#FFFFFF", // Surface White
+        },
+        text: {
+            primary: "#1A202C",
+            secondary: "#64748B",
+        },
+        success: {
+            main: "#10B981",
+        },
+        warning: {
+            main: "#F59E0B",
+        },
+        error: {
+            main: "#EF4444",
+        },
     },
-    MuiTextField: {
-      defaultProps: {
-        variant: 'outlined',
-      },
+    typography: {
+        fontFamily: "'Inter', sans-serif",
+        h1: {
+            fontSize: 24,
+            fontWeight: 700,
+        },
+        h2: {
+            fontSize: 18,
+            fontWeight: 600,
+        },
+        body1: {
+            fontSize: 14,
+            fontWeight: 400,
+        },
+        caption: {
+            fontSize: 12,
+            fontWeight: 400,
+            color: "#64748B",
+        },
     },
-  },
+    shape: {
+        borderRadius: 12,
+    },
+    components: {
+        MuiCard: {
+            styleOverrides: {
+                root: {
+                    boxShadow:
+                        "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)", // Bóng đổ mềm mại
+                    border: "1px solid rgba(0,0,0,0.05)",
+                },
+            },
+        },
+        MuiButton: {
+            styleOverrides: {
+                root: {
+                    textTransform: "none",
+                    fontWeight: 600,
+                    boxShadow: "none",
+                    "&:hover": {
+                        boxShadow: "0 4px 12px rgba(0, 180, 216, 0.2)",
+                    },
+                },
+            },
+        },
+        MuiDrawer: {
+            styleOverrides: {
+                paper: {
+                    backgroundColor: "#0B3B60", // Sidebar màu Primary Navy
+                    color: "#FFFFFF",
+                },
+            },
+        },
+    },
 });
