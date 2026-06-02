@@ -1,9 +1,9 @@
 
 class Role:
     ADMIN = "admin"
+    CNQY = "chu_nhiem_quan_y"
     BAC_SI = "bac_si"
-    NHAN_VIEN_KHO = "nhan_vien_kho"
-    AUDITOR = "auditor"
+    Y_SI = "y_si"
 
 class Action:
     READ = "read"
@@ -12,13 +12,33 @@ class Action:
     DELETE = "delete"
 
 RESOURCES = [
-    "benh_an", "benh_nhan_ra_vao", "chi_tiet_don_thuoc", "chi_tiet_du_tru",
-    "chi_tiet_phieu_cham_soc", "chi_tiet_xuat_kho", "di_tuyen_sau_dieu_tri",
-    "don_thuoc", "don_vi", "giay_gioi_thieu", "kham_benh", "lich_kham_sk_nam",
-    "phieu_cham_soc", "phieu_du_tru", "phieu_kham_suc_khoe", "phieu_xuat_kho",
-    "quan_nhan", "ra_benh_xa", "so_nhap_xuat", "thuoc_vtyt",
-    "nguoi_dung", "vai_tro", "quyen", "vai_tro_quyen",
-    "nhat_ky_dang_nhap", "nhat_ky_thao_tac", "nhat_ky_backup"
+    "benh_an", 
+    "benh_nhan_ra_vao", 
+    "chi_tiet_don_thuoc", 
+    "chi_tiet_du_tru",
+    "chi_tiet_phieu_cham_soc", 
+    "chi_tiet_xuat_kho", 
+    "di_tuyen_sau_dieu_tri",
+    "don_thuoc", 
+    "don_vi", 
+    "giay_gioi_thieu", 
+    "kham_benh", 
+    "lich_kham_sk_nam",
+    "phieu_cham_soc", 
+    "phieu_du_tru", 
+    "phieu_kham_suc_khoe", 
+    "phieu_xuat_kho",
+    "quan_nhan", 
+    "ra_benh_xa", 
+    "so_nhap_xuat", 
+    "thuoc_vtyt",
+    "nguoi_dung", 
+    "vai_tro", 
+    "quyen", 
+    "vai_tro_quyen",
+    "nhat_ky_dang_nhap", 
+    "nhat_ky_thao_tac", 
+    "nhat_ky_backup"
 ]
 
 def get_all_permissions():

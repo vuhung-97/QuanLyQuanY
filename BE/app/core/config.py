@@ -21,9 +21,9 @@ class Settings(BaseSettings):
     API_PORT: int = 8000
     FRONTEND_URLS: str = ""
     DATABASE_URL: str | None = None
-    JWT_SECRET_KEY: str = "change-me"
+    JWT_SECRET_KEY: str = "jwt:BA8@9r#.30g7"
     JWT_ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     ADMIN_PASSWORD: str = "admin123"
 
 
