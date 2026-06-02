@@ -16,6 +16,11 @@ def login(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = 
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Tên đăng nhập hoặc mật khẩu không chính xác",
         )
+    if user.trang_thai is False:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Tài khoản đã bị vô hiệu hóa",
+        )
     
     access_token = create_access_token(data={"sub": user.ten_dang_nhap, "role": user.id_vai_tro})
     return {"access_token": access_token, "token_type": "bearer"}

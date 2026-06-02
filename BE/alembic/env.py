@@ -7,7 +7,7 @@ from alembic import context
 from sqlalchemy import engine_from_config, pool
 from sqlalchemy.engine import URL
 
-from app.core.config import load_env
+from app.core.config import settings
 from app.database.base import Base
 import app.database.models  # noqa: F401
 
@@ -21,32 +21,21 @@ target_metadata = Base.metadata
 
 
 def get_database_url() -> str:
-    """Lấy DB URL cho Alembic từ env, fallback alembic.ini."""
-    load_env()
+    """Lấy DB URL cho Alembic từ settings, fallback alembic.ini."""
+    if settings.DATABASE_URL:
+        return settings.DATABASE_URL
 
-    direct_url = os.getenv("DATABASE_URL")
-    if direct_url:
-        return direct_url
-
-    host = os.getenv("DB_HOST")
-    port = os.getenv("DB_PORT")
-    name = os.getenv("DB_NAME")
-    user = os.getenv("DB_USER")
-    password = os.getenv("DB_PASSWORD")
-
-    if all([host, port, name, user, password]):
-        try:
-            port_number = int(port)
-        except ValueError:
+    if all([settings.DB_HOST, settings.DB_PORT, settings.DB_NAME, settings.DB_USER, settings.DB_PASSWORD]):
+        if not 1 <= settings.DB_PORT <= 65535:
             return config.get_main_option("sqlalchemy.url")
 
         return URL.create(
             drivername="postgresql+psycopg",
-            username=user,
-            password=password,
-            host=host,
-            port=port_number,
-            database=name,
+            username=settings.DB_USER,
+            password=settings.DB_PASSWORD,
+            host=settings.DB_HOST,
+            port=settings.DB_PORT,
+            database=settings.DB_NAME,
         ).render_as_string(hide_password=False)
 
     return config.get_main_option("sqlalchemy.url")

@@ -13,7 +13,7 @@ class VaiTroQuyen(Base):
         primary_key=True,
     )
     id_quyen: Mapped[str] = mapped_column(
-        String(20),
+        String(100),
         ForeignKey("quyen.id", ondelete="CASCADE"),
         primary_key=True,
     )

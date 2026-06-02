@@ -8,7 +8,7 @@ class QuyenBase(SchemaBase):
 
 
 class QuyenCreate(QuyenBase):
-    id: str = Field(max_length=20)
+    id: str = Field(max_length=100)
 
 
 class QuyenUpdate(SchemaBase):
@@ -17,4 +17,4 @@ class QuyenUpdate(SchemaBase):
 
 
 class QuyenRead(QuyenBase):
-    id: str = Field(max_length=20)
+    id: str = Field(max_length=100)

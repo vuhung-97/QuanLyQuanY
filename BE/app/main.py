@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from fastapi import FastAPI
 
-from .core.config import load_env, setup_cors
+from .core.config import setup_cors
 from .core.error_handlers import register_error_handlers
 from .database.session import create_db
 from .routes import RESOURCE_ROUTERS, system_router, auth
@@ -18,9 +18,6 @@ api = FastAPI(
 
 # Đăng ký global error handlers
 register_error_handlers(api)
-
-# Tải các biến môi trường
-load_env()
 
 # Đăng ký cấu hình CORS
 setup_cors(api)

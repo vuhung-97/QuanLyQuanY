@@ -4,7 +4,7 @@ from pydantic import Field
 
 class VaiTroQuyenBase(SchemaBase):
     id_vai_tro: str = Field(max_length=20)
-    id_quyen: str = Field(max_length=20)
+    id_quyen: str = Field(max_length=100)
 
 
 class VaiTroQuyenCreate(VaiTroQuyenBase):
