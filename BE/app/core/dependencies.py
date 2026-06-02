@@ -54,7 +54,7 @@ def require_permissions(*required_permissions: str):
         current_user: NguoiDung = Depends(get_current_user),
         db: Session = Depends(get_db),
     ) -> NguoiDung:
-        if current_user.id_vai_tro == "admin":
+        if current_user.id_vai_tro == "ROLE_ADMIN" or current_user.ten_dang_nhap == "admin":
             return current_user
 
         user_perms = db.query(VaiTroQuyen.id_quyen).filter(
