@@ -7,10 +7,6 @@ import {
     CardContent,
     Checkbox,
     Chip,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
     Divider,
     Grid,
     LinearProgress,
@@ -18,16 +14,15 @@ import {
     ListItemButton,
     ListItemText,
     Stack,
-    TextField,
     Typography,
 } from "@mui/material";
 import {
     Add as AddIcon,
     Edit as EditIcon,
     Save as SaveIcon,
-    Security as SecurityIcon,
 } from "@mui/icons-material";
 import api from "../../services/api.js";
+import RoleFormDialog from "./RoleFormDialog.jsx";
 
 const fallbackRoles = [
     {
@@ -66,8 +61,6 @@ const fallbackPermissions = [
     },
 ];
 
-const emptyRole = { id: "", ten_vai_tro: "", mo_ta: "" };
-
 export default function RolePermissionPage() {
     const [roles, setRoles] = useState([]);
     const [permissions, setPermissions] = useState([]);
@@ -81,7 +74,6 @@ export default function RolePermissionPage() {
     const [error, setError] = useState("");
     const [openDialog, setOpenDialog] = useState(false);
     const [editingRole, setEditingRole] = useState(null);
-    const [roleForm, setRoleForm] = useState(emptyRole);
     const [permissionFilter, setPermissionFilter] = useState("all");
 
     const actionTypes = [
@@ -198,43 +190,34 @@ export default function RolePermissionPage() {
         }
     };
 
-    const handleRoleFormChange = (event) => {
-        const { name, value } = event.target;
-        setRoleForm((current) => ({ ...current, [name]: value }));
-    };
-
     const handleOpenEdit = (role) => {
         setEditingRole(role);
-        setRoleForm({ id: role.id, ten_vai_tro: role.ten_vai_tro, mo_ta: role.mo_ta || "" });
         setOpenDialog(true);
     };
 
     const handleOpenCreate = () => {
         setEditingRole(null);
-        setRoleForm(emptyRole);
         setOpenDialog(true);
     };
 
-    const handleSubmitRole = async (event) => {
-        event.preventDefault();
+    const handleSubmitRole = async (formData) => {
         setSaving(true);
         setError("");
         try {
             if (editingRole) {
-                const res = await api.patch(`/vai_tro/${editingRole.id}`, roleForm, {
+                const res = await api.patch(`/vai_tro/${editingRole.id}`, formData, {
                     headers: { "Content-Type": "application/json" },
                 });
                 setRoles((current) =>
                     current.map((r) => (r.id === editingRole.id ? res.data : r)),
                 );
             } else {
-                const res = await api.post("/vai_tro", roleForm, {
+                const res = await api.post("/vai_tro", formData, {
                     headers: { "Content-Type": "application/json" },
                 });
                 setRoles((current) => [res.data, ...current]);
                 setSelectedRoleId(res.data.id);
             }
-            setRoleForm(emptyRole);
             setOpenDialog(false);
         } catch (err) {
             setError(err.response?.data?.detail || "Không thể lưu vai trò.");
@@ -514,60 +497,13 @@ export default function RolePermissionPage() {
                 </Grid>
             </Grid>
 
-            <Dialog
+            <RoleFormDialog
                 open={openDialog}
+                editingRole={editingRole}
+                saving={saving}
+                onSubmit={handleSubmitRole}
                 onClose={() => setOpenDialog(false)}
-                fullWidth
-                maxWidth="sm"
-            >
-                <Box component="form" onSubmit={handleSubmitRole}>
-                    <DialogTitle>
-                        {editingRole ? "Cập nhật vai trò" : "Thêm vai trò"}
-                    </DialogTitle>
-                    <DialogContent>
-                        <Stack spacing={2} sx={{ pt: 1 }}>
-                            <TextField
-                                name="id"
-                                label="ID vai trò"
-                                value={roleForm.id}
-                                onChange={handleRoleFormChange}
-                                required={!editingRole}
-                                disabled={!!editingRole}
-                                slotProps={{ htmlInput: { maxLength: 20 } }}
-                            />
-                            <TextField
-                                name="ten_vai_tro"
-                                label="Tên vai trò"
-                                value={roleForm.ten_vai_tro}
-                                onChange={handleRoleFormChange}
-                                required
-                                slotProps={{ htmlInput: { maxLength: 100 } }}
-                            />
-                            <TextField
-                                name="mo_ta"
-                                label="Mô tả"
-                                value={roleForm.mo_ta}
-                                onChange={handleRoleFormChange}
-                                multiline
-                                minRows={3}
-                            />
-                        </Stack>
-                    </DialogContent>
-                    <DialogActions sx={{ px: 3, pb: 2.5 }}>
-                        <Button onClick={() => setOpenDialog(false)}>
-                            Hủy
-                        </Button>
-                        <Button
-                            type="submit"
-                            variant="contained"
-                            startIcon={<SecurityIcon />}
-                            disabled={saving}
-                        >
-                            {saving ? "Đang lưu..." : editingRole ? "Cập nhật" : "Tạo vai trò"}
-                        </Button>
-                    </DialogActions>
-                </Box>
-            </Dialog>
+            />
         </Stack>
     );
 }
