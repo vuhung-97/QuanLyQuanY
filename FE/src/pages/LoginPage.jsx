@@ -99,7 +99,7 @@ export default function LoginPage() {
                 />
 
                 <Stack spacing={1.25} sx={{ position: "relative" }}>
-                    <Stack direction="row" alignItems="center" spacing={1.5}>
+                    <Stack direction="row" spacing={1.5} sx={{ alignItems: "center" }}>
                         <Box
                             sx={{
                                 width: 100,
@@ -223,7 +223,7 @@ export default function LoginPage() {
                     <Stack spacing={3}>
                         <Stack
                             spacing={1.5}
-                            alignItems={{ xs: "center", sm: "flex-start" }}
+                            sx={{ alignItems: { xs: "center", sm: "flex-start" } }}
                         >
                             <Box
                                 sx={{
@@ -273,41 +273,42 @@ export default function LoginPage() {
                                     autoComplete="current-password"
                                     fullWidth
                                     required
-                                    InputProps={{
-                                        endAdornment: (
-                                            <InputAdornment position="end">
-                                                <IconButton
-                                                    aria-label={
-                                                        showPassword
-                                                            ? "An mat khau"
-                                                            : "Hien mat khau"
-                                                    }
-                                                    onClick={() =>
-                                                        setShowPassword(
-                                                            (value) => !value,
-                                                        )
-                                                    }
-                                                    edge="end"
-                                                >
-                                                    {showPassword ? (
-                                                        <VisibilityOffIcon />
-                                                    ) : (
-                                                        <VisibilityIcon />
-                                                    )}
-                                                </IconButton>
-                                            </InputAdornment>
-                                        ),
+                                    slotProps={{
+                                        input: {
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        aria-label={
+                                                            showPassword
+                                                                ? "An mat khau"
+                                                                : "Hien mat khau"
+                                                        }
+                                                        onClick={() =>
+                                                            setShowPassword(
+                                                                (value) => !value,
+                                                            )
+                                                        }
+                                                        edge="end"
+                                                    >
+                                                        {showPassword ? (
+                                                            <VisibilityOffIcon />
+                                                        ) : (
+                                                            <VisibilityIcon />
+                                                        )}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ),
+                                        },
                                     }}
                                 />
 
                                 <Stack
                                     direction={{ xs: "column", sm: "row" }}
-                                    alignItems={{
-                                        xs: "flex-start",
-                                        sm: "center",
-                                    }}
-                                    justifyContent="space-between"
                                     spacing={1}
+                                    sx={{
+                                        alignItems: { xs: "flex-start", sm: "center" },
+                                        justifyContent: "space-between",
+                                    }}
                                 >
                                     <FormControlLabel
                                         control={

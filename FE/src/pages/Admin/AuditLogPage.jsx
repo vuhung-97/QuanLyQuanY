@@ -95,7 +95,7 @@ export default function AuditLogPage() {
             <Card sx={{ borderRadius: 3 }}>
                 {loading && <LinearProgress />}
                 <CardContent sx={{ p: "24px !important" }}>
-                    <Stack direction={{ xs: "column", md: "row" }} justifyContent="space-between" spacing={2} sx={{ mb: 2 }}>
+                    <Stack direction={{ xs: "column", md: "row" }} spacing={2} sx={{ mb: 2, justifyContent: "space-between" }}>
                         <Tabs value={tab} onChange={(_, value) => setTab(value)}>
                             {tabs.map((item) => <Tab key={item.value} value={item.value} label={item.label} />)}
                         </Tabs>

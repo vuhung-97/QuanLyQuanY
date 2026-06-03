@@ -33,9 +33,8 @@ export default function Footer({
             {showDivider && <Divider sx={{ mb: 1.5, display: "none" }} />}
             <Stack
                 direction={{ xs: "column", sm: "row" }}
-                justifyContent="space-between"
-                alignItems={{ xs: "flex-start", sm: "center" }}
                 spacing={1}
+                sx={{ justifyContent: "space-between", alignItems: { xs: "flex-start", sm: "center" } }}
             >
                 <Typography variant="caption" sx={{ color: "text.secondary" }}>
                     {copyrightText}
@@ -47,8 +46,7 @@ export default function Footer({
                     <Stack
                         direction="row"
                         spacing={2}
-                        alignItems="center"
-                        flexWrap="wrap"
+                        sx={{ alignItems: "center", flexWrap: "wrap" }}
                     >
                         {extraInfo}
                         {links.length > 0 &&

@@ -129,10 +129,10 @@ export default function DashboardPage() {
             {/* Top Widgets */}
             <Grid container spacing={2.5}>
                 {stats.map((stat, index) => (
-                    <Grid item xs={12} sm={6} md={3} key={index}>
+                    <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
                         <Card sx={{ p: 1, borderRadius: 3, boxShadow: "0px 4px 12px rgba(0,0,0,0.03)" }}>
                             <CardContent sx={{ p: "16px !important" }}>
-                                <Stack direction="row" spacing={1.5} alignItems="flex-start" sx={{ mb: 2 }}>
+                                <Stack direction="row" spacing={1.5} sx={{ mb: 2, alignItems: "flex-start" }}>
                                     <Avatar variant="rounded" sx={{ bgcolor: stat.bgColor, width: 40, height: 40, borderRadius: 2 }}>
                                         {stat.icon}
                                     </Avatar>
@@ -145,11 +145,11 @@ export default function DashboardPage() {
                                         </Typography>
                                     </Box>
                                 </Stack>
-                                <Stack direction="row" alignItems="baseline" justifyContent="space-between">
+                                <Stack direction="row" sx={{ alignItems: "baseline", justifyContent: "space-between" }}>
                                     <Typography variant="h4" fontWeight={700} sx={{ color: "#1E293B" }}>
                                         {stat.value}
                                     </Typography>
-                                    <Stack direction="row" alignItems="center" spacing={0.5}>
+                                    <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
                                         <CallMadeIcon sx={{ fontSize: 14, color: "#10B981" }} />
                                         <Typography variant="body2" fontWeight={600} sx={{ color: "#10B981" }}>
                                             {stat.trend}
@@ -165,7 +165,7 @@ export default function DashboardPage() {
             {/* Area Chart */}
             <Card sx={{ borderRadius: 3, boxShadow: "0px 4px 12px rgba(0,0,0,0.03)", overflow: "visible" }}>
                 <CardContent sx={{ p: "24px !important" }}>
-                    <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 4 }}>
+                    <Stack direction="row" sx={{ mb: 4, justifyContent: "space-between", alignItems: "center" }}>
                         <Typography variant="h6" fontWeight={700} sx={{ color: "#1E293B" }}>
                             Xu hướng bệnh tật & sức khỏe bộ đội
                         </Typography>
@@ -237,7 +237,7 @@ export default function DashboardPage() {
             {/* Bottom Row */}
             <Grid container spacing={2.5}>
                 {/* Table */}
-                <Grid item xs={12} md={8}>
+                <Grid size={{ xs: 12, md: 8 }}>
                     <Card sx={{ borderRadius: 3, boxShadow: "0px 4px 12px rgba(0,0,0,0.03)", height: "100%" }}>
                         <CardContent sx={{ p: "24px !important", pb: "16px !important" }}>
                             <Typography variant="h6" fontWeight={700} sx={{ color: "#1E293B", mb: 2 }}>
@@ -259,7 +259,7 @@ export default function DashboardPage() {
                                         {tableData.map((row, idx) => (
                                             <TableRow key={idx} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
                                                 <TableCell sx={{ borderBottom: "1px solid #F1F5F9", pl: 0, py: 1.5 }}>
-                                                    <Stack direction="row" alignItems="center" spacing={1.5}>
+                                                    <Stack direction="row" spacing={1.5} sx={{ alignItems: "center" }}>
                                                         <Avatar src={row.avatar} sx={{ width: 32, height: 32 }} />
                                                         <Typography variant="body2" fontWeight={500} sx={{ color: "#334155" }}>
                                                             {row.name}
@@ -293,7 +293,7 @@ export default function DashboardPage() {
                 </Grid>
 
                 {/* Reports List */}
-                <Grid item xs={12} md={4}>
+                <Grid size={{ xs: 12, md: 4 }}>
                     <Card sx={{ borderRadius: 3, boxShadow: "0px 4px 12px rgba(0,0,0,0.03)", height: "100%" }}>
                         <CardContent sx={{ p: "24px !important" }}>
                             <Typography variant="h6" fontWeight={700} sx={{ color: "#1E293B", mb: 3 }}>
@@ -301,7 +301,7 @@ export default function DashboardPage() {
                             </Typography>
                             <Stack spacing={3}>
                                 {reports.map((report, idx) => (
-                                    <Stack direction="row" spacing={2} alignItems="center" key={idx}>
+                                    <Stack direction="row" spacing={2} key={idx} sx={{ alignItems: "center" }}>
                                         <Avatar variant="rounded" sx={{ bgcolor: "rgba(59, 130, 246, 0.1)", width: 40, height: 40, borderRadius: 2 }}>
                                             {report.icon}
                                         </Avatar>

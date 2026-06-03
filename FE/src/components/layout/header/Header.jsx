@@ -133,7 +133,7 @@ export default function Header({
                         </SearchIconWrapper>
                         <StyledInputBase
                             placeholder={searchPlaceholder}
-                            inputProps={{ "aria-label": "search" }}
+                            slotProps={{ htmlInput: { "aria-label": "search" } }}
                             onChange={(e) => onSearch?.(e.target.value)}
                         />
                     </Search>
@@ -143,8 +143,7 @@ export default function Header({
                 <Stack
                     direction="row"
                     spacing={1.5}
-                    alignItems="center"
-                    sx={{ mr: 2 }}
+                    sx={{ mr: 2, alignItems: "center" }}
                 >
                     <IconButton
                         color="inherit"

@@ -5,7 +5,7 @@ export default function PeriodicCheckupPlaceholderPage({ title }) {
     return (
         <Card sx={{ borderRadius: 3 }}>
             <CardContent sx={{ p: "28px !important" }}>
-                <Stack spacing={1.5} alignItems="center" textAlign="center">
+                <Stack spacing={1.5} sx={{ alignItems: "center" }} textAlign="center">
                     <ConstructionIcon sx={{ fontSize: 48, color: "secondary.main" }} />
                     <Typography variant="h1">{title}</Typography>
                     <Typography color="text.secondary">

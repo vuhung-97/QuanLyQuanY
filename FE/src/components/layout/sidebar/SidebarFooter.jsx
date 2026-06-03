@@ -37,7 +37,7 @@ function ActionItem({ icon, label, open, onClick }) {
                 {open && (
                     <ListItemText
                         primary={label}
-                        primaryTypographyProps={{ fontSize: FONT_SIZE_SM }}
+                        slotProps={{ primaryTypography: { fontSize: FONT_SIZE_SM } }}
                     />
                 )}
             </ListItemButton>

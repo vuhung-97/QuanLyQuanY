@@ -7,8 +7,7 @@ export default function SidebarProfile({ user, open = true, sx }) {
         <Stack
             direction="row"
             spacing={2}
-            alignItems="center"
-            sx={{ mb: 3, px: 1, ...sx }}
+            sx={{ mb: 3, px: 1, alignItems: "center", ...sx }}
         >
             <Avatar src={user.avatar} sx={{ width: 40, height: 40 }} />
             <Box sx={{ overflow: "hidden" }}>

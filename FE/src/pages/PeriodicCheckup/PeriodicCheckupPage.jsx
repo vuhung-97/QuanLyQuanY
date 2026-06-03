@@ -197,9 +197,8 @@ export default function PeriodicCheckupPage() {
         <Stack spacing={3}>
             <Stack
                 direction={{ xs: "column", md: "row" }}
-                alignItems={{ xs: "flex-start", md: "center" }}
-                justifyContent="space-between"
                 spacing={2}
+                sx={{ alignItems: { xs: "flex-start", md: "center" }, justifyContent: "space-between" }}
             >
                 <Box>
                     <Typography variant="h1" sx={{ color: "text.primary" }}>
@@ -223,10 +222,10 @@ export default function PeriodicCheckupPage() {
 
             <Grid container spacing={2.5}>
                 {summaryCards.map((item) => (
-                    <Grid item xs={12} sm={6} md={3} key={item.label}>
+                    <Grid size={{ xs: 12, sm: 6, md: 3 }} key={item.label}>
                         <Card sx={{ height: "100%", borderRadius: 3 }}>
                             <CardContent>
-                                <Stack direction="row" spacing={2} alignItems="center">
+                                <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
                                     <Box
                                         sx={{
                                             width: 46,
@@ -263,9 +262,8 @@ export default function PeriodicCheckupPage() {
                 <CardContent sx={{ p: "24px !important" }}>
                     <Stack
                         direction={{ xs: "column", md: "row" }}
-                        justifyContent="space-between"
                         spacing={2}
-                        sx={{ mb: 2.5 }}
+                        sx={{ mb: 2.5, justifyContent: "space-between" }}
                     >
                         <Box>
                             <Typography variant="h2">Danh sách lịch khám</Typography>
@@ -279,7 +277,7 @@ export default function PeriodicCheckupPage() {
                                 placeholder="Tìm mã lịch, đơn vị, địa điểm"
                                 value={query}
                                 onChange={(event) => setQuery(event.target.value)}
-                                InputProps={{ startAdornment: <SearchIcon sx={{ mr: 1, color: "text.secondary" }} /> }}
+                                slotProps={{ input: { startAdornment: <SearchIcon sx={{ mr: 1, color: "text.secondary" }} /> } }}
                                 sx={{ minWidth: { xs: "100%", sm: 280 } }}
                             />
                             <TextField
@@ -355,11 +353,11 @@ export default function PeriodicCheckupPage() {
                     <DialogTitle>Tạo lịch khám sức khỏe định kỳ</DialogTitle>
                     <DialogContent>
                         <Stack spacing={2} sx={{ pt: 1 }}>
-                            <TextField name="ma_lich_kham" label="Mã lịch khám" value={form.ma_lich_kham} onChange={handleFormChange} required inputProps={{ maxLength: 10 }} />
-                            <TextField name="ma_don_vi" label="Mã đơn vị" value={form.ma_don_vi} onChange={handleFormChange} inputProps={{ maxLength: 10 }} />
+                            <TextField name="ma_lich_kham" label="Mã lịch khám" value={form.ma_lich_kham} onChange={handleFormChange} required slotProps={{ htmlInput: { maxLength: 10 } }} />
+                            <TextField name="ma_don_vi" label="Mã đơn vị" value={form.ma_don_vi} onChange={handleFormChange} slotProps={{ htmlInput: { maxLength: 10 } }} />
                             <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
-                                <TextField name="thoi_gian_bat_dau" label="Ngày bắt đầu" type="date" value={form.thoi_gian_bat_dau} onChange={handleFormChange} fullWidth InputLabelProps={{ shrink: true }} />
-                                <TextField name="thoi_gian_ket_thuc" label="Ngày kết thúc" type="date" value={form.thoi_gian_ket_thuc} onChange={handleFormChange} fullWidth InputLabelProps={{ shrink: true }} />
+                                <TextField name="thoi_gian_bat_dau" label="Ngày bắt đầu" type="date" value={form.thoi_gian_bat_dau} onChange={handleFormChange} fullWidth slotProps={{ inputLabel: { shrink: true } }} />
+                                <TextField name="thoi_gian_ket_thuc" label="Ngày kết thúc" type="date" value={form.thoi_gian_ket_thuc} onChange={handleFormChange} fullWidth slotProps={{ inputLabel: { shrink: true } }} />
                             </Stack>
                             <TextField name="dia_diem" label="Địa điểm" value={form.dia_diem} onChange={handleFormChange} multiline minRows={2} />
                         </Stack>
