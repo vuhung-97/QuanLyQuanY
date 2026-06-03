@@ -1,4 +1,4 @@
-export const DRAWER_WIDTH = 260;
+export const DRAWER_WIDTH = 320;
 export const COLLAPSED_DRAWER_WIDTH = 80;
 export const HEADER_HEIGHT = 64;
 export const SEARCH_INPUT_WIDTH = "30ch";
