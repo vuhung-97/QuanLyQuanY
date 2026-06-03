@@ -2,12 +2,13 @@ from sqlalchemy import Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database.base import Base
+from app.database.id_helper import generate_id
 
 
 class ThuocVtyt(Base):
     __tablename__ = "thuoc_vtyt"
 
-    ma_thuoc_vtyt: Mapped[str] = mapped_column(String(10), primary_key=True)
+    ma_thuoc_vtyt: Mapped[str] = mapped_column(String(10), primary_key=True, default=lambda: generate_id(10))
     ten_thuoc_vtyt: Mapped[str] = mapped_column(String(255))
     don_vi_tinh: Mapped[str | None] = mapped_column(String(50), nullable=True)
     so_luong: Mapped[int | None] = mapped_column(Integer, default=0, nullable=True)

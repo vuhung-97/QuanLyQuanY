@@ -11,7 +11,7 @@ class ThuocVtytBase(SchemaBase):
     cap_chat_luong: str | None = Field(default=None, max_length=100)
 
 class ThuocVtytCreate(ThuocVtytBase):
-    ma_thuoc_vtyt: str = Field(max_length=10)
+    ma_thuoc_vtyt: str | None = None
 
 class ThuocVtytUpdate(SchemaBase):
     ten_thuoc_vtyt: str | None = Field(default=None, max_length=255)

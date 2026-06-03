@@ -15,7 +15,7 @@ class NhatKyThaoTacBase(SchemaBase):
 
 
 class NhatKyThaoTacCreate(NhatKyThaoTacBase):
-    id: str = Field(max_length=20)
+    id: str | None = None
 
 
 class NhatKyThaoTacUpdate(SchemaBase):

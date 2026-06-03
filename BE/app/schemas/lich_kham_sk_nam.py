@@ -19,7 +19,7 @@ class LichKhamSkNamBase(SchemaBase):
 
 
 class LichKhamSkNamCreate(LichKhamSkNamBase):
-    ma_lich_kham: str = Field(max_length=10)
+    ma_lich_kham: str | None = None
 
 
 class LichKhamSkNamUpdate(SchemaBase):

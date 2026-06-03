@@ -10,6 +10,7 @@ from app.crud.nguoi_dung import nguoi_dung_crud
 from app.database.nguoi_dung import NguoiDung
 from app.database.session import get_db
 from app.routes.base import _run_crud
+from app.crud.utils import normalize_payload
 from app.schemas.nguoi_dung import NguoiDungCreate, NguoiDungRead, NguoiDungUpdate
 
 
@@ -50,7 +51,8 @@ def get_user(item_id: str, db: Session = Depends(get_db)) -> Any:
     response_model=NguoiDungRead,
 )
 def create_user(payload: NguoiDungCreate, db: Session = Depends(get_db)) -> NguoiDung:
-    values = payload.model_dump(exclude={"mat_khau"})
+    values = payload.model_dump(exclude={"mat_khau"}, exclude_none=True)
+    normalize_payload(NguoiDung, values)
     values["mat_khau_hash"] = get_password_hash(payload.mat_khau)
     row = NguoiDung(**values)
     db.add(row)
@@ -63,6 +65,7 @@ def create_user(payload: NguoiDungCreate, db: Session = Depends(get_db)) -> Nguo
 def update_user(payload: NguoiDungUpdate, item_id: str, db: Session = Depends(get_db)) -> NguoiDung:
     row = _run_crud(lambda: nguoi_dung_crud.get(db, item_id))
     values = payload.model_dump(exclude_unset=True, exclude={"mat_khau"})
+    normalize_payload(NguoiDung, values)
     for field, value in values.items():
         setattr(row, field, value)
     if payload.mat_khau is not None:

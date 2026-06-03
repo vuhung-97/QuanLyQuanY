@@ -20,7 +20,7 @@ class RaBenhXaBase(SchemaBase):
 
 
 class RaBenhXaCreate(RaBenhXaBase):
-    ma_ra_benh_xa: str = Field(max_length=10)
+    ma_ra_benh_xa: str | None = None
 
 
 class RaBenhXaUpdate(SchemaBase):

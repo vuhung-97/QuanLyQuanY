@@ -11,7 +11,7 @@ class NguoiDungBase(SchemaBase):
 
 
 class NguoiDungCreate(NguoiDungBase):
-    id: str = Field(max_length=20)
+    id: str | None = None
     mat_khau: str = Field(min_length=8)
 
 

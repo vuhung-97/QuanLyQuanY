@@ -6,6 +6,7 @@ from sqlalchemy import inspect, select
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
 
+from app.crud.utils import normalize_payload
 from app.database.base import Base
 
 
@@ -97,6 +98,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
     def _payload_values(self, payload: BaseModel, *, exclude_unset: bool = False) -> dict[str, object]:
         values = payload.model_dump(exclude_unset=exclude_unset)
+        normalize_payload(self.model, values)
         column_keys = self._column_keys()
         return {field: value for field, value in values.items() if field in column_keys}
 

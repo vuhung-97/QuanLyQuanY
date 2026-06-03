@@ -2,12 +2,13 @@ from sqlalchemy import Boolean, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database.base import Base
+from app.database.id_helper import generate_id
 
 
 class NguoiDung(Base):
     __tablename__ = "nguoi_dung"
 
-    id: Mapped[str] = mapped_column(String(20), primary_key=True)
+    id: Mapped[str] = mapped_column(String(20), primary_key=True, default=lambda: generate_id(20))
     ten_dang_nhap: Mapped[str] = mapped_column(String(50))
     mat_khau_hash: Mapped[str] = mapped_column(Text)
     ho_ten: Mapped[str] = mapped_column(String(100))

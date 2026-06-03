@@ -11,7 +11,7 @@ class KhamBenhBase(SchemaBase):
 
 
 class KhamBenhCreate(KhamBenhBase):
-    ma_kham_benh: str = Field(max_length=10)
+    ma_kham_benh: str | None = None
 
 
 class KhamBenhUpdate(SchemaBase):

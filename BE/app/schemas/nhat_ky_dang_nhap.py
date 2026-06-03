@@ -12,7 +12,7 @@ class NhatKyDangNhapBase(SchemaBase):
 
 
 class NhatKyDangNhapCreate(NhatKyDangNhapBase):
-    id: str = Field(max_length=20)
+    id: str | None = None
 
 
 class NhatKyDangNhapUpdate(SchemaBase):

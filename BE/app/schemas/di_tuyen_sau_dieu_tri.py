@@ -15,7 +15,7 @@ class DiTuyenSauDieuTriBase(SchemaBase):
 
 
 class DiTuyenSauDieuTriCreate(DiTuyenSauDieuTriBase):
-    ma_chuyen_tuyen: str = Field(max_length=10)
+    ma_chuyen_tuyen: str | None = None
 
 
 class DiTuyenSauDieuTriUpdate(SchemaBase):

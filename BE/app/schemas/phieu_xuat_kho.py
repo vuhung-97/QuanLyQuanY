@@ -13,7 +13,7 @@ class PhieuXuatKhoBase(SchemaBase):
 
 
 class PhieuXuatKhoCreate(PhieuXuatKhoBase):
-    ma_phieu_xuat: str = Field(max_length=10)
+    ma_phieu_xuat: str | None = None
 
 
 class PhieuXuatKhoUpdate(SchemaBase):

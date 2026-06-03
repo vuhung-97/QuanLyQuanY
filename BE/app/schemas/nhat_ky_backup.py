@@ -11,7 +11,7 @@ class NhatKyBackupBase(SchemaBase):
 
 
 class NhatKyBackupCreate(NhatKyBackupBase):
-    id: str = Field(max_length=20)
+    id: str | None = None
 
 
 class NhatKyBackupUpdate(SchemaBase):

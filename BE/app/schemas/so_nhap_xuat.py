@@ -25,7 +25,7 @@ class SoNhapXuatBase(SchemaBase):
 
 
 class SoNhapXuatCreate(SoNhapXuatBase):
-    ma_giao_dich: str = Field(max_length=10)
+    ma_giao_dich: str | None = None
 
 
 class SoNhapXuatUpdate(SchemaBase):

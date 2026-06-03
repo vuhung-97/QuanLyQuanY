@@ -5,12 +5,13 @@ from sqlalchemy import DateTime, ForeignKey, Integer, Numeric, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database.base import Base
+from app.database.id_helper import generate_id
 
 
 class SoNhapXuat(Base):
     __tablename__ = "so_nhap_xuat"
 
-    ma_giao_dich: Mapped[str] = mapped_column(String(10), primary_key=True)
+    ma_giao_dich: Mapped[str] = mapped_column(String(10), primary_key=True, default=lambda: generate_id(10))
     ma_thuoc_vtyt: Mapped[str | None] = mapped_column(String(10), ForeignKey("thuoc_vtyt.ma_thuoc_vtyt", ondelete="RESTRICT"), nullable=True)
     quy_cach: Mapped[str | None] = mapped_column(String(255), nullable=True)
     don_gia: Mapped[Decimal | None] = mapped_column(Numeric(15, 2), nullable=True)

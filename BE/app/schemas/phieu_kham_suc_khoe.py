@@ -15,7 +15,7 @@ class PhieuKhamSucKhoeBase(SchemaBase):
 
 
 class PhieuKhamSucKhoeCreate(PhieuKhamSucKhoeBase):
-    ma_phieu_kham: str = Field(max_length=10)
+    ma_phieu_kham: str | None = None
 
 
 class PhieuKhamSucKhoeUpdate(SchemaBase):

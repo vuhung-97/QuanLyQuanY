@@ -16,7 +16,7 @@ class GiayGioiThieuBase(SchemaBase):
 
 
 class GiayGioiThieuCreate(GiayGioiThieuBase):
-    ma_giay_gt: str = Field(max_length=10)
+    ma_giay_gt: str | None = None
 
 
 class GiayGioiThieuUpdate(SchemaBase):

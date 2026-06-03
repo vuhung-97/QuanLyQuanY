@@ -77,6 +77,12 @@ Mỗi resource đều có 5 endpoints theo pattern chuẩn:
 
 Tất cả resource dùng **single-column primary key** là string (max_length 10-20 tuỳ resource). Một số resource (bảng quan hệ nhiều-nhiều) dùng **composite key** — khi đó {id} là các giá trị phân cách bằng dấu phẩy (vd: `ROLE_ADMIN,benh_an:read`).
 
+**Auto-generated ID:** Hầu hết resource sử dụng thư viện [nanoid](https://github.com/ai/nanoid) (Python) để tự động sinh ID ngẫu nhiên khi tạo bản ghi. ID được sinh trong SQLAlchemy `default=` nên không cần gửi trong request body POST — nếu không gửi, hệ thống tự tạo. Người dùng vẫn có thể ghi đè bằng cách gửi ID tuỳ chỉnh.
+
+Các bảng không auto-ID (cần nhập thủ công): `quyen`, `vai_tro`, `quan_nhan`, `don_vi` — vì ID mang ý nghĩa nghiệp vụ (vd: `ROLE_ADMIN`, `nguoi_dung:read`).
+
+Xem danh sách đầy đủ tại `BE/app/database/id_helper.py`.
+
 ---
 
 ## Phân quyền (RBAC)
@@ -169,10 +175,11 @@ nhat_ky_dang_nhap, nhat_ky_thao_tac, nhat_ky_backup
 
 ### POST /kham_benh
 
+Không cần gửi `ma_kham_benh` — ID tự động sinh bởi nanoid nếu không cung cấp:
+
 **Request**:
 ```json
 {
-  "ma_kham_benh": "KB0001",
   "ma_quan_nhan": "QN0001",
   "trieu_chung_chan_doan": "Đau đầu, sốt nhẹ",
   "phuong_phap_dieu_tri": "Nghỉ ngơi, uống thuốc hạ sốt",
@@ -184,12 +191,21 @@ nhat_ky_dang_nhap, nhat_ky_thao_tac, nhat_ky_backup
 **Response** `201 Created`:
 ```json
 {
-  "ma_kham_benh": "KB0001",
+  "ma_kham_benh": "V1StGXR8_Z",
   "ma_quan_nhan": "QN0001",
   "trieu_chung_chan_doan": "Đau đầu, sốt nhẹ",
   "phuong_phap_dieu_tri": "Nghỉ ngơi, uống thuốc hạ sốt",
   "kham_lan": 1,
   "ket_qua": "Đã ổn định"
+}
+```
+
+Hoặc nếu muốn tự đặt ID:
+```json
+{
+  "ma_kham_benh": "KB0001",
+  "ma_quan_nhan": "QN0001",
+  ...
 }
 ```
 
@@ -512,6 +528,7 @@ nhat_ky_dang_nhap, nhat_ky_thao_tac, nhat_ky_backup
 
 - **Backend**: FastAPI (Python), SQLAlchemy ORM, PostgreSQL
 - **Auth**: JWT (python-jose) + bcrypt (passlib)
+- **ID Generation**: nanoid (Python) — `BE/app/database/id_helper.py`
 - **API Port**: 8000
 - **Swagger UI**: http://localhost:8000/docs
 - **OpenAPI JSON**: http://localhost:8000/openapi.json

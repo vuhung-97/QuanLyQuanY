@@ -10,7 +10,7 @@ class PhieuDuTruBase(SchemaBase):
 
 
 class PhieuDuTruCreate(PhieuDuTruBase):
-    ma_phieu_du_tru: str = Field(max_length=10)
+    ma_phieu_du_tru: str | None = None
 
 
 class PhieuDuTruUpdate(SchemaBase):

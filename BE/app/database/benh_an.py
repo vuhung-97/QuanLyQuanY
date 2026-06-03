@@ -2,12 +2,13 @@ from sqlalchemy import ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database.base import Base
+from app.database.id_helper import generate_id
 
 
 class BenhAn(Base):
     __tablename__ = "benh_an"
 
-    ma_benh_an: Mapped[str] = mapped_column(String(10), primary_key=True)
+    ma_benh_an: Mapped[str] = mapped_column(String(10), primary_key=True, default=lambda: generate_id(10))
     ma_quan_nhan: Mapped[str | None] = mapped_column(String(10), ForeignKey("quan_nhan.ma_quan_nhan", ondelete="CASCADE"), nullable=True)
     ngoai_kieu: Mapped[str | None] = mapped_column(String(100), nullable=True)
     doi_tuong: Mapped[str | None] = mapped_column(String(100), nullable=True)

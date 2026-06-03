@@ -14,7 +14,7 @@ class PhieuChamSocBase(SchemaBase):
 
 
 class PhieuChamSocCreate(PhieuChamSocBase):
-    ma_phieu_cs: str = Field(max_length=10)
+    ma_phieu_cs: str | None = None
 
 
 class PhieuChamSocUpdate(SchemaBase):

@@ -18,3 +18,4 @@ python-multipart==0.0.30
 PyYAML==6.0.3
 watchfiles==1.2.0
 websockets==16.0
+nanoid==2.0.0

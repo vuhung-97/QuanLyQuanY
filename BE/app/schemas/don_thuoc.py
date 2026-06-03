@@ -8,7 +8,7 @@ class DonThuocBase(SchemaBase):
 
 
 class DonThuocCreate(DonThuocBase):
-    ma_don_thuoc: str = Field(max_length=10)
+    ma_don_thuoc: str | None = None
 
 
 class DonThuocUpdate(SchemaBase):

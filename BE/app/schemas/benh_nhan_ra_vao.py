@@ -13,7 +13,7 @@ class BenhNhanRaVaoBase(SchemaBase):
 
 
 class BenhNhanRaVaoCreate(BenhNhanRaVaoBase):
-    ma_ra_vao: str = Field(max_length=10)
+    ma_ra_vao: str | None = None
 
 
 class BenhNhanRaVaoUpdate(SchemaBase):

@@ -14,7 +14,7 @@ class BenhAnBase(SchemaBase):
 
 
 class BenhAnCreate(BenhAnBase):
-    ma_benh_an: str = Field(max_length=10)
+    ma_benh_an: str | None = None
 
 
 class BenhAnUpdate(SchemaBase):
