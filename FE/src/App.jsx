@@ -5,6 +5,9 @@ import DashboardPage from "./pages/Dashboard/DashboardPage.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import PeriodicCheckupPage from "./pages/PeriodicCheckup/PeriodicCheckupPage.jsx";
 import PeriodicCheckupPlaceholderPage from "./pages/PeriodicCheckup/PeriodicCheckupPlaceholderPage.jsx";
+import UserManagementPage from "./pages/Admin/UserManagementPage.jsx";
+import RolePermissionPage from "./pages/Admin/RolePermissionPage.jsx";
+import AuditLogPage from "./pages/Admin/AuditLogPage.jsx";
 
 export default function App() {
     return (
@@ -32,6 +35,10 @@ export default function App() {
                         path="kham-dinh-ky/chua-kham"
                         element={<PeriodicCheckupPlaceholderPage title="Danh sách quân nhân chưa khám" />}
                     />
+                    <Route path="admin" element={<Navigate to="/admin/nguoi-dung" replace />} />
+                    <Route path="admin/nguoi-dung" element={<UserManagementPage />} />
+                    <Route path="admin/phan-quyen" element={<RolePermissionPage />} />
+                    <Route path="admin/nhat-ky" element={<AuditLogPage />} />
                     {/* Thêm các trang khác ở đây sau (VD: /kham-benh, /kho-duoc) */}
                 </Route>
             </Routes>

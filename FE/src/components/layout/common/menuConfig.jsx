@@ -9,6 +9,10 @@ import {
     MedicalServices as MedicalServicesIcon,
     Inventory2 as InventoryIcon,
     Assessment as AssessmentIcon,
+    AdminPanelSettings as AdminPanelSettingsIcon,
+    ManageAccounts as ManageAccountsIcon,
+    Security as SecurityIcon,
+    History as HistoryIcon,
 } from "@mui/icons-material";
 
 export const defaultMenuItems = [
@@ -29,6 +33,17 @@ export const defaultMenuItems = [
     { id: "examination", title: "Khám bệnh", path: "/kham-benh", icon: <MedicalServicesIcon /> },
     { id: "pharmacy", title: "Kho dược", path: "/kho-duoc", icon: <InventoryIcon /> },
     { id: "reports", title: "Báo cáo", path: "/bao-cao", icon: <AssessmentIcon /> },
+    {
+        id: "admin",
+        title: "Quản trị hệ thống",
+        path: "/admin",
+        icon: <AdminPanelSettingsIcon />,
+        children: [
+            { id: "admin-users", title: "Tài khoản người dùng", path: "/admin/nguoi-dung", icon: <ManageAccountsIcon /> },
+            { id: "admin-permissions", title: "Vai trò & phân quyền", path: "/admin/phan-quyen", icon: <SecurityIcon /> },
+            { id: "admin-audit", title: "Nhật ký hệ thống", path: "/admin/nhat-ky", icon: <HistoryIcon /> },
+        ],
+    },
 ];
 
 export function filterMenuByRole(items, allowedIds) {
