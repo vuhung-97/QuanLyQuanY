@@ -43,7 +43,7 @@ export default function Sidebar({
             width: open ? width : collapsedWidth,
             overflowX: "hidden",
             bgcolor: theme.palette.primary.main,
-            color: "#FFFFFF",
+            color: theme.palette.common.white,
             borderRight: "none",
             mt: `${headerHeight}px`,
             height: `calc(100% - ${headerHeight}px)`,

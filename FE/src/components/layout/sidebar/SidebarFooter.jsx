@@ -6,7 +6,9 @@ import {
     ListItemButton,
     ListItemIcon,
     ListItemText,
+    useTheme,
 } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import {
     SettingsOutlined as SettingsIcon,
     Logout as LogoutIcon,
@@ -14,14 +16,18 @@ import {
 import { FONT_SIZE_SM } from "../common/constants.js";
 
 function ActionItem({ icon, label, open, onClick }) {
+    const theme = useTheme();
     return (
         <ListItem disablePadding sx={{ mb: 0.5 }}>
             <ListItemButton
                 onClick={onClick}
                 sx={{
                     borderRadius: 2,
-                    color: "rgba(255,255,255,0.7)",
-                    "&:hover": { color: "#FFFFFF", bgcolor: "rgba(255,255,255,0.08)" },
+                    color: alpha(theme.palette.common.white, 0.7),
+                    "&:hover": {
+                        color: theme.palette.common.white,
+                        bgcolor: alpha(theme.palette.common.white, 0.08),
+                    },
                 }}
             >
                 <ListItemIcon
@@ -54,10 +60,11 @@ export default function SidebarFooter({
     showDivider = true,
     extraItems = [],
 }) {
+    const theme = useTheme();
     return (
         <Box sx={{ px: 2, pb: 3 }}>
             {showDivider && (
-                <Divider sx={{ borderColor: "rgba(255,255,255,0.1)", mb: 2 }} />
+                <Divider sx={{ borderColor: alpha(theme.palette.common.white, 0.1), mb: 2 }} />
             )}
 
             <List disablePadding>

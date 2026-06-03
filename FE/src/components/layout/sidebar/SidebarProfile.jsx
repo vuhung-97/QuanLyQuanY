@@ -1,6 +1,8 @@
-import { Box, Stack, Avatar, Typography } from "@mui/material";
+import { Box, Stack, Avatar, Typography, useTheme } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 
 export default function SidebarProfile({ user, open = true, sx }) {
+    const theme = useTheme();
     if (!user || !open) return null;
 
     return (
@@ -15,7 +17,7 @@ export default function SidebarProfile({ user, open = true, sx }) {
                     variant="subtitle2"
                     sx={{
                         fontWeight: 600,
-                        color: "#FFFFFF",
+                        color: theme.palette.common.white,
                         whiteSpace: "nowrap",
                     }}
                 >
@@ -25,7 +27,7 @@ export default function SidebarProfile({ user, open = true, sx }) {
                     <Typography
                         variant="caption"
                         sx={{
-                            color: "rgba(255,255,255,0.6)",
+                            color: alpha(theme.palette.common.white, 0.6),
                             display: "block",
                             whiteSpace: "normal",
                             lineHeight: 1.2,

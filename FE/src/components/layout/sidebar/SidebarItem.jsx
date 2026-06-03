@@ -1,6 +1,11 @@
 import { FONT_SIZE_MD, FONT_SIZE_SM } from "../common/constants.js";
-import { useTheme } from "@mui/material";
-import { ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
+import { useTheme, alpha } from "@mui/material/styles";
+import {
+    ListItem,
+    ListItemButton,
+    ListItemIcon,
+    ListItemText,
+} from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 
 export default function SidebarItem({
@@ -22,7 +27,10 @@ export default function SidebarItem({
     };
 
     return (
-        <ListItem disablePadding sx={{ display: "block", mb: 1, ...sx?.listItem }}>
+        <ListItem
+            disablePadding
+            sx={{ display: "block", mb: 1, ...sx?.listItem }}
+        >
             <ListItemButton
                 onClick={handleClick}
                 sx={{
@@ -32,12 +40,16 @@ export default function SidebarItem({
                     pl: open ? 2 + depth * 2 : 2,
                     borderRadius: 2.5,
                     bgcolor: active ? activeBg : "transparent",
-                    color: active ? "#FFFFFF" : "rgba(255,255,255,0.7)",
+                    color: active
+                        ? "background.default"
+                        : alpha(theme.palette.common.white, 0.7),
                     "&:hover": {
-                        bgcolor: active ? activeBg : "rgba(255, 255, 255, 0.08)",
-                        color: "#FFFFFF",
+                        bgcolor: active
+                            ? activeBg
+                            : alpha(theme.palette.common.white, 0.08),
+                        color: theme.palette.common.white,
                         "& .MuiListItemIcon-root": {
-                            color: "#FFFFFF",
+                            color: theme.palette.common.white,
                         },
                     },
                     ...sx?.button,
@@ -48,7 +60,7 @@ export default function SidebarItem({
                         minWidth: 0,
                         mr: open ? 2 : 0,
                         justifyContent: "center",
-                        color: active ? "#FFFFFF" : "rgba(255,255,255,0.7)",
+                        color: active ? theme.palette.common.white : alpha(theme.palette.common.white, 0.7),
                     }}
                 >
                     {item.icon}
@@ -63,7 +75,9 @@ export default function SidebarItem({
                         },
                     }}
                 />
-                {open && hasChildren && (expanded ? <ExpandLess /> : <ExpandMore />)}
+                {open &&
+                    hasChildren &&
+                    (expanded ? <ExpandLess /> : <ExpandMore />)}
             </ListItemButton>
         </ListItem>
     );

@@ -11,13 +11,20 @@ export const FONT_SIZE_XL = 22;
 export const FONT_SIZE_XXL = 28;
 
 export const APP_NAME = "Quản lý Quân y Lữ đoàn Hải quân";
-export const APP_SUBTITLE = "Hệ thống quản lý nghiệp vụ Quân y";
+export const APP_SUBTITLE = "Hệ thống quản lý nghiệp vụ";
 export const APP_VERSION = "1.0.0";
 
 export const DEFAULT_USER = {
-    name: "Nguyễn Văn An",
+    name: "Người dùng",
     avatar: "https://i.pravatar.cc/150?img=11",
-    role: "Chủ nhiệm Quân y - Lữ đoàn Hải quân",
+    role: "",
+};
+
+export const ROLE_NAME_MAP = {
+    admin: "Quản trị viên",
+    chu_nhiem_quan_y: "Chủ nhiệm Quân y",
+    bac_si: "Bác sĩ",
+    y_si: "Y sĩ",
 };
 
 export const STORAGE_KEYS = {

@@ -23,25 +23,78 @@ export const defaultMenuItems = [
         path: "/kham-dinh-ky",
         icon: <HealthAndSafetyIcon />,
         children: [
-            { id: "periodic-schedule", title: "Lập lịch khám", path: "/kham-dinh-ky/lap-lich", icon: <PlaylistAddCheckIcon /> },
-            { id: "periodic-exam", title: "Khám sức khỏe định kỳ", path: "/kham-dinh-ky/kham-suc-khoe", icon: <AssignmentTurnedInIcon /> },
-            { id: "periodic-missing", title: "Danh sách quân nhân chưa khám", path: "/kham-dinh-ky/chua-kham", icon: <PersonSearchIcon /> },
+            {
+                id: "periodic-schedule",
+                title: "Lập lịch khám",
+                path: "/kham-dinh-ky/lap-lich",
+                icon: <PlaylistAddCheckIcon />,
+            },
+            {
+                id: "periodic-exam",
+                title: "Khám sức khỏe định kỳ",
+                path: "/kham-dinh-ky/kham-suc-khoe",
+                icon: <AssignmentTurnedInIcon />,
+            },
+            {
+                id: "periodic-missing",
+                title: "Danh sách quân nhân chưa khám",
+                path: "/kham-dinh-ky/chua-kham",
+                icon: <PersonSearchIcon />,
+            },
         ],
     },
-    { id: "personnel", title: "Hồ sơ quân nhân", path: "/ho-so", icon: <PersonIcon /> },
-    { id: "inpatient", title: "Quản lý nội trú", path: "/noi-tru", icon: <BedIcon /> },
-    { id: "examination", title: "Khám bệnh", path: "/kham-benh", icon: <MedicalServicesIcon /> },
-    { id: "pharmacy", title: "Kho dược", path: "/kho-duoc", icon: <InventoryIcon /> },
-    { id: "reports", title: "Báo cáo", path: "/bao-cao", icon: <AssessmentIcon /> },
+    {
+        id: "inpatient",
+        title: "Quản lý nội trú",
+        path: "/noi-tru",
+        icon: <BedIcon />,
+    },
+    {
+        id: "examination",
+        title: "Khám bệnh",
+        path: "/kham-benh",
+        icon: <MedicalServicesIcon />,
+    },
+    {
+        id: "pharmacy",
+        title: "Kho dược",
+        path: "/kho-duoc",
+        icon: <InventoryIcon />,
+    },
+    {
+        id: "reports",
+        title: "Báo cáo",
+        path: "/bao-cao",
+        icon: <AssessmentIcon />,
+    },
+];
+
+export const adminMenuItems = [
+    ...defaultMenuItems,
     {
         id: "admin",
         title: "Quản trị hệ thống",
         path: "/admin",
         icon: <AdminPanelSettingsIcon />,
         children: [
-            { id: "admin-users", title: "Tài khoản người dùng", path: "/admin/nguoi-dung", icon: <ManageAccountsIcon /> },
-            { id: "admin-permissions", title: "Vai trò & phân quyền", path: "/admin/phan-quyen", icon: <SecurityIcon /> },
-            { id: "admin-audit", title: "Nhật ký hệ thống", path: "/admin/nhat-ky", icon: <HistoryIcon /> },
+            {
+                id: "admin-users",
+                title: "Tài khoản người dùng",
+                path: "/admin/nguoi-dung",
+                icon: <ManageAccountsIcon />,
+            },
+            {
+                id: "admin-permissions",
+                title: "Vai trò & phân quyền",
+                path: "/admin/phan-quyen",
+                icon: <SecurityIcon />,
+            },
+            {
+                id: "admin-audit",
+                title: "Nhật ký hệ thống",
+                path: "/admin/nhat-ky",
+                icon: <HistoryIcon />,
+            },
         ],
     },
 ];

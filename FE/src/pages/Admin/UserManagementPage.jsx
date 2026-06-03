@@ -41,25 +41,6 @@ const emptyForm = {
     trang_thai: true,
 };
 
-const fallbackUsers = [
-    {
-        id: "admin",
-        ten_dang_nhap: "admin",
-        ho_ten: "Quản trị viên",
-        id_vai_tro: "ROLE_ADMIN",
-        id_quan_nhan: "",
-        trang_thai: true,
-    },
-    {
-        id: "bs001",
-        ten_dang_nhap: "bacsi01",
-        ho_ten: "Bác sĩ quân y",
-        id_vai_tro: "ROLE_BAC_SI",
-        id_quan_nhan: "QN001",
-        trang_thai: true,
-    },
-];
-
 export default function UserManagementPage() {
     const [users, setUsers] = useState([]);
     const [roles, setRoles] = useState([]);
@@ -94,12 +75,6 @@ export default function UserManagementPage() {
                         err.response?.data?.detail ||
                             "Chưa tải được dữ liệu quản trị từ API.",
                     );
-                    setUsers(fallbackUsers);
-                    setRoles([
-                        { id: "ROLE_ADMIN", ten_vai_tro: "Quản trị viên" },
-                        { id: "ROLE_BAC_SI", ten_vai_tro: "Bác sĩ" },
-                        { id: "ROLE_Y_SI", ten_vai_tro: "Y sĩ" },
-                    ]);
                 }
             } finally {
                 if (!ignore) setLoading(false);
@@ -115,7 +90,13 @@ export default function UserManagementPage() {
     const filteredUsers = users.filter((user) => {
         const keyword = query.trim().toLowerCase();
         if (!keyword) return true;
-        return [user.id, user.ten_dang_nhap, user.ho_ten, user.id_vai_tro, user.ten_vai_tro]
+        return [
+            user.id,
+            user.ten_dang_nhap,
+            user.ho_ten,
+            user.id_vai_tro,
+            user.ten_vai_tro,
+        ]
             .filter(Boolean)
             .some((value) => String(value).toLowerCase().includes(keyword));
     });
