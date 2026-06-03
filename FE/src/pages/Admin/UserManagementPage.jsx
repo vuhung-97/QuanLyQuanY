@@ -115,7 +115,7 @@ export default function UserManagementPage() {
     const filteredUsers = users.filter((user) => {
         const keyword = query.trim().toLowerCase();
         if (!keyword) return true;
-        return [user.id, user.ten_dang_nhap, user.ho_ten, user.id_vai_tro]
+        return [user.id, user.ten_dang_nhap, user.ho_ten, user.id_vai_tro, user.ten_vai_tro]
             .filter(Boolean)
             .some((value) => String(value).toLowerCase().includes(keyword));
     });
@@ -320,6 +320,7 @@ export default function UserManagementPage() {
                                             <Chip
                                                 size="small"
                                                 label={
+                                                    user.ten_vai_tro ||
                                                     user.id_vai_tro ||
                                                     "Chưa gán"
                                                 }

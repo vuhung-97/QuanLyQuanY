@@ -26,3 +26,4 @@ class NguoiDungUpdate(SchemaBase):
 
 class NguoiDungRead(NguoiDungBase):
     id: str = Field(max_length=20)
+    ten_vai_tro: str | None = None

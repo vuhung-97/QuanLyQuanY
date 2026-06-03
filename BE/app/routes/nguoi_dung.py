@@ -12,6 +12,7 @@ from app.database.session import get_db
 from app.routes.base import _run_crud
 from app.crud.utils import normalize_payload
 from app.schemas.nguoi_dung import NguoiDungCreate, NguoiDungRead, NguoiDungUpdate
+from app.services.nguoi_dung_service import attach_vai_tro_name, attach_vai_tro_names
 
 
 router = APIRouter(prefix="/nguoi_dung", tags=["nguoi_dung"])
@@ -36,12 +37,16 @@ def list_users(
     sort_by: str | None = Query(default=None),
     sort_desc: bool = Query(default=False),
 ) -> list[Any]:
-    return _run_crud(lambda: nguoi_dung_crud.get_multi(db, limit=limit, offset=offset, sort_by=sort_by, sort_desc=sort_desc))
+    users = _run_crud(lambda: nguoi_dung_crud.get_multi(db, limit=limit, offset=offset, sort_by=sort_by, sort_desc=sort_desc))
+    attach_vai_tro_names(db, users)
+    return users
 
 
 @router.get("/{item_id}", dependencies=[Depends(require_permissions("nguoi_dung:read"))], response_model=NguoiDungRead)
 def get_user(item_id: str, db: Session = Depends(get_db)) -> Any:
-    return _run_crud(lambda: nguoi_dung_crud.get(db, item_id))
+    user = _run_crud(lambda: nguoi_dung_crud.get(db, item_id))
+    attach_vai_tro_name(db, user)
+    return user
 
 
 @router.post(
@@ -58,6 +63,7 @@ def create_user(payload: NguoiDungCreate, db: Session = Depends(get_db)) -> Nguo
     db.add(row)
     _commit_or_raise(db)
     db.refresh(row)
+    attach_vai_tro_name(db, row)
     return row
 
 
@@ -73,6 +79,7 @@ def update_user(payload: NguoiDungUpdate, item_id: str, db: Session = Depends(ge
 
     _commit_or_raise(db)
     db.refresh(row)
+    attach_vai_tro_name(db, row)
     return row
 
 
