@@ -5,7 +5,7 @@ from sqlalchemy import DateTime, ForeignKey, Integer, Numeric, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database.base import Base
-from app.database.id_helper import generate_id
+from ..services.id_helper import generate_id
 
 
 class SoNhapXuat(Base):

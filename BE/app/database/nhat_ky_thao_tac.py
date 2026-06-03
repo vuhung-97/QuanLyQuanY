@@ -5,7 +5,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database.base import Base
-from app.database.id_helper import generate_id
+from ..services.id_helper import generate_id
 
 
 class NhatKyThaoTac(Base):
