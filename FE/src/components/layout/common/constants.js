@@ -21,10 +21,10 @@ export const DEFAULT_USER = {
 };
 
 export const ROLE_NAME_MAP = {
-    admin: "Quản trị viên",
-    chu_nhiem_quan_y: "Chủ nhiệm Quân y",
-    bac_si: "Bác sĩ",
-    y_si: "Y sĩ",
+    ROLE_ADMIN: "Quản trị viên",
+    ROLE_CNQY: "Chủ nhiệm Quân y",
+    ROLE_BACSI: "Bác sĩ",
+    ROLE_YSI: "Y sĩ",
 };
 
 export const STORAGE_KEYS = {

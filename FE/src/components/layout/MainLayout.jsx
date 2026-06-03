@@ -51,7 +51,7 @@ export default function MainLayout({
     const user = useMemo(() => {
         if (propUser) return propUser;
         return {
-            name: jwtPayload?.sub || DEFAULT_USER.name,
+            name: jwtPayload?.ho_ten || jwtPayload?.sub || DEFAULT_USER.name,
             role: jwtPayload?.role
                 ? ROLE_NAME_MAP[jwtPayload.role] || jwtPayload.role
                 : DEFAULT_USER.role,
