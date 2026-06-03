@@ -1,5 +1,5 @@
 import { Box, Stack, Typography, Divider, Link } from "@mui/material";
-import { APP_NAME, APP_VERSION } from "../common/constants.js";
+import { APP_NAME, APP_VERSION, FONT_SIZE_XS } from "../common/constants.js";
 
 export default function Footer({
     copyrightName = APP_NAME,
@@ -26,7 +26,7 @@ export default function Footer({
                 bgcolor: "background.paper",
                 borderTop: "1px solid rgba(0,0,0,0.05)",
                 color: "text.secondary",
-                fontSize: 13,
+                fontSize: FONT_SIZE_XS,
                 ...sx,
             }}
         >
@@ -58,7 +58,7 @@ export default function Footer({
                                     href={link.href}
                                     underline="hover"
                                     color="inherit"
-                                    sx={{ fontSize: 13 }}
+                                    sx={{ fontSize: FONT_SIZE_XS }}
                                 >
                                     {link.label}
                                 </Link>

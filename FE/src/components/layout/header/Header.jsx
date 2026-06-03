@@ -26,6 +26,7 @@ import {
     COLLAPSED_DRAWER_WIDTH,
     HEADER_HEIGHT,
     DEFAULT_USER,
+    FONT_SIZE_LG,
 } from "../common/constants.js";
 import { Search, SearchIconWrapper, StyledInputBase } from "./Header.styles.js";
 
@@ -34,7 +35,11 @@ export default function Header({
     sidebarCollapsible = true,
     onToggleSidebar,
     appName = APP_NAME,
-    logoIcon = <MedicalInformationIcon sx={{ color: "#FFFFFF", fontSize: 32 }} />,
+    logoIcon = (
+        <MedicalInformationIcon
+            sx={{ color: "background.paper", fontSize: 32 }}
+        />
+    ),
     user = DEFAULT_USER,
     notificationsCount = 0,
     onNotificationsClick,
@@ -69,7 +74,7 @@ export default function Header({
             sx={{
                 zIndex: (theme) => theme.zIndex.drawer + 1,
                 bgcolor: "primary.main",
-                color: "#FFFFFF",
+                color: "background.paper",
                 borderBottom: "none",
             }}
         >
@@ -107,19 +112,19 @@ export default function Header({
                     {logoIcon}
                 </Box>
 
-                <Typography
-                    variant="h6"
-                    noWrap
-                    sx={{
-                        ml: 3,
-                        flexGrow: 1,
-                        fontWeight: 600,
-                        fontSize: "1.2rem",
-                        display: { xs: "none", sm: "block" },
-                    }}
-                >
-                    {appName}
-                </Typography>
+                    <Typography
+                        variant="h6"
+                        noWrap
+                        sx={{
+                            ml: 3,
+                            flexGrow: 1,
+                            fontWeight: 600,
+                            fontSize: FONT_SIZE_LG,
+                            display: { xs: "none", sm: "block" },
+                        }}
+                    >
+                        {appName}
+                    </Typography>
 
                 {showSearch && (
                     <Search>
@@ -135,7 +140,12 @@ export default function Header({
                 )}
                 {!showSearch && <Box sx={{ flexGrow: 1 }} />}
 
-                <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mr: 2 }}>
+                <Stack
+                    direction="row"
+                    spacing={1.5}
+                    alignItems="center"
+                    sx={{ mr: 2 }}
+                >
                     <IconButton
                         color="inherit"
                         size="large"
@@ -162,19 +172,33 @@ export default function Header({
                         anchorEl={anchorEl}
                         open={Boolean(anchorEl)}
                         onClose={handleMenuClose}
-                        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                        transformOrigin={{ vertical: "top", horizontal: "right" }}
+                        anchorOrigin={{
+                            vertical: "bottom",
+                            horizontal: "right",
+                        }}
+                        transformOrigin={{
+                            vertical: "top",
+                            horizontal: "right",
+                        }}
                         slotProps={{
-                            paper: { sx: { mt: 1, minWidth: 200, borderRadius: 2 } },
+                            paper: {
+                                sx: { mt: 1, minWidth: 200, borderRadius: 2 },
+                            },
                         }}
                     >
                         {user?.name && (
                             <Box sx={{ px: 2, py: 1 }}>
-                                <Typography variant="subtitle2" fontWeight={600}>
+                                <Typography
+                                    variant="subtitle2"
+                                    fontWeight={600}
+                                >
                                     {user.name}
                                 </Typography>
                                 {user?.role && (
-                                    <Typography variant="caption" color="text.secondary">
+                                    <Typography
+                                        variant="caption"
+                                        color="text.secondary"
+                                    >
                                         {user.role}
                                     </Typography>
                                 )}

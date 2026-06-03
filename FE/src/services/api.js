@@ -1,16 +1,48 @@
 import axios from "axios";
 
+export function decodeJWT(token) {
+    try {
+        const payload = token.split(".")[1];
+        const decoded = atob(payload.replace(/-/g, "+").replace(/_/g, "/"));
+        return JSON.parse(decoded);
+    } catch {
+        return null;
+    }
+}
+
+export function clearAuth() {
+    localStorage.removeItem("datamed_access_token");
+    localStorage.removeItem("datamed_token_exp");
+}
+
+export function isTokenExpired() {
+    const exp = localStorage.getItem("datamed_token_exp");
+    if (!exp) return true;
+    return Date.now() >= Number(exp) * 1000;
+}
+
 const api = axios.create({
-  baseURL: "http://localhost:8000",
-  headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    baseURL: "http://localhost:8000",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
 });
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("datamed_access_token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
+    const token = localStorage.getItem("datamed_access_token");
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
 });
+
+api.interceptors.response.use(
+    (res) => res,
+    (error) => {
+        if (error.response?.status === 401) {
+            clearAuth();
+            window.location.href = "/login";
+        }
+        return Promise.reject(error);
+    },
+);
 
 export default api;

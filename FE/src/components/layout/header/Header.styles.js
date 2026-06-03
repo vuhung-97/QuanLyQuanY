@@ -1,6 +1,6 @@
 import { alpha, styled } from "@mui/material/styles";
 import { InputBase } from "@mui/material";
-import { SEARCH_INPUT_WIDTH } from "../common/constants.js";
+import { SEARCH_INPUT_WIDTH, FONT_SIZE_SM } from "../common/constants.js";
 
 export const Search = styled("div")(({ theme }) => ({
     position: "relative",
@@ -36,7 +36,7 @@ export const StyledInputBase = styled(InputBase)(({ theme }) => ({
         paddingLeft: `calc(1em + ${theme.spacing(4)})`,
         transition: theme.transitions.create("width"),
         width: "100%",
-        fontSize: "0.9rem",
+        fontSize: FONT_SIZE_SM,
         [theme.breakpoints.up("md")]: {
             width: SEARCH_INPUT_WIDTH,
         },

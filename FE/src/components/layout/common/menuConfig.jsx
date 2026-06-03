@@ -1,6 +1,9 @@
 import {
     Dashboard as DashboardIcon,
     HealthAndSafety as HealthAndSafetyIcon,
+    PlaylistAddCheck as PlaylistAddCheckIcon,
+    AssignmentTurnedIn as AssignmentTurnedInIcon,
+    PersonSearch as PersonSearchIcon,
     Person as PersonIcon,
     Bed as BedIcon,
     MedicalServices as MedicalServicesIcon,
@@ -10,7 +13,17 @@ import {
 
 export const defaultMenuItems = [
     { id: "dashboard", title: "Tổng quan", path: "/", icon: <DashboardIcon /> },
-    { id: "periodic-checkup", title: "Khám sức khỏe định kỳ", path: "/kham-dinh-ky", icon: <HealthAndSafetyIcon /> },
+    {
+        id: "periodic-checkup",
+        title: "Khám sức khỏe định kỳ",
+        path: "/kham-dinh-ky",
+        icon: <HealthAndSafetyIcon />,
+        children: [
+            { id: "periodic-schedule", title: "Lập lịch khám", path: "/kham-dinh-ky/lap-lich", icon: <PlaylistAddCheckIcon /> },
+            { id: "periodic-exam", title: "Khám sức khỏe định kỳ", path: "/kham-dinh-ky/kham-suc-khoe", icon: <AssignmentTurnedInIcon /> },
+            { id: "periodic-missing", title: "Danh sách quân nhân chưa khám", path: "/kham-dinh-ky/chua-kham", icon: <PersonSearchIcon /> },
+        ],
+    },
     { id: "personnel", title: "Hồ sơ quân nhân", path: "/ho-so", icon: <PersonIcon /> },
     { id: "inpatient", title: "Quản lý nội trú", path: "/noi-tru", icon: <BedIcon /> },
     { id: "examination", title: "Khám bệnh", path: "/kham-benh", icon: <MedicalServicesIcon /> },

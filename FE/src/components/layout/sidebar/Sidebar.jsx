@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Box, Drawer, List, useTheme } from "@mui/material";
+import { Drawer, List, useTheme } from "@mui/material";
 import {
     DRAWER_WIDTH,
     COLLAPSED_DRAWER_WIDTH,
@@ -30,6 +30,12 @@ export default function Sidebar({
         if (matchExact) return location.pathname === path;
         if (path === "/") return location.pathname === "/";
         return location.pathname === path || location.pathname.startsWith(path + "/");
+    };
+
+    const hasActiveChild = (item) => item.children?.some((child) => isActive(child.path));
+
+    const handleItemClick = (item) => {
+        navigate(item.children?.[0]?.path || item.path);
     };
 
     const paperSx = useMemo(
@@ -68,15 +74,35 @@ export default function Sidebar({
             }}
         >
             <List sx={{ px: 2, pt: 3, flexGrow: 1 }}>
-                {menuItems.map((item) => (
-                    <SidebarItem
-                        key={item.id || item.path || item.title}
-                        item={item}
-                        open={open}
-                        active={isActive(item.path)}
-                        onClick={() => navigate(item.path)}
-                    />
-                ))}
+                {menuItems.map((item) => {
+                    const childActive = hasActiveChild(item);
+                    const parentActive = isActive(item.path) || childActive;
+                    const expanded = open && parentActive && item.children?.length > 0;
+
+                    return (
+                        <div key={item.id || item.path || item.title}>
+                            <SidebarItem
+                                item={item}
+                                open={open}
+                                active={parentActive}
+                                expanded={expanded}
+                                hasChildren={item.children?.length > 0}
+                                onClick={() => handleItemClick(item)}
+                            />
+
+                            {expanded && item.children.map((child) => (
+                                <SidebarItem
+                                    key={child.id || child.path || child.title}
+                                    item={child}
+                                    open={open}
+                                    depth={1}
+                                    active={isActive(child.path)}
+                                    onClick={() => navigate(child.path)}
+                                />
+                            ))}
+                        </div>
+                    );
+                })}
             </List>
 
             <SidebarProfile user={user} open={open} />

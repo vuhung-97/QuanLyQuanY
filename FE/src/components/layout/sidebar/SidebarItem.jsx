@@ -1,10 +1,15 @@
+import { FONT_SIZE_MD, FONT_SIZE_SM } from "../common/constants.js";
 import { useTheme } from "@mui/material";
 import { ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
 
 export default function SidebarItem({
     item,
     open = true,
     active = false,
+    depth = 0,
+    expanded = false,
+    hasChildren = false,
     onClick,
     sx,
 }) {
@@ -24,6 +29,7 @@ export default function SidebarItem({
                     minHeight: 48,
                     justifyContent: open ? "initial" : "center",
                     px: 2,
+                    pl: open ? 2 + depth * 2 : 2,
                     borderRadius: 2.5,
                     bgcolor: active ? activeBg : "transparent",
                     color: active ? "#FFFFFF" : "rgba(255,255,255,0.7)",
@@ -53,10 +59,11 @@ export default function SidebarItem({
                         opacity: open ? 1 : 0,
                         "& .MuiTypography-root": {
                             fontWeight: active ? 600 : 400,
-                            fontSize: "0.95rem",
+                            fontSize: depth > 0 ? FONT_SIZE_SM : FONT_SIZE_MD,
                         },
                     }}
                 />
+                {open && hasChildren && (expanded ? <ExpandLess /> : <ExpandMore />)}
             </ListItemButton>
         </ListItem>
     );

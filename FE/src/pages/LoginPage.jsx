@@ -21,7 +21,7 @@ import {
     Alert,
     Snackbar,
 } from "@mui/material";
-import api from "../services/api";
+import api, { decodeJWT } from "../services/api";
 
 export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false);
@@ -41,7 +41,13 @@ export default function LoginPage() {
             params.append("password", formData.get("password"));
 
             const res = await api.post("/auth/login", params);
-            localStorage.setItem("datamed_access_token", res.data.access_token);
+            const token = res.data.access_token;
+            localStorage.setItem("datamed_access_token", token);
+
+            const payload = decodeJWT(token);
+            if (payload?.exp) {
+                localStorage.setItem("datamed_token_exp", String(payload.exp));
+            }
 
             if (formData.get("remember") === "on") {
                 localStorage.setItem(

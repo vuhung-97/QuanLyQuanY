@@ -29,23 +29,17 @@ export const theme = createTheme({
     },
     typography: {
         fontFamily: "'Inter', sans-serif",
-        h1: {
-            fontSize: 24,
-            fontWeight: 700,
-        },
-        h2: {
-            fontSize: 18,
-            fontWeight: 600,
-        },
-        body1: {
-            fontSize: 14,
-            fontWeight: 400,
-        },
-        caption: {
-            fontSize: 12,
-            fontWeight: 400,
-            color: "#64748B",
-        },
+        h1: { fontSize: 28, fontWeight: 700 },
+        h2: { fontSize: 22, fontWeight: 600 },
+        h3: { fontSize: 20, fontWeight: 600 },
+        h4: { fontSize: 18, fontWeight: 600 },
+        h5: { fontSize: 16, fontWeight: 600 },
+        h6: { fontSize: 15, fontWeight: 600 },
+        subtitle1: { fontSize: 15, fontWeight: 500 },
+        subtitle2: { fontSize: 14, fontWeight: 500 },
+        body1: { fontSize: 15, fontWeight: 400 },
+        body2: { fontSize: 14, fontWeight: 400 },
+        caption: { fontSize: 13, fontWeight: 400, color: "#64748B" },
     },
     shape: {
         borderRadius: 12,

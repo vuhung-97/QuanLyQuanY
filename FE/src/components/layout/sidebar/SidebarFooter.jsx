@@ -11,6 +11,7 @@ import {
     SettingsOutlined as SettingsIcon,
     Logout as LogoutIcon,
 } from "@mui/icons-material";
+import { FONT_SIZE_SM } from "../common/constants.js";
 
 function ActionItem({ icon, label, open, onClick }) {
     return (
@@ -36,7 +37,7 @@ function ActionItem({ icon, label, open, onClick }) {
                 {open && (
                     <ListItemText
                         primary={label}
-                        primaryTypographyProps={{ fontSize: "0.9rem" }}
+                        primaryTypographyProps={{ fontSize: FONT_SIZE_SM }}
                     />
                 )}
             </ListItemButton>
