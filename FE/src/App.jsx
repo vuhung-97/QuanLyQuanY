@@ -3,6 +3,7 @@ import LoginPage from "./pages/LoginPage.jsx";
 import MainLayout from "./components/layout/MainLayout.jsx";
 import DashboardPage from "./pages/Dashboard/DashboardPage.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import AdminRoute from "./components/AdminRoute.jsx";
 import PeriodicCheckupPage from "./pages/PeriodicCheckup/PeriodicCheckupPage.jsx";
 import PeriodicCheckupPlaceholderPage from "./pages/PeriodicCheckup/PeriodicCheckupPlaceholderPage.jsx";
 import UserManagementPage from "./pages/Admin/UserManagementPage.jsx";
@@ -35,10 +36,10 @@ export default function App() {
                         path="kham-dinh-ky/chua-kham"
                         element={<PeriodicCheckupPlaceholderPage title="Danh sách quân nhân chưa khám" />}
                     />
-                    <Route path="admin" element={<Navigate to="/admin/nguoi-dung" replace />} />
-                    <Route path="admin/nguoi-dung" element={<UserManagementPage />} />
-                    <Route path="admin/phan-quyen" element={<RolePermissionPage />} />
-                    <Route path="admin/nhat-ky" element={<AuditLogPage />} />
+                    <Route path="admin" element={<AdminRoute><Navigate to="/admin/nguoi-dung" replace /></AdminRoute>} />
+                    <Route path="admin/nguoi-dung" element={<AdminRoute><UserManagementPage /></AdminRoute>} />
+                    <Route path="admin/phan-quyen" element={<AdminRoute><RolePermissionPage /></AdminRoute>} />
+                    <Route path="admin/nhat-ky" element={<AdminRoute><AuditLogPage /></AdminRoute>} />
                     {/* Thêm các trang khác ở đây sau (VD: /kham-benh, /kho-duoc) */}
                 </Route>
             </Routes>

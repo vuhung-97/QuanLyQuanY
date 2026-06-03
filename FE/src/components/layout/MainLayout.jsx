@@ -41,7 +41,7 @@ export default function MainLayout({
         return token ? decodeJWT(token) : null;
     }, []);
 
-    const isAdmin = jwtPayload?.role === "ROLE_ADMIN";
+    const isAdmin = jwtPayload?.role === "ROLE_ADMIN" || jwtPayload?.role === "ROLE_CNQY";
 
     const filteredMenuItems = useMemo(() => {
         if (isAdmin) return adminItems;
