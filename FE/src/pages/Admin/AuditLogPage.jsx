@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import {
-    Alert,
     Box,
     Card,
     CardContent,
@@ -22,6 +21,7 @@ import {
 } from "@mui/material";
 import { History as HistoryIcon } from "@mui/icons-material";
 import api from "../../services/api.js";
+import FeedbackSnackbar from "../../components/FeedbackSnackbar.jsx";
 
 const tabs = [
     { value: "login", label: "Đăng nhập", endpoint: "/nhat_ky_dang_nhap" },
@@ -134,8 +134,6 @@ export default function AuditLogPage() {
                     hệ thống.
                 </Typography>
             </Box>
-
-            {error && <Alert severity="warning">{error}</Alert>}
 
             <Card sx={{ borderRadius: 3 }}>
                 {loading && <LinearProgress />}
@@ -399,6 +397,13 @@ export default function AuditLogPage() {
                     </Stack>
                 </DialogContent>
             </Dialog>
+
+            <FeedbackSnackbar
+                open={!!error}
+                message={error}
+                severity="error"
+                onClose={() => setError("")}
+            />
         </Stack>
     );
 }

@@ -13,6 +13,7 @@ export function decodeJWT(token) {
 export function clearAuth() {
     localStorage.removeItem("datamed_access_token");
     localStorage.removeItem("datamed_token_exp");
+    localStorage.removeItem("datamed_user_role");
 }
 
 export function isTokenExpired() {
@@ -37,7 +38,10 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
     (res) => res,
     (error) => {
-        if (error.response?.status === 401) {
+        if (
+            error.response?.status === 401 &&
+            window.location.pathname !== "/login"
+        ) {
             clearAuth();
             window.location.href = "/login";
         }

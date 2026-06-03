@@ -18,7 +18,7 @@ import {
     Search as SearchIcon,
     SettingsOutlined as SettingsIcon,
     Logout as LogoutIcon,
-    MedicalInformation as MedicalInformationIcon,
+    LocalHospital as LocalHospitalIcon,
 } from "@mui/icons-material";
 import {
     APP_NAME,
@@ -26,7 +26,7 @@ import {
     COLLAPSED_DRAWER_WIDTH,
     HEADER_HEIGHT,
     DEFAULT_USER,
-    FONT_SIZE_LG,
+    FONT_SIZE_XXL,
 } from "../common/constants.js";
 import { Search, SearchIconWrapper, StyledInputBase } from "./Header.styles.js";
 
@@ -36,9 +36,7 @@ export default function Header({
     onToggleSidebar,
     appName = APP_NAME,
     logoIcon = (
-        <MedicalInformationIcon
-            sx={{ color: "background.paper", fontSize: 32 }}
-        />
+        <LocalHospitalIcon sx={{ color: "background.paper", fontSize: 60 }} />
     ),
     user = DEFAULT_USER,
     notificationsCount = 0,
@@ -112,19 +110,19 @@ export default function Header({
                     {logoIcon}
                 </Box>
 
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        sx={{
-                            ml: 3,
-                            flexGrow: 1,
-                            fontWeight: 600,
-                            fontSize: FONT_SIZE_LG,
-                            display: { xs: "none", sm: "block" },
-                        }}
-                    >
-                        {appName}
-                    </Typography>
+                <Typography
+                    variant="h6"
+                    noWrap
+                    sx={{
+                        ml: 3,
+                        flexGrow: 1,
+                        fontWeight: 600,
+                        fontSize: FONT_SIZE_XXL,
+                        display: { xs: "none", sm: "block" },
+                    }}
+                >
+                    {appName}
+                </Typography>
 
                 {showSearch && (
                     <Search>
@@ -133,7 +131,9 @@ export default function Header({
                         </SearchIconWrapper>
                         <StyledInputBase
                             placeholder={searchPlaceholder}
-                            slotProps={{ htmlInput: { "aria-label": "search" } }}
+                            slotProps={{
+                                htmlInput: { "aria-label": "search" },
+                            }}
                             onChange={(e) => onSearch?.(e.target.value)}
                         />
                     </Search>

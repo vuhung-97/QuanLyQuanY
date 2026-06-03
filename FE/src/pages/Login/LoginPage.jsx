@@ -21,7 +21,7 @@ import {
     Alert,
     Snackbar,
 } from "@mui/material";
-import api, { decodeJWT } from "../services/api";
+import api, { decodeJWT } from "../../services/api";
 
 export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false);
@@ -58,8 +58,7 @@ export default function LoginPage() {
 
             window.location.href = "/";
         } catch (err) {
-            const detail =
-                err.response?.data?.detail || "Đăng nhập thất bại";
+            const detail = err.response?.data?.detail || "Đăng nhập thất bại";
             setError(detail);
         } finally {
             setLoading(false);
@@ -99,7 +98,11 @@ export default function LoginPage() {
                 />
 
                 <Stack spacing={1.25} sx={{ position: "relative" }}>
-                    <Stack direction="row" spacing={1.5} sx={{ alignItems: "center" }}>
+                    <Stack
+                        direction="row"
+                        spacing={1.5}
+                        sx={{ alignItems: "center" }}
+                    >
                         <Box
                             sx={{
                                 width: 100,
@@ -223,7 +226,9 @@ export default function LoginPage() {
                     <Stack spacing={3}>
                         <Stack
                             spacing={1.5}
-                            sx={{ alignItems: { xs: "center", sm: "flex-start" } }}
+                            sx={{
+                                alignItems: { xs: "center", sm: "flex-start" },
+                            }}
                         >
                             <Box
                                 sx={{
@@ -285,7 +290,8 @@ export default function LoginPage() {
                                                         }
                                                         onClick={() =>
                                                             setShowPassword(
-                                                                (value) => !value,
+                                                                (value) =>
+                                                                    !value,
                                                             )
                                                         }
                                                         edge="end"
@@ -306,7 +312,10 @@ export default function LoginPage() {
                                     direction={{ xs: "column", sm: "row" }}
                                     spacing={1}
                                     sx={{
-                                        alignItems: { xs: "flex-start", sm: "center" },
+                                        alignItems: {
+                                            xs: "flex-start",
+                                            sm: "center",
+                                        },
                                         justifyContent: "space-between",
                                     }}
                                 >
@@ -345,7 +354,9 @@ export default function LoginPage() {
                                         },
                                     }}
                                 >
-                                    {loading ? "Đang đăng nhập..." : "Đăng nhập"}
+                                    {loading
+                                        ? "Đang đăng nhập..."
+                                        : "Đăng nhập"}
                                 </Button>
                             </Stack>
                         </Box>
@@ -354,7 +365,10 @@ export default function LoginPage() {
                             open={!!error}
                             autoHideDuration={5000}
                             onClose={() => setError("")}
-                            anchorOrigin={{ vertical: "top", horizontal: "center" }}
+                            anchorOrigin={{
+                                vertical: "top",
+                                horizontal: "center",
+                            }}
                         >
                             <Alert
                                 severity="error"

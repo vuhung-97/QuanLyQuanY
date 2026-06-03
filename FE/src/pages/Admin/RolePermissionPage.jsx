@@ -22,6 +22,7 @@ import {
     Save as SaveIcon,
 } from "@mui/icons-material";
 import api from "../../services/api.js";
+import FeedbackSnackbar from "../../components/FeedbackSnackbar.jsx";
 import RoleFormDialog from "./RoleFormDialog.jsx";
 
 const fallbackRoles = [
@@ -72,15 +73,14 @@ export default function RolePermissionPage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
     const [openDialog, setOpenDialog] = useState(false);
     const [editingRole, setEditingRole] = useState(null);
     const [permissionFilter, setPermissionFilter] = useState("all");
 
     const actionTypes = [
         ...new Set(
-            permissions
-                .map((p) => p.id.split(":").at(1))
-                .filter(Boolean),
+            permissions.map((p) => p.id.split(":").at(1)).filter(Boolean),
         ),
     ];
 
@@ -176,7 +176,9 @@ export default function RolePermissionPage() {
     const handleToggleSelectAll = () => {
         if (allSelected) {
             setSelectedPermissionIds((current) => {
-                const filteredIds = new Set(filteredPermissions.map((p) => p.id));
+                const filteredIds = new Set(
+                    filteredPermissions.map((p) => p.id),
+                );
                 const next = new Set(current);
                 for (const id of filteredIds) next.delete(id);
                 return next;
@@ -205,11 +207,17 @@ export default function RolePermissionPage() {
         setError("");
         try {
             if (editingRole) {
-                const res = await api.patch(`/vai_tro/${editingRole.id}`, formData, {
-                    headers: { "Content-Type": "application/json" },
-                });
+                const res = await api.patch(
+                    `/vai_tro/${editingRole.id}`,
+                    formData,
+                    {
+                        headers: { "Content-Type": "application/json" },
+                    },
+                );
                 setRoles((current) =>
-                    current.map((r) => (r.id === editingRole.id ? res.data : r)),
+                    current.map((r) =>
+                        r.id === editingRole.id ? res.data : r,
+                    ),
                 );
             } else {
                 const res = await api.post("/vai_tro", formData, {
@@ -219,6 +227,11 @@ export default function RolePermissionPage() {
                 setSelectedRoleId(res.data.id);
             }
             setOpenDialog(false);
+            setSuccess(
+                editingRole
+                    ? "Cập nhật vai trò thành công"
+                    : "Tạo vai trò thành công",
+            );
         } catch (err) {
             setError(err.response?.data?.detail || "Không thể lưu vai trò.");
         } finally {
@@ -260,6 +273,7 @@ export default function RolePermissionPage() {
                     id_quyen,
                 })),
             ]);
+            setSuccess("Lưu phân quyền thành công");
         } catch (err) {
             setError(err.response?.data?.detail || "Không thể lưu phân quyền.");
         } finally {
@@ -278,7 +292,7 @@ export default function RolePermissionPage() {
                     <Typography variant="h1">Vai trò & phân quyền</Typography>
                     <Typography color="text.secondary" sx={{ mt: 0.75 }}>
                         Quản lý vai trò, quyền truy cập và gán quyền nghiệp vụ
-                        cho tài khoản admin.
+                        cho tài khoản.
                     </Typography>
                 </Box>
                 <Button
@@ -290,8 +304,6 @@ export default function RolePermissionPage() {
                     Thêm vai trò
                 </Button>
             </Stack>
-
-            {error && <Alert severity="warning">{error}</Alert>}
 
             <Grid container spacing={2.5}>
                 <Grid size={{ xs: 12, md: 4 }}>
@@ -366,9 +378,14 @@ export default function RolePermissionPage() {
                                     <Button
                                         variant="outlined"
                                         onClick={handleToggleSelectAll}
-                                        disabled={!selectedRoleId || filteredPermissions.length === 0}
+                                        disabled={
+                                            !selectedRoleId ||
+                                            filteredPermissions.length === 0
+                                        }
                                     >
-                                        {allSelected ? "Bỏ chọn tất cả" : "Chọn tất cả"}
+                                        {allSelected
+                                            ? "Bỏ chọn tất cả"
+                                            : "Chọn tất cả"}
                                     </Button>
                                     <Button
                                         variant="contained"
@@ -376,18 +393,28 @@ export default function RolePermissionPage() {
                                         onClick={handleSavePermissions}
                                         disabled={!selectedRoleId || saving}
                                     >
-                                        {saving ? "Đang lưu..." : "Lưu phân quyền"}
+                                        {saving
+                                            ? "Đang lưu..."
+                                            : "Lưu phân quyền"}
                                     </Button>
                                 </Stack>
                             </Stack>
 
                             <Divider sx={{ mb: 2 }} />
 
-                            <Stack direction="row" spacing={1} sx={{ mb: 2, flexWrap: "wrap" }}>
+                            <Stack
+                                direction="row"
+                                spacing={1}
+                                sx={{ mb: 2, flexWrap: "wrap" }}
+                            >
                                 <Chip
                                     label="Tất cả"
                                     size="small"
-                                    color={permissionFilter === "all" ? "primary" : "default"}
+                                    color={
+                                        permissionFilter === "all"
+                                            ? "primary"
+                                            : "default"
+                                    }
                                     onClick={() => setPermissionFilter("all")}
                                 />
                                 {actionTypes.map((action) => (
@@ -395,8 +422,14 @@ export default function RolePermissionPage() {
                                         key={action}
                                         label={action}
                                         size="small"
-                                        color={permissionFilter === action ? "primary" : "default"}
-                                        onClick={() => setPermissionFilter(action)}
+                                        color={
+                                            permissionFilter === action
+                                                ? "primary"
+                                                : "default"
+                                        }
+                                        onClick={() =>
+                                            setPermissionFilter(action)
+                                        }
                                     />
                                 ))}
                             </Stack>
@@ -503,6 +536,19 @@ export default function RolePermissionPage() {
                 saving={saving}
                 onSubmit={handleSubmitRole}
                 onClose={() => setOpenDialog(false)}
+            />
+
+            <FeedbackSnackbar
+                open={!!success}
+                message={success}
+                severity="success"
+                onClose={() => setSuccess("")}
+            />
+            <FeedbackSnackbar
+                open={!!error}
+                message={error}
+                severity="error"
+                onClose={() => setError("")}
             />
         </Stack>
     );

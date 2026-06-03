@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import {
-    Alert,
     Box,
     Button,
     Card,
@@ -31,6 +30,7 @@ import {
     Search as SearchIcon,
 } from "@mui/icons-material";
 import api from "../../services/api.js";
+import FeedbackSnackbar from "../../components/FeedbackSnackbar.jsx";
 
 const emptyForm = {
     ten_dang_nhap: "",
@@ -47,6 +47,7 @@ export default function UserManagementPage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
     const [query, setQuery] = useState("");
     const [openDialog, setOpenDialog] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
@@ -150,6 +151,11 @@ export default function UserManagementPage() {
                 setUsers((current) => [res.data, ...current]);
             }
             setOpenDialog(false);
+            setSuccess(
+                editingUser
+                    ? "Cập nhật tài khoản thành công"
+                    : "Thêm tài khoản thành công",
+            );
         } catch (err) {
             setError(
                 err.response?.data?.detail ||
@@ -171,7 +177,7 @@ export default function UserManagementPage() {
                     <Typography variant="h1">Tài khoản người dùng</Typography>
                     <Typography color="text.secondary" sx={{ mt: 0.75 }}>
                         Thêm tài khoản, đổi vai trò và quản lý trạng thái đăng
-                        nhập cho tài khoản admin.
+                        nhập cho tài khoản.
                     </Typography>
                 </Box>
                 <Button
@@ -183,8 +189,6 @@ export default function UserManagementPage() {
                     Thêm tài khoản
                 </Button>
             </Stack>
-
-            {error && <Alert severity="warning">{error}</Alert>}
 
             <Grid container spacing={2.5}>
                 <Grid size={{ xs: 12, md: 4 }}>
@@ -455,6 +459,19 @@ export default function UserManagementPage() {
                     </DialogActions>
                 </Box>
             </Dialog>
+
+            <FeedbackSnackbar
+                open={!!success}
+                message={success}
+                severity="success"
+                onClose={() => setSuccess("")}
+            />
+            <FeedbackSnackbar
+                open={!!error}
+                message={error}
+                severity="error"
+                onClose={() => setError("")}
+            />
         </Stack>
     );
 }
