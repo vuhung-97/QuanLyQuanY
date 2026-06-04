@@ -40,7 +40,7 @@ def _ghi_log_thao_tac(db: Session, hanh_dong: str, id_nguoi_dung: str | None,
         du_lieu_moi=du_lieu_moi,
     )
     db.add(log)
-    db.flush()
+    db.commit()
 
 
 router = APIRouter(prefix="/nguoi_dung", tags=["nguoi_dung"])

@@ -123,7 +123,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             du_lieu_moi=du_lieu_moi,
         )
         db.add(log)
-        db.flush()
+        db.commit()
 
     def _primary_key_columns(self) -> list[str]:
         return [column.key for column in inspect(self.model).primary_key]
