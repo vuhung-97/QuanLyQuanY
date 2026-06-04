@@ -5,7 +5,7 @@ import DashboardPage from "./pages/Dashboard/DashboardPage.jsx";
 import ProtectedRoute from "./components//common/ProtectedRoute.jsx";
 import AdminRoute from "./components/common/AdminRoute.jsx";
 import PeriodicCheckupPage from "./pages/PeriodicCheckup/PeriodicCheckupPage.jsx";
-import PeriodicCheckupPlaceholderPage from "./pages/PeriodicCheckup/PeriodicCheckupPlaceholderPage.jsx";
+import PlaceHolderPage from "./components/common/PlaceHolderPage.jsx";
 import UserManagementPage from "./pages/Admin/UserManagementPage.jsx";
 import RolePermissionPage from "./pages/Admin/RolePermissionPage.jsx";
 import AuditLogPage from "./pages/Admin/AuditLogPage.jsx";
@@ -39,14 +39,30 @@ export default function App() {
                     <Route
                         path="kham-dinh-ky/kham-suc-khoe"
                         element={
-                            <PeriodicCheckupPlaceholderPage title="Khám sức khỏe định kỳ" />
+                            <PlaceHolderPage title="Khám sức khỏe định kỳ" />
                         }
                     />
                     <Route
                         path="kham-dinh-ky/chua-kham"
                         element={
-                            <PeriodicCheckupPlaceholderPage title="Danh sách quân nhân chưa khám" />
+                            <PlaceHolderPage title="Danh sách quân nhân chưa khám" />
                         }
+                    />
+                    <Route
+                        path="noi-tru"
+                        element={<PlaceHolderPage title="Quản lý nội trú" />}
+                    />
+                    <Route
+                        path="kham-benh"
+                        element={<PlaceHolderPage title="Khám bệnh" />}
+                    />
+                    <Route
+                        path="kho-duoc"
+                        element={<PlaceHolderPage title="Kho dược" />}
+                    />
+                    <Route
+                        path="bao-cao"
+                        element={<PlaceHolderPage title="Báo cáo" />}
                     />
                     <Route
                         path="admin"
@@ -80,7 +96,6 @@ export default function App() {
                             </AdminRoute>
                         }
                     />
-                    {/* Thêm các trang khác ở đây sau (VD: /kham-benh, /kho-duoc) */}
                 </Route>
             </Routes>
         </BrowserRouter>
