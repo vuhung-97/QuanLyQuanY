@@ -1,7 +1,10 @@
-import { Button, Chip, TableCell, TableRow } from "@mui/material";
-import { ManageAccounts as ManageAccountsIcon } from "@mui/icons-material";
+import { Button, Chip, IconButton, TableCell, TableRow } from "@mui/material";
+import {
+    Delete as DeleteIcon,
+    ManageAccounts as ManageAccountsIcon,
+} from "@mui/icons-material";
 
-export default function UserTableRow({ user, onEdit }) {
+export default function UserTableRow({ user, onEdit, onDelete }) {
     return (
         <TableRow hover>
             <TableCell sx={{ fontWeight: 700, color: "primary.main" }}>
@@ -33,8 +36,18 @@ export default function UserTableRow({ user, onEdit }) {
                     size="small"
                     startIcon={<ManageAccountsIcon />}
                     onClick={() => onEdit(user)}
+                    sx={{ fontSize: "1rem" }}
                 >
-                    Sửa quyền
+                    Sửa
+                </Button>
+                <Button
+                    color="error"
+                    size="small"
+                    startIcon={<DeleteIcon />}
+                    onClick={() => onDelete(user)}
+                    sx={{ fontSize: "1rem" }}
+                >
+                    Xóa
                 </Button>
             </TableCell>
         </TableRow>

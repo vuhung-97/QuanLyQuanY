@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Navigate } from "react-router-dom";
-import { isTokenExpired, clearAuth } from "../services/api.js";
+import { isTokenExpired, clearAuth } from "../../services/api.js";
 
 const TOKEN_CHECK_INTERVAL = 30_000;
 

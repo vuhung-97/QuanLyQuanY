@@ -1,5 +1,5 @@
 import { Navigate } from "react-router-dom";
-import { decodeJWT } from "../services/api.js";
+import { decodeJWT } from "../../services/api.js";
 
 const ALLOWED_ROLES = ["ROLE_ADMIN", "ROLE_CNQY"];
 

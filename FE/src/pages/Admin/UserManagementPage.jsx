@@ -24,10 +24,11 @@ import {
 } from "@mui/material";
 import {
     Add as AddIcon,
-    Search as SearchIcon,
+    Delete as DeleteIcon,
 } from "@mui/icons-material";
 import api from "../../services/api.js";
-import FeedbackSnackbar from "../../components/FeedbackSnackbar.jsx";
+import SearchBar from "../../components/common/SearchBar.jsx";
+import FeedbackSnackbar from "../../components/common/FeedbackSnackbar.jsx";
 import AdminPageHeader from "../../components/admin/AdminPageHeader.jsx";
 import TableCard from "../../components/admin/TableCard.jsx";
 import TableEmptyRow from "../../components/admin/TableEmptyRow.jsx";
@@ -53,6 +54,8 @@ export default function UserManagementPage() {
     const [openDialog, setOpenDialog] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
     const [form, setForm] = useState(emptyForm);
+    const [deleteTarget, setDeleteTarget] = useState(null);
+    const [deleting, setDeleting] = useState(false);
 
     useEffect(() => {
         let ignore = false;
@@ -123,6 +126,28 @@ export default function UserManagementPage() {
             ...current,
             [name]: type === "checkbox" ? checked : value,
         }));
+    };
+
+    const handleOpenDelete = (user) => {
+        setDeleteTarget(user);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!deleteTarget) return;
+        setDeleting(true);
+        setError("");
+        try {
+            await api.delete(`/nguoi_dung/${deleteTarget.id}`);
+            setUsers((current) =>
+                current.filter((user) => user.id !== deleteTarget.id),
+            );
+            setSuccess("Xoá tài khoản thành công");
+        } catch (err) {
+            setError(err.response?.data?.detail || "Không thể xoá tài khoản.");
+        } finally {
+            setDeleting(false);
+            setDeleteTarget(null);
+        }
     };
 
     const handleSubmit = async (event) => {
@@ -219,79 +244,66 @@ export default function UserManagementPage() {
             </Grid>
 
             <TableCard loading={loading}>
-                    <Stack
-                        direction={{ xs: "column", md: "row" }}
-                        spacing={2}
-                        sx={{ mb: 2.5, justifyContent: "space-between" }}
-                    >
-                        <Box>
-                            <Typography variant="h2">
-                                Danh sách người dùng
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                                Resource /nguoi_dung
-                            </Typography>
-                        </Box>
-                        <TextField
-                            size="small"
-                            placeholder="Tìm tài khoản, họ tên, vai trò"
-                            value={query}
-                            onChange={(event) => setQuery(event.target.value)}
-                            slotProps={{
-                                input: {
-                                    startAdornment: (
-                                        <SearchIcon
-                                            sx={{
-                                                mr: 1,
-                                                color: "text.secondary",
-                                            }}
-                                        />
-                                    ),
-                                },
-                            }}
-                            sx={{ minWidth: { xs: "100%", md: 320 } }}
-                        />
-                    </Stack>
+                <Stack
+                    direction={{ xs: "column", md: "row" }}
+                    spacing={2}
+                    sx={{ mb: 2.5, justifyContent: "space-between" }}
+                >
+                    <Box>
+                        <Typography variant="h2">
+                            Danh sách người dùng
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                            Resource /nguoi_dung
+                        </Typography>
+                    </Box>
+                    <SearchBar
+                        value={query}
+                        onChange={(event) => setQuery(event.target.value)}
+                        placeholder="Tìm tài khoản, họ tên, vai trò"
+                    />
+                </Stack>
 
-                    <TableContainer>
-                        <Table sx={{ minWidth: 760 }}>
-                            <TableHead>
-                                <TableRow>
-                                    {[
-                                        "ID",
-                                        "Tên đăng nhập",
-                                        "Họ tên",
-                                        "Vai trò",
-                                        "Quân nhân",
-                                        "Trạng thái",
-                                        "Thao tác",
-                                    ].map((label) => (
-                                        <TableCell
-                                            key={label}
-                                            sx={{ fontWeight: 700 }}
-                                        >
-                                            {label}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {filteredUsers.map((user) => (
-                                    <UserTableRow
-                                        key={user.id}
-                                        user={user}
-                                        onEdit={handleOpenEdit}
-                                    />
+                <TableContainer>
+                    <Table sx={{ minWidth: 760 }}>
+                        <TableHead>
+                            <TableRow>
+                                {[
+                                    "ID",
+                                    "Tên đăng nhập",
+                                    "Họ tên",
+                                    "Vai trò",
+                                    "Quân nhân",
+                                    "Trạng thái",
+                                    "Thao tác",
+                                ].map((label) => (
+                                    <TableCell
+                                        key={label}
+                                        sx={{ fontWeight: 700 }}
+                                    >
+                                        {label}
+                                    </TableCell>
                                 ))}
-                                {!loading && filteredUsers.length === 0 && (
-                                    <TableEmptyRow
-                                        colSpan={7}
-                                        message="Không có tài khoản phù hợp."
-                                    />
-                                )}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {filteredUsers.map((user) => (
+                                <UserTableRow
+                                    key={user.id}
+                                    user={user}
+                                    onEdit={handleOpenEdit}
+                                    onDelete={handleOpenDelete}
+                                />
+                            ))}
+                            {!loading && filteredUsers.length === 0 && (
+                                <TableEmptyRow
+                                    colSpan={7}
+                                    message="Không có tài khoản phù hợp."
+                                />
+                            )}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
             </TableCard>
 
             <Dialog
@@ -382,6 +394,38 @@ export default function UserManagementPage() {
                         </Button>
                     </DialogActions>
                 </Box>
+            </Dialog>
+
+            <Dialog
+                open={!!deleteTarget}
+                onClose={() => !deleting && setDeleteTarget(null)}
+            >
+                <DialogTitle>Xác nhận xoá tài khoản</DialogTitle>
+                <DialogContent>
+                    <Typography>
+                        Bạn có chắc muốn xoá tài khoản{" "}
+                        <strong>{deleteTarget?.ho_ten}</strong> (
+                        {deleteTarget?.ten_dang_nhap})? Hành động này không thể
+                        hoàn tác.
+                    </Typography>
+                </DialogContent>
+                <DialogActions sx={{ px: 3, pb: 2.5 }}>
+                    <Button
+                        onClick={() => setDeleteTarget(null)}
+                        disabled={deleting}
+                    >
+                        Hủy
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="error"
+                        startIcon={<DeleteIcon />}
+                        disabled={deleting}
+                        onClick={handleConfirmDelete}
+                    >
+                        {deleting ? "Đang xoá..." : "Xoá"}
+                    </Button>
+                </DialogActions>
             </Dialog>
 
             <FeedbackSnackbar
