@@ -339,6 +339,10 @@ export default function UserManagementPage() {
                                 value={form.mat_khau}
                                 onChange={handleChange}
                                 required={!editingUser}
+                                helperText="Tối thiểu 8 ký tự"
+                                slotProps={{
+                                    htmlInput: { minLength: 8 },
+                                }}
                             />
                             <TextField
                                 name="ho_ten"

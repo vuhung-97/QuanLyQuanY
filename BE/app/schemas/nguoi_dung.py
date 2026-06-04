@@ -27,3 +27,12 @@ class NguoiDungUpdate(SchemaBase):
 class NguoiDungRead(NguoiDungBase):
     id: str = Field(max_length=20)
     ten_vai_tro: str | None = None
+
+
+class CapNhatTaiKhoanRequest(SchemaBase):
+    ho_ten: str | None = Field(default=None, max_length=100)
+
+
+class DoiMatKhauRequest(SchemaBase):
+    mat_khau_cu: str
+    mat_khau_moi: str = Field(min_length=8)

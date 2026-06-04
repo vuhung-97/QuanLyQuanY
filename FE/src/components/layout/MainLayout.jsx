@@ -1,10 +1,11 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { Box } from "@mui/material";
 import Header from "./header/Header.jsx";
 import Sidebar from "./sidebar/Sidebar.jsx";
 import Footer from "./footer/Footer.jsx";
 import { useSidebarState } from "./common/hooks.js";
+import AccountSettingsDialog from "../account/AccountSettingsDialog.jsx";
 import { decodeJWT } from "../../services/api.js";
 import { defaultMenuItems, adminMenuItems } from "./common/menuConfig.jsx";
 import {
@@ -35,6 +36,9 @@ export default function MainLayout({
 }) {
     const { open, toggle } = useSidebarState(initialSidebarOpen);
     const navigate = useNavigate();
+    const [openAccountSettings, setOpenAccountSettings] = useState(false);
+
+    const handleSettings = onSettings || (() => setOpenAccountSettings(true));
 
     const jwtPayload = useMemo(() => {
         const token = localStorage.getItem(STORAGE_KEYS.token);
@@ -92,7 +96,7 @@ export default function MainLayout({
                     searchPlaceholder={searchPlaceholder}
                     onSearch={onSearch}
                     onLogout={handleLogout}
-                    onSettings={onSettings}
+                    onSettings={handleSettings}
                 />
 
                 <Sidebar
@@ -100,7 +104,7 @@ export default function MainLayout({
                     menuItems={filteredMenuItems}
                     user={user}
                     onLogout={handleLogout}
-                    onSettings={onSettings}
+                    onSettings={handleSettings}
                     sx={sidebarSx}
                 />
 
@@ -123,6 +127,11 @@ export default function MainLayout({
                     {showFooter && <Footer {...footerProps} />}
                 </Box>
             </Box>
+
+            <AccountSettingsDialog
+                open={openAccountSettings}
+                onClose={() => setOpenAccountSettings(false)}
+            />
         </Box>
     );
 }
