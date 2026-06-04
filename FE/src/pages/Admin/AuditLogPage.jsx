@@ -1,13 +1,7 @@
 import { useEffect, useState } from "react";
 import {
     Box,
-    Card,
-    CardContent,
     Chip,
-    Dialog,
-    DialogContent,
-    DialogTitle,
-    LinearProgress,
     Stack,
     Tab,
     Table,
@@ -23,6 +17,9 @@ import { History as HistoryIcon } from "@mui/icons-material";
 import api from "../../services/api.js";
 import FeedbackSnackbar from "../../components/FeedbackSnackbar.jsx";
 import PaginationWidget from "../../components/PaginationWidget.jsx";
+import AdminPageHeader from "../../components/admin/AdminPageHeader.jsx";
+import TableCard from "../../components/admin/TableCard.jsx";
+import AuditDetailDialog from "../../components/admin/AuditDetailDialog.jsx";
 
 const tabs = [
     { value: "login", label: "Đăng nhập", endpoint: "/nhat_ky_dang_nhap" },
@@ -36,12 +33,6 @@ function formatDateTime(value) {
         dateStyle: "short",
         timeStyle: "short",
     }).format(new Date(value));
-}
-
-function asJson(value) {
-    if (!value) return "--";
-    if (typeof value === "string") return value;
-    return JSON.stringify(value, null, 2);
 }
 
 const ROWS_PER_PAGE = 100;
@@ -109,17 +100,12 @@ export default function AuditLogPage() {
 
     return (
         <Stack spacing={3}>
-            <Box>
-                <Typography variant="h1">Nhật ký hệ thống</Typography>
-                <Typography color="text.secondary" sx={{ mt: 0.75 }}>
-                    Theo dõi đăng nhập, thao tác dữ liệu và lịch sử backup của
-                    hệ thống.
-                </Typography>
-            </Box>
+            <AdminPageHeader
+                title="Nhật ký hệ thống"
+                description="Theo dõi đăng nhập, thao tác dữ liệu và lịch sử backup của hệ thống."
+            />
 
-            <Card sx={{ borderRadius: 3 }}>
-                {loading && <LinearProgress />}
-                <CardContent sx={{ p: "24px !important" }}>
+            <TableCard loading={loading}>
                     <Stack
                         direction={{ xs: "column", md: "row" }}
                         spacing={2}
@@ -338,51 +324,12 @@ export default function AuditLogPage() {
                             </Box>
                         )}
                     </TableContainer>
-                </CardContent>
-            </Card>
+            </TableCard>
 
-            <Dialog
-                open={!!detail}
+            <AuditDetailDialog
+                detail={detail}
                 onClose={() => setDetail(null)}
-                fullWidth
-                maxWidth="md"
-            >
-                <DialogTitle>Chi tiết thao tác</DialogTitle>
-                <DialogContent>
-                    <Stack spacing={2}>
-                        <Box>
-                            <Typography fontWeight={700}>Dữ liệu cũ</Typography>
-                            <Box
-                                component="pre"
-                                sx={{
-                                    p: 2,
-                                    bgcolor: "background.default",
-                                    borderRadius: 2,
-                                    overflow: "auto",
-                                }}
-                            >
-                                {asJson(detail?.du_lieu_cu)}
-                            </Box>
-                        </Box>
-                        <Box>
-                            <Typography fontWeight={700}>
-                                Dữ liệu mới
-                            </Typography>
-                            <Box
-                                component="pre"
-                                sx={{
-                                    p: 2,
-                                    bgcolor: "background.default",
-                                    borderRadius: 2,
-                                    overflow: "auto",
-                                }}
-                            >
-                                {asJson(detail?.du_lieu_moi)}
-                            </Box>
-                        </Box>
-                    </Stack>
-                </DialogContent>
-            </Dialog>
+            />
 
             <FeedbackSnackbar
                 open={!!error}

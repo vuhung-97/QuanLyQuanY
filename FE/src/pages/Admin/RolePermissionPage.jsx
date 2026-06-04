@@ -5,7 +5,6 @@ import {
     Button,
     Card,
     CardContent,
-    Checkbox,
     Chip,
     Divider,
     Grid,
@@ -23,6 +22,10 @@ import {
 } from "@mui/icons-material";
 import api from "../../services/api.js";
 import FeedbackSnackbar from "../../components/FeedbackSnackbar.jsx";
+import AdminPageHeader from "../../components/admin/AdminPageHeader.jsx";
+import TableCard from "../../components/admin/TableCard.jsx";
+import PermissionCard from "../../components/admin/PermissionCard.jsx";
+import usePermissionDiff from "../../components/admin/usePermissionDiff.js";
 import RoleFormDialog from "./RoleFormDialog.jsx";
 
 const fallbackRoles = [
@@ -162,6 +165,13 @@ export default function RolePermissionPage() {
         setSelectedPermissionIds(new Set(ids));
     }, [rolePermissions, selectedRoleId]);
 
+    const { savePermissions } = usePermissionDiff(
+        rolePermissions,
+        setRolePermissions,
+        selectedRoleId,
+        selectedPermissionIds,
+    );
+
     const selectedRole = roles.find((role) => role.id === selectedRoleId);
 
     const togglePermission = (permissionId) => {
@@ -244,35 +254,7 @@ export default function RolePermissionPage() {
         setSaving(true);
         setError("");
         try {
-            const currentIds = rolePermissions
-                .filter((item) => item.id_vai_tro === selectedRoleId)
-                .map((item) => item.id_quyen);
-            const selectedIds = Array.from(selectedPermissionIds);
-            const toAdd = selectedIds.filter((id) => !currentIds.includes(id));
-            const toRemove = currentIds.filter(
-                (id) => !selectedPermissionIds.has(id),
-            );
-
-            await Promise.all([
-                ...toAdd.map((id_quyen) =>
-                    api.post(
-                        "/vai_tro_quyen",
-                        { id_vai_tro: selectedRoleId, id_quyen },
-                        { headers: { "Content-Type": "application/json" } },
-                    ),
-                ),
-                ...toRemove.map((id_quyen) =>
-                    api.delete(`/vai_tro_quyen/${selectedRoleId},${id_quyen}`),
-                ),
-            ]);
-
-            setRolePermissions((current) => [
-                ...current.filter((item) => item.id_vai_tro !== selectedRoleId),
-                ...selectedIds.map((id_quyen) => ({
-                    id_vai_tro: selectedRoleId,
-                    id_quyen,
-                })),
-            ]);
+            await savePermissions();
             setSuccess("Lưu phân quyền thành công");
         } catch (err) {
             setError(err.response?.data?.detail || "Không thể lưu phân quyền.");
@@ -283,27 +265,20 @@ export default function RolePermissionPage() {
 
     return (
         <Stack spacing={3}>
-            <Stack
-                direction={{ xs: "column", md: "row" }}
-                spacing={2}
-                sx={{ justifyContent: "space-between" }}
-            >
-                <Box>
-                    <Typography variant="h1">Vai trò & phân quyền</Typography>
-                    <Typography color="text.secondary" sx={{ mt: 0.75 }}>
-                        Quản lý vai trò, quyền truy cập và gán quyền nghiệp vụ
-                        cho tài khoản.
-                    </Typography>
-                </Box>
-                <Button
-                    variant="contained"
-                    startIcon={<AddIcon />}
-                    onClick={handleOpenCreate}
-                    sx={{ alignSelf: { xs: "stretch", md: "center" } }}
-                >
-                    Thêm vai trò
-                </Button>
-            </Stack>
+            <AdminPageHeader
+                title="Vai trò & phân quyền"
+                description="Quản lý vai trò, quyền truy cập và gán quyền nghiệp vụ cho tài khoản."
+                action={
+                    <Button
+                        variant="contained"
+                        startIcon={<AddIcon />}
+                        onClick={handleOpenCreate}
+                        sx={{ alignSelf: { xs: "stretch", md: "center" } }}
+                    >
+                        Thêm vai trò
+                    </Button>
+                }
+            />
 
             <Grid container spacing={2.5}>
                 <Grid size={{ xs: 12, md: 4 }}>
@@ -353,9 +328,7 @@ export default function RolePermissionPage() {
                 </Grid>
 
                 <Grid size={{ xs: 12, md: 8 }}>
-                    <Card sx={{ borderRadius: 3 }}>
-                        {loading && <LinearProgress />}
-                        <CardContent sx={{ p: "24px !important" }}>
+                    <TableCard loading={loading}>
                             <Stack
                                 direction={{ xs: "column", md: "row" }}
                                 spacing={2}
@@ -435,81 +408,20 @@ export default function RolePermissionPage() {
                             </Stack>
 
                             <Grid container spacing={1.5}>
-                                {filteredPermissions.map((permission) => {
-                                    const checked = selectedPermissionIds.has(
-                                        permission.id,
-                                    );
-                                    return (
-                                        <Grid
-                                            size={{ xs: 12, sm: 6 }}
-                                            key={permission.id}
-                                        >
-                                            <Card
-                                                variant="outlined"
-                                                sx={{
-                                                    borderRadius: 2,
-                                                    borderColor: checked
-                                                        ? "secondary.main"
-                                                        : "divider",
-                                                }}
-                                            >
-                                                <CardContent
-                                                    sx={{
-                                                        p: "14px !important",
-                                                    }}
-                                                >
-                                                    <Stack
-                                                        direction="row"
-                                                        spacing={1.25}
-                                                        sx={{
-                                                            alignItems:
-                                                                "flex-start",
-                                                        }}
-                                                    >
-                                                        <Checkbox
-                                                            checked={checked}
-                                                            onChange={() =>
-                                                                togglePermission(
-                                                                    permission.id,
-                                                                )
-                                                            }
-                                                        />
-                                                        <Box>
-                                                            <Typography
-                                                                fontWeight={700}
-                                                            >
-                                                                {permission.ten_quyen ||
-                                                                    permission.id}
-                                                            </Typography>
-                                                            <Typography
-                                                                variant="caption"
-                                                                sx={{
-                                                                    display:
-                                                                        "block",
-                                                                }}
-                                                            >
-                                                                {permission.id}
-                                                            </Typography>
-                                                            {permission.mo_ta && (
-                                                                <Typography
-                                                                    variant="body2"
-                                                                    color="text.secondary"
-                                                                    sx={{
-                                                                        mt: 0.5,
-                                                                    }}
-                                                                >
-                                                                    {
-                                                                        permission.mo_ta
-                                                                    }
-                                                                </Typography>
-                                                            )}
-                                                        </Box>
-                                                    </Stack>
-                                                </CardContent>
-                                            </Card>
-                                        </Grid>
-                                    );
-                                })}
+                                {filteredPermissions.map((permission) => (
+                                    <Grid
+                                        size={{ xs: 12, sm: 6 }}
+                                        key={permission.id}
+                                    >
+                                        <PermissionCard
+                                            permission={permission}
+                                            checked={selectedPermissionIds.has(
+                                                permission.id,
+                                            )}
+                                            onToggle={togglePermission}
+                                        />
+                                    </Grid>
+                                ))}
                             </Grid>
 
                             {!loading && filteredPermissions.length === 0 && (
@@ -525,8 +437,7 @@ export default function RolePermissionPage() {
                                         : "Không có quyền nào khớp với bộ lọc."}
                                 </Box>
                             )}
-                        </CardContent>
-                    </Card>
+                        </TableCard>
                 </Grid>
             </Grid>
 

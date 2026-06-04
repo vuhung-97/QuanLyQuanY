@@ -4,14 +4,12 @@ import {
     Button,
     Card,
     CardContent,
-    Chip,
     Dialog,
     DialogActions,
     DialogContent,
     DialogTitle,
     FormControlLabel,
     Grid,
-    LinearProgress,
     MenuItem,
     Stack,
     Switch,
@@ -26,11 +24,14 @@ import {
 } from "@mui/material";
 import {
     Add as AddIcon,
-    ManageAccounts as ManageAccountsIcon,
     Search as SearchIcon,
 } from "@mui/icons-material";
 import api from "../../services/api.js";
 import FeedbackSnackbar from "../../components/FeedbackSnackbar.jsx";
+import AdminPageHeader from "../../components/admin/AdminPageHeader.jsx";
+import TableCard from "../../components/admin/TableCard.jsx";
+import TableEmptyRow from "../../components/admin/TableEmptyRow.jsx";
+import UserTableRow from "../../components/admin/UserTableRow.jsx";
 
 const emptyForm = {
     ten_dang_nhap: "",
@@ -168,27 +169,20 @@ export default function UserManagementPage() {
 
     return (
         <Stack spacing={3}>
-            <Stack
-                direction={{ xs: "column", md: "row" }}
-                spacing={2}
-                sx={{ justifyContent: "space-between" }}
-            >
-                <Box>
-                    <Typography variant="h1">Tài khoản người dùng</Typography>
-                    <Typography color="text.secondary" sx={{ mt: 0.75 }}>
-                        Thêm tài khoản, đổi vai trò và quản lý trạng thái đăng
-                        nhập cho tài khoản.
-                    </Typography>
-                </Box>
-                <Button
-                    variant="contained"
-                    startIcon={<AddIcon />}
-                    onClick={handleOpenCreate}
-                    sx={{ alignSelf: { xs: "stretch", md: "center" } }}
-                >
-                    Thêm tài khoản
-                </Button>
-            </Stack>
+            <AdminPageHeader
+                title="Tài khoản người dùng"
+                description="Thêm tài khoản, đổi vai trò và quản lý trạng thái đăng nhập cho tài khoản."
+                action={
+                    <Button
+                        variant="contained"
+                        startIcon={<AddIcon />}
+                        onClick={handleOpenCreate}
+                        sx={{ alignSelf: { xs: "stretch", md: "center" } }}
+                    >
+                        Thêm tài khoản
+                    </Button>
+                }
+            />
 
             <Grid container spacing={2.5}>
                 <Grid size={{ xs: 12, md: 4 }}>
@@ -227,9 +221,7 @@ export default function UserManagementPage() {
                 </Grid>
             </Grid>
 
-            <Card sx={{ borderRadius: 3 }}>
-                {loading && <LinearProgress />}
-                <CardContent sx={{ p: "24px !important" }}>
+            <TableCard loading={loading}>
                     <Stack
                         direction={{ xs: "column", md: "row" }}
                         spacing={2}
@@ -288,87 +280,22 @@ export default function UserManagementPage() {
                             </TableHead>
                             <TableBody>
                                 {filteredUsers.map((user) => (
-                                    <TableRow key={user.id} hover>
-                                        <TableCell
-                                            sx={{
-                                                fontWeight: 700,
-                                                color: "primary.main",
-                                            }}
-                                        >
-                                            {user.id}
-                                        </TableCell>
-                                        <TableCell>
-                                            {user.ten_dang_nhap}
-                                        </TableCell>
-                                        <TableCell>{user.ho_ten}</TableCell>
-                                        <TableCell>
-                                            <Chip
-                                                size="small"
-                                                label={
-                                                    user.ten_vai_tro ||
-                                                    user.id_vai_tro ||
-                                                    "Chưa gán"
-                                                }
-                                                color={
-                                                    user.id_vai_tro ===
-                                                    "ROLE_ADMIN"
-                                                        ? "secondary"
-                                                        : "default"
-                                                }
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            {user.id_quan_nhan || "--"}
-                                        </TableCell>
-                                        <TableCell>
-                                            <Chip
-                                                size="small"
-                                                label={
-                                                    user.trang_thai
-                                                        ? "Hoạt động"
-                                                        : "Khóa"
-                                                }
-                                                color={
-                                                    user.trang_thai
-                                                        ? "success"
-                                                        : "error"
-                                                }
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <Button
-                                                size="small"
-                                                startIcon={
-                                                    <ManageAccountsIcon />
-                                                }
-                                                onClick={() =>
-                                                    handleOpenEdit(user)
-                                                }
-                                            >
-                                                Sửa quyền
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
+                                    <UserTableRow
+                                        key={user.id}
+                                        user={user}
+                                        onEdit={handleOpenEdit}
+                                    />
                                 ))}
                                 {!loading && filteredUsers.length === 0 && (
-                                    <TableRow>
-                                        <TableCell
-                                            colSpan={7}
-                                            align="center"
-                                            sx={{
-                                                py: 5,
-                                                color: "text.secondary",
-                                            }}
-                                        >
-                                            Không có tài khoản phù hợp.
-                                        </TableCell>
-                                    </TableRow>
+                                    <TableEmptyRow
+                                        colSpan={7}
+                                        message="Không có tài khoản phù hợp."
+                                    />
                                 )}
                             </TableBody>
                         </Table>
                     </TableContainer>
-                </CardContent>
-            </Card>
+            </TableCard>
 
             <Dialog
                 open={openDialog}
