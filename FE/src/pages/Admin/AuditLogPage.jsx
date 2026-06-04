@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
     Box,
+    Button,
     Chip,
     Stack,
     Tab,
@@ -13,7 +14,11 @@ import {
     Tabs,
     Typography,
 } from "@mui/material";
-import { History as HistoryIcon } from "@mui/icons-material";
+import {
+    Backup as BackupIcon,
+    Download as DownloadIcon,
+    History as HistoryIcon,
+} from "@mui/icons-material";
 import SearchBar from "../../components/common/SearchBar.jsx";
 import api from "../../services/api.js";
 import FeedbackSnackbar from "../../components/common/FeedbackSnackbar.jsx";
@@ -43,10 +48,13 @@ export default function AuditLogPage() {
     const [logs, setLogs] = useState({ login: [], action: [], backup: [] });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
     const [detail, setDetail] = useState(null);
     const [page, setPage] = useState(1);
     const [totalRecords, setTotalRecords] = useState(0);
     const [query, setQuery] = useState("");
+    const [backupFiles, setBackupFiles] = useState([]);
+    const [creatingBackup, setCreatingBackup] = useState(false);
 
     const activeTab = tabs.find((item) => item.value === tab);
 
@@ -91,6 +99,63 @@ export default function AuditLogPage() {
             ignore = true;
         };
     }, [tab, page, activeTab.endpoint]);
+
+    useEffect(() => {
+        if (tab !== "backup") return;
+        let ignore = false;
+
+        async function loadFiles() {
+            try {
+                const res = await api.get("/backup");
+                if (!ignore)
+                    setBackupFiles(Array.isArray(res.data) ? res.data : []);
+            } catch (err) {
+                if (!ignore)
+                    setError(
+                        err.response?.data?.detail ||
+                            "Không thể tải danh sách file backup.",
+                    );
+            }
+        }
+
+        loadFiles();
+        return () => {
+            ignore = true;
+        };
+    }, [tab]);
+
+    const handleDownload = async (filename) => {
+        try {
+            const res = await api.get(`/backup/download/${filename}`, {
+                responseType: "blob",
+            });
+            const url = URL.createObjectURL(res.data);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (err) {
+            setError(err.response?.data?.detail || "Tải file thất bại.");
+        }
+    };
+
+    const handleCreateBackup = async () => {
+        setCreatingBackup(true);
+        setError("");
+        try {
+            await api.post("/backup");
+            setSuccess("Tạo backup thành công");
+            const res = await api.get("/backup");
+            setBackupFiles(Array.isArray(res.data) ? res.data : []);
+        } catch (err) {
+            setError(err.response?.data?.detail || "Không thể tạo backup.");
+        } finally {
+            setCreatingBackup(false);
+        }
+    };
 
     const handleTabChange = (_, value) => {
         setTab(value);
@@ -141,6 +206,16 @@ export default function AuditLogPage() {
                             />
                         ))}
                     </Tabs>
+                    {tab === "backup" && (
+                        <Button
+                            variant="contained"
+                            startIcon={<BackupIcon />}
+                            disabled={creatingBackup}
+                            onClick={handleCreateBackup}
+                        >
+                            {creatingBackup ? "Đang backup..." : "Tạo backup"}
+                        </Button>
+                    )}
                     <Chip
                         icon={<HistoryIcon />}
                         label={`${totalRecords} bản ghi`}
@@ -308,11 +383,10 @@ export default function AuditLogPage() {
                             <TableHead>
                                 <TableRow>
                                     {[
-                                        "ID",
-                                        "Họ tên",
-                                        "ID người dùng",
-                                        "Thời gian backup",
-                                        "Đường dẫn",
+                                        "File name",
+                                        "Kích thước",
+                                        "Ngày tạo",
+                                        "Hành động",
                                     ].map((label) => (
                                         <TableCell
                                             key={label}
@@ -324,21 +398,38 @@ export default function AuditLogPage() {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {rows.map((row) => (
-                                    <TableRow key={row.id} hover>
+                                {backupFiles.length === 0 && !loading && (
+                                    <TableRow>
+                                        <TableCell colSpan={4} align="center">
+                                            <Typography
+                                                color="text.secondary"
+                                                sx={{ py: 4 }}
+                                            >
+                                                Chưa có file backup.
+                                            </Typography>
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                                {backupFiles.map((file) => (
+                                    <TableRow key={file.filename} hover>
                                         <TableCell sx={{ fontWeight: 700 }}>
-                                            {row.id}
+                                            {file.filename}
                                         </TableCell>
                                         <TableCell>
-                                            {row.ho_ten || "--"}
+                                            {(file.size / 1024).toFixed(1)} KB
                                         </TableCell>
                                         <TableCell>
-                                            {row.id_nguoi_dung || "--"}
+                                            {formatDateTime(file.modified)}
                                         </TableCell>
                                         <TableCell>
-                                            {formatDateTime(row.thoi_gian)}
+                                            <Button
+                                                size="small"
+                                                startIcon={<DownloadIcon />}
+                                                onClick={() => handleDownload(file.filename)}
+                                            >
+                                                Tải về
+                                            </Button>
                                         </TableCell>
-                                        <TableCell>{row.duong_dan}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
@@ -364,6 +455,12 @@ export default function AuditLogPage() {
                 onClose={() => setDetail(null)}
             />
 
+            <FeedbackSnackbar
+                open={!!success}
+                message={success}
+                severity="success"
+                onClose={() => setSuccess("")}
+            />
             <FeedbackSnackbar
                 open={!!error}
                 message={error}

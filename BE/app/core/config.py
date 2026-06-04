@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     ADMIN_PASSWORD: str = "admin123"
+    BACKUP_DIR: str = "backups"
 
 
 settings = Settings()

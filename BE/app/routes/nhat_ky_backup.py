@@ -1,13 +1,15 @@
+from datetime import datetime, timezone
 from typing import Any
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.orm import Session
 
-from app.core.dependencies import require_permissions
+from app.core.dependencies import get_current_user, require_permissions
 from app.crud.nhat_ky_backup import nhat_ky_backup_crud
+from app.database.nhat_ky_backup import NhatKyBackup
 from app.database.session import get_db
 from app.routes.base import _run_crud, _serialize_items
-from app.schemas.nhat_ky_backup import NhatKyBackupRead
+from app.schemas.nhat_ky_backup import NhatKyBackupCreate, NhatKyBackupRead
 from app.services.nguoi_dung_service import attach_ho_ten
 
 
@@ -38,3 +40,27 @@ def list_items(
         total = _run_crud(lambda: nhat_ky_backup_crud.count(db))
         return {"items": items, "total": total, "limit": limit, "offset": offset}
     return items
+
+
+@router.post(
+    "",
+    dependencies=[Depends(require_permissions("nhat_ky_backup:create"))],
+    status_code=status.HTTP_201_CREATED,
+    response_model=NhatKyBackupRead,
+)
+def create_item(
+    payload: NhatKyBackupCreate,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user),
+) -> Any:
+    row = NhatKyBackup(
+        id=payload.id,
+        thoi_gian=payload.thoi_gian or datetime.now(timezone.utc),
+        duong_dan=payload.duong_dan,
+        id_nguoi_dung=current_user.id,
+    )
+    db.add(row)
+    db.commit()
+    db.refresh(row)
+    attach_ho_ten(db, [row])
+    return row

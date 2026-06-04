@@ -26,6 +26,7 @@ from app.routes.system import router as system_router
 from app.routes.thuoc_vtyt import router as thuoc_vtyt_router
 from app.routes.vai_tro import router as vai_tro_router
 from app.routes.vai_tro_quyen import router as vai_tro_quyen_router
+from app.routes.backup import router as backup_router
 
 RESOURCE_ROUTERS = [
     benh_an_router,
@@ -55,6 +56,7 @@ RESOURCE_ROUTERS = [
     nhat_ky_backup_router,
     nhat_ky_dang_nhap_router,
     nhat_ky_thao_tac_router,
+    backup_router,
 ]
 
 __all__ = ["RESOURCE_ROUTERS", "system_router"]
