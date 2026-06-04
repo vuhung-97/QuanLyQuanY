@@ -220,9 +220,6 @@ export default function RolePermissionPage() {
                 const res = await api.patch(
                     `/vai_tro/${editingRole.id}`,
                     formData,
-                    {
-                        headers: { "Content-Type": "application/json" },
-                    },
                 );
                 setRoles((current) =>
                     current.map((r) =>
@@ -230,9 +227,7 @@ export default function RolePermissionPage() {
                     ),
                 );
             } else {
-                const res = await api.post("/vai_tro", formData, {
-                    headers: { "Content-Type": "application/json" },
-                });
+                const res = await api.post("/vai_tro", formData);
                 setRoles((current) => [res.data, ...current]);
                 setSelectedRoleId(res.data.id);
             }

@@ -180,9 +180,7 @@ export default function PeriodicCheckupPage() {
         event.preventDefault();
         setSaving(true);
         try {
-            const res = await api.post("/lich_kham_sk_nam", form, {
-                headers: { "Content-Type": "application/json" },
-            });
+            const res = await api.post("/lich_kham_sk_nam", form);
             setSchedules((current) => [res.data, ...current]);
             setForm(emptyForm);
             setOpenDialog(false);

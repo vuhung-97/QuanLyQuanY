@@ -138,7 +138,6 @@ export default function UserManagementPage() {
                 const res = await api.patch(
                     `/nguoi_dung/${editingUser.id}`,
                     payload,
-                    { headers: { "Content-Type": "application/json" } },
                 );
                 setUsers((current) =>
                     current.map((user) =>
@@ -146,9 +145,7 @@ export default function UserManagementPage() {
                     ),
                 );
             } else {
-                const res = await api.post("/nguoi_dung", payload, {
-                    headers: { "Content-Type": "application/json" },
-                });
+                const res = await api.post("/nguoi_dung", payload);
                 setUsers((current) => [res.data, ...current]);
             }
             setOpenDialog(false);

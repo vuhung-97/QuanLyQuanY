@@ -40,7 +40,9 @@ export default function LoginPage() {
             params.append("username", formData.get("username"));
             params.append("password", formData.get("password"));
 
-            const res = await api.post("/auth/login", params);
+            const res = await api.post("/auth/login", params, {
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            });
             const token = res.data.access_token;
             localStorage.setItem("datamed_access_token", token);
 
