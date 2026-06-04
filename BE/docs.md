@@ -518,7 +518,7 @@ Hoặc nếu muốn tự đặt ID:
 | Field | Type |
 |-------|------|
 | `id` | string (PK) |
-| `thoi_gian_backup` | datetime |
+| `thoi_gian` | datetime |
 | `duong_dan` | string |
 | `id_nguoi_dung` | string |
 

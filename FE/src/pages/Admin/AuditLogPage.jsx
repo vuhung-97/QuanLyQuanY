@@ -60,7 +60,7 @@ export default function AuditLogPage() {
                         limit: ROWS_PER_PAGE,
                         offset: (page - 1) * ROWS_PER_PAGE,
                         sort_by:
-                            tab === "backup" ? "thoi_gian_backup" : "thoi_gian",
+                            "thoi_gian",
                         sort_desc: true,
                         include_total: true,
                     },
@@ -300,7 +300,7 @@ export default function AuditLogPage() {
                                             </TableCell>
                                             <TableCell>
                                                 {formatDateTime(
-                                                    row.thoi_gian_backup,
+                                                    row.thoi_gian,
                                                 )}
                                             </TableCell>
                                             <TableCell>
