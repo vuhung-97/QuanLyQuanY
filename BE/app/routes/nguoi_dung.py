@@ -1,18 +1,46 @@
 from typing import Any
 
+from datetime import datetime, timezone
+
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from app.core.auth import get_password_hash
-from app.core.dependencies import require_permissions
+from app.core.dependencies import get_current_user, require_permissions
 from app.crud.nguoi_dung import nguoi_dung_crud
 from app.database.nguoi_dung import NguoiDung
+from app.database.nhat_ky_thao_tac import NhatKyThaoTac
 from app.database.session import get_db
 from app.routes.base import _run_crud
 from app.crud.utils import normalize_payload
 from app.schemas.nguoi_dung import NguoiDungCreate, NguoiDungRead, NguoiDungUpdate
 from app.services.nguoi_dung_service import attach_vai_tro_name, attach_vai_tro_names
+
+
+def _row_to_dict(row: NguoiDung) -> dict:
+    from sqlalchemy import inspect as sa_inspect
+    skip = {"mat_khau_hash"}
+    return {
+        c.key: getattr(row, c.key)
+        for c in sa_inspect(row.__class__).columns
+        if c.key not in skip
+    }
+
+
+def _ghi_log_thao_tac(db: Session, hanh_dong: str, id_nguoi_dung: str | None,
+                      ten_bang: str, du_lieu_cu: dict | None = None,
+                      du_lieu_moi: dict | None = None) -> None:
+    log = NhatKyThaoTac(
+        id_nguoi_dung=id_nguoi_dung,
+        thoi_gian=datetime.now(timezone.utc),
+        hanh_dong=hanh_dong,
+        ten_bang=ten_bang,
+        du_lieu_cu=du_lieu_cu,
+        du_lieu_moi=du_lieu_moi,
+    )
+    db.add(log)
+    db.flush()
 
 
 router = APIRouter(prefix="/nguoi_dung", tags=["nguoi_dung"])
@@ -55,7 +83,11 @@ def get_user(item_id: str, db: Session = Depends(get_db)) -> Any:
     status_code=status.HTTP_201_CREATED,
     response_model=NguoiDungRead,
 )
-def create_user(payload: NguoiDungCreate, db: Session = Depends(get_db)) -> NguoiDung:
+def create_user(
+    payload: NguoiDungCreate,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user),
+) -> NguoiDung:
     values = payload.model_dump(exclude={"mat_khau"}, exclude_none=True)
     normalize_payload(NguoiDung, values)
     values["mat_khau_hash"] = get_password_hash(payload.mat_khau)
@@ -64,12 +96,20 @@ def create_user(payload: NguoiDungCreate, db: Session = Depends(get_db)) -> Nguo
     _commit_or_raise(db)
     db.refresh(row)
     attach_vai_tro_name(db, row)
+    _ghi_log_thao_tac(db, "CREATE", current_user.id, "nguoi_dung",
+                       du_lieu_moi=_row_to_dict(row))
     return row
 
 
 @router.patch("/{item_id}", dependencies=[Depends(require_permissions("nguoi_dung:update"))], response_model=NguoiDungRead)
-def update_user(payload: NguoiDungUpdate, item_id: str, db: Session = Depends(get_db)) -> NguoiDung:
+def update_user(
+    payload: NguoiDungUpdate,
+    item_id: str,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user),
+) -> NguoiDung:
     row = _run_crud(lambda: nguoi_dung_crud.get(db, item_id))
+    old = _row_to_dict(row)
     values = payload.model_dump(exclude_unset=True, exclude={"mat_khau"})
     normalize_payload(NguoiDung, values)
     for field, value in values.items():
@@ -80,9 +120,15 @@ def update_user(payload: NguoiDungUpdate, item_id: str, db: Session = Depends(ge
     _commit_or_raise(db)
     db.refresh(row)
     attach_vai_tro_name(db, row)
+    _ghi_log_thao_tac(db, "UPDATE", current_user.id, "nguoi_dung",
+                       du_lieu_cu=old, du_lieu_moi=_row_to_dict(row))
     return row
 
 
 @router.delete("/{item_id}", dependencies=[Depends(require_permissions("nguoi_dung:delete"))], status_code=status.HTTP_204_NO_CONTENT)
-def delete_user(item_id: str, db: Session = Depends(get_db)) -> None:
-    _run_crud(lambda: nguoi_dung_crud.delete(db, item_id))
+def delete_user(
+    item_id: str,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user),
+) -> None:
+    _run_crud(lambda: nguoi_dung_crud.delete(db, item_id, nguoi_dung_id=current_user.id))

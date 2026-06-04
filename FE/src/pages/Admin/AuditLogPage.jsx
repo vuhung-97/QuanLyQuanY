@@ -22,47 +22,13 @@ import {
 import { History as HistoryIcon } from "@mui/icons-material";
 import api from "../../services/api.js";
 import FeedbackSnackbar from "../../components/FeedbackSnackbar.jsx";
+import PaginationWidget from "../../components/PaginationWidget.jsx";
 
 const tabs = [
     { value: "login", label: "Đăng nhập", endpoint: "/nhat_ky_dang_nhap" },
     { value: "action", label: "Thao tác", endpoint: "/nhat_ky_thao_tac" },
     { value: "backup", label: "Backup", endpoint: "/nhat_ky_backup" },
 ];
-
-const fallbackLogs = {
-    login: [
-        {
-            id: "LG001",
-            id_nguoi_dung: "admin",
-            ho_ten: "Admin",
-            thoi_gian: "2026-06-03T08:15:00",
-            trang_thai_thanh_cong: true,
-            thiet_bi: "Chrome / Windows",
-        },
-    ],
-    action: [
-        {
-            id: "AC001",
-            id_nguoi_dung: "admin",
-            ho_ten: "Admin",
-            thoi_gian: "2026-06-03T08:20:00",
-            hanh_dong: "CREATE",
-            ten_bang: "nguoi_dung",
-            du_lieu_cu: null,
-            du_lieu_moi: { id: "bs001" },
-            dia_chi_ip: "127.0.0.1",
-        },
-    ],
-    backup: [
-        {
-            id: "BK001",
-            id_nguoi_dung: "admin",
-            ho_ten: "Admin",
-            thoi_gian_backup: "2026-06-03T07:30:00",
-            duong_dan: "D:/backup/datamed.sql",
-        },
-    ],
-};
 
 function formatDateTime(value) {
     if (!value) return "--";
@@ -78,39 +44,50 @@ function asJson(value) {
     return JSON.stringify(value, null, 2);
 }
 
+const ROWS_PER_PAGE = 100;
+
 export default function AuditLogPage() {
     const [tab, setTab] = useState("login");
     const [logs, setLogs] = useState({ login: [], action: [], backup: [] });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [detail, setDetail] = useState(null);
+    const [page, setPage] = useState(1);
+    const [totalRecords, setTotalRecords] = useState(0);
+
+    const activeTab = tabs.find((item) => item.value === tab);
 
     useEffect(() => {
         let ignore = false;
-        const activeTab = tabs.find((item) => item.value === tab);
 
         async function loadLogs() {
             setLoading(true);
             setError("");
             try {
                 const res = await api.get(activeTab.endpoint, {
-                    params: { limit: 100, offset: 0 },
+                    params: {
+                        limit: ROWS_PER_PAGE,
+                        offset: (page - 1) * ROWS_PER_PAGE,
+                        sort_by:
+                            tab === "backup" ? "thoi_gian_backup" : "thoi_gian",
+                        sort_desc: true,
+                        include_total: true,
+                    },
                 });
-                if (!ignore)
+                if (!ignore) {
+                    const data = res.data;
                     setLogs((current) => ({
                         ...current,
-                        [tab]: Array.isArray(res.data) ? res.data : [],
+                        [tab]: Array.isArray(data) ? data : data.items || [],
                     }));
+                    if (data.total !== undefined) setTotalRecords(data.total);
+                }
             } catch (err) {
                 if (!ignore) {
                     setError(
                         err.response?.data?.detail ||
                             "Chưa tải được nhật ký từ API.",
                     );
-                    setLogs((current) => ({
-                        ...current,
-                        [tab]: fallbackLogs[tab],
-                    }));
                 }
             } finally {
                 if (!ignore) setLoading(false);
@@ -121,7 +98,12 @@ export default function AuditLogPage() {
         return () => {
             ignore = true;
         };
-    }, [tab]);
+    }, [tab, page, activeTab.endpoint]);
+
+    const handleTabChange = (_, value) => {
+        setTab(value);
+        setPage(1);
+    };
 
     const rows = logs[tab] || [];
 
@@ -143,10 +125,7 @@ export default function AuditLogPage() {
                         spacing={2}
                         sx={{ mb: 2, justifyContent: "space-between" }}
                     >
-                        <Tabs
-                            value={tab}
-                            onChange={(_, value) => setTab(value)}
-                        >
+                        <Tabs value={tab} onChange={handleTabChange}>
                             {tabs.map((item) => (
                                 <Tab
                                     key={item.value}
@@ -157,11 +136,19 @@ export default function AuditLogPage() {
                         </Tabs>
                         <Chip
                             icon={<HistoryIcon />}
-                            label={`${rows.length} bản ghi`}
+                            label={`${totalRecords} bản ghi`}
                             color="secondary"
                             variant="outlined"
                         />
                     </Stack>
+
+                    <PaginationWidget
+                        page={page}
+                        totalRecords={totalRecords}
+                        rowsPerPage={ROWS_PER_PAGE}
+                        onChange={setPage}
+                        sx={{ mb: 2 }}
+                    />
 
                     <TableContainer>
                         {tab === "login" && (
@@ -235,7 +222,6 @@ export default function AuditLogPage() {
                                         {[
                                             "ID",
                                             "Họ tên",
-                                            "ID người dùng",
                                             "Thời gian",
                                             "Hành động",
                                             "Bảng",
@@ -258,9 +244,9 @@ export default function AuditLogPage() {
                                                 {row.id}
                                             </TableCell>
                                             <TableCell>
-                                                {row.id_nguoi_dung
-                                                    ? `${row.id_nguoi_dung}`
-                                                    : "--"}
+                                                {row.ho_ten
+                                                    ? `${row.ho_ten} (${row.id_nguoi_dung})`
+                                                    : row.id_nguoi_dung || "--"}
                                             </TableCell>
                                             <TableCell>
                                                 {formatDateTime(row.thoi_gian)}

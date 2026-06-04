@@ -30,3 +30,4 @@ class NhatKyThaoTacUpdate(SchemaBase):
 
 class NhatKyThaoTacRead(NhatKyThaoTacBase):
     id: str = Field(max_length=20)
+    ho_ten: str | None = None

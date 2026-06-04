@@ -1,13 +1,17 @@
 import csv
+from datetime import datetime, timezone
 from typing import Generic, TypeVar
 
 from pydantic import BaseModel, ValidationError
-from sqlalchemy import inspect, select
+from sqlalchemy import func, inspect, select
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from app.crud.utils import normalize_payload
 from app.database.base import Base
+from app.database.nhat_ky_thao_tac import NhatKyThaoTac
+
+_LOG_SKIP_TABLES = {"nhat_ky_thao_tac", "nhat_ky_dang_nhap", "nhat_ky_backup"}
 
 
 ModelType = TypeVar("ModelType", bound=Base)
@@ -61,21 +65,26 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
         return list(db.scalars(statement.offset(offset).limit(limit)).all())
 
+    def count(self, db: Session) -> int:
+        return db.scalar(select(func.count()).select_from(self.model)) or 0
+
     def get(self, db: Session, item_id: str) -> ModelType:
         row = db.get(self.model, self._primary_key_value(item_id))
         if row is None:
             raise CRUDNotFoundError("Item not found")
         return row
 
-    def create(self, db: Session, payload: CreateSchemaType) -> ModelType:
+    def create(self, db: Session, payload: CreateSchemaType, nguoi_dung_id: str | None = None) -> ModelType:
         row = self.model(**self._payload_values(payload))
         db.add(row)
         self._commit(db)
         db.refresh(row)
+        self._log(db, "CREATE", nguoi_dung_id, du_lieu_moi=self._row_to_dict(row))
         return row
 
-    def update(self, db: Session, item_id: str, payload: UpdateSchemaType) -> ModelType:
+    def update(self, db: Session, item_id: str, payload: UpdateSchemaType, nguoi_dung_id: str | None = None) -> ModelType:
         row = self.get(db, item_id)
+        old = self._row_to_dict(row)
         for field, value in self._payload_values(payload, exclude_unset=True).items():
             if field in self._primary_key_columns():
                 continue
@@ -83,12 +92,38 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         self._validate_updated_row(db, row, type(payload))
         self._commit(db)
         db.refresh(row)
+        self._log(db, "UPDATE", nguoi_dung_id, du_lieu_cu=old, du_lieu_moi=self._row_to_dict(row))
         return row
 
-    def delete(self, db: Session, item_id: str) -> None:
+    def delete(self, db: Session, item_id: str, nguoi_dung_id: str | None = None) -> None:
         row = self.get(db, item_id)
+        old = self._row_to_dict(row)
         db.delete(row)
         self._commit(db)
+        self._log(db, "DELETE", nguoi_dung_id, du_lieu_cu=old)
+
+    def _row_to_dict(self, row: ModelType) -> dict:
+        skip = {"mat_khau_hash"}
+        return {
+            c.key: getattr(row, c.key)
+            for c in inspect(self.model).columns
+            if c.key not in skip
+        }
+
+    def _log(self, db: Session, hanh_dong: str, nguoi_dung_id: str | None,
+             du_lieu_cu: dict | None = None, du_lieu_moi: dict | None = None) -> None:
+        if self.model.__tablename__ in _LOG_SKIP_TABLES:
+            return
+        log = NhatKyThaoTac(
+            id_nguoi_dung=nguoi_dung_id,
+            thoi_gian=datetime.now(timezone.utc),
+            hanh_dong=hanh_dong,
+            ten_bang=self.model.__tablename__,
+            du_lieu_cu=du_lieu_cu,
+            du_lieu_moi=du_lieu_moi,
+        )
+        db.add(log)
+        db.flush()
 
     def _primary_key_columns(self) -> list[str]:
         return [column.key for column in inspect(self.model).primary_key]

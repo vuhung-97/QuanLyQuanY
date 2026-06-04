@@ -15,7 +15,7 @@ from app.crud.base import (
     CRUDNotFoundError,
 )
 from app.database.session import get_db
-from app.core.dependencies import require_permissions
+from app.core.dependencies import get_current_user, require_permissions
 
 
 ResultType = TypeVar("ResultType")
@@ -26,6 +26,10 @@ def _run_crud(operation: Callable[[], ResultType]) -> ResultType:
         return operation()
     except CRUDError as exc:
         raise _to_http_exception(exc) from exc
+
+
+def _serialize_items(records: list, schema: type[BaseModel]) -> list[dict]:
+    return [schema.model_validate(r).model_dump(mode="json") for r in records]
 
 
 def _to_http_exception(exc: CRUDError) -> HTTPException:
@@ -96,17 +100,30 @@ def create_crud_router(
 
     if enable_create:
         @router.post("", dependencies=create_deps, status_code=status.HTTP_201_CREATED, response_model=read_schema)
-        def create_item(payload: create_schema, db: Session = Depends(get_db)) -> Any:
-            return _run_crud(lambda: crud.create(db, payload))
+        def create_item(
+            payload: create_schema,
+            db: Session = Depends(get_db),
+            current_user = Depends(get_current_user),
+        ) -> Any:
+            return _run_crud(lambda: crud.create(db, payload, nguoi_dung_id=current_user.id))
 
     if enable_update:
         @router.patch("/{item_id}", dependencies=update_deps, response_model=read_schema)
-        def update_item(payload: update_schema, item_id: str, db: Session = Depends(get_db)) -> Any:
-            return _run_crud(lambda: crud.update(db, item_id, payload))
+        def update_item(
+            payload: update_schema,
+            item_id: str,
+            db: Session = Depends(get_db),
+            current_user = Depends(get_current_user),
+        ) -> Any:
+            return _run_crud(lambda: crud.update(db, item_id, payload, nguoi_dung_id=current_user.id))
 
     if enable_delete:
         @router.delete("/{item_id}", dependencies=delete_deps, status_code=status.HTTP_204_NO_CONTENT)
-        def delete_item(item_id: str, db: Session = Depends(get_db)) -> None:
-            _run_crud(lambda: crud.delete(db, item_id))
+        def delete_item(
+            item_id: str,
+            db: Session = Depends(get_db),
+            current_user = Depends(get_current_user),
+        ) -> None:
+            _run_crud(lambda: crud.delete(db, item_id, nguoi_dung_id=current_user.id))
 
     return router

@@ -1,12 +1,40 @@
+from typing import Any
+
+from fastapi import APIRouter, Depends, Query
+from sqlalchemy.orm import Session
+
+from app.core.dependencies import require_permissions
 from app.crud.nhat_ky_backup import nhat_ky_backup_crud
-from app.routes.base import create_crud_router
+from app.database.session import get_db
+from app.routes.base import _run_crud, _serialize_items
+from app.schemas.nhat_ky_backup import NhatKyBackupRead
+from app.services.nguoi_dung_service import attach_ho_ten
 
 
-router = create_crud_router(
-    resource="nhat_ky_backup",
-    crud=nhat_ky_backup_crud,
-    read_permission="nhat_ky_backup:read",
-    enable_create=False,
-    enable_update=False,
-    enable_delete=False,
+router = APIRouter(prefix="/nhat_ky_backup", tags=["nhat_ky_backup"])
+
+
+@router.get(
+    "",
+    response_model=None,
+    dependencies=[Depends(require_permissions("nhat_ky_backup:read"))],
 )
+def list_items(
+    db: Session = Depends(get_db),
+    limit: int = Query(default=100, ge=1, le=500),
+    offset: int = Query(default=0, ge=0),
+    sort_by: str | None = Query(default=None),
+    sort_desc: bool = Query(default=False),
+    include_total: bool = Query(default=False),
+) -> Any:
+    records = _run_crud(
+        lambda: nhat_ky_backup_crud.get_multi(
+            db, limit=limit, offset=offset, sort_by=sort_by, sort_desc=sort_desc
+        )
+    )
+    attach_ho_ten(db, records)
+    items = _serialize_items(records, NhatKyBackupRead)
+    if include_total:
+        total = _run_crud(lambda: nhat_ky_backup_crud.count(db))
+        return {"items": items, "total": total, "limit": limit, "offset": offset}
+    return items
