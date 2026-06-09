@@ -103,12 +103,14 @@ export default function AccountSettingsDialog({ open, onClose }) {
     return (
         <>
             <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-                <DialogTitle>Cài đặt tài khoản</DialogTitle>
+                <DialogTitle variant="h1" sx={{ textAlign: "center" }}>
+                    Cài đặt tài khoản
+                </DialogTitle>
                 <DialogContent>
                     {loading ? null : (
                         <Stack spacing={2} sx={{ pt: 1 }}>
                             <Typography variant="h2">
-                                Thông tin tài khoản
+                                - Thông tin tài khoản
                             </Typography>
                             <Stack spacing={0.5}>
                                 <Typography>
@@ -131,7 +133,7 @@ export default function AccountSettingsDialog({ open, onClose }) {
                             </Stack>
 
                             <Typography variant="h3" sx={{ mt: 1 }}>
-                                Cập nhật họ tên
+                                - Cập nhật họ tên
                             </Typography>
                             <Stack
                                 component="form"
@@ -160,7 +162,10 @@ export default function AccountSettingsDialog({ open, onClose }) {
 
                             <Divider sx={{ my: 1 }} />
 
-                            <Typography variant="h2">Đổi mật khẩu</Typography>
+                            <Typography variant="h2">- Đổi mật khẩu</Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                <i>(Tối thiểu 8 ký tự)</i>
+                            </Typography>
                             <Stack
                                 component="form"
                                 onSubmit={handleChangePassword}
@@ -185,7 +190,6 @@ export default function AccountSettingsDialog({ open, onClose }) {
                                     }
                                     required
                                     size="small"
-                                    helperText="Tối thiểu 8 ký tự"
                                     slotProps={{
                                         htmlInput: { minLength: 8 },
                                     }}
