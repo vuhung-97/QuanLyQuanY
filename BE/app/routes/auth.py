@@ -44,7 +44,7 @@ def login(
             detail="Tên đăng nhập hoặc mật khẩu không chính xác",
         )
 
-    if user.trang_thai is False:
+    if not user.trang_thai:
         _ghi_log_dang_nhap(db, id_nguoi_dung=user.id, thanh_cong=False, thiet_bi=thiet_bi)
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

@@ -17,5 +17,5 @@ class NguoiDung(Base):
         ForeignKey("vai_tro.id", ondelete="SET NULL"),
         nullable=True,
     )
-    id_quan_nhan: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    id_quan_nhan: Mapped[str | None] = mapped_column(String(10), nullable=True)
     trang_thai: Mapped[bool] = mapped_column(Boolean, default=False)

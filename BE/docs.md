@@ -75,11 +75,11 @@ Mỗi resource đều có 5 endpoints theo pattern chuẩn:
 
 ### Primary Key (ID)
 
-Tất cả resource dùng **single-column primary key** là string (max_length 10-20 tuỳ resource). Một số resource (bảng quan hệ nhiều-nhiều) dùng **composite key** — khi đó {id} là các giá trị phân cách bằng dấu phẩy (vd: `ROLE_ADMIN,benh_an:read`).
+Tất cả resource dùng **single-column primary key** là string (max_length 10-100 tuỳ resource). Một số resource (bảng quan hệ nhiều-nhiều) dùng **composite key** — khi đó {id} là các giá trị phân cách bằng dấu phẩy (vd: `DT001,TV001` cho `chi_tiet_don_thuoc`).
 
 **Auto-generated ID:** Hầu hết resource sử dụng thư viện [nanoid](https://github.com/ai/nanoid) (Python) để tự động sinh ID ngẫu nhiên khi tạo bản ghi. ID được sinh trong SQLAlchemy `default=` nên không cần gửi trong request body POST — nếu không gửi, hệ thống tự tạo. Người dùng vẫn có thể ghi đè bằng cách gửi ID tuỳ chỉnh.
 
-Các bảng không auto-ID (cần nhập thủ công): `quyen`, `vai_tro`, `quan_nhan`, `don_vi` — vì ID mang ý nghĩa nghiệp vụ (vd: `ROLE_ADMIN`, `nguoi_dung:read`).
+Các bảng không auto-ID (cần nhập thủ công): `quyen`, `vai_tro`, `quan_nhan`, `don_vi` — vì ID mang ý nghĩa nghiệp vụ (vd: `ROLE_ADMIN`, `QN0001`).
 
 Xem danh sách đầy đủ tại `BE/app/database/id_helper.py`.
 
@@ -124,50 +124,63 @@ nhat_ky_dang_nhap, nhat_ky_thao_tac, nhat_ky_backup
 | `POST/PATCH/DELETE /vai_tro` | CRUD vai trò |
 | `POST/PATCH/DELETE /vai_tro_quyen` | Gán quyền cho vai trò |
 | `POST/PATCH/DELETE /nguoi_dung` | CRUD người dùng (kèm hash mật khẩu) |
+| `GET /nguoi_dung/me` | Thông tin tài khoản hiện tại |
+| `PATCH /nguoi_dung/me` | Cập nhật thông tin cá nhân |
+| `POST /nguoi_dung/me/change-password` | Đổi mật khẩu |
 | `GET /nhat_ky_dang_nhap` | Audit — chỉ đọc |
 | `GET /nhat_ky_thao_tac` | Audit — chỉ đọc |
 | `GET /nhat_ky_backup` | Audit — chỉ đọc |
+
+### Endpoints đặc biệt khác
+
+| Endpoint | Ghi chú |
+|----------|---------|
+| `POST /backup` | Tạo backup database |
+| `GET /backup` | Danh sách file backup |
+| `GET /backup/download/{filename}` | Tải file backup |
+| `GET /thong-ke/don-vi` | Thống kê quân số theo đơn vị |
+| `GET /thong-ke/lich-kham/{ma_lich_kham}` | Thống kê tiến độ khám sức khoẻ |
+
+**Lưu ý**: `lich_kham_sk_nam` có nested endpoints cho chi tiết:
+- `GET /lich_kham_sk_nam/{ma_lich_kham}/chi-tiet` — Danh sách chi tiết
+- `POST /lich_kham_sk_nam/{ma_lich_kham}/chi-tiet` — Thêm chi tiết
+- `PATCH /lich_kham_sk_nam/{ma_lich_kham}/chi-tiet/{ma_don_vi}` — Cập nhật chi tiết
+- `DELETE /lich_kham_sk_nam/{ma_lich_kham}/chi-tiet/{ma_don_vi}` — Xoá chi tiết
 
 ---
 
 ## Danh sách tất cả Resource CRUD
 
-### Đang active
-
 | Resource | Endpoint prefix | Ghi chú |
 |----------|----------------|---------|
-| `quyen` | `/quyen` | Quản lý quyền (RBAC) |
-| `vai_tro` | `/vai_tro` | Quản lý vai trò |
-| `vai_tro_quyen` | `/vai_tro_quyen` | Gán quyền - vai trò |
-| `nguoi_dung` | `/nguoi_dung` | Quản lý người dùng (có hash mật khẩu) |
+| `benh_an` | `/benh_an` | Bệnh án |
+| `benh_nhan_ra_vao` | `/benh_nhan_ra_vao` | Bệnh nhân ra vào |
+| `chi_tiet_don_thuoc` | `/chi_tiet_don_thuoc` | Chi tiết đơn thuốc (composite key) |
+| `chi_tiet_du_tru` | `/chi_tiet_du_tru` | Chi tiết phiếu dự trù (composite key) |
+| `chi_tiet_phieu_cham_soc` | `/chi_tiet_phieu_cham_soc` | Chi tiết phiếu chăm sóc (composite key) |
+| `chi_tiet_xuat_kho` | `/chi_tiet_xuat_kho` | Chi tiết xuất kho (composite key) |
+| `di_tuyen_sau_dieu_tri` | `/di_tuyen_sau_dieu_tri` | Di tuyến sau điều trị |
+| `don_thuoc` | `/don_thuoc` | Đơn thuốc |
+| `don_vi` | `/don_vi` | Đơn vị (cây phân cấp) |
+| `giay_gioi_thieu` | `/giay_gioi_thieu` | Giấy giới thiệu |
+| `kham_benh` | `/kham_benh` | Khám bệnh |
+| `lich_kham_sk_nam` | `/lich_kham_sk_nam` | Lịch khám sức khoẻ năm (kèm nested `/chi-tiet`) |
+| `lich_kham_sk_nam_chi_tiet` | (nested) | Chi tiết lịch khám (qua `/lich_kham_sk_nam/{id}/chi-tiet`) |
+| `nguoi_dung` | `/nguoi_dung` | Người dùng (hash mật khẩu, custom route) |
 | `nhat_ky_backup` | `/nhat_ky_backup` | Nhật ký backup (chỉ đọc) |
 | `nhat_ky_dang_nhap` | `/nhat_ky_dang_nhap` | Nhật ký đăng nhập (chỉ đọc) |
 | `nhat_ky_thao_tac` | `/nhat_ky_thao_tac` | Nhật ký thao tác (chỉ đọc) |
-
-### Chưa active (chờ bật router)
-
-| Resource | Endpoint prefix |
-|----------|----------------|
-| `benh_an` | `/benh_an` |
-| `benh_nhan_ra_vao` | `/benh_nhan_ra_vao` |
-| `chi_tiet_don_thuoc` | `/chi_tiet_don_thuoc` |
-| `chi_tiet_du_tru` | `/chi_tiet_du_tru` |
-| `chi_tiet_phieu_cham_soc` | `/chi_tiet_phieu_cham_soc` |
-| `chi_tiet_xuat_kho` | `/chi_tiet_xuat_kho` |
-| `di_tuyen_sau_dieu_tri` | `/di_tuyen_sau_dieu_tri` |
-| `don_thuoc` | `/don_thuoc` |
-| `don_vi` | `/don_vi` |
-| `giay_gioi_thieu` | `/giay_gioi_thieu` |
-| `kham_benh` | `/kham_benh` |
-| `lich_kham_sk_nam` | `/lich_kham_sk_nam` |
-| `phieu_cham_soc` | `/phieu_cham_soc` |
-| `phieu_du_tru` | `/phieu_du_tru` |
-| `phieu_kham_suc_khoe` | `/phieu_kham_suc_khoe` |
-| `phieu_xuat_kho` | `/phieu_xuat_kho` |
-| `quan_nhan` | `/quan_nhan` |
-| `ra_benh_xa` | `/ra_benh_xa` |
-| `so_nhap_xuat` | `/so_nhap_xuat` |
-| `thuoc_vtyt` | `/thuoc_vtyt` |
+| `phieu_cham_soc` | `/phieu_cham_soc` | Phiếu chăm sóc |
+| `phieu_du_tru` | `/phieu_du_tru` | Phiếu dự trù |
+| `phieu_kham_suc_khoe` | `/phieu_kham_suc_khoe` | Phiếu khám sức khoẻ |
+| `phieu_xuat_kho` | `/phieu_xuat_kho` | Phiếu xuất kho |
+| `quan_nhan` | `/quan_nhan` | Quân nhân |
+| `quyen` | `/quyen` | Quyền (RBAC) |
+| `ra_benh_xa` | `/ra_benh_xa` | Ra bệnh xá |
+| `so_nhap_xuat` | `/so_nhap_xuat` | Sổ nhập xuất |
+| `thuoc_vtyt` | `/thuoc_vtyt` | Thuốc / VTYT |
+| `vai_tro` | `/vai_tro` | Vai trò (RBAC) |
+| `vai_tro_quyen` | `/vai_tro_quyen` | Gán quyền - vai trò (composite key) |
 
 ---
 
@@ -338,7 +351,7 @@ Hoặc nếu muốn tự đặt ID:
 | `mat_khau` | string | ✅ (create) / ❌ (update) | min 8, KHÔNG lưu raw, tự động hash |
 | `ho_ten` | string | ✅ | max 100 |
 | `id_vai_tro` | string | ❌ | max 20 |
-| `id_quan_nhan` | string | ❌ | max 20 |
+| `id_quan_nhan` | string | ❌ | max 10 |
 | `trang_thai` | bool | ❌ (default: false) | |
 
 **Lưu ý**: `nguoi_dung` có custom route (không dùng `create_crud_router`) để xử lý hash mật khẩu. Field `mat_khau` chỉ gửi khi create hoặc update — response trả về `NguoiDungRead` không bao gồm `mat_khau`.
@@ -371,7 +384,6 @@ Hoặc nếu muốn tự đặt ID:
 | `ma_giay_gt` | string (PK) | ✅ | 10 |
 | `ma_quan_nhan` | string | ❌ | 10 |
 | `ten_benh_vien` | string | ❌ | 255 |
-| `so_suc_khoe` | bool | ❌ (default: false) | |
 | `can_benh` | string | ❌ | |
 | `y_kien_de_nghi` | string | ❌ | |
 | `thoi_gian_den_benh_vien` | datetime | ❌ | |
@@ -382,9 +394,16 @@ Hoặc nếu muốn tự đặt ID:
 | Field | Type | Required | Max |
 |-------|------|----------|-----|
 | `ma_lich_kham` | string (PK) | ✅ | 10 |
-| `ma_don_vi` | string | ❌ | 10 |
-| `thoi_gian_bat_dau` | date | ❌ | |
-| `thoi_gian_ket_thuc` | date | ❌ | (phải >= thoi_gian_bat_dau) |
+| `thoi_gian_bat_dau` | datetime | ❌ | |
+| `thoi_gian_ket_thuc` | datetime | ❌ | (phải >= thoi_gian_bat_dau) |
+
+### LichKhamSkNamChiTiet (nested: `/lich_kham_sk_nam/{ma_lich_kham}/chi-tiet`)
+| Field | Type | Required | Max |
+|-------|------|----------|-----|
+| `ma_lich_kham` | string (PK) | ✅ | 10 |
+| `ma_don_vi` | string (PK) | ✅ | 10 |
+| `thoi_gian_bat_dau` | datetime | ❌ | |
+| `thoi_gian_ket_thuc` | datetime | ❌ | (phải >= thoi_gian_bat_dau) |
 | `dia_diem` | string | ❌ | |
 
 ### PhieuKhamSucKhoe (`/phieu_kham_suc_khoe`)
