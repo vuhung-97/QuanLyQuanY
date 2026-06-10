@@ -14,4 +14,3 @@ class PhieuKhamSucKhoe(Base):
     kham_lam_sang: Mapped[str | None] = mapped_column(Text, nullable=True)
     kham_can_lam_sang: Mapped[str | None] = mapped_column(Text, nullable=True)
     ket_luan: Mapped[str | None] = mapped_column(Text, nullable=True)
-    chi_dan_can_thiet: Mapped[str | None] = mapped_column(Text, nullable=True)

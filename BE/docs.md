@@ -416,7 +416,6 @@ Hoặc nếu muốn tự đặt ID:
 | `kham_lam_sang` | string | ❌ | |
 | `kham_can_lam_sang` | string | ❌ | |
 | `ket_luan` | string | ❌ | |
-| `chi_dan_can_thiet` | string | ❌ | |
 
 ### PhieuChamSoc (`/phieu_cham_soc`)
 | Field | Type | Required | Max |

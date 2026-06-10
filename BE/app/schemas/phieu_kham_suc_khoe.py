@@ -10,7 +10,6 @@ class PhieuKhamSucKhoeBase(SchemaBase):
     kham_lam_sang: str | None = None
     kham_can_lam_sang: str | None = None
     ket_luan: str | None = None
-    chi_dan_can_thiet: str | None = None
 
 
 class PhieuKhamSucKhoeCreate(PhieuKhamSucKhoeBase):
@@ -23,7 +22,6 @@ class PhieuKhamSucKhoeUpdate(SchemaBase):
     kham_lam_sang: str | None = None
     kham_can_lam_sang: str | None = None
     ket_luan: str | None = None
-    chi_dan_can_thiet: str | None = None
 
 
 class PhieuKhamSucKhoeRead(PhieuKhamSucKhoeBase):

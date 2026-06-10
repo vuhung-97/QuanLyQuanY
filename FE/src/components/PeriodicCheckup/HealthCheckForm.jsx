@@ -259,7 +259,6 @@ export default function HealthCheckForm({
                 kham_lam_sang: JSON.stringify(ls),
                 kham_can_lam_sang: JSON.stringify(cls),
                 ket_luan: JSON.stringify(kl),
-                chi_dan_can_thiet: kl.chi_dan_khac || "",
             };
 
             if (isEdit) {
