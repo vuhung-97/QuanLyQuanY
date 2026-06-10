@@ -1,10 +1,14 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import "dayjs/locale/vi";
 import LoginPage from "./pages/Login/LoginPage.jsx";
 import MainLayout from "./components/layout/MainLayout.jsx";
 import DashboardPage from "./pages/Dashboard/DashboardPage.jsx";
 import ProtectedRoute from "./components//common/ProtectedRoute.jsx";
 import AdminRoute from "./components/common/AdminRoute.jsx";
 import PeriodicCheckupPage from "./pages/PeriodicCheckup/PeriodicCheckupPage.jsx";
+import ExamPage from "./pages/PeriodicCheckup/ExamPage.jsx";
 import PlaceHolderPage from "./components/common/PlaceHolderPage.jsx";
 import UserManagementPage from "./pages/Admin/UserManagementPage.jsx";
 import RolePermissionPage from "./pages/Admin/RolePermissionPage.jsx";
@@ -12,6 +16,7 @@ import AuditLogPage from "./pages/Admin/AuditLogPage.jsx";
 
 export default function App() {
     return (
+        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="vi">
         <BrowserRouter>
             <Routes>
                 <Route path="/login" element={<LoginPage />} />
@@ -38,15 +43,7 @@ export default function App() {
                     />
                     <Route
                         path="kham-dinh-ky/kham-suc-khoe"
-                        element={
-                            <PlaceHolderPage title="Khám sức khỏe định kỳ" />
-                        }
-                    />
-                    <Route
-                        path="kham-dinh-ky/chua-kham"
-                        element={
-                            <PlaceHolderPage title="Danh sách quân nhân chưa khám" />
-                        }
+                        element={<ExamPage />}
                     />
                     <Route
                         path="noi-tru"
@@ -99,5 +96,6 @@ export default function App() {
                 </Route>
             </Routes>
         </BrowserRouter>
+        </LocalizationProvider>
     );
 }

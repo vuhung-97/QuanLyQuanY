@@ -10,6 +10,7 @@ from app.database.don_vi import DonVi
 from app.database.giay_gioi_thieu import GiayGioiThieu
 from app.database.kham_benh import KhamBenh
 from app.database.lich_kham_sk_nam import LichKhamSkNam
+from app.database.lich_kham_sk_nam_chi_tiet import LichKhamSkNamChiTiet
 from app.database.nguoi_dung import NguoiDung
 from app.database.nhat_ky_backup import NhatKyBackup
 from app.database.nhat_ky_dang_nhap import NhatKyDangNhap
@@ -39,6 +40,7 @@ MODEL_REGISTRY = {
     "giay_gioi_thieu": GiayGioiThieu,
     "kham_benh": KhamBenh,
     "lich_kham_sk_nam": LichKhamSkNam,
+    "lich_kham_sk_nam_chi_tiet": LichKhamSkNamChiTiet,
     "nguoi_dung": NguoiDung,
     "nhat_ky_backup": NhatKyBackup,
     "nhat_ky_dang_nhap": NhatKyDangNhap,
@@ -69,6 +71,7 @@ __all__ = [
     "GiayGioiThieu",
     "KhamBenh",
     "LichKhamSkNam",
+    "LichKhamSkNamChiTiet",
     "MODEL_REGISTRY",
     "NguoiDung",
     "NhatKyBackup",

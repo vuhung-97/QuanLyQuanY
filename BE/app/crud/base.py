@@ -1,5 +1,5 @@
 import csv
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from typing import Generic, TypeVar
 
 from pydantic import BaseModel, ValidationError
@@ -104,11 +104,15 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
     def _row_to_dict(self, row: ModelType) -> dict:
         skip = {"mat_khau_hash"}
-        return {
-            c.key: getattr(row, c.key)
-            for c in inspect(self.model).columns
-            if c.key not in skip
-        }
+        result = {}
+        for c in inspect(self.model).columns:
+            if c.key in skip:
+                continue
+            value = getattr(row, c.key)
+            if isinstance(value, (date, datetime)):
+                value = value.isoformat()
+            result[c.key] = value
+        return result
 
     def _log(self, db: Session, hanh_dong: str, nguoi_dung_id: str | None,
              du_lieu_cu: dict | None = None, du_lieu_moi: dict | None = None) -> None:
@@ -135,7 +139,11 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         values = payload.model_dump(exclude_unset=exclude_unset)
         normalize_payload(self.model, values)
         column_keys = self._column_keys()
-        return {field: value for field, value in values.items() if field in column_keys}
+        pk_columns = self._primary_key_columns()
+        return {
+            field: value for field, value in values.items()
+            if field in column_keys and not (field in pk_columns and value is None)
+        }
 
     def _validate_updated_row(self, db: Session, row: ModelType, schema: type[BaseModel]) -> None:
         try:
