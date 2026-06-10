@@ -118,9 +118,18 @@ const tableData = [
 ];
 
 const reports = [
-    { title: "Báo cáo sức khỏe định kỳ năm", icon: <DescriptionIcon sx={{ color: "#3B82F6" }} /> },
-    { title: "Thống kê quân nhân nội trú", icon: <AddBoxIcon sx={{ color: "#3B82F6" }} /> },
-    { title: "Báo cáo tình hình dịch tễ\nBáo cáo tồn kho dược", icon: <DescriptionIcon sx={{ color: "#3B82F6" }} /> },
+    {
+        title: "Báo cáo sức khỏe định kỳ năm",
+        icon: <DescriptionIcon sx={{ color: "#3B82F6" }} />,
+    },
+    {
+        title: "Thống kê quân nhân nội trú",
+        icon: <AddBoxIcon sx={{ color: "#3B82F6" }} />,
+    },
+    {
+        title: "Báo cáo tình hình dịch tễ\nBáo cáo tồn kho dược",
+        icon: <DescriptionIcon sx={{ color: "#3B82F6" }} />,
+    },
 ];
 
 export default function DashboardPage() {
@@ -130,28 +139,83 @@ export default function DashboardPage() {
             <Grid container spacing={2.5}>
                 {stats.map((stat, index) => (
                     <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
-                        <Card sx={{ p: 1, borderRadius: 3, boxShadow: "0px 4px 12px rgba(0,0,0,0.03)" }}>
+                        <Card
+                            sx={{
+                                p: 1,
+                                borderRadius: 3,
+                                boxShadow: "0px 4px 12px rgba(0,0,0,0.03)",
+                            }}
+                        >
                             <CardContent sx={{ p: "16px !important" }}>
-                                <Stack direction="row" spacing={1.5} sx={{ mb: 2, alignItems: "flex-start" }}>
-                                    <Avatar variant="rounded" sx={{ bgcolor: stat.bgColor, width: 40, height: 40, borderRadius: 2 }}>
+                                <Stack
+                                    direction="row"
+                                    spacing={1.5}
+                                    sx={{ mb: 2, alignItems: "flex-start" }}
+                                >
+                                    <Avatar
+                                        variant="rounded"
+                                        sx={{
+                                            bgcolor: stat.bgColor,
+                                            width: 40,
+                                            height: 40,
+                                            borderRadius: 2,
+                                        }}
+                                    >
                                         {stat.icon}
                                     </Avatar>
                                     <Box>
-                                        <Typography color="text.secondary" variant="body2" sx={{ lineHeight: 1.2, fontWeight: 500 }}>
+                                        <Typography
+                                            color="text.secondary"
+                                            variant="body2"
+                                            sx={{
+                                                lineHeight: 1.2,
+                                                fontWeight: 500,
+                                            }}
+                                        >
                                             {stat.title1}
                                         </Typography>
-                                        <Typography color="text.secondary" variant="body2" sx={{ lineHeight: 1.2, fontWeight: 500 }}>
+                                        <Typography
+                                            color="text.secondary"
+                                            variant="body2"
+                                            sx={{
+                                                lineHeight: 1.2,
+                                                fontWeight: 500,
+                                            }}
+                                        >
                                             {stat.title2}
                                         </Typography>
                                     </Box>
                                 </Stack>
-                                <Stack direction="row" sx={{ alignItems: "baseline", justifyContent: "space-between" }}>
-                                    <Typography variant="h4" fontWeight={700} sx={{ color: "#1E293B" }}>
+                                <Stack
+                                    direction="row"
+                                    sx={{
+                                        alignItems: "baseline",
+                                        justifyContent: "space-between",
+                                    }}
+                                >
+                                    <Typography
+                                        variant="h4"
+                                        fontWeight={700}
+                                        sx={{ color: "#1E293B" }}
+                                    >
                                         {stat.value}
                                     </Typography>
-                                    <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
-                                        <CallMadeIcon sx={{ fontSize: 14, color: "#10B981" }} />
-                                        <Typography variant="body2" fontWeight={600} sx={{ color: "#10B981" }}>
+                                    <Stack
+                                        direction="row"
+                                        spacing={0.5}
+                                        sx={{ alignItems: "center" }}
+                                    >
+                                        <CallMadeIcon
+                                            sx={{
+                                                fontSize: 14,
+                                                color: "#10B981",
+                                            }}
+                                        />
+                                        <Typography
+                                            variant="body2"
+                                            fontWeight={600}
+                                            sx={{ color: "#10B981" }}
+                                        >
                                             {stat.trend}
                                         </Typography>
                                     </Stack>
@@ -163,17 +227,37 @@ export default function DashboardPage() {
             </Grid>
 
             {/* Area Chart */}
-            <Card sx={{ borderRadius: 3, boxShadow: "0px 4px 12px rgba(0,0,0,0.03)", overflow: "visible" }}>
+            <Card
+                sx={{
+                    borderRadius: 3,
+                    boxShadow: "0px 4px 12px rgba(0,0,0,0.03)",
+                    overflow: "visible",
+                }}
+            >
                 <CardContent sx={{ p: "24px !important" }}>
-                    <Stack direction="row" sx={{ mb: 4, justifyContent: "space-between", alignItems: "center" }}>
-                        <Typography variant="h6" fontWeight={700} sx={{ color: "#1E293B" }}>
+                    <Stack
+                        direction="row"
+                        sx={{
+                            mb: 4,
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                        }}
+                    >
+                        <Typography
+                            variant="h6"
+                            fontWeight={700}
+                            sx={{ color: "#1E293B" }}
+                        >
                             Xu hướng bệnh tật & sức khỏe bộ đội
                         </Typography>
                         <Stack direction="row" spacing={2}>
                             <Button
                                 variant="text"
                                 color="inherit"
-                                sx={{ color: "text.secondary", fontWeight: 500 }}
+                                sx={{
+                                    color: "text.secondary",
+                                    fontWeight: 500,
+                                }}
                             >
                                 Xu hướng bệnh tật đội
                             </Button>
@@ -193,24 +277,79 @@ export default function DashboardPage() {
                             </Button>
                         </Stack>
                     </Stack>
-                    <Box sx={{ height: 320, width: "100%" }}>
+                    <Box sx={{ height: 320, width: "100%", minWidth: 0 }}>
                         <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={chartData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+                            <AreaChart
+                                data={chartData}
+                                margin={{
+                                    top: 10,
+                                    right: 0,
+                                    left: -20,
+                                    bottom: 0,
+                                }}
+                            >
                                 <defs>
-                                    <linearGradient id="colorTeal" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#00B4D8" stopOpacity={0.3} />
-                                        <stop offset="95%" stopColor="#00B4D8" stopOpacity={0} />
+                                    <linearGradient
+                                        id="colorTeal"
+                                        x1="0"
+                                        y1="0"
+                                        x2="0"
+                                        y2="1"
+                                    >
+                                        <stop
+                                            offset="5%"
+                                            stopColor="#00B4D8"
+                                            stopOpacity={0.3}
+                                        />
+                                        <stop
+                                            offset="95%"
+                                            stopColor="#00B4D8"
+                                            stopOpacity={0}
+                                        />
                                     </linearGradient>
-                                    <linearGradient id="colorBlue" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#0B3B60" stopOpacity={0.1} />
-                                        <stop offset="95%" stopColor="#0B3B60" stopOpacity={0} />
+                                    <linearGradient
+                                        id="colorBlue"
+                                        x1="0"
+                                        y1="0"
+                                        x2="0"
+                                        y2="1"
+                                    >
+                                        <stop
+                                            offset="5%"
+                                            stopColor="#0B3B60"
+                                            stopOpacity={0.1}
+                                        />
+                                        <stop
+                                            offset="95%"
+                                            stopColor="#0B3B60"
+                                            stopOpacity={0}
+                                        />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
-                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "#64748B", fontSize: 12 }} dy={10} />
-                                <YAxis axisLine={false} tickLine={false} tick={{ fill: "#64748B", fontSize: 12 }} />
+                                <CartesianGrid
+                                    strokeDasharray="3 3"
+                                    vertical={false}
+                                    stroke="#F1F5F9"
+                                />
+                                <XAxis
+                                    dataKey="name"
+                                    axisLine={false}
+                                    tickLine={false}
+                                    tick={{ fill: "#64748B", fontSize: 12 }}
+                                    dy={10}
+                                />
+                                <YAxis
+                                    axisLine={false}
+                                    tickLine={false}
+                                    tick={{ fill: "#64748B", fontSize: 12 }}
+                                />
                                 <RechartsTooltip
-                                    contentStyle={{ borderRadius: 8, border: "none", boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)" }}
+                                    contentStyle={{
+                                        borderRadius: 8,
+                                        border: "none",
+                                        boxShadow:
+                                            "0 4px 12px rgba(0, 0, 0, 0.1)",
+                                    }}
                                 />
                                 <Area
                                     type="monotone"
@@ -238,51 +377,200 @@ export default function DashboardPage() {
             <Grid container spacing={2.5}>
                 {/* Table */}
                 <Grid size={{ xs: 12, md: 8 }}>
-                    <Card sx={{ borderRadius: 3, boxShadow: "0px 4px 12px rgba(0,0,0,0.03)", height: "100%" }}>
-                        <CardContent sx={{ p: "24px !important", pb: "16px !important" }}>
-                            <Typography variant="h6" fontWeight={700} sx={{ color: "#1E293B", mb: 2 }}>
+                    <Card
+                        sx={{
+                            borderRadius: 3,
+                            boxShadow: "0px 4px 12px rgba(0,0,0,0.03)",
+                            height: "100%",
+                        }}
+                    >
+                        <CardContent
+                            sx={{ p: "24px !important", pb: "16px !important" }}
+                        >
+                            <Typography
+                                variant="h6"
+                                fontWeight={700}
+                                sx={{ color: "#1E293B", mb: 2 }}
+                            >
                                 Danh sách khám bệnh gần đây
                             </Typography>
                             <TableContainer>
-                                <Table sx={{ minWidth: 600 }} aria-label="recent patients table">
+                                <Table
+                                    sx={{ minWidth: 600 }}
+                                    aria-label="recent patients table"
+                                >
                                     <TableHead>
                                         <TableRow>
-                                            <TableCell sx={{ color: "#1E293B", fontWeight: 600, borderBottom: "1px solid #F1F5F9", pl: 0 }}>Bệnh nhân</TableCell>
-                                            <TableCell sx={{ color: "#1E293B", fontWeight: 600, borderBottom: "1px solid #F1F5F9" }}>Mã QN</TableCell>
-                                            <TableCell sx={{ color: "#1E293B", fontWeight: 600, borderBottom: "1px solid #F1F5F9" }}>Khoa</TableCell>
-                                            <TableCell sx={{ color: "#1E293B", fontWeight: 600, borderBottom: "1px solid #F1F5F9" }}>Bác sĩ</TableCell>
-                                            <TableCell sx={{ color: "#1E293B", fontWeight: 600, borderBottom: "1px solid #F1F5F9" }}>Trạng thái</TableCell>
-                                            <TableCell sx={{ color: "#1E293B", fontWeight: 600, borderBottom: "1px solid #F1F5F9", pr: 0 }}>Thời gian</TableCell>
+                                            <TableCell
+                                                sx={{
+                                                    color: "#1E293B",
+                                                    fontWeight: 600,
+                                                    borderBottom:
+                                                        "1px solid #F1F5F9",
+                                                    pl: 0,
+                                                }}
+                                            >
+                                                Bệnh nhân
+                                            </TableCell>
+                                            <TableCell
+                                                sx={{
+                                                    color: "#1E293B",
+                                                    fontWeight: 600,
+                                                    borderBottom:
+                                                        "1px solid #F1F5F9",
+                                                }}
+                                            >
+                                                Mã QN
+                                            </TableCell>
+                                            <TableCell
+                                                sx={{
+                                                    color: "#1E293B",
+                                                    fontWeight: 600,
+                                                    borderBottom:
+                                                        "1px solid #F1F5F9",
+                                                }}
+                                            >
+                                                Khoa
+                                            </TableCell>
+                                            <TableCell
+                                                sx={{
+                                                    color: "#1E293B",
+                                                    fontWeight: 600,
+                                                    borderBottom:
+                                                        "1px solid #F1F5F9",
+                                                }}
+                                            >
+                                                Bác sĩ
+                                            </TableCell>
+                                            <TableCell
+                                                sx={{
+                                                    color: "#1E293B",
+                                                    fontWeight: 600,
+                                                    borderBottom:
+                                                        "1px solid #F1F5F9",
+                                                }}
+                                            >
+                                                Trạng thái
+                                            </TableCell>
+                                            <TableCell
+                                                sx={{
+                                                    color: "#1E293B",
+                                                    fontWeight: 600,
+                                                    borderBottom:
+                                                        "1px solid #F1F5F9",
+                                                    pr: 0,
+                                                }}
+                                            >
+                                                Thời gian
+                                            </TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
                                         {tableData.map((row, idx) => (
-                                            <TableRow key={idx} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
-                                                <TableCell sx={{ borderBottom: "1px solid #F1F5F9", pl: 0, py: 1.5 }}>
-                                                    <Stack direction="row" spacing={1.5} sx={{ alignItems: "center" }}>
-                                                        <Avatar src={row.avatar} sx={{ width: 32, height: 32 }} />
-                                                        <Typography variant="body2" fontWeight={500} sx={{ color: "#334155" }}>
+                                            <TableRow
+                                                key={idx}
+                                                sx={{
+                                                    "&:last-child td, &:last-child th":
+                                                        { border: 0 },
+                                                }}
+                                            >
+                                                <TableCell
+                                                    sx={{
+                                                        borderBottom:
+                                                            "1px solid #F1F5F9",
+                                                        pl: 0,
+                                                        py: 1.5,
+                                                    }}
+                                                >
+                                                    <Stack
+                                                        direction="row"
+                                                        spacing={1.5}
+                                                        sx={{
+                                                            alignItems:
+                                                                "center",
+                                                        }}
+                                                    >
+                                                        <Avatar
+                                                            src={row.avatar}
+                                                            sx={{
+                                                                width: 32,
+                                                                height: 32,
+                                                            }}
+                                                        />
+                                                        <Typography
+                                                            variant="body2"
+                                                            fontWeight={500}
+                                                            sx={{
+                                                                color: "#334155",
+                                                            }}
+                                                        >
                                                             {row.name}
                                                         </Typography>
                                                     </Stack>
                                                 </TableCell>
-                                                <TableCell sx={{ borderBottom: "1px solid #F1F5F9", color: "#64748B" }}>{row.id}</TableCell>
-                                                <TableCell sx={{ borderBottom: "1px solid #F1F5F9", color: "#64748B" }}>{row.dept}</TableCell>
-                                                <TableCell sx={{ borderBottom: "1px solid #F1F5F9", color: "#64748B" }}>{row.doctor}</TableCell>
-                                                <TableCell sx={{ borderBottom: "1px solid #F1F5F9" }}>
+                                                <TableCell
+                                                    sx={{
+                                                        borderBottom:
+                                                            "1px solid #F1F5F9",
+                                                        color: "#64748B",
+                                                    }}
+                                                >
+                                                    {row.id}
+                                                </TableCell>
+                                                <TableCell
+                                                    sx={{
+                                                        borderBottom:
+                                                            "1px solid #F1F5F9",
+                                                        color: "#64748B",
+                                                    }}
+                                                >
+                                                    {row.dept}
+                                                </TableCell>
+                                                <TableCell
+                                                    sx={{
+                                                        borderBottom:
+                                                            "1px solid #F1F5F9",
+                                                        color: "#64748B",
+                                                    }}
+                                                >
+                                                    {row.doctor}
+                                                </TableCell>
+                                                <TableCell
+                                                    sx={{
+                                                        borderBottom:
+                                                            "1px solid #F1F5F9",
+                                                    }}
+                                                >
                                                     <Chip
                                                         label={row.status}
                                                         size="small"
                                                         sx={{
-                                                            bgcolor: row.status === "Đã khám" ? "rgba(0, 180, 216, 0.15)" : "rgba(245, 158, 11, 0.15)",
-                                                            color: row.status === "Đã khám" ? "#00B4D8" : "#F59E0B",
+                                                            bgcolor:
+                                                                row.status ===
+                                                                "Đã khám"
+                                                                    ? "rgba(0, 180, 216, 0.15)"
+                                                                    : "rgba(245, 158, 11, 0.15)",
+                                                            color:
+                                                                row.status ===
+                                                                "Đã khám"
+                                                                    ? "#00B4D8"
+                                                                    : "#F59E0B",
                                                             fontWeight: 600,
                                                             borderRadius: 1.5,
                                                             px: 0.5,
                                                         }}
                                                     />
                                                 </TableCell>
-                                                <TableCell sx={{ borderBottom: "1px solid #F1F5F9", color: "#64748B", pr: 0 }}>{row.time}</TableCell>
+                                                <TableCell
+                                                    sx={{
+                                                        borderBottom:
+                                                            "1px solid #F1F5F9",
+                                                        color: "#64748B",
+                                                        pr: 0,
+                                                    }}
+                                                >
+                                                    {row.time}
+                                                </TableCell>
                                             </TableRow>
                                         ))}
                                     </TableBody>
@@ -294,18 +582,49 @@ export default function DashboardPage() {
 
                 {/* Reports List */}
                 <Grid size={{ xs: 12, md: 4 }}>
-                    <Card sx={{ borderRadius: 3, boxShadow: "0px 4px 12px rgba(0,0,0,0.03)", height: "100%" }}>
+                    <Card
+                        sx={{
+                            borderRadius: 3,
+                            boxShadow: "0px 4px 12px rgba(0,0,0,0.03)",
+                            height: "100%",
+                        }}
+                    >
                         <CardContent sx={{ p: "24px !important" }}>
-                            <Typography variant="h6" fontWeight={700} sx={{ color: "#1E293B", mb: 3 }}>
+                            <Typography
+                                variant="h6"
+                                fontWeight={700}
+                                sx={{ color: "#1E293B", mb: 3 }}
+                            >
                                 Tổng quan báo cáo
                             </Typography>
                             <Stack spacing={3}>
                                 {reports.map((report, idx) => (
-                                    <Stack direction="row" spacing={2} key={idx} sx={{ alignItems: "center" }}>
-                                        <Avatar variant="rounded" sx={{ bgcolor: "rgba(59, 130, 246, 0.1)", width: 40, height: 40, borderRadius: 2 }}>
+                                    <Stack
+                                        direction="row"
+                                        spacing={2}
+                                        key={idx}
+                                        sx={{ alignItems: "center" }}
+                                    >
+                                        <Avatar
+                                            variant="rounded"
+                                            sx={{
+                                                bgcolor:
+                                                    "rgba(59, 130, 246, 0.1)",
+                                                width: 40,
+                                                height: 40,
+                                                borderRadius: 2,
+                                            }}
+                                        >
                                             {report.icon}
                                         </Avatar>
-                                        <Typography variant="body2" sx={{ color: "#334155", fontWeight: 500, whiteSpace: "pre-line" }}>
+                                        <Typography
+                                            variant="body2"
+                                            sx={{
+                                                color: "#334155",
+                                                fontWeight: 500,
+                                                whiteSpace: "pre-line",
+                                            }}
+                                        >
                                             {report.title}
                                         </Typography>
                                     </Stack>

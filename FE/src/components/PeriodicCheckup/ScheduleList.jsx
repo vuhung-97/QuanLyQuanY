@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
     Box,
     Card,
@@ -152,8 +152,8 @@ export default function ScheduleList({
                                     expanded[row.ma_lich_kham],
                                 );
                                 return (
-                                    <>
-                                        <TableRow key={row.ma_lich_kham} hover>
+                                    <React.Fragment key={row.ma_lich_kham}>
+                                        <TableRow hover>
                                             <TableCell>
                                                 <IconButton
                                                     size="small"
@@ -378,7 +378,7 @@ export default function ScheduleList({
                                                 </Collapse>
                                             </TableCell>
                                         </TableRow>
-                                    </>
+                                    </React.Fragment>
                                 );
                             })}
                             {!loading && schedules.length === 0 && (

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
     Box, Button, Card, CardContent, Chip, LinearProgress, MenuItem,
     Stack, Tab, Table, TableBody, TableCell, TableContainer, TableHead,
@@ -42,14 +42,31 @@ export default function HealthCheckMain() {
     const [formOpen, setFormOpen] = useState(false);
     const [selectedQn, setSelectedQn] = useState(null);
     const [searchText, setSearchText] = useState("");
-    const [selectedYear, setSelectedYear] = useState(String(new Date().getFullYear()));
+    const [selectedYear, setSelectedYear] = useState("");
+    const [allUnitLookup, setAllUnitLookup] = useState(new Map());
+
+    useEffect(() => {
+        api.get("/thong-ke/don-vi").then(res => {
+            const list = Array.isArray(res.data) ? res.data : [];
+            setAllUnitLookup(new Map(list.map(u => [u.ma_don_vi, u.ten_don_vi])));
+        }).catch(() => {});
+    }, []);
 
     useEffect(() => {
         let ignore = false;
         async function load() {
             try {
                 const res = await api.get("/lich_kham_sk_nam", { params: { limit: 100 } });
-                if (!ignore) setSchedules(Array.isArray(res.data) ? res.data : []);
+                if (!ignore) {
+                    const data = Array.isArray(res.data) ? res.data : [];
+                    setSchedules(data);
+                    const currentYear = String(new Date().getFullYear());
+                    const hasCurrentYear = data.some(s =>
+                        s.thoi_gian_bat_dau &&
+                        new Date(s.thoi_gian_bat_dau).getFullYear() === Number(currentYear)
+                    );
+                    setSelectedYear(hasCurrentYear ? currentYear : "");
+                }
             } catch {
             }
         }
@@ -136,6 +153,12 @@ export default function HealthCheckMain() {
             qn.ho_ten?.toLowerCase().includes(keyword) ||
             qn.ma_quan_nhan?.toLowerCase().includes(keyword)
         );
+    }).sort((a, b) => {
+        const uA = a.ma_don_vi || "";
+        const uB = b.ma_don_vi || "";
+        if (uA < uB) return -1;
+        if (uA > uB) return 1;
+        return (a.ho_ten || "").localeCompare(b.ho_ten || "", "vi");
     });
 
     const handleFormSaved = useCallback(() => {
@@ -240,7 +263,7 @@ export default function HealthCheckMain() {
                             <Table sx={{ minWidth: 700 }}>
                                 <TableHead>
                                     <TableRow>
-                                        {["STT", "Mã QN", "Họ tên", "Cấp bậc", "Chức vụ", "Tình trạng khám", "Thao tác"].map((l) => (
+                                        {["STT", "Mã QN", "Họ tên", "Đơn vị", "Cấp bậc", "Chức vụ", "Tình trạng khám", "Thao tác"].map((l) => (
                                             <TableCell key={l} sx={{ fontWeight: 700, color: "text.primary" }}>{l}</TableCell>
                                         ))}
                                     </TableRow>
@@ -256,6 +279,7 @@ export default function HealthCheckMain() {
                                                     {qn.ma_quan_nhan}
                                                 </TableCell>
                                                 <TableCell>{qn.ho_ten || "--"}</TableCell>
+                                                <TableCell>{allUnitLookup.get(qn.ma_don_vi) || qn.ma_don_vi || "--"}</TableCell>
                                                 <TableCell>{qn.cap_bac || "--"}</TableCell>
                                                 <TableCell>{qn.chuc_vu || "--"}</TableCell>
                                                 <TableCell>
@@ -282,7 +306,7 @@ export default function HealthCheckMain() {
                                     })}
                                     {!loading && filteredSoldiers.length === 0 && (
                                         <TableRow>
-                                            <TableCell colSpan={7} align="center" sx={{ py: 6, color: "text.secondary" }}>
+                                            <TableCell colSpan={8} align="center" sx={{ py: 6, color: "text.secondary" }}>
                                                 Không có quân nhân nào.
                                             </TableCell>
                                         </TableRow>
@@ -313,6 +337,7 @@ export default function HealthCheckMain() {
                     onSaved={handleFormSaved}
                     quanNhan={selectedQn}
                     existingPhieu={phieuMap[selectedQn.ma_quan_nhan] || null}
+                    unitLookup={allUnitLookup}
                 />
             )}
         </Stack>
