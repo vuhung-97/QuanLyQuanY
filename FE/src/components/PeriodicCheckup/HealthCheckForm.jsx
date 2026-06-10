@@ -22,10 +22,18 @@ export default function HealthCheckForm({ open, onClose, onSaved, quanNhan, exis
 
     useEffect(() => {
         if (open && quanNhan) {
+            const common = {
+                ma_quan_nhan: quanNhan.ma_quan_nhan,
+                ngay_nhap_ngu: quanNhan.ngay_nhap_ngu || "",
+                tien_su_benh_tat: "",
+                kham_lam_sang: "",
+                kham_can_lam_sang: "",
+                ket_luan: "",
+                chi_dan_can_thiet: "",
+            };
             if (existingPhieu) {
                 setForm({
-                    ma_quan_nhan: existingPhieu.ma_quan_nhan || quanNhan.ma_quan_nhan,
-                    ngay_nhap_ngu: existingPhieu.ngay_nhap_ngu || "",
+                    ...common,
                     tien_su_benh_tat: existingPhieu.tien_su_benh_tat || "",
                     kham_lam_sang: existingPhieu.kham_lam_sang || "",
                     kham_can_lam_sang: existingPhieu.kham_can_lam_sang || "",
@@ -33,15 +41,7 @@ export default function HealthCheckForm({ open, onClose, onSaved, quanNhan, exis
                     chi_dan_can_thiet: existingPhieu.chi_dan_can_thiet || "",
                 });
             } else {
-                setForm({
-                    ma_quan_nhan: quanNhan.ma_quan_nhan,
-                    ngay_nhap_ngu: "",
-                    tien_su_benh_tat: "",
-                    kham_lam_sang: "",
-                    kham_can_lam_sang: "",
-                    ket_luan: "",
-                    chi_dan_can_thiet: "",
-                });
+                setForm(common);
             }
             setError("");
         }
@@ -57,10 +57,19 @@ export default function HealthCheckForm({ open, onClose, onSaved, quanNhan, exis
         setSaving(true);
         setError("");
         try {
+            const { ngay_nhap_ngu, ...phieuData } = form;
+
+            await api.patch(`/quan_nhan/${quanNhan.ma_quan_nhan}`, {
+                ngay_nhap_ngu: ngay_nhap_ngu || null,
+            });
+
             if (isEdit) {
-                await api.patch(`/phieu_kham_suc_khoe/${existingPhieu.ma_phieu_kham}`, form);
+                await api.patch(
+                    `/phieu_kham_suc_khoe/${existingPhieu.ma_phieu_kham}`,
+                    phieuData,
+                );
             } else {
-                await api.post("/phieu_kham_suc_khoe", form);
+                await api.post("/phieu_kham_suc_khoe", phieuData);
             }
             onSaved();
             onClose();

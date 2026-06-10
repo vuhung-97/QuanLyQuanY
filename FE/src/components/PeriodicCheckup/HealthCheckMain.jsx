@@ -13,6 +13,7 @@ import {
 import api from "../../services/api.js";
 import StatsCards from "./StatsCards.jsx";
 import HealthCheckForm from "./HealthCheckForm.jsx";
+import SearchBar from "../common/SearchBar.jsx";
 
 const filterTabs = ["Tất cả", "Chưa khám", "Đang khám", "Đã khám"];
 
@@ -40,6 +41,7 @@ export default function HealthCheckMain() {
     const [filterTab, setFilterTab] = useState(0);
     const [formOpen, setFormOpen] = useState(false);
     const [selectedQn, setSelectedQn] = useState(null);
+    const [searchText, setSearchText] = useState("");
 
     useEffect(() => {
         let ignore = false;
@@ -114,6 +116,13 @@ export default function HealthCheckMain() {
         if (filterTab === 2) return tt === "Đang khám";
         if (filterTab === 3) return tt === "Đã khám";
         return true;
+    }).filter((qn) => {
+        if (!searchText) return true;
+        const keyword = searchText.toLowerCase().trim();
+        return (
+            qn.ho_ten?.toLowerCase().includes(keyword) ||
+            qn.ma_quan_nhan?.toLowerCase().includes(keyword)
+        );
     });
 
     const handleFormSaved = useCallback(() => {
@@ -192,6 +201,11 @@ export default function HealthCheckMain() {
                         <Stack direction={{ xs: "column", md: "row" }} spacing={2}
                             sx={{ mb: 2, justifyContent: "space-between", alignItems: { md: "center" } }}>
                             <Typography variant="h2">Danh sách quân nhân</Typography>
+                            <SearchBar
+                                value={searchText}
+                                onChange={(e) => setSearchText(e.target.value)}
+                                placeholder="Tìm kiếm quân nhân..."
+                            />
                             <Tabs value={filterTab} onChange={(_, v) => setFilterTab(v)}
                                 sx={{ minHeight: 36, "& .MuiTab-root": { minHeight: 36, py: 0.5 } }}>
                                 {filterTabs.map((t) => (
