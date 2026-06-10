@@ -42,6 +42,7 @@ export default function HealthCheckMain() {
     const [formOpen, setFormOpen] = useState(false);
     const [selectedQn, setSelectedQn] = useState(null);
     const [searchText, setSearchText] = useState("");
+    const [selectedYear, setSelectedYear] = useState(String(new Date().getFullYear()));
 
     useEffect(() => {
         let ignore = false;
@@ -80,9 +81,8 @@ export default function HealthCheckMain() {
         async function load() {
             setLoading(true);
             try {
-                const qnRes = await api.get("/quan_nhan", { params: { limit: 500 } });
-                const allQn = Array.isArray(qnRes.data) ? qnRes.data : [];
-                const qnList = allQn.filter((q) => q.ma_don_vi === selectedUnit);
+                const qnRes = await api.get(`/quan_nhan/by-don-vi/${selectedUnit}`);
+                const qnList = Array.isArray(qnRes.data) ? qnRes.data : [];
                 if (ignore) return;
 
                 const phieuData = {};
@@ -108,6 +108,19 @@ export default function HealthCheckMain() {
         load();
         return () => { ignore = true; };
     }, [selectedUnit]);
+
+    const years = [...new Set(
+        schedules
+            .map(s => s.thoi_gian_bat_dau ? new Date(s.thoi_gian_bat_dau).getFullYear() : null)
+            .filter(Boolean)
+    )].sort((a, b) => b - a);
+
+    const filteredSchedules = selectedYear
+        ? schedules.filter(s => {
+            const y = s.thoi_gian_bat_dau ? new Date(s.thoi_gian_bat_dau).getFullYear() : null;
+            return y === Number(selectedYear);
+        })
+        : schedules;
 
     const filteredSoldiers = soldiers.filter((qn) => {
         const tt = getTrangThai(phieuMap[qn.ma_quan_nhan]);
@@ -165,12 +178,21 @@ export default function HealthCheckMain() {
                 <CardContent>
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={2}
                         sx={{ alignItems: { sm: "center" } }}>
+                        <TextField select size="small" label="Chọn năm"
+                            value={selectedYear}
+                            onChange={(e) => { setSelectedYear(e.target.value); setSelectedSchedule(""); setSelectedUnit(""); }}
+                            sx={{ minWidth: 120 }}>
+                            <MenuItem value="">-- Tất cả --</MenuItem>
+                            {years.map((y) => (
+                                <MenuItem key={y} value={y}>{y}</MenuItem>
+                            ))}
+                        </TextField>
                         <TextField select size="small" label="Chọn lịch khám"
                             value={selectedSchedule}
                             onChange={(e) => { setSelectedSchedule(e.target.value); setSelectedUnit(""); }}
                             sx={{ minWidth: 250 }}>
                             <MenuItem value="">-- Chọn lịch --</MenuItem>
-                            {schedules.map((s) => (
+                            {filteredSchedules.map((s) => (
                                 <MenuItem key={s.ma_lich_kham} value={s.ma_lich_kham}>
                                     {s.ma_lich_kham} ({s.thoi_gian_bat_dau || ""} - {s.thoi_gian_ket_thuc || ""})
                                 </MenuItem>
