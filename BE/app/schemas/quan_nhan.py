@@ -13,6 +13,7 @@ class QuanNhanBase(SchemaBase):
     gioi_tinh: bool | None = None
     dan_toc: str | None = Field(default=None, max_length=50)
     nghe_nghiep: str = Field(default="Bộ đội", max_length=100)
+    ngay_nhap_ngu: date | None = None
     dia_chi: str | None = None
     so_dien_thoai: str | None = Field(default=None, max_length=20)
     so_the_bhyt: str | None = Field(default=None, max_length=50)
@@ -32,6 +33,7 @@ class QuanNhanUpdate(SchemaBase):
     gioi_tinh: bool | None = None
     dan_toc: str | None = None
     nghe_nghiep: str | None = None
+    ngay_nhap_ngu: date | None = None
     dia_chi: str | None = None
     so_dien_thoai: str | None = None
     so_the_bhyt: str | None = None

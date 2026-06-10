@@ -6,7 +6,6 @@ from pydantic import Field
 
 class PhieuKhamSucKhoeBase(SchemaBase):
     ma_quan_nhan: str | None = Field(default=None, max_length=10)
-    ngay_nhap_ngu: date | None = None
     tien_su_benh_tat: str | None = None
     kham_lam_sang: str | None = None
     kham_can_lam_sang: str | None = None
@@ -20,7 +19,6 @@ class PhieuKhamSucKhoeCreate(PhieuKhamSucKhoeBase):
 
 class PhieuKhamSucKhoeUpdate(SchemaBase):
     ma_quan_nhan: str | None = None
-    ngay_nhap_ngu: date | None = None
     tien_su_benh_tat: str | None = None
     kham_lam_sang: str | None = None
     kham_can_lam_sang: str | None = None

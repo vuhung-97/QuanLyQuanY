@@ -18,6 +18,7 @@ class QuanNhan(Base):
     gioi_tinh: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
     dan_toc: Mapped[str | None] = mapped_column(String(50), nullable=True)
     nghe_nghiep: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    ngay_nhap_ngu: Mapped[date | None] = mapped_column(Date, nullable=True)
     dia_chi: Mapped[str | None] = mapped_column(Text, nullable=True)
     so_dien_thoai: Mapped[str | None] = mapped_column(String(20), nullable=True)
     so_the_bhyt: Mapped[str | None] = mapped_column(String(50), nullable=True)
