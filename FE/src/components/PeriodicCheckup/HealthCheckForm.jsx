@@ -180,6 +180,7 @@ export default function HealthCheckForm({
     quanNhan,
     existingPhieu,
     unitLookup,
+    nam,
 }) {
     const [activeTab, setActiveTab] = useState(0);
     const [ngayNhapNgu, setNgayNhapNgu] = useState("");
@@ -255,21 +256,23 @@ export default function HealthCheckForm({
         try {
             const phieuData = {
                 ma_quan_nhan: quanNhan.ma_quan_nhan,
+                nam: nam || null,
                 tien_su_benh_tat: JSON.stringify(ts),
                 kham_lam_sang: JSON.stringify(ls),
                 kham_can_lam_sang: JSON.stringify(cls),
-                ket_luan: JSON.stringify(kl),
+                ket_luan: Object.values(kl).some(v => v && v !== "Loại 1") ? JSON.stringify(kl) : "",
             };
 
+            let saved;
             if (isEdit) {
-                await api.patch(
+                saved = await api.patch(
                     `/phieu_kham_suc_khoe/${existingPhieu.ma_phieu_kham}`,
                     phieuData,
                 );
             } else {
-                await api.post("/phieu_kham_suc_khoe", phieuData);
+                saved = await api.post("/phieu_kham_suc_khoe", phieuData);
             }
-            onSaved();
+            onSaved(saved.data);
             onClose();
         } catch (err) {
             setError(err.response?.data?.detail || "Không thể lưu phiếu khám.");

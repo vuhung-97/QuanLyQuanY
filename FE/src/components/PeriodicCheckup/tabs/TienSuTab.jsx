@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
     Box,
     Card,
@@ -45,29 +45,11 @@ const fieldsGiaDinh = [
 ];
 
 const TienSuTab = React.memo(({ ts, onTsChange, cardStyle }) => {
-    const [normalFields, setNormalFields] = useState(new Set());
-
-    const toggleNormal = (name) => {
-        const isNormal = normalFields.has(name);
-        if (isNormal) {
-            onTsChange({ target: { name, value: "" } });
-            setNormalFields((prev) => {
-                const next = new Set(prev);
-                next.delete(name);
-                return next;
-            });
-        } else {
-            onTsChange({ target: { name, value: "Không" } });
-            setNormalFields((prev) => {
-                const next = new Set(prev);
-                next.add(name);
-                return next;
-            });
-        }
-    };
-
     const renderField = (f) => {
-        const isNormal = normalFields.has(f.name);
+        const isNormal = ts[f.name] === "Không";
+        const handleToggle = () => {
+            onTsChange({ target: { name: f.name, value: isNormal ? "" : "Không" } });
+        };
         return (
             <Grid size={f.grid} key={f.name}>
                 <TextField
@@ -85,7 +67,7 @@ const TienSuTab = React.memo(({ ts, onTsChange, cardStyle }) => {
                                 <InputAdornment position="end">
                                     <IconButton
                                         size="small"
-                                        onClick={() => toggleNormal(f.name)}
+                                        onClick={handleToggle}
                                         color={isNormal ? "success" : "default"}
                                     >
                                         {isNormal ? (

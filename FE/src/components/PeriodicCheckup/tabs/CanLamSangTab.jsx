@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
     Card, CardContent, Grid, IconButton, InputAdornment, TextField, Typography,
 } from "@mui/material";
@@ -37,27 +37,6 @@ const cdhaFields = [
 ];
 
 const CanLamSangTab = React.memo(({ cls, onClsChange, cardStyle }) => {
-    const [normalCdha, setNormalCdha] = useState(new Set());
-
-    const toggleNormalCdha = (name) => {
-        const isNormal = normalCdha.has(name);
-        if (isNormal) {
-            onClsChange({ target: { name, value: "" } });
-            setNormalCdha((prev) => {
-                const next = new Set(prev);
-                next.delete(name);
-                return next;
-            });
-        } else {
-            onClsChange({ target: { name, value: "Bình thường" } });
-            setNormalCdha((prev) => {
-                const next = new Set(prev);
-                next.add(name);
-                return next;
-            });
-        }
-    };
-
     return (
         <>
             <Card sx={cardStyle}>
@@ -112,7 +91,10 @@ const CanLamSangTab = React.memo(({ cls, onClsChange, cardStyle }) => {
                     <SectionTitle>Chẩn đoán hình ảnh & Khác</SectionTitle>
                     <Grid container spacing={2}>
                         {cdhaFields.map((f) => {
-                            const isNormal = normalCdha.has(f.name);
+                            const isNormal = cls[f.name] === "Bình thường";
+                            const handleToggle = () => {
+                                onClsChange({ target: { name: f.name, value: isNormal ? "" : "Bình thường" } });
+                            };
                             return (
                                 <Grid size={{ xs: 12, sm: 6 }} key={f.name}>
                                     <TextField
@@ -130,7 +112,7 @@ const CanLamSangTab = React.memo(({ cls, onClsChange, cardStyle }) => {
                                                     <InputAdornment position="end">
                                                         <IconButton
                                                             size="small"
-                                                            onClick={() => toggleNormalCdha(f.name)}
+                                                            onClick={handleToggle}
                                                             color={isNormal ? "success" : "default"}
                                                         >
                                                             {isNormal ? <Undo fontSize="small" /> : <CheckCircleOutlined fontSize="small" />}

@@ -19,8 +19,15 @@ const filterTabs = ["Tất cả", "Chưa khám", "Đang khám", "Đã khám"];
 
 function getTrangThai(phieu) {
     if (!phieu) return "Chưa khám";
-    if (phieu.ket_luan) return "Đã khám";
-    return "Đang khám";
+    if (!phieu.ket_luan) return "Đang khám";
+    try {
+        const parsed = JSON.parse(phieu.ket_luan);
+        if (typeof parsed === "object" && parsed !== null) {
+            const hasData = Object.values(parsed).some(v => v && v !== "Loại 1");
+            if (!hasData) return "Đang khám";
+        }
+    } catch {}
+    return "Đã khám";
 }
 
 function statusChipColor(tt) {
@@ -34,6 +41,7 @@ export default function HealthCheckMain() {
     const [selectedSchedule, setSelectedSchedule] = useState("");
     const [units, setUnits] = useState([]);
     const [selectedUnit, setSelectedUnit] = useState("");
+    const [selectedScheduleObj, setSelectedScheduleObj] = useState(null);
     const [soldiers, setSoldiers] = useState([]);
     const [phieuMap, setPhieuMap] = useState({});
     const [stats, setStats] = useState(null);
@@ -93,6 +101,10 @@ export default function HealthCheckMain() {
     }, [selectedSchedule]);
 
     useEffect(() => {
+        setSelectedScheduleObj(schedules.find(s => s.ma_lich_kham === selectedSchedule) || null);
+    }, [schedules, selectedSchedule]);
+
+    useEffect(() => {
         if (!selectedUnit) { setSoldiers([]); setPhieuMap({}); return; }
         let ignore = false;
         async function load() {
@@ -102,16 +114,15 @@ export default function HealthCheckMain() {
                 const qnList = Array.isArray(qnRes.data) ? qnRes.data : [];
                 if (ignore) return;
 
-                const phieuData = {};
-                for (const qn of qnList) {
-                    try {
-                        const pRes = await api.get("/phieu_kham_suc_khoe", {
-                            params: { ma_quan_nhan: qn.ma_quan_nhan, limit: 1 },
-                        });
-                        const items = Array.isArray(pRes.data) ? pRes.data : [];
-                        if (items.length > 0) phieuData[qn.ma_quan_nhan] = items[0];
-                    } catch {
+                let phieuData = {};
+                try {
+                    const pRes = await api.get(`/phieu_kham_suc_khoe/latest-by-unit/${selectedUnit}`);
+                    const list = Array.isArray(pRes.data) ? pRes.data : [];
+                    phieuData = {};
+                    for (const p of list) {
+                        phieuData[p.ma_quan_nhan] = p;
                     }
+                } catch {
                 }
                 if (!ignore) {
                     setSoldiers(qnList);
@@ -139,7 +150,7 @@ export default function HealthCheckMain() {
         })
         : schedules;
 
-    const filteredSoldiers = soldiers.filter((qn) => {
+    const filteredSoldiers = useMemo(() => soldiers.filter((qn) => {
         const tt = getTrangThai(phieuMap[qn.ma_quan_nhan]);
         if (filterTab === 0) return true;
         if (filterTab === 1) return tt === "Chưa khám";
@@ -159,15 +170,15 @@ export default function HealthCheckMain() {
         if (uA < uB) return -1;
         if (uA > uB) return 1;
         return (a.ho_ten || "").localeCompare(b.ho_ten || "", "vi");
-    });
+    }), [soldiers, phieuMap, filterTab, searchText]);
 
-    const handleFormSaved = useCallback(() => {
-        if (selectedUnit) {
-            const unit = selectedUnit;
-            setSelectedUnit("");
-            setTimeout(() => setSelectedUnit(unit), 50);
+    const handleFormSaved = useCallback((savedPhieu) => {
+        if (selectedQn) {
+            setPhieuMap(prev => ({ ...prev, [selectedQn.ma_quan_nhan]: savedPhieu }));
         }
-    }, [selectedUnit]);
+        setFormOpen(false);
+        setSelectedQn(null);
+    }, [selectedQn]);
 
     const statsItems = stats
         ? [
@@ -288,18 +299,18 @@ export default function HealthCheckMain() {
                                                 </TableCell>
                                                 <TableCell>
                                                     {tt === "Chưa khám" && (
-                                                        <Button size="small" variant="contained"
-                                                            onClick={() => { setSelectedQn(qn); setFormOpen(true); }}>
-                                                            Khám
-                                                        </Button>
-                                                    )}
-                                                    {(tt === "Đang khám" || tt === "Đã khám") && (
-                                                        <Button size="small" variant="outlined"
-                                                            startIcon={<VisibilityIcon />}
-                                                            onClick={() => { setSelectedQn(qn); setFormOpen(true); }}>
-                                                            {tt === "Đã khám" ? "Xem" : "Tiếp tục"}
-                                                        </Button>
-                                                    )}
+                                                         <Button size="small" variant="contained"
+                                                             onClick={() => { document.activeElement?.blur(); setSelectedQn(qn); setFormOpen(true); }}>
+                                                             Khám
+                                                         </Button>
+                                                     )}
+                                                     {(tt === "Đang khám" || tt === "Đã khám") && (
+                                                         <Button size="small" variant="outlined"
+                                                             startIcon={<VisibilityIcon />}
+                                                             onClick={() => { document.activeElement?.blur(); setSelectedQn(qn); setFormOpen(true); }}>
+                                                             {tt === "Đã khám" ? "Xem" : "Tiếp tục"}
+                                                         </Button>
+                                                     )}
                                                 </TableCell>
                                             </TableRow>
                                         );
@@ -338,6 +349,7 @@ export default function HealthCheckMain() {
                     quanNhan={selectedQn}
                     existingPhieu={phieuMap[selectedQn.ma_quan_nhan] || null}
                     unitLookup={allUnitLookup}
+                    nam={selectedScheduleObj ? new Date(selectedScheduleObj.thoi_gian_bat_dau).getFullYear() : null}
                 />
             )}
         </Stack>

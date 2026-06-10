@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
     Card,
     CardContent,
@@ -53,27 +53,6 @@ const fields = [
 ];
 
 const KetLuanTab = React.memo(({ kl, onKlChange, cardStyle }) => {
-    const [normalKlFields, setNormalKlFields] = useState(new Set());
-
-    const toggleNormalKl = (name) => {
-        const isNormal = normalKlFields.has(name);
-        if (isNormal) {
-            onKlChange({ target: { name, value: "" } });
-            setNormalKlFields((prev) => {
-                const next = new Set(prev);
-                next.delete(name);
-                return next;
-            });
-        } else {
-            onKlChange({ target: { name, value: "Không" } });
-            setNormalKlFields((prev) => {
-                const next = new Set(prev);
-                next.add(name);
-                return next;
-            });
-        }
-    };
-
     return (
         <Card sx={cardStyle}>
             <CardContent sx={{ p: 3 }}>
@@ -109,7 +88,10 @@ const KetLuanTab = React.memo(({ kl, onKlChange, cardStyle }) => {
                         />
                     </Grid>
                     {fields.map((f) => {
-                        const isNormal = normalKlFields.has(f.name);
+                        const isNormal = kl[f.name] === "Không";
+                        const handleToggle = () => {
+                            onKlChange({ target: { name: f.name, value: isNormal ? "" : "Không" } });
+                        };
                         return (
                             <Grid size={12} key={f.name}>
                                 <TextField
@@ -128,11 +110,7 @@ const KetLuanTab = React.memo(({ kl, onKlChange, cardStyle }) => {
                                                 <InputAdornment position="end">
                                                     <IconButton
                                                         size="small"
-                                                        onClick={() =>
-                                                            toggleNormalKl(
-                                                                f.name,
-                                                            )
-                                                        }
+                                                        onClick={handleToggle}
                                                         color={
                                                             isNormal
                                                                 ? "success"

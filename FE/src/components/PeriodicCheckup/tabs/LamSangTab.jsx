@@ -141,75 +141,81 @@ const TheLucField = React.memo(({ field, value, onChange }) => (
 ));
 
 const ChuyenKhoaRow = React.memo(
-    ({ sp, noteValue, loaiValue, onLsChange, isNormal, onToggleNormal }) => (
-        <Grid size={12}>
-            <Grid container spacing={2} sx={{ alignItems: "center" }}>
-                <Grid size={{ xs: 12, sm: 3 }}>
-                    <Typography
-                        variant="body2"
-                        fontWeight="600"
-                        color="#0B3B60"
-                    >
-                        {sp.label}
-                    </Typography>
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6 }}>
-                    <TextField
-                        name={`${sp.id}_note`}
-                        label="Kết quả khám"
-                        value={noteValue}
-                        onChange={onLsChange}
-                        disabled={isNormal}
-                        fullWidth
-                        size="small"
-                        slotProps={{
-                            input: {
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            size="small"
-                                            onClick={() =>
-                                                onToggleNormal(sp.id)
-                                            }
-                                            color={
-                                                isNormal ? "success" : "default"
-                                            }
-                                        >
-                                            {isNormal ? (
-                                                <Undo fontSize="small" />
-                                            ) : (
-                                                <CheckCircleOutlined fontSize="small" />
-                                            )}
-                                        </IconButton>
-                                    </InputAdornment>
-                                ),
-                            },
-                        }}
-                    />
-                </Grid>
-                <Grid size={{ xs: 12, sm: 3 }}>
-                    <FormControl fullWidth size="small">
-                        <InputLabel>Phân loại</InputLabel>
-                        <Select
-                            name={`${sp.id}_loai`}
-                            value={loaiValue}
-                            onChange={onLsChange}
-                            label="Phân loại"
+    ({ sp, noteValue, loaiValue, onLsChange }) => {
+        const isNormal = noteValue === "Bình thường";
+        const handleToggleNormal = () => {
+            onLsChange({
+                target: { name: `${sp.id}_note`, value: isNormal ? "" : "Bình thường" },
+            });
+        };
+        return (
+            <Grid size={12}>
+                <Grid container spacing={2} sx={{ alignItems: "center" }}>
+                    <Grid size={{ xs: 12, sm: 3 }}>
+                        <Typography
+                            variant="body2"
+                            fontWeight="600"
+                            color="#0B3B60"
                         >
-                            {PHAN_LOAI_OPTIONS.map((loai) => (
-                                <MenuItem key={loai} value={loai}>
-                                    {loai}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                </Grid>
-                <Grid size={12}>
-                    <Divider sx={{ opacity: 0.5 }} />
+                            {sp.label}
+                        </Typography>
+                    </Grid>
+                    <Grid size={{ xs: 12, sm: 6 }}>
+                        <TextField
+                            name={`${sp.id}_note`}
+                            label="Kết quả khám"
+                            value={noteValue}
+                            onChange={onLsChange}
+                            disabled={isNormal}
+                            fullWidth
+                            size="small"
+                            slotProps={{
+                                input: {
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                size="small"
+                                                onClick={handleToggleNormal}
+                                                color={
+                                                    isNormal ? "success" : "default"
+                                                }
+                                            >
+                                                {isNormal ? (
+                                                    <Undo fontSize="small" />
+                                                ) : (
+                                                    <CheckCircleOutlined fontSize="small" />
+                                                )}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                },
+                            }}
+                        />
+                    </Grid>
+                    <Grid size={{ xs: 12, sm: 3 }}>
+                        <FormControl fullWidth size="small">
+                            <InputLabel>Phân loại</InputLabel>
+                            <Select
+                                name={`${sp.id}_loai`}
+                                value={loaiValue}
+                                onChange={onLsChange}
+                                label="Phân loại"
+                            >
+                                {PHAN_LOAI_OPTIONS.map((loai) => (
+                                    <MenuItem key={loai} value={loai}>
+                                        {loai}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </Grid>
+                    <Grid size={12}>
+                        <Divider sx={{ opacity: 0.5 }} />
+                    </Grid>
                 </Grid>
             </Grid>
-        </Grid>
-    ),
+        );
+    },
 );
 
 const MatNumberField = React.memo(({ name, label, value, onChange }) => (
@@ -240,28 +246,6 @@ const getBmiStatus = (bmiStr) => {
 const LamSangTab = React.memo(({ ls, onLsChange, cardStyle }) => {
     const bmiInfo = getBmiStatus(ls.bmi);
     const [showCoKinh, setShowCoKinh] = useState(false);
-    const [normalSpecialities, setNormalSpecialities] = useState(new Set());
-
-    const toggleNormalSp = (spId) => {
-        const isNormal = normalSpecialities.has(spId);
-        if (isNormal) {
-            onLsChange({ target: { name: `${spId}_note`, value: "" } });
-            setNormalSpecialities((prev) => {
-                const next = new Set(prev);
-                next.delete(spId);
-                return next;
-            });
-        } else {
-            onLsChange({
-                target: { name: `${spId}_note`, value: "Bình thường" },
-            });
-            setNormalSpecialities((prev) => {
-                const next = new Set(prev);
-                next.add(spId);
-                return next;
-            });
-        }
-    };
 
     return (
         <>
@@ -314,8 +298,6 @@ const LamSangTab = React.memo(({ ls, onLsChange, cardStyle }) => {
                                 noteValue={ls[`${sp.id}_note`]}
                                 loaiValue={ls[`${sp.id}_loai`]}
                                 onLsChange={onLsChange}
-                                isNormal={normalSpecialities.has(sp.id)}
-                                onToggleNormal={toggleNormalSp}
                             />
                         ))}
                     </Grid>

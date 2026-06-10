@@ -411,7 +411,7 @@ Hoặc nếu muốn tự đặt ID:
 |-------|------|----------|-----|
 | `ma_phieu_kham` | string (PK) | ✅ | 10 |
 | `ma_quan_nhan` | string | ❌ | 10 |
-| `ngay_nhap_ngu` | date | ❌ | |
+| `nam` | integer | ❌ | |
 | `tien_su_benh_tat` | string | ❌ | |
 | `kham_lam_sang` | string | ❌ | |
 | `kham_can_lam_sang` | string | ❌ | |
