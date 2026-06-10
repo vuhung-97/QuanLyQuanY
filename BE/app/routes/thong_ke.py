@@ -12,6 +12,22 @@ from app.core.dependencies import require_permissions
 router = APIRouter(prefix="/thong-ke", tags=["thong-ke"])
 
 
+def _build_children_map(db: Session) -> dict[str, list[str]]:
+    all_units = db.query(DonVi.ma_don_vi, DonVi.ma_don_vi_truc_thuoc).all()
+    children_map: dict[str, list[str]] = {}
+    for u in all_units:
+        if u.ma_don_vi_truc_thuoc:
+            children_map.setdefault(u.ma_don_vi_truc_thuoc, []).append(u.ma_don_vi)
+    return children_map
+
+
+def _get_descendants(ma: str, children_map: dict[str, list[str]]) -> list[str]:
+    codes = [ma]
+    for child in children_map.get(ma, []):
+        codes.extend(_get_descendants(child, children_map))
+    return codes
+
+
 @router.get("/don-vi", dependencies=[Depends(require_permissions("don_vi:read"))])
 def thong_ke_don_vi(
     db: Session = Depends(get_db),
@@ -22,19 +38,35 @@ def thong_ke_don_vi(
         db.query(
             DonVi.ma_don_vi,
             DonVi.ten_don_vi,
+            DonVi.ma_don_vi_truc_thuoc,
             func.count(QuanNhan.ma_quan_nhan).label("quan_so"),
         )
         .outerjoin(QuanNhan, DonVi.ma_don_vi == QuanNhan.ma_don_vi)
-        .group_by(DonVi.ma_don_vi, DonVi.ten_don_vi)
+        .group_by(DonVi.ma_don_vi, DonVi.ten_don_vi, DonVi.ma_don_vi_truc_thuoc)
         .offset(offset)
         .limit(limit)
         .all()
     )
+
+    children_map = _build_children_map(db)
+
+    raw_map = {}
+    for r in results:
+        raw_map[r.ma_don_vi] = r.quan_so or 0
+
+    def _calc_tong(ma: str) -> int:
+        total = raw_map.get(ma, 0)
+        for child in children_map.get(ma, []):
+            total += _calc_tong(child)
+        return total
+
     return [
         {
             "ma_don_vi": r.ma_don_vi,
             "ten_don_vi": r.ten_don_vi,
+            "ma_don_vi_truc_thuoc": r.ma_don_vi_truc_thuoc,
             "quan_so": r.quan_so,
+            "tong_quan_so": _calc_tong(r.ma_don_vi),
         }
         for r in results
     ]
@@ -45,7 +77,6 @@ def thong_ke_lich_kham(
     ma_lich_kham: str,
     db: Session = Depends(get_db),
 ):
-    # Get details from chi_tiet table
     chi_tiet_list = (
         db.query(LichKhamSkNamChiTiet)
         .filter(LichKhamSkNamChiTiet.ma_lich_kham == ma_lich_kham)
@@ -54,11 +85,12 @@ def thong_ke_lich_kham(
 
     from fastapi import HTTPException
     if not chi_tiet_list:
-        # Fallback: if no details, use all units
         units = db.query(DonVi).all()
     else:
         unit_codes = [ct.ma_don_vi for ct in chi_tiet_list]
         units = db.query(DonVi).filter(DonVi.ma_don_vi.in_(unit_codes)).all()
+
+    children_map = _build_children_map(db)
 
     danh_sach_don_vi = []
     tong_quan_so = 0
@@ -67,16 +99,18 @@ def thong_ke_lich_kham(
     tong_con_lai = 0
 
     for unit in units:
+        unit_codes = _get_descendants(unit.ma_don_vi, children_map)
+
         quan_so = (
             db.query(func.count(QuanNhan.ma_quan_nhan))
-            .filter(QuanNhan.ma_don_vi == unit.ma_don_vi)
+            .filter(QuanNhan.ma_don_vi.in_(unit_codes))
             .scalar()
         ) or 0
 
         da_kham = (
             db.query(func.count(PhieuKhamSucKhoe.ma_phieu_kham))
             .join(QuanNhan, PhieuKhamSucKhoe.ma_quan_nhan == QuanNhan.ma_quan_nhan)
-            .filter(QuanNhan.ma_don_vi == unit.ma_don_vi)
+            .filter(QuanNhan.ma_don_vi.in_(unit_codes))
             .filter(PhieuKhamSucKhoe.ket_luan.isnot(None))
             .scalar()
         ) or 0
@@ -84,7 +118,7 @@ def thong_ke_lich_kham(
         dang_kham = (
             db.query(func.count(PhieuKhamSucKhoe.ma_phieu_kham))
             .join(QuanNhan, PhieuKhamSucKhoe.ma_quan_nhan == QuanNhan.ma_quan_nhan)
-            .filter(QuanNhan.ma_don_vi == unit.ma_don_vi)
+            .filter(QuanNhan.ma_don_vi.in_(unit_codes))
             .filter(PhieuKhamSucKhoe.ket_luan.is_(None))
             .scalar()
         ) or 0
@@ -93,7 +127,6 @@ def thong_ke_lich_kham(
         if con_lai < 0:
             con_lai = 0
 
-        # Find matching chi_tiet for location/date info
         ct = next((c for c in chi_tiet_list if c.ma_don_vi == unit.ma_don_vi), None)
 
         danh_sach_don_vi.append({

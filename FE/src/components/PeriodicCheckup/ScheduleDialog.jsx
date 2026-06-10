@@ -236,9 +236,12 @@ export default function ScheduleDialog({
     useEffect(() => {
         if (open) {
             api.get("/thong-ke/don-vi", { params: { limit: 100 } })
-                .then((res) =>
-                    setUnitOptions(Array.isArray(res.data) ? res.data : []),
-                )
+                .then((res) => {
+                    const all = Array.isArray(res.data) ? res.data : [];
+                    setUnitOptions(
+                        all.filter((u) => !u.ma_don_vi_truc_thuoc),
+                    );
+                })
                 .catch(() => {});
         }
     }, [open]);
