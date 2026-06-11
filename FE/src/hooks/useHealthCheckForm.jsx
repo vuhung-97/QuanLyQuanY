@@ -3,7 +3,7 @@ import api from "../services/api.js";
 import {
     DEFAULT_TS, DEFAULT_LS, DEFAULT_CLS, DEFAULT_KL,
     parseTienSu, parseLamSang, parseCanLamSang, parseKetLuan,
-} from "../components/PeriodicCheckup/healthCheckFormUtils.js";
+} from "../components/PeriodicCheckup/HealthCheck/healthCheckFormUtils.js";
 
 export default function useHealthCheckForm({
     open, quanNhan, existingPhieu, nam, onSaved, onClose,

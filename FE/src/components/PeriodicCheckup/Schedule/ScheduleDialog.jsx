@@ -4,7 +4,7 @@ import {
     DialogTitle, IconButton, Stack, TextField, Typography,
 } from "@mui/material";
 import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
-import useScheduleDialog from "../../hooks/useScheduleDialog";
+import useScheduleDialog from "../../../hooks/useScheduleDialog";
 import DateTimeInput from "./DateTimeInput.jsx";
 
 const DetailItem = memo(function DetailItem({

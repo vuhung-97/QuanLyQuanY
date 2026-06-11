@@ -9,8 +9,8 @@ import {
     KeyboardArrowDown as ArrowDownIcon,
     KeyboardArrowUp as ArrowUpIcon,
 } from "@mui/icons-material";
-import DataTable from "../common/DataTable.jsx";
-import { findNearestDetail, formatDateTime } from "./periodicUtils";
+import DataTable from "../../common/DataTable.jsx";
+import { findNearestDetail, formatDateTime } from "../periodicUtils";
 
 const columns = [
     { key: "expand", label: "", sx: { width: 40 } },

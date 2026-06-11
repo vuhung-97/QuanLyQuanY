@@ -1,5 +1,5 @@
 import { Box, Stack, Typography } from "@mui/material";
-import HealthCheckMain from "../../components/PeriodicCheckup/HealthCheckMain.jsx";
+import HealthCheckMain from "../../components/PeriodicCheckup/HealthCheck/HealthCheckMain.jsx";
 
 export default function PeriodicCheckupPage() {
     return (

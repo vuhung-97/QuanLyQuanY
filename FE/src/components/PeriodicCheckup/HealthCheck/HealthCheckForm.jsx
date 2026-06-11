@@ -4,7 +4,7 @@ import { Biotech as BiotechIcon } from "@mui/icons-material";
 import HistoryIcon from "@mui/icons-material/History";
 import MonitorHeartIcon from "@mui/icons-material/MonitorHeart";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
-import useHealthCheckForm from "../../hooks/useHealthCheckForm";
+import useHealthCheckForm from "../../../hooks/useHealthCheckForm";
 import { cardStyle } from "./healthCheckFormUtils";
 import TienSuTab from "./tabs/TienSuTab";
 import LamSangTab from "./tabs/LamSangTab";

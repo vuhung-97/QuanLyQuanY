@@ -8,14 +8,14 @@ import {
     PendingActions as PendingActionsIcon,
     PersonAddAlt as PersonAddAltIcon,
 } from "@mui/icons-material";
-import useHealthCheckData from "../../hooks/useHealthCheckData";
-import api from "../../services/api.js";
+import useHealthCheckData from "../../../hooks/useHealthCheckData";
+import api from "../../../services/api.js";
 import {
     filterSoldiers, filterTabs, getPhanLoai, getTrangThai, statusChipColor,
-} from "./periodicUtils";
-import { buildXlsContent, saveWorkbook } from "../../utils/xlsExport";
+} from "../periodicUtils";
+import { buildXlsContent, saveWorkbook } from "../../../utils/xlsExport";
 import SoldierTable from "./SoldierTable.jsx";
-import StatCardGrid from "../common/StatCardGrid.jsx";
+import StatCardGrid from "../../common/StatCardGrid.jsx";
 import HealthCheckForm from "./HealthCheckForm.jsx";
 
 function EmptyState({ show, message }) {

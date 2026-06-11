@@ -4,9 +4,9 @@ import { Add as AddIcon } from "@mui/icons-material";
 import api from "../../services/api.js";
 import useScheduleData from "../../hooks/useScheduleData";
 import { getScheduleStatus, statusColor } from "../../components/PeriodicCheckup/periodicUtils";
-import ScheduleList from "../../components/PeriodicCheckup/ScheduleList.jsx";
-import ScheduleDialog from "../../components/PeriodicCheckup/ScheduleDialog.jsx";
-import UnitOverview from "../../components/PeriodicCheckup/UnitOverview.jsx";
+import ScheduleList from "../../components/PeriodicCheckup/Schedule/ScheduleList.jsx";
+import ScheduleDialog from "../../components/PeriodicCheckup/Schedule/ScheduleDialog.jsx";
+import UnitOverview from "../../components/PeriodicCheckup/Schedule/UnitOverview.jsx";
 import StatCardGrid from "../../components/common/StatCardGrid.jsx";
 import ConfirmDialog from "../../components/common/ConfirmDialog.jsx";
 
