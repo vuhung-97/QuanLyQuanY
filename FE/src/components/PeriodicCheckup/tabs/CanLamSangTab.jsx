@@ -1,8 +1,10 @@
 import React from "react";
 import {
-    Card, CardContent, Grid, IconButton, InputAdornment, TextField, Typography,
+    Card, CardContent, Grid, IconButton, InputAdornment,
+    MenuItem, TextField, Tooltip, Typography,
 } from "@mui/material";
 import { CheckCircleOutlined, Undo } from "@mui/icons-material";
+import { fieldRanges, isOutOfRange } from "./fieldRanges";
 
 function SectionTitle({ children }) {
     return (
@@ -24,8 +26,8 @@ const xetNghiemMauFields = [
 ];
 
 const xetNghiemNuocTieuFields = [
-    { name: "nuoc_tieu_glucose", label: "Glucose nước tiểu" },
-    { name: "nuoc_tieu_protein", label: "Protein nước tiểu" },
+    { name: "nuoc_tieu_glucose", label: "Glucose nước tiểu", type: "select", options: ["Âm tính", "Dương tính"] },
+    { name: "nuoc_tieu_protein", label: "Protein nước tiểu", type: "select", options: ["Âm tính", "Dương tính"] },
     { name: "nuoc_tieu_te_bao",  label: "Tế bào nước tiểu" },
 ];
 
@@ -43,24 +45,36 @@ const CanLamSangTab = React.memo(({ cls, onClsChange, cardStyle, readOnly = fals
                 <CardContent sx={{ p: 3 }}>
                     <SectionTitle>Xét nghiệm máu</SectionTitle>
                     <Grid container spacing={2}>
-                        {xetNghiemMauFields.map((f) => (
-                            <Grid size={{ xs: 12, sm: 3 }} key={f.name}>
-                                <TextField
-                                    name={f.name}
-                                    label={f.label}
-                                    type="number"
-                                    value={cls[f.name]}
-                                    onChange={onClsChange}
-                                    fullWidth
-                                    size="small"
-                                    slotProps={{
-                                        htmlInput: { step: "1", min: "1" },
-                                        input: { endAdornment: <InputAdornment position="end">{f.unit}</InputAdornment> },
-                                    }}
-                                    disabled={readOnly}
-                                />
-                            </Grid>
-                        ))}
+                        {xetNghiemMauFields.map((f) => {
+                            const outOfRange = isOutOfRange(f.name, cls[f.name]);
+                            return (
+                                <Grid size={{ xs: 12, sm: 3 }} key={f.name}>
+                                    <Tooltip title={fieldRanges[f.name]?.tooltip || ""} arrow placement="right">
+                                        <TextField
+                                            name={f.name}
+                                            label={f.label}
+                                            type="number"
+                                            value={cls[f.name]}
+                                            onChange={onClsChange}
+                                            fullWidth
+                                            size="small"
+                                            error={outOfRange}
+                                            slotProps={{
+                                                htmlInput: { step: "1", min: "1" },
+                                                input: {
+                                                    endAdornment: (
+                                                        <InputAdornment position="end">
+                                                            {f.unit}
+                                                        </InputAdornment>
+                                                    ),
+                                                },
+                                            }}
+                                            disabled={readOnly}
+                                        />
+                                    </Tooltip>
+                                </Grid>
+                            );
+                        })}
                     </Grid>
                 </CardContent>
             </Card>
@@ -69,21 +83,48 @@ const CanLamSangTab = React.memo(({ cls, onClsChange, cardStyle, readOnly = fals
                 <CardContent sx={{ p: 3 }}>
                     <SectionTitle>Xét nghiệm nước tiểu</SectionTitle>
                     <Grid container spacing={2}>
-                        {xetNghiemNuocTieuFields.map((f) => (
-                            <Grid size={{ xs: 12, sm: 4 }} key={f.name}>
-                                <TextField
-                                    name={f.name}
-                                    label={f.label}
-                                    type="number"
-                                    value={cls[f.name]}
-                                    onChange={onClsChange}
-                                    fullWidth
-                                    size="small"
-                                    slotProps={{ htmlInput: { step: "1", min: "1" } }}
-                                    disabled={readOnly}
-                                />
-                            </Grid>
-                        ))}
+                        {xetNghiemNuocTieuFields.map((f) => {
+                            const outOfRange = isOutOfRange(f.name, cls[f.name]);
+                            return (
+                                <Grid size={{ xs: 12, sm: 4 }} key={f.name}>
+                                    <Tooltip title={fieldRanges[f.name]?.tooltip || ""} arrow placement="right">
+                                        {f.type === "select" ? (
+                                            <TextField
+                                                select
+                                                name={f.name}
+                                                label={f.label}
+                                                value={cls[f.name]}
+                                                onChange={onClsChange}
+                                                fullWidth
+                                                size="small"
+                                                error={outOfRange}
+                                                disabled={readOnly}
+                                            >
+                                                <MenuItem value="">-- Chọn --</MenuItem>
+                                                {f.options.map((opt) => (
+                                                    <MenuItem key={opt} value={opt}>{opt}</MenuItem>
+                                                ))}
+                                            </TextField>
+                                        ) : (
+                                            <TextField
+                                                name={f.name}
+                                                label={f.label}
+                                                type="number"
+                                                value={cls[f.name]}
+                                                onChange={onClsChange}
+                                                fullWidth
+                                                size="small"
+                                                error={outOfRange}
+                                                slotProps={{
+                                                    htmlInput: { step: "1", min: "1" },
+                                                }}
+                                                disabled={readOnly}
+                                            />
+                                        )}
+                                    </Tooltip>
+                                </Grid>
+                            );
+                        })}
                     </Grid>
                 </CardContent>
             </Card>

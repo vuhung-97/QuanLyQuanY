@@ -14,6 +14,7 @@ import {
     MenuItem,
     Select,
     TextField,
+    Tooltip,
     Typography,
 } from "@mui/material";
 import {
@@ -22,6 +23,7 @@ import {
     ExpandMore,
     Undo,
 } from "@mui/icons-material";
+import { fieldRanges, isOutOfRange } from "./fieldRanges";
 
 const specialities = [
     { id: "tim_mach", label: "Tim mạch" },
@@ -116,30 +118,36 @@ function SectionTitle({ children }) {
     );
 }
 
-const TheLucField = React.memo(({ field, value, onChange, readOnly }) => (
-    <Grid size={{ xs: 6, sm: 4, md: 2 }}>
-        <TextField
-            name={field.name}
-            label={field.label}
-            type="number"
-            value={value}
-            onChange={onChange}
-            disabled={readOnly}
-            fullWidth
-            size="small"
-            slotProps={{
-                htmlInput: { step: field.step, min: field.min },
-                input: {
-                    endAdornment: (
-                        <InputAdornment position="end">
-                            {field.unit}
-                        </InputAdornment>
-                    ),
-                },
-            }}
-        />
-    </Grid>
-));
+const TheLucField = React.memo(({ field, value, onChange, readOnly }) => {
+    const outOfRange = isOutOfRange(field.name, value);
+    return (
+        <Grid size={{ xs: 6, sm: 4, md: 2 }}>
+            <Tooltip title={fieldRanges[field.name]?.tooltip || ""} arrow placement="right">
+                <TextField
+                    name={field.name}
+                    label={field.label}
+                    type="number"
+                    value={value}
+                    onChange={onChange}
+                    disabled={readOnly}
+                    fullWidth
+                    size="small"
+                    error={outOfRange}
+                    slotProps={{
+                        htmlInput: { step: field.step, min: field.min },
+                        input: {
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    {field.unit}
+                                </InputAdornment>
+                            ),
+                        },
+                    }}
+                />
+            </Tooltip>
+        </Grid>
+    );
+});
 
 const ChuyenKhoaRow = React.memo(
     ({ sp, noteValue, loaiValue, onLsChange, readOnly }) => {
