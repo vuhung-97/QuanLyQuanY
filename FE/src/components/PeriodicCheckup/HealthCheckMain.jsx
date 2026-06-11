@@ -62,6 +62,7 @@ function SoldierFilterBar({
                         sx={{ minWidth: 250 }}
                         disabled={!selectedSchedule}>
                         <MenuItem value="">-- Chọn đơn vị --</MenuItem>
+                        <MenuItem value="__ALL__">-- Tất cả đơn vị --</MenuItem>
                         {units.map((u) => (
                             <MenuItem key={u.ma_don_vi} value={u.ma_don_vi}>
                                 {u.ten_don_vi} ({u.tong_quan_so} QN)
@@ -191,12 +192,23 @@ export default function HealthCheckMain() {
     );
 
     const handleExport = useCallback(async () => {
-        const nam = selectedScheduleObj?.thoi_gian_bat_dau
-            ? new Date(selectedScheduleObj.thoi_gian_bat_dau).getFullYear()
-            : "";
-        const wb = buildXlsContent(soldiers, phieuMap, allUnitLookup, getTrangThai, nam);
-        await saveWorkbook(wb, "quan_nhan_chua_hoan_thanh.xlsx");
-    }, [soldiers, phieuMap, allUnitLookup, selectedScheduleObj]);
+        if (!selectedSchedule) return;
+        try {
+            const [qnRes, pRes] = await Promise.all([
+                api.get(`/quan_nhan/by-lich-kham/${selectedSchedule}`),
+                api.get(`/phieu_kham_suc_khoe/latest-by-lich-kham/${selectedSchedule}`),
+            ]);
+            const allSoldiers = Array.isArray(qnRes.data) ? qnRes.data : [];
+            const allPhieuMap = (Array.isArray(pRes.data) ? pRes.data : []).reduce(
+                (acc, p) => { acc[p.ma_quan_nhan] = p; return acc; }, {}
+            );
+            const nam = selectedScheduleObj?.thoi_gian_bat_dau
+                ? new Date(selectedScheduleObj.thoi_gian_bat_dau).getFullYear()
+                : "";
+            const wb = buildXlsContent(allSoldiers, allPhieuMap, allUnitLookup, getTrangThai, nam);
+            await saveWorkbook(wb, "quan_nhan_chua_hoan_thanh.xlsx");
+        } catch {}
+    }, [selectedSchedule, allUnitLookup, selectedScheduleObj]);
 
     const handleEdit = useCallback((qn) => {
         document.activeElement?.blur();

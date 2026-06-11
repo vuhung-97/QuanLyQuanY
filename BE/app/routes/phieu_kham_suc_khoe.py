@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.crud.phieu_kham_suc_khoe import phieu_kham_suc_khoe_crud
 from app.database.don_vi import DonVi
+from app.database.lich_kham_sk_nam_chi_tiet import LichKhamSkNamChiTiet
 from app.database.phieu_kham_suc_khoe import PhieuKhamSucKhoe
 from app.database.quan_nhan import QuanNhan
 from app.database.session import get_db
@@ -70,5 +71,55 @@ def get_phieu_history(ma_quan_nhan: str, db: Session = Depends(get_db)):
         .filter(PhieuKhamSucKhoe.ma_quan_nhan == ma_quan_nhan)
         .order_by(PhieuKhamSucKhoe.nam.desc().nullslast(),
                   PhieuKhamSucKhoe.ma_phieu_kham.desc())
+        .all()
+    )
+
+
+@router.get(
+    "/latest-by-lich-kham/{ma_lich_kham}",
+    dependencies=[Depends(require_permissions("phieu_kham_suc_khoe:read"))],
+    response_model=list[PhieuKhamSucKhoeRead],
+)
+def get_latest_phieu_by_lich_kham(
+    ma_lich_kham: str,
+    db: Session = Depends(get_db),
+):
+    chi_tiet_list = (
+        db.query(LichKhamSkNamChiTiet)
+        .filter(LichKhamSkNamChiTiet.ma_lich_kham == ma_lich_kham)
+        .all()
+    )
+    if not chi_tiet_list:
+        return []
+
+    all_units = db.query(DonVi.ma_don_vi, DonVi.ma_don_vi_truc_thuoc).all()
+    children_map: dict[str, list[str]] = {}
+    for u in all_units:
+        if u.ma_don_vi_truc_thuoc:
+            children_map.setdefault(u.ma_don_vi_truc_thuoc, []).append(u.ma_don_vi)
+
+    def get_descendants(ma: str) -> list[str]:
+        codes = [ma]
+        for child in children_map.get(ma, []):
+            codes.extend(get_descendants(child))
+        return codes
+
+    all_codes: set[str] = set()
+    for ct in chi_tiet_list:
+        all_codes.update(get_descendants(ct.ma_don_vi))
+
+    subq = (
+        db.query(
+            PhieuKhamSucKhoe.ma_quan_nhan,
+            func.max(PhieuKhamSucKhoe.ma_phieu_kham).label("max_id"),
+        )
+        .join(QuanNhan, PhieuKhamSucKhoe.ma_quan_nhan == QuanNhan.ma_quan_nhan)
+        .filter(QuanNhan.ma_don_vi.in_(all_codes))
+        .group_by(PhieuKhamSucKhoe.ma_quan_nhan)
+        .subquery()
+    )
+    return (
+        db.query(PhieuKhamSucKhoe)
+        .join(subq, PhieuKhamSucKhoe.ma_phieu_kham == subq.c.max_id)
         .all()
     )

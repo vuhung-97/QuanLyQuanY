@@ -37,7 +37,7 @@ export function buildXlsContent(
     const ws = workbook.addWorksheet("Sheet1");
 
     // Phiên hiệu đơn vị - góc trái
-    ws.getCell("B1").value = "PHÒNG HẬU CẦN KỸ THUẬT";
+    ws.getCell("B1").value = "PHÒNG HC-KT";
     ws.getCell("B1").font = fontxls;
     ws.getCell("B1").alignment = { horizontal: "center", vertical: "middle" };
     ws.getCell("B2").value = "BAN QUÂN Y";
@@ -76,7 +76,7 @@ export function buildXlsContent(
             pattern: "solid",
             fgColor: { argb: "FF0B3B60" },
         };
-        cell.alignment = { horizontal: h.align, vertical: "middle" };
+        cell.alignment = { horizontal: "center", vertical: "middle" };
         cell.border = {
             top: { style: "thin", color: { argb: "FF999999" } },
             bottom: { style: "thin", color: { argb: "FF999999" } },

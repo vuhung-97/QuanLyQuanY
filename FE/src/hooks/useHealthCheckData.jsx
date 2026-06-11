@@ -108,26 +108,42 @@ export default function useHealthCheckData() {
         async function load() {
             setLoading(true);
             try {
-                const qnRes = await api.get(
-                    `/quan_nhan/by-don-vi/${selectedUnit}`,
-                );
-                const qnList = Array.isArray(qnRes.data) ? qnRes.data : [];
-                if (ignore) return;
-
-                let phieuData = {};
-                try {
-                    const pRes = await api.get(
-                        `/phieu_kham_suc_khoe/latest-by-unit/${selectedUnit}`,
-                    );
-                    const list = Array.isArray(pRes.data) ? pRes.data : [];
-                    phieuData = {};
-                    for (const p of list) {
-                        phieuData[p.ma_quan_nhan] = p;
+                if (selectedUnit === "__ALL__") {
+                    const [qnRes, pRes] = await Promise.all([
+                        api.get(`/quan_nhan/by-lich-kham/${selectedSchedule}`),
+                        api.get(`/phieu_kham_suc_khoe/latest-by-lich-kham/${selectedSchedule}`),
+                    ]);
+                    if (!ignore) {
+                        setSoldiers(Array.isArray(qnRes.data) ? qnRes.data : []);
+                        const pList = Array.isArray(pRes.data) ? pRes.data : [];
+                        const phieuData = pList.reduce((acc, p) => {
+                            acc[p.ma_quan_nhan] = p;
+                            return acc;
+                        }, {});
+                        setPhieuMap(phieuData);
                     }
-                } catch {}
-                if (!ignore) {
-                    setSoldiers(qnList);
-                    setPhieuMap(phieuData);
+                } else {
+                    const qnRes = await api.get(
+                        `/quan_nhan/by-don-vi/${selectedUnit}`,
+                    );
+                    const qnList = Array.isArray(qnRes.data) ? qnRes.data : [];
+                    if (ignore) return;
+
+                    let phieuData = {};
+                    try {
+                        const pRes = await api.get(
+                            `/phieu_kham_suc_khoe/latest-by-unit/${selectedUnit}`,
+                        );
+                        const list = Array.isArray(pRes.data) ? pRes.data : [];
+                        phieuData = {};
+                        for (const p of list) {
+                            phieuData[p.ma_quan_nhan] = p;
+                        }
+                    } catch {}
+                    if (!ignore) {
+                        setSoldiers(qnList);
+                        setPhieuMap(phieuData);
+                    }
                 }
             } catch {
             } finally {
@@ -138,7 +154,7 @@ export default function useHealthCheckData() {
         return () => {
             ignore = true;
         };
-    }, [selectedUnit]);
+    }, [selectedUnit, selectedSchedule]);
 
     const years = useMemo(
         () =>
