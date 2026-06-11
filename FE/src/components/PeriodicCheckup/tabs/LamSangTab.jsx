@@ -350,6 +350,7 @@ const LamSangTab = React.memo(({ ls, onLsChange, cardStyle, readOnly = false }) 
                                     label={f.label}
                                     value={ls[f.name]}
                                     onChange={onLsChange}
+                                    readOnly={readOnly}
                                 />
                             ))}
                         <Grid size={{ xs: 6, sm: 4, md: true }}>

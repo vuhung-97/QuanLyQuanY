@@ -7,7 +7,7 @@ const itemSx = {
     minHeight: 56,
 };
 
-export default function HeaderCard({ quanNhan, ngayNhapNgu, cardStyle, unitLookup = new Map() }) {
+export default function HealthCheckFormInfoCard({ quanNhan, ngayNhapNgu, cardStyle, unitLookup = new Map() }) {
     // 1. Định nghĩa mảng dữ liệu để render tự động
     const infoFields = [
         {

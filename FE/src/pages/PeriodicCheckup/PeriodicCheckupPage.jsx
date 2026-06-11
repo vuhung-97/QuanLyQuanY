@@ -1,7 +1,7 @@
 import { Box, Stack, Typography } from "@mui/material";
 import HealthCheckMain from "../../components/PeriodicCheckup/HealthCheckMain.jsx";
 
-export default function ExamPage() {
+export default function PeriodicCheckupPage() {
     return (
         <Stack spacing={3}>
             <Box>

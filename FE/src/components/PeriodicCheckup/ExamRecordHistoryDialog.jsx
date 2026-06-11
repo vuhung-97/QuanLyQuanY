@@ -10,30 +10,9 @@ import {
     Typography,
 } from "@mui/material";
 import api from "../../services/api.js";
+import { getPhanLoai, getTrangThai } from "./periodicUtils";
 
-function getTrangThai(phieu) {
-    if (!phieu.ket_luan) return "Đang khám";
-    try {
-        const parsed = JSON.parse(phieu.ket_luan);
-        if (typeof parsed === "object" && parsed !== null) {
-            const hasData = Object.values(parsed).some(v => v && v !== "Loại 1");
-            if (!hasData) return "Đang khám";
-        }
-    } catch {}
-    return "Đã khám";
-}
-
-function getPhanLoai(phieu) {
-    if (!phieu.ket_luan) return "";
-    try {
-        const parsed = JSON.parse(phieu.ket_luan);
-        return parsed.phan_loai_suc_khoe || "";
-    } catch {
-        return "";
-    }
-}
-
-const PhieuHistoryDialog = memo(({ open, onClose, quanNhan, onViewPhieu }) => {
+const ExamRecordHistoryDialog = memo(({ open, onClose, quanNhan, onViewPhieu }) => {
     const [phieuList, setPhieuList] = useState([]);
     const [loading, setLoading] = useState(false);
 
@@ -96,4 +75,4 @@ const PhieuHistoryDialog = memo(({ open, onClose, quanNhan, onViewPhieu }) => {
     );
 });
 
-export default PhieuHistoryDialog;
+export default ExamRecordHistoryDialog;

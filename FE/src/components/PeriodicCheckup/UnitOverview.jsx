@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
     Box,
     Card,
     CardContent,
-    Chip,
     LinearProgress,
     Stack,
     Table,
@@ -17,17 +16,7 @@ import {
 } from "@mui/material";
 import { Search as SearchIcon } from "@mui/icons-material";
 import api from "../../services/api.js";
-
-function formatDateTime(value) {
-    if (!value) return "--";
-    return new Intl.DateTimeFormat("vi-VN", {
-        hour: "2-digit",
-        minute: "2-digit",
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-    }).format(new Date(value));
-}
+import UnitOverviewRow from "./UnitOverviewRow";
 
 export default function UnitOverview({ chiTietMap }) {
     const [units, setUnits] = useState([]);
@@ -42,7 +31,8 @@ export default function UnitOverview({ chiTietMap }) {
                 const res = await api.get("/thong-ke/don-vi", {
                     params: { limit: 100 },
                 });
-                if (!ignore) setUnits(Array.isArray(res.data) ? res.data : []);
+                if (!ignore)
+                    setUnits(Array.isArray(res.data) ? res.data : []);
             } catch {
             } finally {
                 if (!ignore) setLoading(false);
@@ -54,26 +44,33 @@ export default function UnitOverview({ chiTietMap }) {
         };
     }, []);
 
-    const allDetails = Object.values(chiTietMap || {}).flat();
+    const unitScheduleMap = useMemo(() => {
+        const map = {};
+        const allDetails = Object.values(chiTietMap || {}).flat();
+        for (const ct of allDetails) {
+            if (!map[ct.ma_don_vi]) map[ct.ma_don_vi] = [];
+            map[ct.ma_don_vi].push(ct);
+        }
+        return map;
+    }, [chiTietMap]);
 
-    const unitScheduleMap = {};
-    for (const ct of allDetails) {
-        if (!unitScheduleMap[ct.ma_don_vi]) unitScheduleMap[ct.ma_don_vi] = [];
-        unitScheduleMap[ct.ma_don_vi].push(ct);
-    }
-
-    const filtered = units.filter((u) => {
-        if (u.ma_don_vi_truc_thuoc) return false;
+    const filtered = useMemo(() => {
         const kw = query.trim().toLowerCase();
-        return (
-            !kw ||
-            [u.ma_don_vi, u.ten_don_vi]
-                .filter(Boolean)
-                .some((v) => String(v).toLowerCase().includes(kw))
-        );
-    });
+        return units.filter((u) => {
+            if (u.ma_don_vi_truc_thuoc) return false;
+            return (
+                !kw ||
+                [u.ma_don_vi, u.ten_don_vi]
+                    .filter(Boolean)
+                    .some((v) => String(v).toLowerCase().includes(kw))
+            );
+        });
+    }, [units, query]);
 
-    const totalQuanSo = units.reduce((sum, u) => sum + (u.quan_so || 0), 0);
+    const totalQuanSo = useMemo(
+        () => units.reduce((sum, u) => sum + (u.quan_so || 0), 0),
+        [units],
+    );
 
     return (
         <Card sx={{ borderRadius: 3 }}>
@@ -139,62 +136,13 @@ export default function UnitOverview({ chiTietMap }) {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-{filtered.map((row) => {
-                                const unitSchedules =
-                                    unitScheduleMap[row.ma_don_vi] || [];
-                                const hasSchedule =
-                                    unitSchedules.length > 0;
-                                const nearest = hasSchedule
-                                    ? unitSchedules.reduce((a, b) => {
-                                          const da = a.thoi_gian_bat_dau
-                                              ? new Date(
-                                                    a.thoi_gian_bat_dau,
-                                                )
-                                              : 0;
-                                          const db = b.thoi_gian_bat_dau
-                                              ? new Date(
-                                                    b.thoi_gian_bat_dau,
-                                                )
-                                              : 0;
-                                          return db > da ? b : a;
-                                      })
-                                    : null;
-                                return (
-                                    <TableRow key={row.ma_don_vi} hover>
-                                        <TableCell
-                                            sx={{
-                                                fontWeight: 700,
-                                                color: "primary.main",
-                                                pl: 3,
-                                            }}
-                                        >
-                                            {row.ma_don_vi}
-                                        </TableCell>
-                                        <TableCell sx={{ fontWeight: 600 }}>
-                                            {row.ten_don_vi}
-                                        </TableCell>
-                                        <TableCell>
-                                            {row.tong_quan_so ?? "--"}
-                                        </TableCell>
-                                        <TableCell>
-                                            {hasSchedule ? (
-                                                <Chip
-                                                    size="small"
-                                                    label={`${formatDateTime(nearest.thoi_gian_bat_dau)} - ${formatDateTime(nearest.thoi_gian_ket_thuc)}`}
-                                                    sx={{ fontWeight: 600 }}
-                                                />
-                                            ) : (
-                                                <Typography
-                                                    variant="body2"
-                                                    color="text.secondary"
-                                                >
-                                                    Chưa có
-                                                </Typography>
-                                            )}
-                                        </TableCell>
-                                    </TableRow>
-                                );
-                            })}
+                            {filtered.map((row) => (
+                                <UnitOverviewRow
+                                    key={row.ma_don_vi}
+                                    row={row}
+                                    unitScheduleMap={unitScheduleMap}
+                                />
+                            ))}
                             {!loading && filtered.length === 0 && (
                                 <TableRow>
                                     <TableCell

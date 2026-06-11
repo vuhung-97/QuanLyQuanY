@@ -130,9 +130,9 @@ def thong_ke_lich_kham(
         ct = next((c for c in chi_tiet_list if c.ma_don_vi == unit.ma_don_vi), None)
 
         danh_sach_don_vi.append({
-            "ma_dv": unit.ma_don_vi,
-            "ten_dv": unit.ten_don_vi,
-            "tong_so": quan_so,
+            "ma_don_vi": unit.ma_don_vi,
+            "ten_don_vi": unit.ten_don_vi,
+            "tong_quan_so": quan_so,
             "da_kham": da_kham,
             "dang_kham": dang_kham,
             "con_lai": con_lai,
