@@ -29,21 +29,7 @@ export function getScheduleStatus(row) {
     return "Đang thực hiện";
 }
 
-export function formatDate(value) {
-    if (!value) return "--";
-    return new Intl.DateTimeFormat("vi-VN").format(new Date(value));
-}
-
-export function formatDateTime(value) {
-    if (!value) return "--";
-    return new Intl.DateTimeFormat("vi-VN", {
-        hour: "2-digit",
-        minute: "2-digit",
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-    }).format(new Date(value));
-}
+export { formatDate, formatDateTime } from "../../utils/date.js";
 
 export function statusColor(status) {
     if (status === "Đã kết thúc")

@@ -7,8 +7,8 @@ import { getScheduleStatus, statusColor } from "../../components/PeriodicCheckup
 import ScheduleList from "../../components/PeriodicCheckup/ScheduleList.jsx";
 import ScheduleDialog from "../../components/PeriodicCheckup/ScheduleDialog.jsx";
 import UnitOverview from "../../components/PeriodicCheckup/UnitOverview.jsx";
-import SummaryCards from "../../components/PeriodicCheckup/SummaryCards.jsx";
-import ScheduleDeleteDialog from "../../components/PeriodicCheckup/ScheduleDeleteDialog.jsx";
+import StatCardGrid from "../../components/common/StatCardGrid.jsx";
+import ConfirmDialog from "../../components/common/ConfirmDialog.jsx";
 
 export default function PeriodicSchedulePage() {
     const {
@@ -122,7 +122,10 @@ export default function PeriodicSchedulePage() {
                 </Alert>
             )}
 
-            <SummaryCards items={summaryItems} />
+            <StatCardGrid
+                items={summaryItems}
+                sizeOverrides={{ "Thời gian khám": { md: 6 } }}
+            />
 
             <UnitOverview chiTietMap={chiTietMap} />
 
@@ -147,10 +150,14 @@ export default function PeriodicSchedulePage() {
                 chiTietList={dialog.chiTietList}
             />
 
-            <ScheduleDeleteDialog
+            <ConfirmDialog
                 open={deleteDialog.open}
-                deletingSchedule={deleteDialog.schedule}
-                deleteDetailInfo={deleteDialog.detailInfo}
+                title="Xác nhận xóa"
+                message={
+                    deleteDialog.detailInfo
+                        ? `Bạn có chắc muốn xóa đơn vị ${deleteDialog.detailInfo.ma_don_vi} khỏi lịch ${deleteDialog.schedule?.ma_lich_kham}?`
+                        : `Bạn có chắc muốn xóa lịch khám ${deleteDialog.schedule?.ma_lich_kham}? Hành động này không thể hoàn tác.`
+                }
                 onConfirm={handleDeleteConfirm}
                 onClose={() => setDeleteDialog({ open: false, schedule: null, detailInfo: null })}
             />

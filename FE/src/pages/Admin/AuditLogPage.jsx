@@ -5,12 +5,6 @@ import {
     Chip,
     Stack,
     Tab,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
     Tabs,
     Typography,
 } from "@mui/material";
@@ -23,23 +17,17 @@ import SearchBar from "../../components/common/SearchBar.jsx";
 import api from "../../services/api.js";
 import FeedbackSnackbar from "../../components/common/FeedbackSnackbar.jsx";
 import PaginationWidget from "../../components/common/PaginationWidget.jsx";
+import DataTable from "../../components/common/DataTable.jsx";
 import AdminPageHeader from "../../components/admin/AdminPageHeader.jsx";
 import TableCard from "../../components/admin/TableCard.jsx";
 import AuditDetailDialog from "../../components/admin/AuditDetailDialog.jsx";
+import { formatDateTime } from "../../utils/date.js";
 
 const tabs = [
     { value: "login", label: "Đăng nhập", endpoint: "/nhat_ky_dang_nhap" },
     { value: "action", label: "Thao tác", endpoint: "/nhat_ky_thao_tac" },
     { value: "backup", label: "Backup", endpoint: "/nhat_ky_backup" },
 ];
-
-function formatDateTime(value) {
-    if (!value) return "--";
-    return new Intl.DateTimeFormat("vi-VN", {
-        dateStyle: "short",
-        timeStyle: "short",
-    }).format(new Date(value));
-}
 
 const ROWS_PER_PAGE = 100;
 
@@ -242,212 +230,157 @@ export default function AuditLogPage() {
                     />
                 </Stack>
 
-                <TableContainer>
-                    {tab === "login" && (
-                        <Table sx={{ minWidth: 760 }}>
-                            <TableHead>
-                                <TableRow>
-                                    {[
-                                        "ID",
-                                        "Họ tên",
-                                        "ID người dùng",
-                                        "Thời gian",
-                                        "Trạng thái",
-                                        "Thiết bị",
-                                    ].map((label) => (
-                                        <TableCell
-                                            key={label}
-                                            sx={{ fontWeight: 700 }}
-                                        >
-                                            {label}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {rows.map((row) => (
-                                    <TableRow key={row.id} hover>
-                                        <TableCell sx={{ fontWeight: 700 }}>
-                                            {row.id}
-                                        </TableCell>
-                                        <TableCell>
-                                            {row.ho_ten || "--"}
-                                        </TableCell>
-                                        <TableCell>
-                                            {row.id_nguoi_dung || "--"}
-                                        </TableCell>
-                                        <TableCell>
-                                            {formatDateTime(row.thoi_gian)}
-                                        </TableCell>
-                                        <TableCell>
-                                            <Chip
-                                                size="small"
-                                                label={
-                                                    row.trang_thai_thanh_cong
-                                                        ? "Thành công"
-                                                        : "Thất bại"
-                                                }
-                                                color={
-                                                    row.trang_thai_thanh_cong
-                                                        ? "success"
-                                                        : "error"
-                                                }
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            {row.thiet_bi || "--"}
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    )}
+                {tab === "login" && (
+                    <DataTable
+                        columns={[
+                            { key: "id", label: "ID" },
+                            { key: "ho_ten", label: "Họ tên" },
+                            { key: "id_nguoi_dung", label: "ID người dùng" },
+                            { key: "thoi_gian", label: "Thời gian" },
+                            { key: "trang_thai", label: "Trạng thái" },
+                            { key: "thiet_bi", label: "Thiết bị" },
+                        ]}
+                        loading={loading}
+                        emptyMessage="Chưa có nhật ký."
+                        minWidth={760}
+                    >
+                        {rows.map((row) => (
+                            <TableRow key={row.id} hover>
+                                <TableCell sx={{ fontWeight: 700 }}>
+                                    {row.id}
+                                </TableCell>
+                                <TableCell>
+                                    {row.ho_ten || "--"}
+                                </TableCell>
+                                <TableCell>
+                                    {row.id_nguoi_dung || "--"}
+                                </TableCell>
+                                <TableCell>
+                                    {formatDateTime(row.thoi_gian)}
+                                </TableCell>
+                                <TableCell>
+                                    <Chip
+                                        size="small"
+                                        label={
+                                            row.trang_thai_thanh_cong
+                                                ? "Thành công"
+                                                : "Thất bại"
+                                        }
+                                        color={
+                                            row.trang_thai_thanh_cong
+                                                ? "success"
+                                                : "error"
+                                        }
+                                    />
+                                </TableCell>
+                                <TableCell>
+                                    {row.thiet_bi || "--"}
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </DataTable>
+                )}
 
-                    {tab === "action" && (
-                        <Table sx={{ minWidth: 880 }}>
-                            <TableHead>
-                                <TableRow>
-                                    {[
-                                        "ID",
-                                        "Họ tên",
-                                        "ID người dùng",
-                                        "Thời gian",
-                                        "Hành động",
-                                        "Bảng",
-                                        "IP",
-                                        "Chi tiết",
-                                    ].map((label) => (
-                                        <TableCell
-                                            key={label}
-                                            sx={{ fontWeight: 700 }}
-                                        >
-                                            {label}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {rows.map((row) => (
-                                    <TableRow key={row.id} hover>
-                                        <TableCell sx={{ fontWeight: 700 }}>
-                                            {row.id}
-                                        </TableCell>
-                                        <TableCell>
-                                            {row.ho_ten || "--"}
-                                        </TableCell>
-                                        <TableCell>
-                                            {row.id_nguoi_dung || "--"}
-                                        </TableCell>
-                                        <TableCell>
-                                            {formatDateTime(row.thoi_gian)}
-                                        </TableCell>
-                                        <TableCell>
-                                            <Chip
-                                                size="small"
-                                                label={row.hanh_dong || "--"}
-                                                color={
-                                                    row.hanh_dong === "CREATE"
-                                                        ? "success"
-                                                        : row.hanh_dong ===
-                                                            "UPDATE"
-                                                          ? "info"
-                                                          : row.hanh_dong ===
-                                                              "DELETE"
-                                                            ? "error"
-                                                            : "default"
-                                                }
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            {row.ten_bang || "--"}
-                                        </TableCell>
-                                        <TableCell>
-                                            {row.dia_chi_ip || "--"}
-                                        </TableCell>
-                                        <TableCell>
-                                            <Chip
-                                                label="Xem"
-                                                size="small"
-                                                onClick={() => setDetail(row)}
-                                                clickable
-                                            />
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    )}
+                {tab === "action" && (
+                    <DataTable
+                        columns={[
+                            { key: "id", label: "ID" },
+                            { key: "ho_ten", label: "Họ tên" },
+                            { key: "id_nguoi_dung", label: "ID người dùng" },
+                            { key: "thoi_gian", label: "Thời gian" },
+                            { key: "hanh_dong", label: "Hành động" },
+                            { key: "bang", label: "Bảng" },
+                            { key: "ip", label: "IP" },
+                            { key: "chi_tiet", label: "Chi tiết" },
+                        ]}
+                        loading={loading}
+                        emptyMessage="Chưa có nhật ký."
+                        minWidth={880}
+                    >
+                        {rows.map((row) => (
+                            <TableRow key={row.id} hover>
+                                <TableCell sx={{ fontWeight: 700 }}>
+                                    {row.id}
+                                </TableCell>
+                                <TableCell>
+                                    {row.ho_ten || "--"}
+                                </TableCell>
+                                <TableCell>
+                                    {row.id_nguoi_dung || "--"}
+                                </TableCell>
+                                <TableCell>
+                                    {formatDateTime(row.thoi_gian)}
+                                </TableCell>
+                                <TableCell>
+                                    <Chip
+                                        size="small"
+                                        label={row.hanh_dong || "--"}
+                                        color={
+                                            row.hanh_dong === "CREATE"
+                                                ? "success"
+                                                : row.hanh_dong === "UPDATE"
+                                                  ? "info"
+                                                  : row.hanh_dong === "DELETE"
+                                                    ? "error"
+                                                    : "default"
+                                        }
+                                    />
+                                </TableCell>
+                                <TableCell>
+                                    {row.ten_bang || "--"}
+                                </TableCell>
+                                <TableCell>
+                                    {row.dia_chi_ip || "--"}
+                                </TableCell>
+                                <TableCell>
+                                    <Chip
+                                        label="Xem"
+                                        size="small"
+                                        onClick={() => setDetail(row)}
+                                        clickable
+                                    />
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </DataTable>
+                )}
 
-                    {tab === "backup" && (
-                        <Table sx={{ minWidth: 720 }}>
-                            <TableHead>
-                                <TableRow>
-                                    {[
-                                        "File name",
-                                        "Kích thước",
-                                        "Ngày tạo",
-                                        "Hành động",
-                                    ].map((label) => (
-                                        <TableCell
-                                            key={label}
-                                            sx={{ fontWeight: 700 }}
-                                        >
-                                            {label}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {backupFiles.length === 0 && !loading && (
-                                    <TableRow>
-                                        <TableCell colSpan={4} align="center">
-                                            <Typography
-                                                color="text.secondary"
-                                                sx={{ py: 4 }}
-                                            >
-                                                Chưa có file backup.
-                                            </Typography>
-                                        </TableCell>
-                                    </TableRow>
-                                )}
-                                {backupFiles.map((file) => (
-                                    <TableRow key={file.filename} hover>
-                                        <TableCell sx={{ fontWeight: 700 }}>
-                                            {file.filename}
-                                        </TableCell>
-                                        <TableCell>
-                                            {(file.size / 1024).toFixed(1)} KB
-                                        </TableCell>
-                                        <TableCell>
-                                            {formatDateTime(file.modified)}
-                                        </TableCell>
-                                        <TableCell>
-                                            <Button
-                                                size="small"
-                                                startIcon={<DownloadIcon />}
-                                                onClick={() => handleDownload(file.filename)}
-                                            >
-                                                Tải về
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    )}
-
-                    {!loading && rows.length === 0 && (
-                        <Box
-                            sx={{
-                                py: 6,
-                                textAlign: "center",
-                                color: "text.secondary",
-                            }}
-                        >
-                            Chưa có nhật ký.
-                        </Box>
-                    )}
-                </TableContainer>
+                {tab === "backup" && (
+                    <DataTable
+                        columns={[
+                            { key: "file_name", label: "File name" },
+                            { key: "kich_thuoc", label: "Kích thước" },
+                            { key: "ngay_tao", label: "Ngày tạo" },
+                            { key: "hanh_dong", label: "Hành động" },
+                        ]}
+                        loading={loading}
+                        emptyMessage="Chưa có file backup."
+                        minWidth={720}
+                    >
+                        {backupFiles.map((file) => (
+                            <TableRow key={file.filename} hover>
+                                <TableCell sx={{ fontWeight: 700 }}>
+                                    {file.filename}
+                                </TableCell>
+                                <TableCell>
+                                    {(file.size / 1024).toFixed(1)} KB
+                                </TableCell>
+                                <TableCell>
+                                    {formatDateTime(file.modified)}
+                                </TableCell>
+                                <TableCell>
+                                    <Button
+                                        size="small"
+                                        startIcon={<DownloadIcon />}
+                                        onClick={() => handleDownload(file.filename)}
+                                    >
+                                        Tải về
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </DataTable>
+                )}
             </TableCard>
 
             <AuditDetailDialog

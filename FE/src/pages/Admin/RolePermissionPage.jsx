@@ -25,7 +25,7 @@ import FeedbackSnackbar from "../../components/common/FeedbackSnackbar.jsx";
 import AdminPageHeader from "../../components/admin/AdminPageHeader.jsx";
 import TableCard from "../../components/admin/TableCard.jsx";
 import PermissionCard from "../../components/admin/PermissionCard.jsx";
-import usePermissionDiff from "../../components/admin/usePermissionDiff.js";
+import usePermissionDiff from "../../hooks/usePermissionDiff.js";
 import RoleFormDialog from "./RoleFormDialog.jsx";
 
 const fallbackRoles = [

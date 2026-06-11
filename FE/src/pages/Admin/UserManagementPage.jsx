@@ -29,10 +29,11 @@ import {
 import api from "../../services/api.js";
 import SearchBar from "../../components/common/SearchBar.jsx";
 import FeedbackSnackbar from "../../components/common/FeedbackSnackbar.jsx";
+import DataTable from "../../components/common/DataTable.jsx";
 import AdminPageHeader from "../../components/admin/AdminPageHeader.jsx";
 import TableCard from "../../components/admin/TableCard.jsx";
-import TableEmptyRow from "../../components/admin/TableEmptyRow.jsx";
 import UserTableRow from "../../components/admin/UserTableRow.jsx";
+import ConfirmDialog from "../../components/common/ConfirmDialog.jsx";
 
 const emptyForm = {
     ten_dang_nhap: "",
@@ -264,46 +265,29 @@ export default function UserManagementPage() {
                     />
                 </Stack>
 
-                <TableContainer>
-                    <Table sx={{ minWidth: 760 }}>
-                        <TableHead>
-                            <TableRow>
-                                {[
-                                    "ID",
-                                    "Tên đăng nhập",
-                                    "Họ tên",
-                                    "Vai trò",
-                                    "Quân nhân",
-                                    "Trạng thái",
-                                    "Thao tác",
-                                ].map((label) => (
-                                    <TableCell
-                                        key={label}
-                                        sx={{ fontWeight: 700 }}
-                                    >
-                                        {label}
-                                    </TableCell>
-                                ))}
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {filteredUsers.map((user) => (
-                                <UserTableRow
-                                    key={user.id}
-                                    user={user}
-                                    onEdit={handleOpenEdit}
-                                    onDelete={handleOpenDelete}
-                                />
-                            ))}
-                            {!loading && filteredUsers.length === 0 && (
-                                <TableEmptyRow
-                                    colSpan={7}
-                                    message="Không có tài khoản phù hợp."
-                                />
-                            )}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+                <DataTable
+                    columns={[
+                        { key: "id", label: "ID" },
+                        { key: "ten_dang_nhap", label: "Tên đăng nhập" },
+                        { key: "ho_ten", label: "Họ tên" },
+                        { key: "vai_tro", label: "Vai trò" },
+                        { key: "quan_nhan", label: "Quân nhân" },
+                        { key: "trang_thai", label: "Trạng thái" },
+                        { key: "thao_tac", label: "Thao tác" },
+                    ]}
+                    loading={false}
+                    emptyMessage="Không có tài khoản phù hợp."
+                    minWidth={760}
+                >
+                    {filteredUsers.map((user) => (
+                        <UserTableRow
+                            key={user.id}
+                            user={user}
+                            onEdit={handleOpenEdit}
+                            onDelete={handleOpenDelete}
+                        />
+                    ))}
+                </DataTable>
             </TableCard>
 
             <Dialog
@@ -400,37 +384,23 @@ export default function UserManagementPage() {
                 </Box>
             </Dialog>
 
-            <Dialog
+            <ConfirmDialog
                 open={!!deleteTarget}
-                onClose={() => !deleting && setDeleteTarget(null)}
-            >
-                <DialogTitle>Xác nhận xoá tài khoản</DialogTitle>
-                <DialogContent>
-                    <Typography>
+                title="Xác nhận xoá tài khoản"
+                message={
+                    <>
                         Bạn có chắc muốn xoá tài khoản{" "}
                         <strong>{deleteTarget?.ho_ten}</strong> (
                         {deleteTarget?.ten_dang_nhap})? Hành động này không thể
                         hoàn tác.
-                    </Typography>
-                </DialogContent>
-                <DialogActions sx={{ px: 3, pb: 2.5 }}>
-                    <Button
-                        onClick={() => setDeleteTarget(null)}
-                        disabled={deleting}
-                    >
-                        Hủy
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="error"
-                        startIcon={<DeleteIcon />}
-                        disabled={deleting}
-                        onClick={handleConfirmDelete}
-                    >
-                        {deleting ? "Đang xoá..." : "Xoá"}
-                    </Button>
-                </DialogActions>
-            </Dialog>
+                    </>
+                }
+                confirmLabel={deleting ? "Đang xoá..." : "Xoá"}
+                confirmIcon={<DeleteIcon />}
+                loading={deleting}
+                onConfirm={handleConfirmDelete}
+                onClose={() => setDeleteTarget(null)}
+            />
 
             <FeedbackSnackbar
                 open={!!success}

@@ -1,22 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
 import {
-    Box,
-    Card,
-    CardContent,
-    LinearProgress,
-    Stack,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    TextField,
-    Typography,
+    Box, Card, CardContent, Chip, Stack, TableCell, TableRow,
+    TextField, Typography,
 } from "@mui/material";
 import { Search as SearchIcon } from "@mui/icons-material";
 import api from "../../services/api.js";
-import UnitOverviewRow from "./UnitOverviewRow";
+import DataTable from "../common/DataTable.jsx";
+import { formatDateTime } from "./periodicUtils";
+
+const columns = [
+    { key: "ma_don_vi", label: "Mã đơn vị" },
+    { key: "ten_don_vi", label: "Tên đơn vị" },
+    { key: "quan_so", label: "Quân số" },
+    { key: "lich_da_lap", label: "Lịch đã lập" },
+];
 
 export default function UnitOverview({ chiTietMap }) {
     const [units, setUnits] = useState([]);
@@ -74,7 +71,6 @@ export default function UnitOverview({ chiTietMap }) {
 
     return (
         <Card sx={{ borderRadius: 3 }}>
-            {loading && <LinearProgress />}
             <CardContent sx={{ p: "24px !important" }}>
                 <Stack
                     direction={{ xs: "column", md: "row" }}
@@ -113,50 +109,52 @@ export default function UnitOverview({ chiTietMap }) {
                         sx={{ minWidth: { xs: "100%", sm: 280 } }}
                     />
                 </Stack>
-                <TableContainer>
-                    <Table sx={{ minWidth: 650 }}>
-                        <TableHead>
-                            <TableRow>
-                                {[
-                                    "Mã đơn vị",
-                                    "Tên đơn vị",
-                                    "Quân số",
-                                    "Lịch đã lập",
-                                ].map((l) => (
-                                    <TableCell
-                                        key={l}
-                                        sx={{
-                                            fontWeight: 700,
-                                            color: "text.primary",
-                                        }}
-                                    >
-                                        {l}
-                                    </TableCell>
-                                ))}
+                <DataTable
+                    columns={columns}
+                    loading={loading}
+                    emptyMessage="Không có đơn vị nào."
+                    minWidth={650}
+                >
+                    {filtered.map((row) => {
+                        const unitSchedules = unitScheduleMap[row.ma_don_vi] || [];
+                        const hasSchedule = unitSchedules.length > 0;
+                        const nearest = hasSchedule
+                            ? unitSchedules.reduce((a, b) => {
+                                  const da = a.thoi_gian_bat_dau
+                                      ? new Date(a.thoi_gian_bat_dau)
+                                      : 0;
+                                  const db = b.thoi_gian_bat_dau
+                                      ? new Date(b.thoi_gian_bat_dau)
+                                      : 0;
+                                  return db > da ? b : a;
+                              })
+                            : null;
+                        return (
+                            <TableRow key={row.ma_don_vi} hover>
+                                <TableCell sx={{ fontWeight: 700, color: "primary.main", pl: 3 }}>
+                                    {row.ma_don_vi}
+                                </TableCell>
+                                <TableCell sx={{ fontWeight: 600 }}>
+                                    {row.ten_don_vi}
+                                </TableCell>
+                                <TableCell>{row.tong_quan_so ?? "--"}</TableCell>
+                                <TableCell>
+                                    {hasSchedule ? (
+                                        <Chip
+                                            size="small"
+                                            label={`${formatDateTime(nearest.thoi_gian_bat_dau)} - ${formatDateTime(nearest.thoi_gian_ket_thuc)}`}
+                                            sx={{ fontWeight: 600 }}
+                                        />
+                                    ) : (
+                                        <Typography variant="body2" color="text.secondary">
+                                            Chưa có
+                                        </Typography>
+                                    )}
+                                </TableCell>
                             </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {filtered.map((row) => (
-                                <UnitOverviewRow
-                                    key={row.ma_don_vi}
-                                    row={row}
-                                    unitScheduleMap={unitScheduleMap}
-                                />
-                            ))}
-                            {!loading && filtered.length === 0 && (
-                                <TableRow>
-                                    <TableCell
-                                        colSpan={4}
-                                        align="center"
-                                        sx={{ py: 6, color: "text.secondary" }}
-                                    >
-                                        Không có đơn vị nào.
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+                        );
+                    })}
+                </DataTable>
             </CardContent>
         </Card>
     );
