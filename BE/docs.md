@@ -1,60 +1,26 @@
-# API Documentation - Quản lý Quân y Đơn vị
+# API Documentation — Quản lý Quân y
 
-## Base URL
-
-```
-http://localhost:8000
-```
-
-## Authentication
-
-### GET /health
-Kiểm tra kết nối database.
-
-**Response** `200 OK`:
-```json
-{ "status": "ok" }
-```
-
-### GET /resources
-Danh sách tất cả resource names (dùng để tra cứu quyền).
-
-**Response** `200 OK`:
-```json
-{ "resources": ["benh_an", "benh_nhan_ra_vao", ...] }
-```
-
-### POST /auth/login
-Đăng nhập, nhận JWT token.
-
-**Request** (form-data / x-www-form-urlencoded):
-```
-username: admin
-password: admin123
-```
-
-**Response** `200 OK`:
-```json
-{
-  "access_token": "eyJhbGciOiJIUzI1NiIs...",
-  "token_type": "bearer"
-}
-```
-
-### Sử dụng token
-
-Gửi header `Authorization: Bearer <access_token>` ở tất cả các request CRUD.
-
-Token hết hạn sau **60 phút** (cấu hình trong `.env`). Payload JWT chứa:
-- `sub`: tên đăng nhập
-- `role`: id_vai_tro (vd: `ROLE_ADMIN`, `ROLE_BAC_SI`, ...)
-- `exp`: thời gian hết hạn
+**Base URL:** `http://localhost:8000` · **Swagger UI:** `/docs`
 
 ---
 
-## CRUD Pattern (áp dụng cho tất cả resources)
+## Authentication
 
-Mỗi resource đều có 5 endpoints theo pattern chuẩn:
+```
+POST /auth/login  →  { "access_token": "...", "token_type": "bearer" }
+```
+Gửi `form-data`/`x-www-form-urlencoded`: `username`, `password`.
+Dùng header `Authorization: Bearer <token>` cho mọi request CRUD.
+Token hết hạn sau **60 phút**. Payload JWT: `sub` (username), `role` (id_vai_tro), `exp`.
+
+```
+GET  /health     →  { "status": "ok" }
+GET  /resources  →  { "resources": ["benh_an", "quan_nhan", ...] }
+```
+
+---
+
+## CRUD Pattern (áp dụng cho mọi resource)
 
 | Method | Endpoint | Mô tả | Status |
 |--------|----------|-------|--------|
@@ -75,55 +41,40 @@ Mỗi resource đều có 5 endpoints theo pattern chuẩn:
 
 ### Primary Key (ID)
 
-Tất cả resource dùng **single-column primary key** là string (max_length 10-100 tuỳ resource). Một số resource (bảng quan hệ nhiều-nhiều) dùng **composite key** — khi đó {id} là các giá trị phân cách bằng dấu phẩy (vd: `DT001,TV001` cho `chi_tiet_don_thuoc`).
+Tất cả resource dùng **string** PK. Hầu hết tự động sinh bằng nanoid (có thể ghi đè).
+Không auto-ID (nhập thủ công): `quyen`, `vai_tro`, `quan_nhan`, `don_vi`.
+Composite key dùng dấu phẩy: `{id1},{id2}`.
 
-**Auto-generated ID:** Hầu hết resource sử dụng thư viện [nanoid](https://github.com/ai/nanoid) (Python) để tự động sinh ID ngẫu nhiên khi tạo bản ghi. ID được sinh trong SQLAlchemy `default=` nên không cần gửi trong request body POST — nếu không gửi, hệ thống tự tạo. Người dùng vẫn có thể ghi đè bằng cách gửi ID tuỳ chỉnh.
+### Error Response
 
-Các bảng không auto-ID (cần nhập thủ công): `quyen`, `vai_tro`, `quan_nhan`, `don_vi` — vì ID mang ý nghĩa nghiệp vụ (vd: `ROLE_ADMIN`, `QN0001`).
-
-Xem danh sách đầy đủ tại `BE/app/database/id_helper.py`.
+```json
+{ "detail": "Mô tả lỗi" }
+```
+| Status | Ý nghĩa |
+|--------|---------|
+| 400 | Dữ liệu không hợp lệ |
+| 401 | Chưa đăng nhập / token lỗi |
+| 403 | Thiếu quyền |
+| 404 | Không tìm thấy |
+| 409 | Xung đột dữ liệu |
+| 500 | Lỗi DB / server |
 
 ---
 
 ## Phân quyền (RBAC)
 
-### Roles (VaiTro)
+**Roles:** `ROLE_ADMIN` (full), `ROLE_CNQY`, `ROLE_BAC_SI`, `ROLE_Y_SI`.
 
-| id | Mô tả |
-|----|-------|
-| `ROLE_ADMIN` | Quản trị viên — có tất cả quyền |
-| `ROLE_CNQY` | Chủ nhiệm quân y |
-| `ROLE_BAC_SI` | Bác sĩ |
-| `ROLE_Y_SI` | Y sĩ |
+**Permissions:** `{resource}:{action}` với action = `read`, `create`, `update`, `delete`.
 
-### Permissions (Quyen)
-
-Mỗi quyền có format: `{resource}:{action}`
-
-Actions: `read`, `create`, `update`, `delete`
-
-Ví dụ: `kham_benh:read`, `don_thuoc:create`, `quan_nhan:delete`
-
-### Resources
-
-```
-benh_an, benh_nhan_ra_vao, chi_tiet_don_thuoc, chi_tiet_du_tru,
-chi_tiet_phieu_cham_soc, chi_tiet_xuat_kho, di_tuyen_sau_dieu_tri,
-don_thuoc, don_vi, giay_gioi_thieu, kham_benh, lich_kham_sk_nam,
-phieu_cham_soc, phieu_du_tru, phieu_kham_suc_khoe, phieu_xuat_kho,
-quan_nhan, ra_benh_xa, so_nhap_xuat, thuoc_vtyt,
-nguoi_dung, vai_tro, quyen, vai_tro_quyen,
-nhat_ky_dang_nhap, nhat_ky_thao_tac, nhat_ky_backup
-```
-
-### Endpoints quản lý RBAC
+### Endpoints RBAC
 
 | Endpoint | Ghi chú |
 |----------|---------|
 | `POST/PATCH/DELETE /quyen` | CRUD quyền |
 | `POST/PATCH/DELETE /vai_tro` | CRUD vai trò |
 | `POST/PATCH/DELETE /vai_tro_quyen` | Gán quyền cho vai trò |
-| `POST/PATCH/DELETE /nguoi_dung` | CRUD người dùng (kèm hash mật khẩu) |
+| `POST/PATCH/DELETE /nguoi_dung` | CRUD người dùng (hash mật khẩu) |
 | `GET /nguoi_dung/me` | Thông tin tài khoản hiện tại |
 | `PATCH /nguoi_dung/me` | Cập nhật thông tin cá nhân |
 | `POST /nguoi_dung/me/change-password` | Đổi mật khẩu |
@@ -141,15 +92,9 @@ nhat_ky_dang_nhap, nhat_ky_thao_tac, nhat_ky_backup
 | `GET /thong-ke/don-vi` | Thống kê quân số theo đơn vị |
 | `GET /thong-ke/lich-kham/{ma_lich_kham}` | Thống kê tiến độ khám sức khoẻ |
 
-**Lưu ý**: `lich_kham_sk_nam` có nested endpoints cho chi tiết:
-- `GET /lich_kham_sk_nam/{ma_lich_kham}/chi-tiet` — Danh sách chi tiết
-- `POST /lich_kham_sk_nam/{ma_lich_kham}/chi-tiet` — Thêm chi tiết
-- `PATCH /lich_kham_sk_nam/{ma_lich_kham}/chi-tiet/{ma_don_vi}` — Cập nhật chi tiết
-- `DELETE /lich_kham_sk_nam/{ma_lich_kham}/chi-tiet/{ma_don_vi}` — Xoá chi tiết
-
 ---
 
-## Danh sách tất cả Resource CRUD
+## Danh sách Resource CRUD
 
 | Resource | Endpoint prefix | Ghi chú |
 |----------|----------------|---------|
@@ -172,9 +117,9 @@ nhat_ky_dang_nhap, nhat_ky_thao_tac, nhat_ky_backup
 | `nhat_ky_thao_tac` | `/nhat_ky_thao_tac` | Nhật ký thao tác (chỉ đọc) |
 | `phieu_cham_soc` | `/phieu_cham_soc` | Phiếu chăm sóc |
 | `phieu_du_tru` | `/phieu_du_tru` | Phiếu dự trù |
-| `phieu_kham_suc_khoe` | `/phieu_kham_suc_khoe` | Phiếu khám sức khoẻ |
+| `phieu_kham_suc_khoe` | `/phieu_kham_suc_khoe` | Phiếu khám sức khoẻ (kèm custom routes) |
 | `phieu_xuat_kho` | `/phieu_xuat_kho` | Phiếu xuất kho |
-| `quan_nhan` | `/quan_nhan` | Quân nhân |
+| `quan_nhan` | `/quan_nhan` | Quân nhân (kèm custom routes) |
 | `quyen` | `/quyen` | Quyền (RBAC) |
 | `ra_benh_xa` | `/ra_benh_xa` | Ra bệnh xá |
 | `so_nhap_xuat` | `/so_nhap_xuat` | Sổ nhập xuất |
@@ -184,93 +129,38 @@ nhat_ky_dang_nhap, nhat_ky_thao_tac, nhat_ky_backup
 
 ---
 
-## Request / Response mẫu
+## Custom Routes (ngoài CRUD mặc định)
 
-### POST /kham_benh
+### QuanNhan
 
-Không cần gửi `ma_kham_benh` — ID tự động sinh bởi nanoid nếu không cung cấp:
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/quan_nhan/by-don-vi/{ma_don_vi}` | Quân nhân theo đơn vị (gồm đơn vị con) |
+| GET | `/quan_nhan/by-lich-kham/{ma_lich_kham}` | Quân nhân theo lịch khám (tất cả đơn vị trong lịch) |
 
-**Request**:
-```json
-{
-  "ma_quan_nhan": "QN0001",
-  "trieu_chung_chan_doan": "Đau đầu, sốt nhẹ",
-  "phuong_phap_dieu_tri": "Nghỉ ngơi, uống thuốc hạ sốt",
-  "kham_lan": 1,
-  "ket_qua": "Đã ổn định"
-}
-```
+### PhieuKhamSucKhoe
 
-**Response** `201 Created`:
-```json
-{
-  "ma_kham_benh": "V1StGXR8_Z",
-  "ma_quan_nhan": "QN0001",
-  "trieu_chung_chan_doan": "Đau đầu, sốt nhẹ",
-  "phuong_phap_dieu_tri": "Nghỉ ngơi, uống thuốc hạ sốt",
-  "kham_lan": 1,
-  "ket_qua": "Đã ổn định"
-}
-```
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/phieu_kham_suc_khoe/latest-by-unit/{ma_don_vi}` | Phiếu khám mới nhất mỗi QN trong đơn vị |
+| GET | `/phieu_kham_suc_khoe/latest-by-lich-kham/{ma_lich_kham}` | Phiếu khám mới nhất mỗi QN trong lịch khám |
+| GET | `/phieu_kham_suc_khoe/by-ma-quan-nhan/{ma_quan_nhan}` | Lịch sử phiếu khám của một QN |
 
-Hoặc nếu muốn tự đặt ID:
-```json
-{
-  "ma_kham_benh": "KB0001",
-  "ma_quan_nhan": "QN0001",
-  ...
-}
-```
+### LichKhamSkNam (nested `/chi-tiet`)
 
-### PATCH /kham_benh/KB0001
-
-**Request** (chỉ gửi field cần cập nhật):
-```json
-{
-  "ket_qua": "Đã hồi phục hoàn toàn"
-}
-```
-
-**Response** `200 OK`: (trả về object đầy đủ sau khi update)
-
-### GET /kham_benh?limit=10&offset=0&sort_by=ma_kham_benh&sort_desc=false
-
-**Response** `200 OK`:
-```json
-[
-  { "ma_kham_benh": "KB0001", ... },
-  { "ma_kham_benh": "KB0002", ... }
-]
-```
-
-### DELETE /kham_benh/KB0001
-
-**Response** `204 No Content` (không có body)
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/{ma_lich_kham}/chi-tiet` | Danh sách đơn vị trong lịch |
+| POST | `/{ma_lich_kham}/chi-tiet` | Thêm đơn vị vào lịch |
+| PATCH | `/{ma_lich_kham}/chi-tiet/{ma_don_vi}` | Sửa chi tiết |
+| DELETE | `/{ma_lich_kham}/chi-tiet/{ma_don_vi}` | Xóa đơn vị khỏi lịch |
 
 ---
 
-## Error Response Format
-
-```json
-{
-  "detail": "Mô tả lỗi"
-}
-```
-
-| Status | Ý nghĩa |
-|--------|---------|
-| 400 | Dữ liệu không hợp lệ (bad request) |
-| 401 | Chưa đăng nhập hoặc token không hợp lệ |
-| 403 | Thiếu quyền hoặc tài khoản bị vô hiệu |
-| 404 | Không tìm thấy bản ghi |
-| 409 | Xung đột dữ liệu (constraint violation) |
-| 500 | Lỗi database hoặc server |
-
----
-
-## Các field Schema theo từng resource
+## Field Schemas
 
 ### QuanNhan (`/quan_nhan`)
+
 | Field | Type | Required | Max |
 |-------|------|----------|-----|
 | `ma_quan_nhan` | string (PK) | ✅ | 10 |
@@ -288,6 +178,7 @@ Hoặc nếu muốn tự đặt ID:
 | `han_bhyt` | date | ❌ | |
 
 ### KhamBenh (`/kham_benh`)
+
 | Field | Type | Required | Max |
 |-------|------|----------|-----|
 | `ma_kham_benh` | string (PK) | ✅ | 10 |
@@ -298,6 +189,7 @@ Hoặc nếu muốn tự đặt ID:
 | `ket_qua` | string | ❌ | |
 
 ### BenhAn (`/benh_an`)
+
 | Field | Type | Required | Max |
 |-------|------|----------|-----|
 | `ma_benh_an` | string (PK) | ✅ | 10 |
@@ -311,6 +203,7 @@ Hoặc nếu muốn tự đặt ID:
 | `tong_ket_benh_an` | string | ❌ | |
 
 ### DonThuoc (`/don_thuoc`)
+
 | Field | Type | Required | Max |
 |-------|------|----------|-----|
 | `ma_don_thuoc` | string (PK) | ✅ | 10 |
@@ -318,6 +211,7 @@ Hoặc nếu muốn tự đặt ID:
 | `chan_doan` | string | ❌ | |
 
 ### ChiTietDonThuoc (`/chi_tiet_don_thuoc`)
+
 | Field | Type | Required | Max |
 |-------|------|----------|-----|
 | `ma_don_thuoc` | string (PK) | ✅ | 10 |
@@ -326,6 +220,7 @@ Hoặc nếu muốn tự đặt ID:
 | `huong_dieu_tri` | string | ❌ | |
 
 ### ThuocVtyt (`/thuoc_vtyt`)
+
 | Field | Type | Required | Max |
 |-------|------|----------|-----|
 | `ma_thuoc_vtyt` | string (PK) | ✅ | 10 |
@@ -337,6 +232,7 @@ Hoặc nếu muốn tự đặt ID:
 | `cap_chat_luong` | string | ❌ | 100 |
 
 ### DonVi (`/don_vi`)
+
 | Field | Type | Required | Max |
 |-------|------|----------|-----|
 | `ma_don_vi` | string (PK) | ✅ | 10 |
@@ -344,19 +240,19 @@ Hoặc nếu muốn tự đặt ID:
 | `ma_don_vi_truc_thuoc` | string | ❌ | 10 |
 
 ### NguoiDung (`/nguoi_dung`)
+
 | Field | Type | Required | Notes |
 |-------|------|----------|-------|
 | `id` | string (PK) | ✅ | max 20 |
 | `ten_dang_nhap` | string | ✅ | max 50 |
-| `mat_khau` | string | ✅ (create) / ❌ (update) | min 8, KHÔNG lưu raw, tự động hash |
+| `mat_khau` | string | ✅ (create) / ❌ (update) | min 8, tự động hash, không trả về |
 | `ho_ten` | string | ✅ | max 100 |
 | `id_vai_tro` | string | ❌ | max 20 |
 | `id_quan_nhan` | string | ❌ | max 10 |
 | `trang_thai` | bool | ❌ (default: false) | |
 
-**Lưu ý**: `nguoi_dung` có custom route (không dùng `create_crud_router`) để xử lý hash mật khẩu. Field `mat_khau` chỉ gửi khi create hoặc update — response trả về `NguoiDungRead` không bao gồm `mat_khau`.
-
 ### BenhNhanRaVao (`/benh_nhan_ra_vao`)
+
 | Field | Type | Required | Max |
 |-------|------|----------|-----|
 | `ma_ra_vao` | string (PK) | ✅ | 10 |
@@ -367,6 +263,7 @@ Hoặc nếu muốn tự đặt ID:
 | `ngay_ra` | date | ❌ | |
 
 ### DiTuyenSauDieuTri (`/di_tuyen_sau_dieu_tri`)
+
 | Field | Type | Required | Max |
 |-------|------|----------|-----|
 | `ma_chuyen_tuyen` | string (PK) | ✅ | 10 |
@@ -379,6 +276,7 @@ Hoặc nếu muốn tự đặt ID:
 | `noi_dieu_tri` | string | ❌ | 255 |
 
 ### GiayGioiThieu (`/giay_gioi_thieu`)
+
 | Field | Type | Required | Max |
 |-------|------|----------|-----|
 | `ma_giay_gt` | string (PK) | ✅ | 10 |
@@ -391,6 +289,7 @@ Hoặc nếu muốn tự đặt ID:
 | `quyet_dinh_y_sinh` | string | ❌ | |
 
 ### LichKhamSkNam (`/lich_kham_sk_nam`)
+
 | Field | Type | Required | Max |
 |-------|------|----------|-----|
 | `ma_lich_kham` | string (PK) | ✅ | 10 |
@@ -398,6 +297,7 @@ Hoặc nếu muốn tự đặt ID:
 | `thoi_gian_ket_thuc` | datetime | ❌ | (phải >= thoi_gian_bat_dau) |
 
 ### LichKhamSkNamChiTiet (nested: `/lich_kham_sk_nam/{ma_lich_kham}/chi-tiet`)
+
 | Field | Type | Required | Max |
 |-------|------|----------|-----|
 | `ma_lich_kham` | string (PK) | ✅ | 10 |
@@ -407,17 +307,19 @@ Hoặc nếu muốn tự đặt ID:
 | `dia_diem` | string | ❌ | |
 
 ### PhieuKhamSucKhoe (`/phieu_kham_suc_khoe`)
+
 | Field | Type | Required | Max |
 |-------|------|----------|-----|
 | `ma_phieu_kham` | string (PK) | ✅ | 10 |
 | `ma_quan_nhan` | string | ❌ | 10 |
 | `nam` | integer | ❌ | |
-| `tien_su_benh_tat` | string | ❌ | |
-| `kham_lam_sang` | string | ❌ | |
-| `kham_can_lam_sang` | string | ❌ | |
+| `tien_su_benh_tat` | string | ❌ | JSON |
+| `kham_lam_sang` | string | ❌ | JSON |
+| `kham_can_lam_sang` | string | ❌ | JSON |
 | `ket_luan` | string | ❌ | |
 
 ### PhieuChamSoc (`/phieu_cham_soc`)
+
 | Field | Type | Required | Max |
 |-------|------|----------|-----|
 | `ma_phieu_cs` | string (PK) | ✅ | 10 |
@@ -429,6 +331,7 @@ Hoặc nếu muốn tự đặt ID:
 | `thuc_hien_y_lenh` | string | ❌ | |
 
 ### ChiTietPhieuChamSoc (`/chi_tiet_phieu_cham_soc`)
+
 | Field | Type | Required | Max |
 |-------|------|----------|-----|
 | `ma_phieu_cs` | string (PK) | ✅ | 10 |
@@ -436,6 +339,7 @@ Hoặc nếu muốn tự đặt ID:
 | `so_luong` | int | ❌ (default: 1) | |
 
 ### RaBenhXa (`/ra_benh_xa`)
+
 | Field | Type | Required | Max |
 |-------|------|----------|-----|
 | `ma_ra_benh_xa` | string (PK) | ✅ | 10 |
@@ -446,6 +350,7 @@ Hoặc nếu muốn tự đặt ID:
 | `ghi_chu` | string | ❌ | |
 
 ### PhieuDuTru (`/phieu_du_tru`)
+
 | Field | Type | Required | Max |
 |-------|------|----------|-----|
 | `ma_phieu_du_tru` | string (PK) | ✅ | 10 |
@@ -453,6 +358,7 @@ Hoặc nếu muốn tự đặt ID:
 | `ghi_chu` | string | ❌ | |
 
 ### ChiTietDuTru (`/chi_tiet_du_tru`)
+
 | Field | Type | Required | Max |
 |-------|------|----------|-----|
 | `ma_phieu_du_tru` | string (PK) | ✅ | 10 |
@@ -460,6 +366,7 @@ Hoặc nếu muốn tự đặt ID:
 | `so_luong` | int | ❌ (default: 1) | |
 
 ### PhieuXuatKho (`/phieu_xuat_kho`)
+
 | Field | Type | Required | Max |
 |-------|------|----------|-----|
 | `ma_phieu_xuat` | string (PK) | ✅ | 10 |
@@ -470,6 +377,7 @@ Hoặc nếu muốn tự đặt ID:
 | `ghi_chu` | string | ❌ | |
 
 ### ChiTietXuatKho (`/chi_tiet_xuat_kho`)
+
 | Field | Type | Required | Max |
 |-------|------|----------|-----|
 | `ma_phieu_xuat` | string (PK) | ✅ | 10 |
@@ -477,6 +385,7 @@ Hoặc nếu muốn tự đặt ID:
 | `so_luong` | int | ✅ | |
 
 ### SoNhapXuat (`/so_nhap_xuat`)
+
 | Field | Type | Required | Max |
 |-------|------|----------|-----|
 | `ma_giao_dich` | string (PK) | ✅ | 10 |
@@ -492,6 +401,7 @@ Hoặc nếu muốn tự đặt ID:
 | `ghi_chu` | string | ❌ | |
 
 ### VaiTro (`/vai_tro`)
+
 | Field | Type | Required | Max |
 |-------|------|----------|-----|
 | `id` | string (PK) | ✅ | 20 |
@@ -499,6 +409,7 @@ Hoặc nếu muốn tự đặt ID:
 | `mo_ta` | string | ❌ | |
 
 ### Quyen (`/quyen`)
+
 | Field | Type | Required | Max |
 |-------|------|----------|-----|
 | `id` | string (PK) | ✅ | 100 |
@@ -506,12 +417,14 @@ Hoặc nếu muốn tự đặt ID:
 | `mo_ta` | string | ❌ | |
 
 ### VaiTroQuyen (`/vai_tro_quyen`)
+
 | Field | Type | Required | Max |
 |-------|------|----------|-----|
 | `id_vai_tro` | string (PK) | ✅ | 20 |
 | `id_quyen` | string (PK) | ✅ | 100 |
 
 ### NhatKyDangNhap (`/nhat_ky_dang_nhap`) — read-only
+
 | Field | Type |
 |-------|------|
 | `id` | string (PK) |
@@ -521,6 +434,7 @@ Hoặc nếu muốn tự đặt ID:
 | `thiet_bi` | string |
 
 ### NhatKyThaoTac (`/nhat_ky_thao_tac`) — read-only
+
 | Field | Type |
 |-------|------|
 | `id` | string (PK) |
@@ -533,6 +447,7 @@ Hoặc nếu muốn tự đặt ID:
 | `dia_chi_ip` | string |
 
 ### NhatKyBackup (`/nhat_ky_backup`) — read-only
+
 | Field | Type |
 |-------|------|
 | `id` | string (PK) |
@@ -546,7 +461,6 @@ Hoặc nếu muốn tự đặt ID:
 
 - **Backend**: FastAPI (Python), SQLAlchemy ORM, PostgreSQL
 - **Auth**: JWT (python-jose) + bcrypt (passlib)
-- **ID Generation**: nanoid (Python) — `BE/app/database/id_helper.py`
+- **ID Generation**: nanoid (Python)
 - **API Port**: 8000
 - **Swagger UI**: http://localhost:8000/docs
-- **OpenAPI JSON**: http://localhost:8000/openapi.json
