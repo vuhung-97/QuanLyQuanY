@@ -57,3 +57,18 @@ def get_latest_phieu_by_unit(ma_don_vi: str, db: Session = Depends(get_db)):
         .join(subq, PhieuKhamSucKhoe.ma_phieu_kham == subq.c.max_id)
         .all()
     )
+
+
+@router.get(
+    "/by-ma-quan-nhan/{ma_quan_nhan}",
+    dependencies=[Depends(require_permissions("phieu_kham_suc_khoe:read"))],
+    response_model=list[PhieuKhamSucKhoeRead],
+)
+def get_phieu_history(ma_quan_nhan: str, db: Session = Depends(get_db)):
+    return (
+        db.query(PhieuKhamSucKhoe)
+        .filter(PhieuKhamSucKhoe.ma_quan_nhan == ma_quan_nhan)
+        .order_by(PhieuKhamSucKhoe.nam.desc().nullslast(),
+                  PhieuKhamSucKhoe.ma_phieu_kham.desc())
+        .all()
+    )
