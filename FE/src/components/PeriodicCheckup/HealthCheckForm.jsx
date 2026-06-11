@@ -181,6 +181,7 @@ export default function HealthCheckForm({
     existingPhieu,
     unitLookup,
     nam,
+    readOnly = false,
 }) {
     const [activeTab, setActiveTab] = useState(0);
     const [ngayNhapNgu, setNgayNhapNgu] = useState("");
@@ -386,6 +387,7 @@ export default function HealthCheckForm({
                             ts={ts}
                             onTsChange={handleTsChange}
                             cardStyle={cardStyle}
+                            readOnly={readOnly}
                         />
                     </TabPanel>
                     <TabPanel value={activeTab} index={1}>
@@ -393,6 +395,7 @@ export default function HealthCheckForm({
                             ls={ls}
                             onLsChange={handleLsChange}
                             cardStyle={cardStyle}
+                            readOnly={readOnly}
                         />
                     </TabPanel>
                     <TabPanel value={activeTab} index={2}>
@@ -400,6 +403,7 @@ export default function HealthCheckForm({
                             cls={cls}
                             onClsChange={handleClsChange}
                             cardStyle={cardStyle}
+                            readOnly={readOnly}
                         />
                     </TabPanel>
                     <TabPanel value={activeTab} index={3}>
@@ -407,6 +411,7 @@ export default function HealthCheckForm({
                             kl={kl}
                             onKlChange={handleKlChange}
                             cardStyle={cardStyle}
+                            readOnly={readOnly}
                         />
                     </TabPanel>
                 </DialogContent>
@@ -432,9 +437,9 @@ export default function HealthCheckForm({
                         type="submit"
                         variant="contained"
                         color="primary"
-                        disabled={saving}
+                        disabled={saving || readOnly}
                     >
-                        {saving ? "Đang lưu..." : "Lưu phiếu khám"}
+                        {readOnly ? "Đã xem" : saving ? "Đang lưu..." : "Lưu phiếu khám"}
                     </Button>
                 </DialogActions>
             </Box>

@@ -116,7 +116,7 @@ function SectionTitle({ children }) {
     );
 }
 
-const TheLucField = React.memo(({ field, value, onChange }) => (
+const TheLucField = React.memo(({ field, value, onChange, readOnly }) => (
     <Grid size={{ xs: 6, sm: 4, md: 2 }}>
         <TextField
             name={field.name}
@@ -124,6 +124,7 @@ const TheLucField = React.memo(({ field, value, onChange }) => (
             type="number"
             value={value}
             onChange={onChange}
+            disabled={readOnly}
             fullWidth
             size="small"
             slotProps={{
@@ -141,9 +142,10 @@ const TheLucField = React.memo(({ field, value, onChange }) => (
 ));
 
 const ChuyenKhoaRow = React.memo(
-    ({ sp, noteValue, loaiValue, onLsChange }) => {
+    ({ sp, noteValue, loaiValue, onLsChange, readOnly }) => {
         const isNormal = noteValue === "Bình thường";
         const handleToggleNormal = () => {
+            if (readOnly) return;
             onLsChange({
                 target: { name: `${sp.id}_note`, value: isNormal ? "" : "Bình thường" },
             });
@@ -166,7 +168,7 @@ const ChuyenKhoaRow = React.memo(
                             label="Kết quả khám"
                             value={noteValue}
                             onChange={onLsChange}
-                            disabled={isNormal}
+                            disabled={readOnly || isNormal}
                             fullWidth
                             size="small"
                             slotProps={{
@@ -179,6 +181,7 @@ const ChuyenKhoaRow = React.memo(
                                                 color={
                                                     isNormal ? "success" : "default"
                                                 }
+                                                disabled={readOnly}
                                             >
                                                 {isNormal ? (
                                                     <Undo fontSize="small" />
@@ -200,6 +203,7 @@ const ChuyenKhoaRow = React.memo(
                                 value={loaiValue}
                                 onChange={onLsChange}
                                 label="Phân loại"
+                                disabled={readOnly}
                             >
                                 {PHAN_LOAI_OPTIONS.map((loai) => (
                                     <MenuItem key={loai} value={loai}>
@@ -218,7 +222,7 @@ const ChuyenKhoaRow = React.memo(
     },
 );
 
-const MatNumberField = React.memo(({ name, label, value, onChange }) => (
+const MatNumberField = React.memo(({ name, label, value, onChange, readOnly }) => (
     <Grid size={{ xs: 6, sm: 4, md: true }}>
         <TextField
             name={name}
@@ -226,6 +230,7 @@ const MatNumberField = React.memo(({ name, label, value, onChange }) => (
             type="number"
             value={value}
             onChange={onChange}
+            disabled={readOnly}
             fullWidth
             size="small"
             slotProps={{ htmlInput: { min: 1, max: 10, step: 1 } }}
@@ -243,7 +248,7 @@ const getBmiStatus = (bmiStr) => {
     return { text: "Béo phì", color: "error" };
 };
 
-const LamSangTab = React.memo(({ ls, onLsChange, cardStyle }) => {
+const LamSangTab = React.memo(({ ls, onLsChange, cardStyle, readOnly = false }) => {
     const bmiInfo = getBmiStatus(ls.bmi);
     const [showCoKinh, setShowCoKinh] = useState(false);
 
@@ -259,6 +264,7 @@ const LamSangTab = React.memo(({ ls, onLsChange, cardStyle }) => {
                                 field={f}
                                 value={ls[f.name]}
                                 onChange={onLsChange}
+                                readOnly={readOnly}
                             />
                         ))}
                         <Grid size={12}>
@@ -298,6 +304,7 @@ const LamSangTab = React.memo(({ ls, onLsChange, cardStyle }) => {
                                 noteValue={ls[`${sp.id}_note`]}
                                 loaiValue={ls[`${sp.id}_loai`]}
                                 onLsChange={onLsChange}
+                                readOnly={readOnly}
                             />
                         ))}
                     </Grid>
@@ -315,6 +322,7 @@ const LamSangTab = React.memo(({ ls, onLsChange, cardStyle }) => {
                                 label={f.label}
                                 value={ls[f.name]}
                                 onChange={onLsChange}
+                                readOnly={readOnly}
                             />
                         ))}
                         <Grid size={{ xs: 6, sm: 4, md: true }}>
@@ -352,6 +360,7 @@ const LamSangTab = React.memo(({ ls, onLsChange, cardStyle }) => {
                                     value={ls.mat_loai}
                                     onChange={onLsChange}
                                     label="Phân loại mắt"
+                                    disabled={readOnly}
                                 >
                                     {PHAN_LOAI_OPTIONS.map((loai) => (
                                         <MenuItem key={loai} value={loai}>

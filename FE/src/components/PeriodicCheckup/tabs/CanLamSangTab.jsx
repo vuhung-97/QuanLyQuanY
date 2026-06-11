@@ -36,7 +36,7 @@ const cdhaFields = [
     { name: "khac",     label: "Cận lâm sàng khác" },
 ];
 
-const CanLamSangTab = React.memo(({ cls, onClsChange, cardStyle }) => {
+const CanLamSangTab = React.memo(({ cls, onClsChange, cardStyle, readOnly = false }) => {
     return (
         <>
             <Card sx={cardStyle}>
@@ -57,6 +57,7 @@ const CanLamSangTab = React.memo(({ cls, onClsChange, cardStyle }) => {
                                         htmlInput: { step: "1", min: "1" },
                                         input: { endAdornment: <InputAdornment position="end">{f.unit}</InputAdornment> },
                                     }}
+                                    disabled={readOnly}
                                 />
                             </Grid>
                         ))}
@@ -79,6 +80,7 @@ const CanLamSangTab = React.memo(({ cls, onClsChange, cardStyle }) => {
                                     fullWidth
                                     size="small"
                                     slotProps={{ htmlInput: { step: "1", min: "1" } }}
+                                    disabled={readOnly}
                                 />
                             </Grid>
                         ))}
@@ -93,6 +95,7 @@ const CanLamSangTab = React.memo(({ cls, onClsChange, cardStyle }) => {
                         {cdhaFields.map((f) => {
                             const isNormal = cls[f.name] === "Bình thường";
                             const handleToggle = () => {
+                                if (readOnly) return;
                                 onClsChange({ target: { name: f.name, value: isNormal ? "" : "Bình thường" } });
                             };
                             return (
@@ -102,7 +105,7 @@ const CanLamSangTab = React.memo(({ cls, onClsChange, cardStyle }) => {
                                         label={f.label}
                                         value={cls[f.name]}
                                         onChange={onClsChange}
-                                        disabled={isNormal}
+                                        disabled={readOnly || isNormal}
                                         multiline
                                         minRows={2}
                                         fullWidth
@@ -112,8 +115,9 @@ const CanLamSangTab = React.memo(({ cls, onClsChange, cardStyle }) => {
                                                     <InputAdornment position="end">
                                                         <IconButton
                                                             size="small"
-                                                            onClick={handleToggle}
+                                                            onClick={readOnly ? undefined : handleToggle}
                                                             color={isNormal ? "success" : "default"}
+                                                            disabled={readOnly}
                                                         >
                                                             {isNormal ? <Undo fontSize="small" /> : <CheckCircleOutlined fontSize="small" />}
                                                         </IconButton>

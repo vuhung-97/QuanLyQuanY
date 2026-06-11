@@ -18,6 +18,7 @@
     "@vitejs/plugin-react": "latest",
     "axios": "^1.16.1",
     "dayjs": "^1.11.21",
+    "exceljs": "^4.4.0",
     "react": "latest",
     "react-dom": "latest",
     "react-router-dom": "^7.16.0",

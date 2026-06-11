@@ -6,6 +6,7 @@ import {
 } from "@mui/material";
 import {
     CheckCircle as CheckCircleIcon,
+    Download as DownloadIcon,
     PendingActions as PendingActionsIcon,
     PersonAddAlt as PersonAddAltIcon,
     Visibility as VisibilityIcon,
@@ -13,7 +14,9 @@ import {
 import api from "../../services/api.js";
 import StatsCards from "./StatsCards.jsx";
 import HealthCheckForm from "./HealthCheckForm.jsx";
+import PhieuHistoryDialog from "./PhieuHistoryDialog.jsx";
 import SearchBar from "../common/SearchBar.jsx";
+import { buildXlsContent, saveWorkbook } from "../../utils/xlsExport.js";
 
 const filterTabs = ["Tất cả", "Chưa khám", "Đang khám", "Đã khám"];
 
@@ -49,6 +52,9 @@ export default function HealthCheckMain() {
     const [filterTab, setFilterTab] = useState(0);
     const [formOpen, setFormOpen] = useState(false);
     const [selectedQn, setSelectedQn] = useState(null);
+    const [selectedHistoryPhieu, setSelectedHistoryPhieu] = useState(null);
+    const [historyQn, setHistoryQn] = useState(null);
+    const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
     const [searchText, setSearchText] = useState("");
     const [selectedYear, setSelectedYear] = useState("");
     const [allUnitLookup, setAllUnitLookup] = useState(new Map());
@@ -180,6 +186,14 @@ export default function HealthCheckMain() {
         setSelectedQn(null);
     }, [selectedQn]);
 
+    const handleExport = useCallback(async () => {
+        const nam = selectedScheduleObj?.thoi_gian_bat_dau
+            ? new Date(selectedScheduleObj.thoi_gian_bat_dau).getFullYear()
+            : "";
+        const wb = buildXlsContent(soldiers, phieuMap, allUnitLookup, getTrangThai, nam);
+        await saveWorkbook(wb, "quan_nhan_chua_hoan_thanh.xlsx");
+    }, [soldiers, phieuMap, allUnitLookup, selectedScheduleObj]);
+
     const statsItems = stats
         ? [
             {
@@ -244,6 +258,17 @@ export default function HealthCheckMain() {
                                 </MenuItem>
                             ))}
                         </TextField>
+                        {selectedSchedule && (
+                            <Button
+                                variant="outlined"
+                                size="small"
+                                startIcon={<DownloadIcon />}
+                                onClick={handleExport}
+                                sx={{ whiteSpace: "nowrap" }}
+                            >
+                                Xuất Excel
+                            </Button>
+                        )}
                     </Stack>
                 </CardContent>
             </Card>
@@ -289,7 +314,13 @@ export default function HealthCheckMain() {
                                                 <TableCell sx={{ fontWeight: 700, color: "primary.main" }}>
                                                     {qn.ma_quan_nhan}
                                                 </TableCell>
-                                                <TableCell>{qn.ho_ten || "--"}</TableCell>
+                                                <TableCell
+                                                    sx={{ cursor: "pointer", fontWeight: 600, color: "primary.main",
+                                                        "&:hover": { textDecoration: "underline" } }}
+                                                    onClick={() => { setHistoryQn(qn); setHistoryDialogOpen(true); }}
+                                                >
+                                                    {qn.ho_ten || "--"}
+                                                </TableCell>
                                                 <TableCell>{allUnitLookup.get(qn.ma_don_vi) || qn.ma_don_vi || "--"}</TableCell>
                                                 <TableCell>{qn.cap_bac || "--"}</TableCell>
                                                 <TableCell>{qn.chuc_vu || "--"}</TableCell>
@@ -341,15 +372,28 @@ export default function HealthCheckMain() {
                 </Typography>
             )}
 
+            <PhieuHistoryDialog
+                open={historyDialogOpen}
+                onClose={() => setHistoryDialogOpen(false)}
+                quanNhan={historyQn}
+                onViewPhieu={(phieu) => {
+                    setSelectedHistoryPhieu(phieu);
+                    setSelectedQn(historyQn);
+                    setHistoryDialogOpen(false);
+                    setFormOpen(true);
+                }}
+            />
+
             {selectedQn && (
                 <HealthCheckForm
                     open={formOpen}
-                    onClose={() => { setFormOpen(false); setSelectedQn(null); }}
+                    onClose={() => { setFormOpen(false); setSelectedQn(null); setSelectedHistoryPhieu(null); }}
                     onSaved={handleFormSaved}
                     quanNhan={selectedQn}
-                    existingPhieu={phieuMap[selectedQn.ma_quan_nhan] || null}
+                    existingPhieu={selectedHistoryPhieu || phieuMap[selectedQn.ma_quan_nhan] || null}
                     unitLookup={allUnitLookup}
                     nam={selectedScheduleObj ? new Date(selectedScheduleObj.thoi_gian_bat_dau).getFullYear() : null}
+                    readOnly={!!selectedHistoryPhieu}
                 />
             )}
         </Stack>

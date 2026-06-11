@@ -44,7 +44,7 @@ const fieldsGiaDinh = [
     { name: "gia_dinh", label: "Gia đình (Bệnh di truyền, bệnh tim mạch, tâm thần...)", multiline: true, minRows: 3, grid: 12 },
 ];
 
-const TienSuTab = React.memo(({ ts, onTsChange, cardStyle }) => {
+const TienSuTab = React.memo(({ ts, onTsChange, cardStyle, readOnly = false }) => {
     const renderField = (f) => {
         const isNormal = ts[f.name] === "Không";
         const handleToggle = () => {
@@ -57,7 +57,7 @@ const TienSuTab = React.memo(({ ts, onTsChange, cardStyle }) => {
                     label={f.label}
                     value={ts[f.name]}
                     onChange={onTsChange}
-                    disabled={isNormal}
+                    disabled={readOnly || isNormal}
                     multiline={f.multiline}
                     minRows={f.minRows}
                     fullWidth
@@ -67,8 +67,9 @@ const TienSuTab = React.memo(({ ts, onTsChange, cardStyle }) => {
                                 <InputAdornment position="end">
                                     <IconButton
                                         size="small"
-                                        onClick={handleToggle}
+                                        onClick={readOnly ? undefined : handleToggle}
                                         color={isNormal ? "success" : "default"}
+                                        disabled={readOnly}
                                     >
                                         {isNormal ? (
                                             <Undo fontSize="small" />

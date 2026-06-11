@@ -52,7 +52,7 @@ const fields = [
     },
 ];
 
-const KetLuanTab = React.memo(({ kl, onKlChange, cardStyle }) => {
+const KetLuanTab = React.memo(({ kl, onKlChange, cardStyle, readOnly = false }) => {
     return (
         <Card sx={cardStyle}>
             <CardContent sx={{ p: 3 }}>
@@ -66,6 +66,7 @@ const KetLuanTab = React.memo(({ kl, onKlChange, cardStyle }) => {
                                 value={kl.phan_loai_suc_khoe}
                                 onChange={onKlChange}
                                 label="Phân loại sức khỏe chung"
+                                disabled={readOnly}
                             >
                                 {PHAN_LOAI_SUC_KHOE.map((o) => (
                                     <MenuItem key={o.value} value={o.value}>
@@ -85,11 +86,13 @@ const KetLuanTab = React.memo(({ kl, onKlChange, cardStyle }) => {
                             minRows={4}
                             fullWidth
                             size="small"
+                            disabled={readOnly}
                         />
                     </Grid>
                     {fields.map((f) => {
                         const isNormal = kl[f.name] === "Không";
                         const handleToggle = () => {
+                            if (readOnly) return;
                             onKlChange({ target: { name: f.name, value: isNormal ? "" : "Không" } });
                         };
                         return (
@@ -99,7 +102,7 @@ const KetLuanTab = React.memo(({ kl, onKlChange, cardStyle }) => {
                                     label={f.label}
                                     value={kl[f.name]}
                                     onChange={onKlChange}
-                                    disabled={isNormal}
+                                    disabled={readOnly || isNormal}
                                     multiline={f.multiline}
                                     minRows={f.minRows}
                                     fullWidth
@@ -110,12 +113,13 @@ const KetLuanTab = React.memo(({ kl, onKlChange, cardStyle }) => {
                                                 <InputAdornment position="end">
                                                     <IconButton
                                                         size="small"
-                                                        onClick={handleToggle}
+                                                        onClick={readOnly ? undefined : handleToggle}
                                                         color={
                                                             isNormal
                                                                 ? "success"
                                                                 : "default"
                                                         }
+                                                        disabled={readOnly}
                                                     >
                                                         {isNormal ? (
                                                             <Undo fontSize="small" />
