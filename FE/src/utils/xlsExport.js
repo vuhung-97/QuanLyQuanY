@@ -1,6 +1,12 @@
 import ExcelJS from "exceljs";
 
-export function buildXlsContent(soldiers, phieuMap, unitLookup, getTrangThai, nam) {
+export function buildXlsContent(
+    soldiers,
+    phieuMap,
+    unitLookup,
+    getTrangThai,
+    nam,
+) {
     const title = `DANH SÁCH QUÂN NHÂN CHƯA KHÁM SỨC KHỎE NĂM ${nam || ""}`;
     const headers = [
         { label: "STT", align: "center", width: 6 },
@@ -12,33 +18,64 @@ export function buildXlsContent(soldiers, phieuMap, unitLookup, getTrangThai, na
         { label: "Tình trạng khám", align: "center", width: 18 },
     ];
 
-    const filtered = soldiers.filter((qn) => {
-        const tt = getTrangThai(phieuMap[qn.ma_quan_nhan]);
-        return tt === "Chưa khám" || tt === "Đang khám";
-    }).sort((a, b) => {
-        const uA = a.ma_don_vi || "";
-        const uB = b.ma_don_vi || "";
-        if (uA < uB) return -1;
-        if (uA > uB) return 1;
-        return (a.ho_ten || "").localeCompare(b.ho_ten || "", "vi");
-    });
+    const filtered = soldiers
+        .filter((qn) => {
+            const tt = getTrangThai(phieuMap[qn.ma_quan_nhan]);
+            return tt === "Chưa khám" || tt === "Đang khám";
+        })
+        .sort((a, b) => {
+            const uA = a.ma_don_vi || "";
+            const uB = b.ma_don_vi || "";
+            if (uA < uB) return -1;
+            if (uA > uB) return 1;
+            return (a.ho_ten || "").localeCompare(b.ho_ten || "", "vi");
+        });
 
     const workbook = new ExcelJS.Workbook();
+    const fontxls = { name: "Times New Roman", size: 14 };
     workbook.created = new Date();
     const ws = workbook.addWorksheet("Sheet1");
 
-    ws.mergeCells("A1:G1");
-    const titleCell = ws.getCell("A1");
+    // Phiên hiệu đơn vị - góc trái
+    ws.getCell("B1").value = "PHÒNG HẬU CẦN KỸ THUẬT";
+    ws.getCell("B1").font = fontxls;
+    ws.getCell("B1").alignment = { horizontal: "center", vertical: "middle" };
+    ws.getCell("B2").value = "BAN QUÂN Y";
+    ws.getCell("B2").font = { ...fontxls, bold: true };
+    ws.getCell("B2").alignment = { horizontal: "center", vertical: "middle" };
+
+    // Quốc hiệu - góc phải
+    ws.getCell("F1").value = "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM";
+    ws.getCell("F1").font = { ...fontxls, bold: true };
+    ws.getCell("F1").alignment = { horizontal: "center", vertical: "middle" };
+    ws.getCell("F2").value = "Độc lập - Tự do - Hạnh phúc";
+    ws.getCell("F2").font = { ...fontxls, bold: true };
+    ws.getCell("F2").alignment = { horizontal: "center", vertical: "middle" };
+    ws.getCell("G3").value = "Quảng Ninh, ngày ... tháng ... năm ...";
+    ws.getCell("G3").font = { ...fontxls, italic: true };
+    ws.getCell("G3").alignment = { horizontal: "right", vertical: "middle" };
+
+    // Tiêu đề chính
+    ws.mergeCells("A5:G5");
+    const titleCell = ws.getCell("A5");
     titleCell.value = title;
-    titleCell.font = { name: "Arial", bold: true, size: 14 };
+    titleCell.font = { ...fontxls, bold: true };
     titleCell.alignment = { horizontal: "center", vertical: "middle" };
 
-    const headerRow = ws.getRow(3);
+    const headerRow = ws.getRow(7);
     headers.forEach((h, i) => {
         const cell = headerRow.getCell(i + 1);
         cell.value = h.label;
-        cell.font = { name: "Arial", bold: true, size: 11, color: { argb: "FFFFFFFF" } };
-        cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF0B3B60" } };
+        cell.font = {
+            ...fontxls,
+            bold: true,
+            color: { argb: "FFFFFFFF" },
+        };
+        cell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FF0B3B60" },
+        };
         cell.alignment = { horizontal: h.align, vertical: "middle" };
         cell.border = {
             top: { style: "thin", color: { argb: "FF999999" } },
@@ -47,7 +84,7 @@ export function buildXlsContent(soldiers, phieuMap, unitLookup, getTrangThai, na
             right: { style: "thin", color: { argb: "FF999999" } },
         };
     });
-    headerRow.height = 22;
+    headerRow.height = 25;
 
     headers.forEach((h, i) => {
         ws.getColumn(i + 1).width = h.width;
@@ -56,13 +93,24 @@ export function buildXlsContent(soldiers, phieuMap, unitLookup, getTrangThai, na
     filtered.forEach((qn, idx) => {
         const tt = getTrangThai(phieuMap[qn.ma_quan_nhan]);
         const donVi = unitLookup.get(qn.ma_don_vi) || qn.ma_don_vi || "";
-        const row = ws.getRow(idx + 4);
-        const values = [idx + 1, qn.ma_quan_nhan, qn.ho_ten || "", donVi, qn.cap_bac || "", qn.chuc_vu || "", tt];
+        const row = ws.getRow(idx + 8);
+        const values = [
+            idx + 1,
+            qn.ma_quan_nhan,
+            qn.ho_ten || "",
+            donVi,
+            qn.cap_bac || "",
+            qn.chuc_vu || "",
+            tt,
+        ];
         values.forEach((val, ci) => {
             const cell = row.getCell(ci + 1);
             cell.value = val;
-            cell.alignment = { horizontal: headers[ci].align, vertical: "middle" };
-            cell.font = { name: "Arial", size: 11 };
+            cell.alignment = {
+                horizontal: headers[ci].align,
+                vertical: "middle",
+            };
+            cell.font = fontxls;
             cell.border = {
                 top: { style: "thin", color: { argb: "FF999999" } },
                 bottom: { style: "thin", color: { argb: "FF999999" } },
@@ -72,6 +120,15 @@ export function buildXlsContent(soldiers, phieuMap, unitLookup, getTrangThai, na
         });
         row.height = 20;
     });
+
+    // Chữ ký cuối file
+    const sigRow = filtered.length + 10;
+    ws.getCell(`F${sigRow}`).value = "CHỦ NHIỆM QUÂN Y";
+    ws.getCell(`F${sigRow}`).font = { ...fontxls, bold: true };
+    ws.getCell(`F${sigRow}`).alignment = {
+        horizontal: "right",
+        vertical: "middle",
+    };
 
     return workbook;
 }
