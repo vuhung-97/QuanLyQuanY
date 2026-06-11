@@ -5,7 +5,7 @@ import Header from "./header/Header.jsx";
 import Sidebar from "./sidebar/Sidebar.jsx";
 import Footer from "./footer/Footer.jsx";
 import { useSidebarState } from "./common/hooks.js";
-import AccountSettingsDialog from "../account/AccountSettingsDialog.jsx";
+import AccountSettingsDialog from "./accountSetting/AccountSettingsDialog.jsx";
 import { decodeJWT } from "../../services/api.js";
 import { defaultMenuItems, adminMenuItems } from "./common/menuConfig.jsx";
 import {
@@ -45,7 +45,8 @@ export default function MainLayout({
         return token ? decodeJWT(token) : null;
     }, []);
 
-    const isAdmin = jwtPayload?.role === "ROLE_ADMIN" || jwtPayload?.role === "ROLE_CNQY";
+    const isAdmin =
+        jwtPayload?.role === "ROLE_ADMIN" || jwtPayload?.role === "ROLE_CNQY";
 
     const filteredMenuItems = useMemo(() => {
         if (isAdmin) return adminItems;

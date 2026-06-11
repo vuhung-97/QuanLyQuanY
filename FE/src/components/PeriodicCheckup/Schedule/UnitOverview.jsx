@@ -1,7 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import {
-    Box, Card, CardContent, Chip, Stack, TableCell, TableRow,
-    TextField, Typography,
+    Box,
+    Card,
+    CardContent,
+    Chip,
+    Stack,
+    TableCell,
+    TableRow,
+    TextField,
+    Typography,
 } from "@mui/material";
 import { Search as SearchIcon } from "@mui/icons-material";
 import api from "../../../services/api.js";
@@ -28,8 +35,7 @@ export default function UnitOverview({ chiTietMap }) {
                 const res = await api.get("/thong-ke/don-vi", {
                     params: { limit: 100 },
                 });
-                if (!ignore)
-                    setUnits(Array.isArray(res.data) ? res.data : []);
+                if (!ignore) setUnits(Array.isArray(res.data) ? res.data : []);
             } catch {
             } finally {
                 if (!ignore) setLoading(false);
@@ -88,8 +94,7 @@ export default function UnitOverview({ chiTietMap }) {
                             color="text.secondary"
                             sx={{ mt: 0.5 }}
                         >
-                            Tổng quân số: <strong>{totalQuanSo}</strong> &mdash;{" "}
-                            {units.length} đơn vị
+                            Tổng quân số: <strong>{totalQuanSo}</strong> QN
                         </Typography>
                     </Box>
                     <TextField
@@ -116,7 +121,8 @@ export default function UnitOverview({ chiTietMap }) {
                     minWidth={650}
                 >
                     {filtered.map((row) => {
-                        const unitSchedules = unitScheduleMap[row.ma_don_vi] || [];
+                        const unitSchedules =
+                            unitScheduleMap[row.ma_don_vi] || [];
                         const hasSchedule = unitSchedules.length > 0;
                         const nearest = hasSchedule
                             ? unitSchedules.reduce((a, b) => {
@@ -131,13 +137,21 @@ export default function UnitOverview({ chiTietMap }) {
                             : null;
                         return (
                             <TableRow key={row.ma_don_vi} hover>
-                                <TableCell sx={{ fontWeight: 700, color: "primary.main", pl: 3 }}>
+                                <TableCell
+                                    sx={{
+                                        fontWeight: 700,
+                                        color: "primary.main",
+                                        pl: 3,
+                                    }}
+                                >
                                     {row.ma_don_vi}
                                 </TableCell>
                                 <TableCell sx={{ fontWeight: 600 }}>
                                     {row.ten_don_vi}
                                 </TableCell>
-                                <TableCell>{row.tong_quan_so ?? "--"}</TableCell>
+                                <TableCell>
+                                    {row.tong_quan_so ?? "--"}
+                                </TableCell>
                                 <TableCell>
                                     {hasSchedule ? (
                                         <Chip
@@ -146,7 +160,10 @@ export default function UnitOverview({ chiTietMap }) {
                                             sx={{ fontWeight: 600 }}
                                         />
                                     ) : (
-                                        <Typography variant="body2" color="text.secondary">
+                                        <Typography
+                                            variant="body2"
+                                            color="text.secondary"
+                                        >
                                             Chưa có
                                         </Typography>
                                     )}

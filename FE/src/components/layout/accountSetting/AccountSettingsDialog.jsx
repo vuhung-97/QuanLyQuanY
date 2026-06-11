@@ -10,8 +10,8 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
-import api from "../../services/api.js";
-import FeedbackSnackbar from "../common/FeedbackSnackbar.jsx";
+import api from "../../../services/api.js";
+import FeedbackSnackbar from "../../common/FeedbackSnackbar.jsx";
 
 export default function AccountSettingsDialog({ open, onClose }) {
     const [profile, setProfile] = useState(null);
