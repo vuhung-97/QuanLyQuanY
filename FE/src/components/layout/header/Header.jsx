@@ -41,7 +41,6 @@ export default function Header({
     user = DEFAULT_USER,
     notificationsCount = 0,
     onNotificationsClick,
-    showSearch = true,
     searchPlaceholder = "Tìm kiếm quân nhân, thuốc...",
     onSearch,
     onSettings,
@@ -123,22 +122,6 @@ export default function Header({
                 >
                     {appName}
                 </Typography>
-
-                {showSearch && (
-                    <Search>
-                        <SearchIconWrapper>
-                            <SearchIcon fontSize="small" />
-                        </SearchIconWrapper>
-                        <StyledInputBase
-                            placeholder={searchPlaceholder}
-                            slotProps={{
-                                htmlInput: { "aria-label": "search" },
-                            }}
-                            onChange={(e) => onSearch?.(e.target.value)}
-                        />
-                    </Search>
-                )}
-                {!showSearch && <Box sx={{ flexGrow: 1 }} />}
 
                 <Stack
                     direction="row"

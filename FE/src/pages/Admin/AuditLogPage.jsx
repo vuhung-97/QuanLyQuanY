@@ -1,13 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-    Box,
-    Button,
-    Chip,
-    Stack,
-    Tab,
-    Tabs,
-    Typography,
-} from "@mui/material";
+import { Box, Button, Chip, Stack, Tab, TableCell, TableRow, Tabs, Typography } from "@mui/material";
 import {
     Backup as BackupIcon,
     Download as DownloadIcon,
@@ -249,9 +241,7 @@ export default function AuditLogPage() {
                                 <TableCell sx={{ fontWeight: 700 }}>
                                     {row.id}
                                 </TableCell>
-                                <TableCell>
-                                    {row.ho_ten || "--"}
-                                </TableCell>
+                                <TableCell>{row.ho_ten || "--"}</TableCell>
                                 <TableCell>
                                     {row.id_nguoi_dung || "--"}
                                 </TableCell>
@@ -273,9 +263,7 @@ export default function AuditLogPage() {
                                         }
                                     />
                                 </TableCell>
-                                <TableCell>
-                                    {row.thiet_bi || "--"}
-                                </TableCell>
+                                <TableCell>{row.thiet_bi || "--"}</TableCell>
                             </TableRow>
                         ))}
                     </DataTable>
@@ -302,9 +290,7 @@ export default function AuditLogPage() {
                                 <TableCell sx={{ fontWeight: 700 }}>
                                     {row.id}
                                 </TableCell>
-                                <TableCell>
-                                    {row.ho_ten || "--"}
-                                </TableCell>
+                                <TableCell>{row.ho_ten || "--"}</TableCell>
                                 <TableCell>
                                     {row.id_nguoi_dung || "--"}
                                 </TableCell>
@@ -326,12 +312,8 @@ export default function AuditLogPage() {
                                         }
                                     />
                                 </TableCell>
-                                <TableCell>
-                                    {row.ten_bang || "--"}
-                                </TableCell>
-                                <TableCell>
-                                    {row.dia_chi_ip || "--"}
-                                </TableCell>
+                                <TableCell>{row.ten_bang || "--"}</TableCell>
+                                <TableCell>{row.dia_chi_ip || "--"}</TableCell>
                                 <TableCell>
                                     <Chip
                                         label="Xem"
@@ -372,7 +354,9 @@ export default function AuditLogPage() {
                                     <Button
                                         size="small"
                                         startIcon={<DownloadIcon />}
-                                        onClick={() => handleDownload(file.filename)}
+                                        onClick={() =>
+                                            handleDownload(file.filename)
+                                        }
                                     >
                                         Tải về
                                     </Button>
