@@ -93,16 +93,16 @@ export default function useExaminationForm({ open, examinationId, onClose, onSav
     const handleChipClick = useCallback((symptom) => {
         setFormState((prev) => {
             const text = prev.trieuChung;
-            if (!text.trim()) return { ...prev, trieuChung: symptom };
+            if (!text.trim()) return { ...prev, trieuChung: symptom + ", " };
+
+            const words = text.split(/[,;]\s*/).filter(Boolean);
+            if (words.includes(symptom)) return prev;
 
             const hasTrailingSep = /[,;]\s*$/.test(text);
-            if (hasTrailingSep) return { ...prev, trieuChung: `${text}${symptom}` };
+            if (hasTrailingSep) return { ...prev, trieuChung: `${text}${symptom}, ` };
 
-            const words = text.split(/[,;]\s*/);
-            const last = words[words.length - 1];
-            if (last === symptom) return prev;
             words[words.length - 1] = symptom;
-            return { ...prev, trieuChung: words.join(", ") };
+            return { ...prev, trieuChung: words.join(", ") + ", " };
         });
     }, []);
 
