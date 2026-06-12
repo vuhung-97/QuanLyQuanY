@@ -12,6 +12,7 @@ class DiTuyenSauDieuTri(Base):
 
     ma_chuyen_tuyen: Mapped[str] = mapped_column(String(10), primary_key=True, default=lambda: generate_id(10))
     ma_quan_nhan: Mapped[str | None] = mapped_column(String(10), ForeignKey("quan_nhan.ma_quan_nhan", ondelete="CASCADE"), nullable=True)
+    ma_giay_gt: Mapped[str | None] = mapped_column(String(10), ForeignKey("giay_gioi_thieu.ma_giay_gt", ondelete="CASCADE"), nullable=True)
     ngay_di: Mapped[date | None] = mapped_column(Date, nullable=True)
     chan_doan_luc_di: Mapped[str | None] = mapped_column(Text, nullable=True)
     ngay_ve: Mapped[date | None] = mapped_column(Date, nullable=True)

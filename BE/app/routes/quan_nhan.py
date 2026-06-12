@@ -1,12 +1,18 @@
-from fastapi import Depends
+from fastapi import Depends, Query
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.crud.quan_nhan import quan_nhan_crud
+from app.database.benh_an import BenhAn
+from app.database.don_thuoc import DonThuoc
 from app.database.don_vi import DonVi
+from app.database.giay_gioi_thieu import GiayGioiThieu
+from app.database.kham_benh import KhamBenh
 from app.database.lich_kham_sk_nam_chi_tiet import LichKhamSkNamChiTiet
 from app.database.quan_nhan import QuanNhan
 from app.database.session import get_db
 from app.routes.base import create_crud_router
+from app.schemas.lich_su_kham import LichSuKhamRead
 from app.schemas.quan_nhan import QuanNhanRead
 from app.core.dependencies import require_permissions
 
@@ -19,6 +25,33 @@ router = create_crud_router(
     update_permission="quan_nhan:update",
     delete_permission="quan_nhan:delete",
 )
+
+
+@router.get(
+    "/danh-sach/list",
+    dependencies=[Depends(require_permissions("quan_nhan:read"))],
+)
+def get_quan_nhan_danh_sach(
+    db: Session = Depends(get_db),
+    limit: int = Query(default=50, ge=1, le=500),
+    offset: int = Query(default=0, ge=0),
+    search: str | None = Query(default=None),
+    ma_don_vi: str | None = Query(default=None),
+):
+    query = db.query(QuanNhan)
+    if search:
+        q = f"%{search}%"
+        query = query.filter(QuanNhan.ho_ten.ilike(q) | QuanNhan.ma_quan_nhan.ilike(q))
+    if ma_don_vi:
+        query = query.filter(QuanNhan.ma_don_vi == ma_don_vi)
+    total = query.count()
+    rows = (
+        query.order_by(QuanNhan.ma_don_vi, QuanNhan.ho_ten)
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
+    return {"data": rows, "total": total}
 
 
 @router.get(
@@ -84,4 +117,27 @@ def get_quan_nhan_by_lich_kham(
         .filter(QuanNhan.ma_don_vi.in_(all_codes))
         .order_by(QuanNhan.ma_don_vi, QuanNhan.ho_ten)
         .all()
+    )
+
+
+@router.get(
+    "/{ma_quan_nhan}/lich-su-kham",
+    dependencies=[Depends(require_permissions("quan_nhan:read"))],
+    response_model=LichSuKhamRead,
+)
+def get_lich_su_kham(ma_quan_nhan: str, db: Session = Depends(get_db)):
+    return LichSuKhamRead(
+        kham_benh=db.query(KhamBenh)
+        .filter(KhamBenh.ma_quan_nhan == ma_quan_nhan)
+        .order_by(KhamBenh.ngay_kham.desc())
+        .all(),
+        don_thuoc=db.query(DonThuoc)
+        .filter(DonThuoc.ma_quan_nhan == ma_quan_nhan)
+        .all(),
+        benh_an=db.query(BenhAn)
+        .filter(BenhAn.ma_quan_nhan == ma_quan_nhan)
+        .all(),
+        chuyen_tuyen=db.query(GiayGioiThieu)
+        .filter(GiayGioiThieu.ma_quan_nhan == ma_quan_nhan)
+        .all(),
     )

@@ -4,6 +4,7 @@ from pydantic import Field
 
 class DonThuocBase(SchemaBase):
     ma_quan_nhan: str | None = Field(default=None, max_length=10)
+    ma_kham_benh: str | None = Field(default=None, max_length=10)
     chan_doan: str | None = None
 
 
@@ -13,6 +14,7 @@ class DonThuocCreate(DonThuocBase):
 
 class DonThuocUpdate(SchemaBase):
     ma_quan_nhan: str | None = None
+    ma_kham_benh: str | None = None
     chan_doan: str | None = None
 
 

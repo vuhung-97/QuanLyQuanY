@@ -6,6 +6,7 @@ from pydantic import Field
 
 class DiTuyenSauDieuTriBase(SchemaBase):
     ma_quan_nhan: str | None = Field(default=None, max_length=10)
+    ma_giay_gt: str | None = Field(default=None, max_length=10)
     ngay_di: date | None = None
     chan_doan_luc_di: str | None = None
     ngay_ve: date | None = None
@@ -20,6 +21,7 @@ class DiTuyenSauDieuTriCreate(DiTuyenSauDieuTriBase):
 
 class DiTuyenSauDieuTriUpdate(SchemaBase):
     ma_quan_nhan: str | None = None
+    ma_giay_gt: str | None = None
     ngay_di: date | None = None
     chan_doan_luc_di: str | None = None
     ngay_ve: date | None = None

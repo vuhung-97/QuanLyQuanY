@@ -1,5 +1,18 @@
+from datetime import datetime
+
+from fastapi import Depends
+from sqlalchemy import inspect
+from sqlalchemy.orm import Session
+
+from app.core.dependencies import require_permissions
 from app.crud.kham_benh import kham_benh_crud
+from app.database.don_vi import DonVi
+from app.database.kham_benh import KhamBenh
+from app.database.quan_nhan import QuanNhan
+from app.database.session import get_db
 from app.routes.base import create_crud_router
+from app.schemas.kham_benh import KhamBenhRead
+from app.services.medical_examination import MedicalExaminationService
 
 
 router = create_crud_router(
@@ -10,3 +23,57 @@ router = create_crud_router(
     update_permission="kham_benh:update",
     delete_permission="kham_benh:delete",
 )
+
+
+@router.get(
+    "/hom-nay/danh-sach",
+    dependencies=[Depends(require_permissions("kham_benh:read"))],
+    response_model=list[KhamBenhRead],
+)
+def get_kham_benh_hom_nay(db: Session = Depends(get_db)):
+    today = datetime.now().date()
+    records = (
+        db.query(KhamBenh, QuanNhan.ho_ten, QuanNhan.ma_don_vi, DonVi.ten_don_vi)
+        .join(QuanNhan, KhamBenh.ma_quan_nhan == QuanNhan.ma_quan_nhan)
+        .join(DonVi, QuanNhan.ma_don_vi == DonVi.ma_don_vi, isouter=True)
+        .filter(KhamBenh.ngay_kham >= today)
+        .order_by(KhamBenh.ngay_kham.desc())
+        .all()
+    )
+    result = []
+    for kb, ho_ten, ma_don_vi, ten_don_vi in records:
+        d = {c.key: getattr(kb, c.key) for c in inspect(KhamBenh).columns}
+        d["ho_ten"] = ho_ten
+        d["ma_don_vi"] = ma_don_vi
+        d["ten_don_vi"] = ten_don_vi
+        d["trang_thai"] = d["trang_thai"] or "chờ"
+        result.append(d)
+    return result
+
+
+@router.post(
+    "/{id}/nhan-thuoc",
+    dependencies=[Depends(require_permissions("kham_benh:update"))],
+    response_model=KhamBenhRead,
+)
+def nhan_thuoc(id: str, db: Session = Depends(get_db)):
+    service = MedicalExaminationService(db)
+    return service.receive_medicine(id)
+
+
+@router.post(
+    "/{id}/chuyen-tuyen",
+    dependencies=[Depends(require_permissions("kham_benh:update"))],
+)
+def chuyen_tuyen(id: str, data: dict, db: Session = Depends(get_db)):
+    service = MedicalExaminationService(db)
+    return service.refer_patient(id, data)
+
+
+@router.post(
+    "/{id}/nhap-vien",
+    dependencies=[Depends(require_permissions("kham_benh:update"))],
+)
+def nhap_vien(id: str, data: dict, db: Session = Depends(get_db)):
+    service = MedicalExaminationService(db)
+    return service.admit_patient(id, data)
