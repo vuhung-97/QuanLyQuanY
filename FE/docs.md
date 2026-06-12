@@ -45,6 +45,7 @@ FE/
     │   │   ├── ExaminationList.jsx   # Danh sách ca khám + DataTable + stat cards
     │   │   ├── ExaminationForm.jsx   # Dialog khám bệnh (form)
     │   │   ├── PrescriptionForm.jsx  # Kê đơn thuốc
+    │   │   ├── ReceiveQnDialog.jsx   # Dialog tiếp nhận quân nhân mới
     │   │   ├── PatientHistory.jsx    # Lịch sử khám
     │   │   ├── ReferralDialog.jsx    # Chuyển tuyến
     │   │   └── AdmissionDialog.jsx   # Nhập viện
@@ -64,6 +65,7 @@ FE/
     │
     ├── hooks/              # Custom hooks — tách logic khỏi UI
     │   ├── useExaminationForm.jsx    # Form khám bệnh
+    │   ├── useExaminationList.jsx    # Danh sách khám bệnh (main list + dialogs)
     │   ├── useHealthCheckForm.jsx    # Form khám sức khỏe
     │   ├── useHealthCheckData.jsx    # Data cho khám sức khỏe
     │   ├── useScheduleDialog.jsx     # Dialog lập lịch

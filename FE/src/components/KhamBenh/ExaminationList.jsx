@@ -1,0 +1,165 @@
+import { useMemo } from "react";
+import {
+    Button, Card, CardContent, Chip, Stack, Typography,
+} from "@mui/material";
+import {
+    Delete as DeleteIcon,
+    Download as DownloadIcon,
+
+    MedicalServices as MedicalServicesIcon,
+    PendingActions as PendingActionsIcon,
+    PersonAddAlt as PersonAddAltIcon,
+    Refresh as RefreshIcon,
+} from "@mui/icons-material";
+import useExaminationList from "../../hooks/useExaminationList.jsx";
+import ConfirmDialog from "../common/ConfirmDialog.jsx";
+import DataTable from "../common/DataTable.jsx";
+import FeedbackSnackbar from "../common/FeedbackSnackbar.jsx";
+import SearchBar from "../common/SearchBar.jsx";
+import StatCardGrid from "../common/StatCardGrid.jsx";
+import ExaminationForm from "./ExaminationForm.jsx";
+
+import ReceiveQnDialog from "./ReceiveQnDialog.jsx";
+
+const STATUS_MAP = {
+    chờ: { label: "Chờ khám", color: "warning" },
+    đang_khám: { label: "Đang khám", color: "info" },
+    chờ_nhận_thuốc: { label: "Chờ nhận thuốc", color: "warning" },
+    đã_khám: { label: "Đã xong", color: "success" },
+    chuyển_tuyến: { label: "Chuyển tuyến", color: "error" },
+    nhập_viện: { label: "Nhập viện", color: "secondary" },
+};
+
+const columns = [
+    { key: "stt", label: "STT", render: (row, idx) => idx + 1 },
+    { key: "ma_kham_benh", label: "Mã KB", sx: { fontWeight: 700, color: "primary.main" } },
+    { key: "ho_ten", label: "Họ tên QN" },
+    { key: "don_vi", label: "Đơn vị", render: (row) => row.ten_don_vi || "--" },
+    {
+        key: "trang_thai",
+        label: "Trạng thái",
+        render: (row) => (
+            <Chip
+                label={STATUS_MAP[row.trang_thai]?.label || row.trang_thai}
+                color={STATUS_MAP[row.trang_thai]?.color || "default"}
+                size="small"
+                sx={{ fontWeight: 600 }}
+            />
+        ),
+    },
+    {
+        key: "ngay_kham",
+        label: "Giờ vào",
+        render: (row) =>
+            row.ngay_kham
+                ? new Date(row.ngay_kham).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })
+                : "--",
+    },
+    {
+        key: "thao_tac",
+        label: "Thao tác",
+        render: (row, _idx, { onExam, onDelete }) => (
+            <Stack direction="row" spacing={0.5}>
+                <Button size="small" variant="outlined" sx={{ textTransform: "none" }} onClick={() => onExam(row.ma_kham_benh)}>
+                    {row.trang_thai === "đã_khám" || row.trang_thai === "chờ_nhận_thuốc" ? "Xem" : "Khám"}
+                </Button>
+                <Button size="small" color="error" sx={{ textTransform: "none", minWidth: 36 }} onClick={() => onDelete(row.ma_kham_benh)}>
+                    <DeleteIcon fontSize="small" />
+                </Button>
+            </Stack>
+        ),
+    },
+];
+
+function Toolbar({ onReceive, onRefresh }) {
+    return (
+        <Stack direction="row" spacing={1.5}>
+            <Button variant="contained" startIcon={<PersonAddAltIcon />} onClick={onReceive} sx={{ textTransform: "none" }}>
+                Tiếp nhận QN mới
+            </Button>
+            <Button variant="outlined" startIcon={<RefreshIcon />} onClick={onRefresh} sx={{ textTransform: "none" }}>
+                Refresh
+            </Button>
+        </Stack>
+    );
+}
+
+export default function ExaminationList() {
+    const {
+        loading, searchText, setSearchText, filtered, statusCounts,
+        snackbar, setSnackbar,
+        confirmDelete, handleDeleteClick, handleDeleteConfirm,
+        openExamForm, selectedExamId, handleOpenExamForm, handleCloseExamForm,
+        openReceiveDialog, setOpenReceiveDialog,
+        handleSelectQN, loadData,
+    } = useExaminationList();
+
+    const statItems = useMemo(
+        () => [
+            { label: "Chờ khám", value: statusCounts.cho, icon: <PendingActionsIcon />, color: "#F59E0B", bg: "#FEF3C7" },
+            { label: "Đang khám", value: statusCounts.dangKham, icon: <MedicalServicesIcon />, color: "#0B3B60", bg: "#DBEAFE" },
+            { label: "Đã xong", value: statusCounts.daXong, icon: <DownloadIcon />, color: "#10B981", bg: "#D1FAE5" },
+            { label: "Chuyển tuyến", value: statusCounts.chuyenTuyen, icon: <MedicalServicesIcon />, color: "#EF4444", bg: "#FEE2E2" },
+        ],
+        [statusCounts],
+    );
+
+    const now = new Date();
+    const todayStr = `${now.getDate().toString().padStart(2, "0")}/${(now.getMonth() + 1).toString().padStart(2, "0")}/${now.getFullYear()}`;
+
+    return (
+        <>
+            <StatCardGrid items={statItems} loading={loading} />
+
+            <Card sx={{ borderRadius: 3 }}>
+                <CardContent sx={{ p: "24px !important" }}>
+                    <Stack direction={{ xs: "column", md: "row" }} spacing={2} sx={{ mb: 2, justifyContent: "space-between", alignItems: { md: "center" } }}>
+                        <Typography variant="h2">Danh sách khám ngày {todayStr}</Typography>
+                        <Toolbar
+                            onReceive={() => setOpenReceiveDialog(true)}
+                            onRefresh={loadData}
+                        />
+                    </Stack>
+                    <SearchBar value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Tìm kiếm ca khám..." />
+                    <DataTable
+                        columns={columns}
+                        rows={filtered}
+                        loading={loading}
+                        emptyMessage="Chưa có ca khám nào hôm nay."
+                        rowExtra={{ onExam: handleOpenExamForm, onDelete: handleDeleteClick }}
+                    />
+                </CardContent>
+            </Card>
+
+            <ReceiveQnDialog
+                open={openReceiveDialog}
+                onClose={() => setOpenReceiveDialog(false)}
+                onSelected={handleSelectQN}
+            />
+
+            <ConfirmDialog
+                open={confirmDelete.open}
+                title="Xác nhận xóa"
+                message="Bạn có chắc muốn xóa ca khám này? Hành động này không thể hoàn tác."
+                confirmLabel="Xóa"
+                confirmColor="error"
+                onConfirm={handleDeleteConfirm}
+                onClose={() => setConfirmDelete({ open: false, id: null })}
+            />
+
+            <ExaminationForm
+                open={openExamForm}
+                examinationId={selectedExamId}
+                onClose={handleCloseExamForm}
+                onSaved={loadData}
+            />
+
+            <FeedbackSnackbar
+                open={snackbar.open}
+                message={snackbar.message}
+                severity={snackbar.severity}
+                onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+            />
+        </>
+    );
+}

@@ -19,6 +19,7 @@ export default function DataTable({
     sx,
     children,
     minWidth = 700,
+    rowExtra,
 }) {
     const hasChildren = children != null;
     const hasRows = rows != null && rows.length > 0;
@@ -74,7 +75,7 @@ export default function DataTable({
                                           align={col.align || "left"}
                                           sx={col.sx}
                                       >
-                                          {col.render ? col.render(row, idx) : row[col.key]}
+                                           {col.render ? col.render(row, idx, rowExtra) : row[col.key]}
                                       </TableCell>
                                   ))}
                               </TableRow>
