@@ -183,10 +183,10 @@ Composite key dùng dấu phẩy: `{id1},{id2}`.
 |-------|------|----------|-----|
 | `ma_kham_benh` | string (PK) | ✅ | 10 |
 | `ma_quan_nhan` | string | ❌ | 10 |
-| `trieu_chung_chan_doan` | string | ❌ | |
+| `trieu_chung` | string | ❌ | |
 | `phuong_phap_dieu_tri` | string | ❌ | |
 | `kham_lan` | int | ❌ | |
-| `ket_qua` | string | ❌ | |
+| `chan_doan` | string | ❌ | |
 
 ### BenhAn (`/benh_an`)
 

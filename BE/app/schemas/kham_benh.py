@@ -8,10 +8,10 @@ class KhamBenhBase(SchemaBase):
     ma_quan_nhan: str | None = Field(default=None, max_length=10)
     trang_thai: str | None = "chờ"
     ngay_kham: datetime | None = None
-    trieu_chung_chan_doan: str | None = None
+    trieu_chung: str | None = None
     phuong_phap_dieu_tri: str | None = None
     kham_lan: int | None = None
-    ket_qua: str | None = None
+    chan_doan: str | None = None
 
 
 class KhamBenhCreate(KhamBenhBase):
@@ -21,10 +21,10 @@ class KhamBenhCreate(KhamBenhBase):
 class KhamBenhUpdate(SchemaBase):
     ma_quan_nhan: str | None = None
     trang_thai: str | None = None
-    trieu_chung_chan_doan: str | None = None
+    trieu_chung: str | None = None
     phuong_phap_dieu_tri: str | None = None
     kham_lan: int | None = None
-    ket_qua: str | None = None
+    chan_doan: str | None = None
 
 
 class KhamBenhRead(KhamBenhBase):

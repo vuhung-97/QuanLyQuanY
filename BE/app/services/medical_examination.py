@@ -36,19 +36,19 @@ class MedicalExaminationService:
         if not kb:
             raise ValueError(f"KhamBenh {kb_id} not found")
 
-        if "trieu_chung_chan_doan" in data:
-            kb.trieu_chung_chan_doan = data["trieu_chung_chan_doan"]
+        if "trieu_chung" in data:
+            kb.trieu_chung = data["trieu_chung"]
         if "phuong_phap_dieu_tri" in data:
             kb.phuong_phap_dieu_tri = data["phuong_phap_dieu_tri"]
-        if "ket_qua" in data:
-            kb.ket_qua = data["ket_qua"]
+        if "chan_doan" in data:
+            kb.chan_doan = data["chan_doan"]
 
         prescription_items = data.get("prescription_items")
         if prescription_items:
             dt = DonThuoc(
                 ma_quan_nhan=kb.ma_quan_nhan,
                 ma_kham_benh=kb_id,
-                chan_doan=data.get("chan_doan"),
+                chan_doan=data.get("prescription_chan_doan"),
             )
             self.db.add(dt)
             self.db.flush()

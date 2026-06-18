@@ -1,7 +1,0 @@
-﻿venv/Scripts/python.exe : INFO:     Started server process [12128]
-    + CategoryInfo          : NotSpecified: (INFO:     Started server process [12128]:String) [], RemoteException
-    + FullyQualifiedErrorId : NativeCommandError
- 
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)

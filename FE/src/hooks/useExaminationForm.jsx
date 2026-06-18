@@ -34,7 +34,7 @@ export default function useExaminationForm({ open, examinationId, onClose, onSav
                 const data = res.data;
                 setExam(data);
                 setFormState({
-                    trieuChung: data.trieu_chung_chan_doan || "",
+                    trieuChung: data.trieu_chung || "",
                     chanDoan: "",
                     phuongPhap: data.phuong_phap_dieu_tri || "",
                     prescriptionItems: [],
@@ -62,13 +62,16 @@ export default function useExaminationForm({ open, examinationId, onClose, onSav
         }
         setSaving(true);
         try {
+            const isFull = formState.chanDoan.trim() && formState.phuongPhap.trim();
+
             const payload = {
-                trieu_chung_chan_doan: formState.trieuChung,
+                trieu_chung: formState.trieuChung,
                 chan_doan: formState.chanDoan,
                 phuong_phap_dieu_tri: formState.phuongPhap,
+                trang_thai: taoDon ? "chờ_nhận_thuốc" : isFull ? "đã_khám" : "đang_khám",
             };
             if (taoDon && formState.prescriptionItems.length > 0) {
-                payload.chan_doan = formState.prescriptionChanDoan;
+                payload.prescription_chan_doan = formState.prescriptionChanDoan;
                 payload.prescription_items = formState.prescriptionItems;
             }
             await khamBenhService.update(exam.ma_kham_benh, payload);
