@@ -7,6 +7,19 @@ import ReferralDialog from "./ReferralDialog.jsx";
 import AdmissionDialog from "./AdmissionDialog.jsx";
 import symptoms from "../../data/trieu_chung.json";
 
+function InfoRow({ label, value }) {
+    return (
+        <Box>
+            <Typography variant="body2" color="text.secondary">
+                {label}
+            </Typography>
+            <Typography variant="body1" fontWeight={600}>
+                {value}
+            </Typography>
+        </Box>
+    );
+}
+
 function PatientInfoCard({ qn, exam }) {
     const examDate = exam?.ngay_kham
         ? new Date(exam.ngay_kham).toLocaleDateString("vi-VN")
@@ -15,27 +28,13 @@ function PatientInfoCard({ qn, exam }) {
     return (
         <Card variant="outlined" sx={{ borderRadius: 2, bgcolor: "#F8FAFC" }}>
             <CardContent>
-                <Grid container spacing={2}>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                        <Typography variant="body2" color="text.secondary">Quân nhân</Typography>
-                        <Typography variant="body1" fontWeight={600}>
-                            {qn?.ho_ten || exam?.ma_quan_nhan || "--"}
-                        </Typography>
-                        {qn?.ma_quan_nhan && (
-                            <Typography variant="caption" color="text.secondary">
-                                {qn.ma_quan_nhan} {qn.ma_don_vi ? `- ${qn.ma_don_vi}` : ""}
-                            </Typography>
-                        )}
-                    </Grid>
-                    <Grid size={{ xs: 6, md: 3 }}>
-                        <Typography variant="body2" color="text.secondary">Ngày khám</Typography>
-                        <Typography variant="body1">{examDate}</Typography>
-                    </Grid>
-                    <Grid size={{ xs: 6, md: 3 }}>
-                        <Typography variant="body2" color="text.secondary">Khám lần</Typography>
-                        <Typography variant="body1">{exam?.kham_lan || 1}</Typography>
-                    </Grid>
-                </Grid>
+                <Stack direction="row" spacing={2} sx={{ "& > *": { flex: 1, minWidth: 0 } }}>
+                    <InfoRow label="Họ và tên" value={qn?.ho_ten || exam?.ma_quan_nhan || "--"} />
+                    <InfoRow label="Đơn vị" value={qn?.ten_don_vi || qn?.ma_don_vi || "--"} />
+                    <InfoRow label="Cấp bậc" value={qn?.cap_bac || "--"} />
+                    <InfoRow label="Chức vụ" value={qn?.chuc_vu || "--"} />
+                    <InfoRow label="Ngày khám" value={examDate} />
+                </Stack>
             </CardContent>
         </Card>
     );
@@ -185,7 +184,7 @@ function FormActions({ saving, prescriptionCount, onSave, onSaveAndPrint, onRefe
     );
 }
 
-export default function ExaminationForm({ open, examinationId, onClose, onSaved }) {
+export default function ExaminationForm({ open, examinationId, rowData, onClose, onSaved }) {
     const {
         exam, qn, loading, saving, formState, updateField,
         handleSave, handleChipClick,
@@ -193,7 +192,7 @@ export default function ExaminationForm({ open, examinationId, onClose, onSaved 
         openAdmission, setOpenAdmission,
         handleReferSaved, handleAdmissionSaved,
         snackbar, setSnackbar,
-    } = useExaminationForm({ open, examinationId, onClose, onSaved });
+    } = useExaminationForm({ open, examinationId, rowData, onClose, onSaved });
 
     const trieuChungWords = formState.trieuChung.split(/[,;]\s*/).filter(Boolean);
 

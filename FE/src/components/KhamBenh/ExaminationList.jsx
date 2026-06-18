@@ -1,11 +1,15 @@
 import { useMemo } from "react";
 import {
-    Button, Card, CardContent, Chip, Stack, Typography,
+    Button,
+    Card,
+    CardContent,
+    Chip,
+    Stack,
+    Typography,
 } from "@mui/material";
 import {
     Delete as DeleteIcon,
     Download as DownloadIcon,
-
     MedicalServices as MedicalServicesIcon,
     PendingActions as PendingActionsIcon,
     PersonAddAlt as PersonAddAltIcon,
@@ -32,7 +36,11 @@ const STATUS_MAP = {
 
 const columns = [
     { key: "stt", label: "STT", render: (row, idx) => idx + 1 },
-    { key: "ma_kham_benh", label: "Mã KB", sx: { fontWeight: 700, color: "primary.main" } },
+    {
+        key: "ma_kham_benh",
+        label: "Mã KB",
+        sx: { fontWeight: 700, color: "primary.main" },
+    },
     { key: "ho_ten", label: "Họ tên QN" },
     { key: "don_vi", label: "Đơn vị", render: (row) => row.ten_don_vi || "--" },
     {
@@ -52,7 +60,10 @@ const columns = [
         label: "Giờ vào",
         render: (row) =>
             row.ngay_kham
-                ? new Date(row.ngay_kham).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })
+                ? new Date(row.ngay_kham).toLocaleTimeString("vi-VN", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                  })
                 : "--",
     },
     {
@@ -60,10 +71,23 @@ const columns = [
         label: "Thao tác",
         render: (row, _idx, { onExam, onDelete }) => (
             <Stack direction="row" spacing={0.5}>
-                <Button size="small" variant="outlined" sx={{ textTransform: "none" }} onClick={() => onExam(row.ma_kham_benh)}>
-                    {row.trang_thai === "đã_khám" || row.trang_thai === "chờ_nhận_thuốc" ? "Xem" : "Khám"}
+                <Button
+                    size="small"
+                    variant="outlined"
+                    sx={{ textTransform: "none" }}
+                    onClick={() => onExam(row.ma_kham_benh)}
+                >
+                    {row.trang_thai === "đã_khám" ||
+                    row.trang_thai === "chờ_nhận_thuốc"
+                        ? "Xem"
+                        : "Khám"}
                 </Button>
-                <Button size="small" color="error" sx={{ textTransform: "none", minWidth: 36 }} onClick={() => onDelete(row.ma_kham_benh)}>
+                <Button
+                    size="small"
+                    color="error"
+                    sx={{ textTransform: "none", minWidth: 36 }}
+                    onClick={() => onDelete(row.ma_kham_benh)}
+                >
                     <DeleteIcon fontSize="small" />
                 </Button>
             </Stack>
@@ -74,10 +98,20 @@ const columns = [
 function Toolbar({ onReceive, onRefresh }) {
     return (
         <Stack direction="row" spacing={1.5}>
-            <Button variant="contained" startIcon={<PersonAddAltIcon />} onClick={onReceive} sx={{ textTransform: "none" }}>
+            <Button
+                variant="contained"
+                startIcon={<PersonAddAltIcon />}
+                onClick={onReceive}
+                sx={{ textTransform: "none" }}
+            >
                 Tiếp nhận QN mới
             </Button>
-            <Button variant="outlined" startIcon={<RefreshIcon />} onClick={onRefresh} sx={{ textTransform: "none" }}>
+            <Button
+                variant="outlined"
+                startIcon={<RefreshIcon />}
+                onClick={onRefresh}
+                sx={{ textTransform: "none" }}
+            >
                 Refresh
             </Button>
         </Stack>
@@ -86,20 +120,56 @@ function Toolbar({ onReceive, onRefresh }) {
 
 export default function ExaminationList() {
     const {
-        loading, searchText, setSearchText, filtered, statusCounts,
-        snackbar, setSnackbar,
-        confirmDelete, handleDeleteClick, handleDeleteConfirm,
-        openExamForm, selectedExamId, handleOpenExamForm, handleCloseExamForm,
-        openReceiveDialog, setOpenReceiveDialog,
-        handleSelectQN, loadData,
+        loading,
+        searchText,
+        setSearchText,
+        filtered,
+        statusCounts,
+        snackbar,
+        setSnackbar,
+        confirmDelete,
+        handleDeleteClick,
+        handleDeleteConfirm,
+        openExamForm,
+        selectedExamId,
+        handleOpenExamForm,
+        handleCloseExamForm,
+        openReceiveDialog,
+        setOpenReceiveDialog,
+        handleSelectQN,
+        loadData,
     } = useExaminationList();
 
     const statItems = useMemo(
         () => [
-            { label: "Chờ khám", value: statusCounts.cho, icon: <PendingActionsIcon />, color: "#F59E0B", bg: "#FEF3C7" },
-            { label: "Đang khám", value: statusCounts.dangKham, icon: <MedicalServicesIcon />, color: "#0B3B60", bg: "#DBEAFE" },
-            { label: "Đã xong", value: statusCounts.daXong, icon: <DownloadIcon />, color: "#10B981", bg: "#D1FAE5" },
-            { label: "Chuyển tuyến", value: statusCounts.chuyenTuyen, icon: <MedicalServicesIcon />, color: "#EF4444", bg: "#FEE2E2" },
+            {
+                label: "Chờ khám",
+                value: statusCounts.cho,
+                icon: <PendingActionsIcon />,
+                color: "#F59E0B",
+                bg: "#FEF3C7",
+            },
+            {
+                label: "Đang khám",
+                value: statusCounts.dangKham,
+                icon: <MedicalServicesIcon />,
+                color: "#0B3B60",
+                bg: "#DBEAFE",
+            },
+            {
+                label: "Đã xong",
+                value: statusCounts.daXong,
+                icon: <DownloadIcon />,
+                color: "#10B981",
+                bg: "#D1FAE5",
+            },
+            {
+                label: "Chuyển tuyến",
+                value: statusCounts.chuyenTuyen,
+                icon: <MedicalServicesIcon />,
+                color: "#EF4444",
+                bg: "#FEE2E2",
+            },
         ],
         [statusCounts],
     );
@@ -113,20 +183,37 @@ export default function ExaminationList() {
 
             <Card sx={{ borderRadius: 3 }}>
                 <CardContent sx={{ p: "24px !important" }}>
-                    <Stack direction={{ xs: "column", md: "row" }} spacing={2} sx={{ mb: 2, justifyContent: "space-between", alignItems: { md: "center" } }}>
-                        <Typography variant="h2">Danh sách khám ngày {todayStr}</Typography>
+                    <Stack
+                        direction={{ xs: "column", md: "row" }}
+                        spacing={2}
+                        sx={{
+                            mb: 2,
+                            justifyContent: "space-between",
+                            alignItems: { md: "center" },
+                        }}
+                    >
+                        <Typography variant="h2">
+                            Danh sách khám ngày {todayStr}
+                        </Typography>
                         <Toolbar
                             onReceive={() => setOpenReceiveDialog(true)}
                             onRefresh={loadData}
                         />
                     </Stack>
-                    <SearchBar value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Tìm kiếm ca khám..." />
+                    <SearchBar
+                        value={searchText}
+                        onChange={(e) => setSearchText(e.target.value)}
+                        placeholder="Tìm kiếm ca khám..."
+                    />
                     <DataTable
                         columns={columns}
                         rows={filtered}
                         loading={loading}
                         emptyMessage="Chưa có ca khám nào hôm nay."
-                        rowExtra={{ onExam: handleOpenExamForm, onDelete: handleDeleteClick }}
+                        rowExtra={{
+                            onExam: handleOpenExamForm,
+                            onDelete: handleDeleteClick,
+                        }}
                     />
                 </CardContent>
             </Card>
@@ -150,6 +237,7 @@ export default function ExaminationList() {
             <ExaminationForm
                 open={openExamForm}
                 examinationId={selectedExamId}
+                rowData={filtered.find(e => e.ma_kham_benh === selectedExamId)}
                 onClose={handleCloseExamForm}
                 onSaved={loadData}
             />

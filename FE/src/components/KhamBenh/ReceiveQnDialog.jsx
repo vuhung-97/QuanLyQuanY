@@ -15,7 +15,11 @@ const ROWS_PER_PAGE = 50;
 
 const qnColumns = [
     { key: "stt", label: "STT", sx: { width: 60 } },
-    { key: "ma_quan_nhan", label: "Mã QN", sx: { fontWeight: 700, color: "primary.main" } },
+    {
+        key: "ma_quan_nhan",
+        label: "Mã QN",
+        sx: { fontWeight: 700, color: "primary.main" },
+    },
     { key: "ho_ten", label: "Họ tên" },
     { key: "ngay_sinh", label: "Ngày sinh" },
     { key: "don_vi", label: "Đơn vị" },
@@ -64,7 +68,11 @@ export default function ReceiveQnDialog({ open, onClose, onSelected }) {
             const sorted = [];
             for (const p of parents) {
                 sorted.push(p);
-                sorted.push(...children.filter((c) => c.ma_don_vi_truc_thuoc === p.ma_don_vi));
+                sorted.push(
+                    ...children.filter(
+                        (c) => c.ma_don_vi_truc_thuoc === p.ma_don_vi,
+                    ),
+                );
             }
             setDonViList(sorted);
         } catch {
@@ -73,7 +81,8 @@ export default function ReceiveQnDialog({ open, onClose, onSelected }) {
     }, []);
 
     const getTenDonVi = useCallback(
-        (ma) => donViList.find((d) => d.ma_don_vi === ma)?.ten_don_vi || ma || "--",
+        (ma) =>
+            donViList.find((d) => d.ma_don_vi === ma)?.ten_don_vi || ma || "--",
         [donViList],
     );
 
@@ -126,8 +135,16 @@ export default function ReceiveQnDialog({ open, onClose, onSelected }) {
     );
 
     return (
-        <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-            <DialogTitle>Tiếp nhận quân nhân mới</DialogTitle>
+        <Dialog
+            open={open}
+            onClose={onClose}
+            maxWidth="md"
+            fullWidth
+            slotProps={{ paper: { sx: { height: "90vh" } } }}
+        >
+            <DialogTitle sx={{ textAlign: "center" }}>
+                Danh sách quân nhân
+            </DialogTitle>
             <DialogContent>
                 <Stack direction="row" spacing={2} sx={{ mt: 1, mb: 2 }}>
                     <Autocomplete
@@ -135,8 +152,16 @@ export default function ReceiveQnDialog({ open, onClose, onSelected }) {
                         value={selectedUnit}
                         onChange={handleUnitChange}
                         getOptionLabel={(o) => o.ten_don_vi || ""}
-                        isOptionEqualToValue={(o, v) => o?.ma_don_vi === v?.ma_don_vi}
-                        renderInput={(params) => <TextField {...params} label="Đơn vị" size="small" />}
+                        isOptionEqualToValue={(o, v) =>
+                            o?.ma_don_vi === v?.ma_don_vi
+                        }
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                label="Đơn vị"
+                                size="small"
+                            />
+                        )}
                         sx={{ minWidth: 280 }}
                         size="small"
                     />
