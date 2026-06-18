@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useCallback } from "react";
 import {
     Autocomplete, Box, Button, Dialog, DialogActions, DialogContent,
     DialogTitle, IconButton, Stack, TextField, Typography,
@@ -7,9 +7,29 @@ import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import useScheduleDialog from "../../../hooks/useScheduleDialog";
 import DateTimeInput from "./DateTimeInput.jsx";
 
+const getUnitOptionLabel = (o) => `${o.ma_don_vi} - ${o.ten_don_vi}`;
+const isUnitOptionEqual = (o, v) => o.ma_don_vi === v.ma_don_vi;
+const renderUnitInput = (params) => <TextField {...params} label="Chọn đơn vị" />;
+
+const LocationField = memo(function LocationField({ value, onChange }) {
+    return (
+        <TextField
+            size="small"
+            label="Địa điểm"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+        />
+    );
+});
+
 const DetailItem = memo(function DetailItem({
     index, data, unitOptions, onChange, onRemove, minDate, maxDate,
 }) {
+    const handleLocationChange = useCallback(
+        (val) => onChange(index, "dia_diem", val),
+        [index, onChange],
+    );
+
     return (
         <Box
             sx={{
@@ -43,8 +63,8 @@ const DetailItem = memo(function DetailItem({
                 <Autocomplete
                     size="small"
                     options={unitOptions}
-                    getOptionLabel={(o) => `${o.ma_don_vi} - ${o.ten_don_vi}`}
-                    isOptionEqualToValue={(o, v) => o.ma_don_vi === v.ma_don_vi}
+                    getOptionLabel={getUnitOptionLabel}
+                    isOptionEqualToValue={isUnitOptionEqual}
                     value={
                         unitOptions.find(
                             (o) => o.ma_don_vi === data.ma_don_vi,
@@ -57,9 +77,7 @@ const DetailItem = memo(function DetailItem({
                             newVal ? newVal.ma_don_vi : "",
                         )
                     }
-                    renderInput={(params) => (
-                        <TextField {...params} label="Chọn đơn vị" />
-                    )}
+                    renderInput={renderUnitInput}
                 />
                 <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
                     <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -89,13 +107,9 @@ const DetailItem = memo(function DetailItem({
                         {maxDate?.split("T")[0]}
                     </Typography>
                 )}
-                <TextField
-                    size="small"
-                    label="Địa điểm"
+                <LocationField
                     value={data.dia_diem}
-                    onChange={(e) =>
-                        onChange(index, "dia_diem", e.target.value)
-                    }
+                    onChange={handleLocationChange}
                 />
             </Stack>
         </Box>

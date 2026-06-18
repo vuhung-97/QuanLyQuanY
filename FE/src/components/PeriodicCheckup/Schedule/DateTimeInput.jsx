@@ -1,9 +1,10 @@
+import { memo } from "react";
 import { Box, Stack, Typography } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import dayjs from "dayjs";
 
-export default function DateTimeInput({ label, value, onChange, minDate, helperText }) {
+const DateTimeInput = memo(function DateTimeInput({ label, value, onChange, minDate, helperText }) {
     const dv = value ? dayjs(value) : null;
     const minDv = minDate ? dayjs(minDate.split("T")[0]) : null;
 
@@ -62,4 +63,6 @@ export default function DateTimeInput({ label, value, onChange, minDate, helperT
             )}
         </Box>
     );
-}
+});
+
+export default DateTimeInput;
