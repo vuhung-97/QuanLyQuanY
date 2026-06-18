@@ -54,7 +54,20 @@ export default function App() {
                         />
                         <Route
                             path="kham-benh"
+                            element={
+                                <Navigate
+                                    to="/kham-benh/Kham-benh-cho-quan-nhan"
+                                    replace
+                                />
+                            }
+                        />
+                        <Route
+                            path="kham-benh/Kham-benh-cho-quan-nhan"
                             element={<KhamBenhPage />}
+                        />
+                        <Route
+                            path="kham-benh/Cap-thuoc"
+                            element={<PlaceHolderPage title="Cấp thuốc" />}
                         />
                         <Route
                             path="kho-duoc"

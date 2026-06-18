@@ -20,7 +20,7 @@ router = create_crud_router(
 
 
 @router.get(
-    "/search/{search}",
+    "/search/value",
     dependencies=[Depends(require_permissions("thuoc_vtyt:read"))],
     response_model=list[ThuocVtytRead],
 )

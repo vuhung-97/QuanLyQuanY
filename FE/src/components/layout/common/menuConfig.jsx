@@ -47,6 +47,20 @@ export const defaultMenuItems = [
         title: "Khám bệnh",
         path: "/kham-benh",
         icon: <MedicalServicesIcon />,
+        children: [
+            {
+                id: "examination-list",
+                title: "Khám bệnh cho quân nhân",
+                path: "/kham-benh/Kham-benh-cho-quan-nhan",
+                icon: <PersonIcon />,
+            },
+            {
+                id: "medicine-dispensing",
+                title: "Cấp thuốc",
+                path: "/kham-benh/Cap-thuoc",
+                icon: <MedicalServicesIcon />,
+            },
+        ],
     },
     {
         id: "pharmacy",

@@ -45,6 +45,14 @@ class MedicalExaminationService:
 
         prescription_items = data.get("prescription_items")
         if prescription_items:
+            old_dts = self.db.query(DonThuoc).filter(DonThuoc.ma_kham_benh == kb_id).all()
+            for old_dt in old_dts:
+                self.db.query(ChiTietDonThuoc).filter(
+                    ChiTietDonThuoc.ma_don_thuoc == old_dt.ma_don_thuoc
+                ).delete()
+                self.db.delete(old_dt)
+            self.db.flush()
+
             dt = DonThuoc(
                 ma_quan_nhan=kb.ma_quan_nhan,
                 ma_kham_benh=kb_id,

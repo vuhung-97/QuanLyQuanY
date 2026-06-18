@@ -1,5 +1,19 @@
 import { useMemo } from "react";
-import { Box, Button, Card, CardContent, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Stack, TextField, Typography } from "@mui/material";
+import {
+    Box,
+    Button,
+    Card,
+    CardContent,
+    Chip,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Grid,
+    Stack,
+    TextField,
+    Typography,
+} from "@mui/material";
 import useExaminationForm from "../../hooks/useExaminationForm.jsx";
 import FeedbackSnackbar from "../common/FeedbackSnackbar.jsx";
 import PrescriptionForm from "./PrescriptionForm.jsx";
@@ -10,10 +24,14 @@ import symptoms from "../../data/trieu_chung.json";
 function InfoRow({ label, value }) {
     return (
         <Box>
-            <Typography variant="body2" color="text.secondary">
+            <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ fontWeight: 800 }}
+            >
                 {label}
             </Typography>
-            <Typography variant="body1" fontWeight={600}>
+            <Typography variant="body1" sx={{ textAlign: "center" }}>
                 {value}
             </Typography>
         </Box>
@@ -28,19 +46,34 @@ function PatientInfoCard({ qn, exam }) {
     return (
         <Card variant="outlined" sx={{ borderRadius: 2, bgcolor: "#F8FAFC" }}>
             <CardContent>
-                <Stack direction="row" spacing={2} sx={{ "& > *": { flex: 1, minWidth: 0 } }}>
-                    <InfoRow label="Họ và tên" value={qn?.ho_ten || exam?.ma_quan_nhan || "--"} />
-                    <InfoRow label="Đơn vị" value={qn?.ten_don_vi || qn?.ma_don_vi || "--"} />
-                    <InfoRow label="Cấp bậc" value={qn?.cap_bac || "--"} />
-                    <InfoRow label="Chức vụ" value={qn?.chuc_vu || "--"} />
-                    <InfoRow label="Ngày khám" value={examDate} />
+                <Stack
+                    direction="row"
+                    spacing={2}
+                    sx={{ "& > *": { flex: 1, minWidth: 0 } }}
+                >
+                    <InfoRow
+                        label="Họ và tên:"
+                        value={qn?.ho_ten || exam?.ma_quan_nhan || "--"}
+                    />
+                    <InfoRow
+                        label="Đơn vị:"
+                        value={qn?.ten_don_vi || qn?.ma_don_vi || "--"}
+                    />
+                    <InfoRow label="Cấp bậc:" value={qn?.cap_bac || "--"} />
+                    <InfoRow label="Chức vụ:" value={qn?.chuc_vu || "--"} />
+                    <InfoRow label="Ngày khám:" value={examDate} />
                 </Stack>
             </CardContent>
         </Card>
     );
 }
 
-function SymptomsSection({ trieuChung, onTrieuChungChange, trieuChungWords, onChipClick }) {
+function SymptomsSection({
+    trieuChung,
+    onTrieuChungChange,
+    trieuChungWords,
+    onChipClick,
+}) {
     const filteredSymptoms = useMemo(() => {
         const segments = trieuChung.split(/[,;]\s*/);
         const last = segments[segments.length - 1] || "";
@@ -62,10 +95,22 @@ function SymptomsSection({ trieuChung, onTrieuChungChange, trieuChungWords, onCh
                 onChange={(e) => onTrieuChungChange(e.target.value)}
                 placeholder="Nhập triệu chứng..."
             />
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 2, mb: 1 }}>
+            <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ mt: 2, mb: 1 }}
+            >
                 Triệu chứng có sẵn:
             </Typography>
-            <Box sx={{ maxHeight: 160, overflowY: "auto", display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+            <Box
+                sx={{
+                    maxHeight: 160,
+                    overflowY: "auto",
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: 0.5,
+                }}
+            >
                 {filteredSymptoms.map((s) => {
                     const selected = trieuChungWords.includes(s);
                     return (
@@ -85,7 +130,12 @@ function SymptomsSection({ trieuChung, onTrieuChungChange, trieuChungWords, onCh
     );
 }
 
-function DiagnosisSection({ chanDoan, onChanDoanChange, phuongPhap, onPhuongPhapChange }) {
+function DiagnosisSection({
+    chanDoan,
+    onChanDoanChange,
+    phuongPhap,
+    onPhuongPhapChange,
+}) {
     return (
         <Grid size={{ xs: 12, md: 6 }}>
             <Typography variant="h3" sx={{ mb: 1.5, color: "text.primary" }}>
@@ -119,35 +169,62 @@ function DiagnosisSection({ chanDoan, onChanDoanChange, phuongPhap, onPhuongPhap
     );
 }
 
-function PrescriptionSection({ items, onItemsChange, chanDoan, onChanDoanChange }) {
+function PrescriptionDisplay({ items }) {
+    if (!items || items.length === 0) return null;
     return (
         <Box>
             <Typography variant="h3" sx={{ mb: 1.5, color: "text.primary" }}>
-                Kê đơn thuốc
+                Đơn thuốc đã kê
             </Typography>
-            <PrescriptionForm items={items} onChange={onItemsChange} />
-            {items.length > 0 && (
-                <TextField
-                    label="Chẩn đoán (đơn thuốc)"
-                    fullWidth
-                    size="small"
-                    value={chanDoan}
-                    onChange={(e) => onChanDoanChange(e.target.value)}
-                    sx={{ mt: 1.5 }}
-                />
-            )}
+            <Stack spacing={1}>
+                {items.map((it, i) => (
+                    <Box
+                        key={i}
+                        sx={{
+                            display: "flex",
+                            gap: 2,
+                            p: 1.5,
+                            border: "1px solid",
+                            borderColor: "divider",
+                            borderRadius: 1,
+                        }}
+                    >
+                        <Typography
+                            variant="body2"
+                            fontWeight={600}
+                            sx={{ minWidth: 200 }}
+                        >
+                            {it.ten_thuoc_vtyt}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                            SL: {it.so_luong}
+                            {it.don_vi_tinh ? ` (${it.don_vi_tinh})` : ""}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                            {it.huong_dieu_tri}
+                        </Typography>
+                    </Box>
+                ))}
+            </Stack>
         </Box>
     );
 }
 
-function FormActions({ saving, prescriptionCount, onSave, onSaveAndPrint, onReferral, onAdmission }) {
+function FormActions({
+    saving,
+    hasPrescription,
+    onSave,
+    onPrescription,
+    onReferral,
+    onAdmission,
+}) {
     return (
         <DialogActions sx={{ px: 3, py: 2, justifyContent: "space-between" }}>
             <Stack direction="row" spacing={1}>
                 <Button
                     variant="contained"
                     color="success"
-                    onClick={() => onSave(false)}
+                    onClick={onSave}
                     disabled={saving}
                     sx={{ textTransform: "none" }}
                 >
@@ -155,11 +232,11 @@ function FormActions({ saving, prescriptionCount, onSave, onSaveAndPrint, onRefe
                 </Button>
                 <Button
                     variant="contained"
-                    onClick={() => onSaveAndPrint()}
-                    disabled={saving || prescriptionCount === 0}
+                    onClick={onPrescription}
+                    disabled={saving}
                     sx={{ textTransform: "none" }}
                 >
-                    Kê đơn & In
+                    {hasPrescription ? "Sửa đơn thuốc" : "Kê đơn thuốc"}
                 </Button>
             </Stack>
             <Stack direction="row" spacing={1}>
@@ -184,31 +261,67 @@ function FormActions({ saving, prescriptionCount, onSave, onSaveAndPrint, onRefe
     );
 }
 
-export default function ExaminationForm({ open, examinationId, rowData, onClose, onSaved }) {
+export default function ExaminationForm({
+    open,
+    examinationId,
+    rowData,
+    onClose,
+    onSaved,
+}) {
     const {
-        exam, qn, loading, saving, formState, updateField,
-        handleSave, handleChipClick,
-        openReferral, setOpenReferral,
-        openAdmission, setOpenAdmission,
-        handleReferSaved, handleAdmissionSaved,
-        snackbar, setSnackbar,
+        exam,
+        qn,
+        loading,
+        saving,
+        formState,
+        updateField,
+        handleSave,
+        handlePrescriptionSave,
+        handleChipClick,
+        openPrescription,
+        setOpenPrescription,
+        openReferral,
+        setOpenReferral,
+        openAdmission,
+        setOpenAdmission,
+        handleReferSaved,
+        handleAdmissionSaved,
+        snackbar,
+        setSnackbar,
     } = useExaminationForm({ open, examinationId, rowData, onClose, onSaved });
 
-    const trieuChungWords = formState.trieuChung.split(/[,;]\s*/).filter(Boolean);
+    const trieuChungWords = formState.trieuChung
+        .split(/[,;]\s*/)
+        .filter(Boolean);
 
     return (
         <>
             <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
                 <DialogTitle>
-                    <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center" }}>
+                    <Stack
+                        direction="row"
+                        sx={{
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                        }}
+                    >
                         <Typography variant="h2">Khám bệnh</Typography>
-                        {loading && <Typography variant="body2" color="text.secondary">Đang tải...</Typography>}
+                        {loading && (
+                            <Typography variant="body2" color="text.secondary">
+                                Đang tải...
+                            </Typography>
+                        )}
                     </Stack>
                 </DialogTitle>
                 <DialogContent dividers>
                     {!exam ? (
-                        <Typography color="text.secondary" sx={{ py: 4, textAlign: "center" }}>
-                            {loading ? "Đang tải dữ liệu..." : "Không tìm thấy ca khám."}
+                        <Typography
+                            color="text.secondary"
+                            sx={{ py: 4, textAlign: "center" }}
+                        >
+                            {loading
+                                ? "Đang tải dữ liệu..."
+                                : "Không tìm thấy ca khám."}
                         </Typography>
                     ) : (
                         <Stack spacing={3}>
@@ -217,23 +330,26 @@ export default function ExaminationForm({ open, examinationId, rowData, onClose,
                             <Grid container spacing={3}>
                                 <SymptomsSection
                                     trieuChung={formState.trieuChung}
-                                    onTrieuChungChange={(v) => updateField("trieuChung", v)}
+                                    onTrieuChungChange={(v) =>
+                                        updateField("trieuChung", v)
+                                    }
                                     trieuChungWords={trieuChungWords}
                                     onChipClick={handleChipClick}
                                 />
                                 <DiagnosisSection
                                     chanDoan={formState.chanDoan}
-                                    onChanDoanChange={(v) => updateField("chanDoan", v)}
+                                    onChanDoanChange={(v) =>
+                                        updateField("chanDoan", v)
+                                    }
                                     phuongPhap={formState.phuongPhap}
-                                    onPhuongPhapChange={(v) => updateField("phuongPhap", v)}
+                                    onPhuongPhapChange={(v) =>
+                                        updateField("phuongPhap", v)
+                                    }
                                 />
                             </Grid>
 
-                            <PrescriptionSection
+                            <PrescriptionDisplay
                                 items={formState.prescriptionItems}
-                                onItemsChange={(v) => updateField("prescriptionItems", v)}
-                                chanDoan={formState.prescriptionChanDoan}
-                                onChanDoanChange={(v) => updateField("prescriptionChanDoan", v)}
                             />
                         </Stack>
                     )}
@@ -241,9 +357,9 @@ export default function ExaminationForm({ open, examinationId, rowData, onClose,
                 {exam && (
                     <FormActions
                         saving={saving}
-                        prescriptionCount={formState.prescriptionItems.length}
+                        hasPrescription={formState.prescriptionItems.length > 0}
                         onSave={handleSave}
-                        onSaveAndPrint={() => handleSave(true)}
+                        onPrescription={() => setOpenPrescription(true)}
                         onReferral={() => setOpenReferral(true)}
                         onAdmission={() => setOpenAdmission(true)}
                     />
@@ -269,6 +385,13 @@ export default function ExaminationForm({ open, examinationId, rowData, onClose,
                     onSaved={handleAdmissionSaved}
                 />
             )}
+
+            <PrescriptionForm
+                open={openPrescription}
+                onClose={() => setOpenPrescription(false)}
+                onSave={handlePrescriptionSave}
+                initialItems={formState.prescriptionItems}
+            />
 
             <FeedbackSnackbar
                 open={snackbar.open}
