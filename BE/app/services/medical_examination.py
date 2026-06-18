@@ -48,7 +48,6 @@ class MedicalExaminationService:
             dt = DonThuoc(
                 ma_quan_nhan=kb.ma_quan_nhan,
                 ma_kham_benh=kb_id,
-                chan_doan=data.get("prescription_chan_doan"),
             )
             self.db.add(dt)
             self.db.flush()
