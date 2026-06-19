@@ -124,6 +124,7 @@ const TheLucField = memo(({ field, value, onChange, readOnly }) => {
         <Grid size={{ xs: 6, sm: 4, md: 2 }}>
             <Tooltip title={fieldRanges[field.name]?.tooltip || ""} arrow placement="right">
                 <TextField
+                    name={field.name}
                     label={field.label}
                     type="number"
                     value={value}

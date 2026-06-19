@@ -14,11 +14,11 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
-import useExaminationForm from "../../hooks/useExaminationForm.jsx";
+import useKhamBenhForm from "../../hooks/useKhamBenhForm.jsx";
 import FeedbackSnackbar from "../common/FeedbackSnackbar.jsx";
-import PrescriptionForm from "./PrescriptionForm.jsx";
-import ReferralDialog from "./ReferralDialog.jsx";
-import AdmissionDialog from "./AdmissionDialog.jsx";
+import DonThuocForm from "./DonThuocForm.jsx";
+import ChuyenTuyenDialog from "./ChuyenTuyenDialog.jsx";
+import NhapVienDialog from "./NhapVienDialog.jsx";
 import symptoms from "../../data/trieu_chung.json";
 
 function InfoRow({ label, value }) {
@@ -322,7 +322,7 @@ const FormActions = memo(function FormActions({
     );
 });
 
-export default function ExaminationForm({
+export default function KhamBenhForm({
     open,
     examinationId,
     rowData,
@@ -355,7 +355,7 @@ export default function ExaminationForm({
         handleAdmissionSaved,
         snackbar,
         setSnackbar,
-    } = useExaminationForm({ open, examinationId, rowData, onClose, onSaved });
+    } = useKhamBenhForm({ open, examinationId, rowData, onClose, onSaved });
 
     return (
         <>
@@ -431,7 +431,7 @@ export default function ExaminationForm({
             </Dialog>
 
             {exam && (
-                <ReferralDialog
+                <ChuyenTuyenDialog
                     open={openReferral}
                     examinationId={exam.ma_kham_benh}
                     qnId={qn?.ma_quan_nhan}
@@ -441,7 +441,7 @@ export default function ExaminationForm({
             )}
 
             {exam && (
-                <AdmissionDialog
+                <NhapVienDialog
                     open={openAdmission}
                     examinationId={exam.ma_kham_benh}
                     qnId={qn?.ma_quan_nhan}
@@ -451,7 +451,7 @@ export default function ExaminationForm({
             )}
 
             {exam && (
-                <PrescriptionForm
+                <DonThuocForm
                     open={openPrescription}
                     onClose={() => setOpenPrescription(false)}
                     onSave={handlePrescriptionSave}

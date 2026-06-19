@@ -2,19 +2,19 @@ import { useState } from "react";
 import { Alert, Box, Button, Stack, Typography } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
 import api from "../../services/api.js";
-import useScheduleData from "../../hooks/useScheduleData";
-import { getScheduleStatus, statusColor } from "../../components/PeriodicCheckup/periodicUtils";
-import ScheduleList from "../../components/PeriodicCheckup/Schedule/ScheduleList.jsx";
-import ScheduleDialog from "../../components/PeriodicCheckup/Schedule/ScheduleDialog.jsx";
-import UnitOverview from "../../components/PeriodicCheckup/Schedule/UnitOverview.jsx";
+import useLichKhamData from "../../hooks/useLichKhamData";
+import { getScheduleStatus, statusColor } from "../../components/KhamSucKhoe/periodicUtils";
+import DanhSachLich from "../../components/KhamSucKhoe/LapLich/DanhSachLich.jsx";
+import LapLichDialog from "../../components/KhamSucKhoe/LapLich/LapLichDialog.jsx";
+import TongQuanDonVi from "../../components/KhamSucKhoe/LapLich/TongQuanDonVi.jsx";
 import StatCardGrid from "../../components/common/StatCardGrid.jsx";
 import ConfirmDialog from "../../components/common/ConfirmDialog.jsx";
 
-export default function PeriodicSchedulePage() {
+export default function LapLichPage() {
     const {
         schedules, chiTietMap, unitStats, loading, error, setError,
         summaryItems, loadSchedules,
-    } = useScheduleData();
+    } = useLichKhamData();
 
     const [query, setQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState("Tất cả");
@@ -127,9 +127,9 @@ export default function PeriodicSchedulePage() {
                 sizeOverrides={{ "Thời gian khám": { md: 6 } }}
             />
 
-            <UnitOverview chiTietMap={chiTietMap} />
+            <TongQuanDonVi chiTietMap={chiTietMap} />
 
-            <ScheduleList
+            <DanhSachLich
                 schedules={filteredSchedules}
                 chiTietMap={chiTietMap}
                 unitMap={unitStats}
@@ -142,7 +142,7 @@ export default function PeriodicSchedulePage() {
                 statusColor={statusColor}
             />
 
-            <ScheduleDialog
+            <LapLichDialog
                 open={dialog.open}
                 onClose={() => setDialog({ open: false, schedule: null, chiTietList: [] })}
                 onSaved={handleDialogSaved}

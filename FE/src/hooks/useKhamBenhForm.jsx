@@ -43,7 +43,7 @@ function parseHuongDieuTri(str) {
     return { sang, trua, toi, thoi_diem_dung, cach_su_dung, ghi_chu };
 }
 
-export default function useExaminationForm({
+export default function useKhamBenhForm({
     open,
     examinationId,
     rowData,

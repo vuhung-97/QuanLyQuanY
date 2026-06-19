@@ -4,8 +4,8 @@ import {
     DialogTitle, IconButton, Stack, TextField, Typography,
 } from "@mui/material";
 import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
-import useScheduleDialog from "../../../hooks/useScheduleDialog";
-import DateTimeInput from "./DateTimeInput.jsx";
+import useLapLichDialog from "../../../hooks/useLapLichDialog";
+import ChonNgayGio from "./ChonNgayGio.jsx";
 
 const getUnitOptionLabel = (o) => `${o.ma_don_vi} - ${o.ten_don_vi}`;
 const isUnitOptionEqual = (o, v) => o.ma_don_vi === v.ma_don_vi;
@@ -75,7 +75,7 @@ const DetailItem = memo(forwardRef(function DetailItem({
                 />
                 <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
                     <Box sx={{ flex: 1, minWidth: 0 }}>
-                        <DateTimeInput
+                        <ChonNgayGio
                             label="Bắt đầu"
                             value={thoiGianBatDau}
                             onChange={setThoiGianBatDau}
@@ -83,7 +83,7 @@ const DetailItem = memo(forwardRef(function DetailItem({
                         />
                     </Box>
                     <Box sx={{ flex: 1, minWidth: 0 }}>
-                        <DateTimeInput
+                        <ChonNgayGio
                             label="Kết thúc"
                             value={thoiGianKetThuc}
                             onChange={setThoiGianKetThuc}
@@ -108,7 +108,7 @@ const DetailItem = memo(forwardRef(function DetailItem({
     );
 }));
 
-export default function ScheduleDialog({
+export default function LapLichDialog({
     open,
     onClose,
     onSaved,
@@ -129,7 +129,7 @@ export default function ScheduleDialog({
         addDetail,
         removeDetail,
         handleSubmit,
-    } = useScheduleDialog({ open, schedule, chiTietList, onSaved, onClose });
+    } = useLapLichDialog({ open, schedule, chiTietList, onSaved, onClose });
 
     const getInitialData = useCallback(
         (key) => {
@@ -158,14 +158,14 @@ export default function ScheduleDialog({
                         <Typography variant="h2">Thông tin chung</Typography>
                         <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
                             <Box sx={{ flex: 1, minWidth: 0 }}>
-                                <DateTimeInput
+                                <ChonNgayGio
                                     label="Thời gian bắt đầu"
                                     value={thoiGianBatDau}
                                     onChange={setThoiGianBatDau}
                                 />
                             </Box>
                             <Box sx={{ flex: 1, minWidth: 0 }}>
-                                <DateTimeInput
+                                <ChonNgayGio
                                     label="Thời gian kết thúc"
                                     value={thoiGianKetThuc}
                                     onChange={setThoiGianKetThuc}

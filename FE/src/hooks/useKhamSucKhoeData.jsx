@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import api from "../services/api.js";
 
-export default function useHealthCheckData() {
+export default function useKhamSucKhoeData() {
     const [schedules, setSchedules] = useState([]);
     const [units, setUnits] = useState([]);
     const [soldiers, setSoldiers] = useState([]);

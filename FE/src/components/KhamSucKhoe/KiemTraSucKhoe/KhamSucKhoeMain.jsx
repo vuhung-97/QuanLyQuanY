@@ -9,15 +9,15 @@ import {
     PersonAddAlt as PersonAddAltIcon,
 } from "@mui/icons-material";
 import useDebounce from "../../../hooks/useDebounce.jsx";
-import useHealthCheckData from "../../../hooks/useHealthCheckData";
+import useKhamSucKhoeData from "../../../hooks/useKhamSucKhoeData";
 import api from "../../../services/api.js";
 import {
     filterSoldiers, filterTabs, getPhanLoai, getTrangThai, statusChipColor,
 } from "../periodicUtils";
 import { buildXlsContent, saveWorkbook } from "../../../utils/xlsExport";
-import SoldierTable from "./SoldierTable.jsx";
+import BangQuanNhan from "./BangQuanNhan.jsx";
 import StatCardGrid from "../../common/StatCardGrid.jsx";
-import HealthCheckForm from "./HealthCheckForm.jsx";
+import KhamSucKhoeForm from "./KhamSucKhoeForm.jsx";
 
 function EmptyState({ show, message }) {
     if (!show) return null;
@@ -144,13 +144,13 @@ function ExamRecordHistoryDialog({ open, onClose, quanNhan, onViewPhieu }) {
     );
 }
 
-export default function HealthCheckMain() {
+export default function KhamSucKhoeMain() {
     const {
         soldiers, phieuMap, setPhieuMap, stats, loading, allUnitLookup,
         units, selectedSchedule, selectedUnit, selectedScheduleObj,
         selectedYear, years, filteredSchedules,
         handleYearChange, handleScheduleChange, setSelectedUnit,
-    } = useHealthCheckData();
+    } = useKhamSucKhoeData();
 
     const [filterTab, setFilterTab] = useState(0);
     const [searchText, setSearchText] = useState("");
@@ -262,7 +262,7 @@ export default function HealthCheckMain() {
             {stats && <StatCardGrid items={statsItems} />}
 
             {selectedUnit && (
-                <SoldierTable
+                <BangQuanNhan
                     soldiers={filteredSoldiers} phieuMap={phieuMap}
                     loading={loading} allUnitLookup={allUnitLookup}
                     searchText={searchText}
@@ -290,7 +290,7 @@ export default function HealthCheckMain() {
             />
 
             {formDialog.open && formDialog.qn && (
-                <HealthCheckForm
+                <KhamSucKhoeForm
                     open={formDialog.open}
                     onClose={closeFormDialog}
                     onSaved={handleFormSaved}

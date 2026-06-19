@@ -15,15 +15,15 @@ import {
     PersonAddAlt as PersonAddAltIcon,
     Refresh as RefreshIcon,
 } from "@mui/icons-material";
-import useExaminationList from "../../hooks/useExaminationList.jsx";
+import useDanhSachKhamBenh from "../../hooks/useDanhSachKhamBenh.jsx";
 import ConfirmDialog from "../common/ConfirmDialog.jsx";
 import DataTable from "../common/DataTable.jsx";
 import FeedbackSnackbar from "../common/FeedbackSnackbar.jsx";
 import SearchBar from "../common/SearchBar.jsx";
 import StatCardGrid from "../common/StatCardGrid.jsx";
-import ExaminationForm from "./ExaminationForm.jsx";
+import KhamBenhForm from "./KhamBenhForm.jsx";
 
-import ReceiveQnDialog from "./ReceiveQnDialog.jsx";
+import TiepNhanQnDialog from "./TiepNhanQnDialog.jsx";
 
 const STATUS_MAP = {
     chờ: { label: "Chờ khám", color: "warning" },
@@ -118,7 +118,7 @@ function Toolbar({ onReceive, onRefresh }) {
     );
 }
 
-export default function ExaminationList() {
+export default function DanhSachKhamBenh() {
     const {
         loading,
         searchText,
@@ -138,7 +138,7 @@ export default function ExaminationList() {
         setOpenReceiveDialog,
         handleSelectQN,
         loadData,
-    } = useExaminationList();
+    } = useDanhSachKhamBenh();
 
     const statItems = useMemo(
         () => [
@@ -218,7 +218,7 @@ export default function ExaminationList() {
                 </CardContent>
             </Card>
 
-            <ReceiveQnDialog
+            <TiepNhanQnDialog
                 open={openReceiveDialog}
                 onClose={() => setOpenReceiveDialog(false)}
                 onSelected={handleSelectQN}
@@ -234,7 +234,7 @@ export default function ExaminationList() {
                 onClose={() => setConfirmDelete({ open: false, id: null })}
             />
 
-            <ExaminationForm
+            <KhamBenhForm
                 open={openExamForm}
                 examinationId={selectedExamId}
                 rowData={filtered.find(e => e.ma_kham_benh === selectedExamId)}

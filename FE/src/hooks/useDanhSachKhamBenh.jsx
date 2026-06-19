@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import useDebounce from "./useDebounce.jsx";
 import { khamBenhService } from "../services/khamBenhService.js";
 
-export default function useExaminationList() {
+export default function useDanhSachKhamBenh() {
     const [examinations, setExaminations] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchText, setSearchText] = useState("");

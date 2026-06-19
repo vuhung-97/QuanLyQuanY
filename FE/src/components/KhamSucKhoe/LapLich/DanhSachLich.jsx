@@ -146,7 +146,7 @@ function ScheduleTableRow({
     );
 }
 
-export default function ScheduleList({
+export default function DanhSachLich({
     schedules, chiTietMap, unitMap, loading, onEdit, onDelete,
     onEditDetail, onDeleteDetail, getScheduleStatus, statusColor,
 }) {

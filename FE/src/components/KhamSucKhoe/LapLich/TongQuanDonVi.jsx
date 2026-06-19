@@ -22,7 +22,7 @@ const columns = [
     { key: "lich_da_lap", label: "Lịch đã lập" },
 ];
 
-export default function UnitOverview({ chiTietMap }) {
+export default function TongQuanDonVi({ chiTietMap }) {
     const [units, setUnits] = useState([]);
     const [loading, setLoading] = useState(true);
     const [query, setQuery] = useState("");

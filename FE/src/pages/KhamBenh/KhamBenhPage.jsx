@@ -1,5 +1,5 @@
 import { Box, Stack, Typography } from "@mui/material";
-import ExaminationList from "../../components/KhamBenh/ExaminationList.jsx";
+import DanhSachKhamBenh from "../../components/KhamBenh/DanhSachKhamBenh.jsx";
 
 export default function KhamBenhPage() {
     return (
@@ -12,7 +12,7 @@ export default function KhamBenhPage() {
                     Tiếp nhận, khám bệnh, kê đơn thuốc, chuyển tuyến và quản lý nội trú.
                 </Typography>
             </Box>
-            <ExaminationList />
+            <DanhSachKhamBenh />
         </Stack>
     );
 }

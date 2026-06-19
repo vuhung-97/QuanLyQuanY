@@ -35,7 +35,7 @@ function fmtDate(d) {
     return d ? new Date(d).toLocaleDateString("vi-VN") : "--";
 }
 
-export default function ReceiveQnDialog({ open, onClose, onSelected }) {
+export default function TiepNhanQnDialog({ open, onClose, onSelected }) {
     const [allSoldiers, setAllSoldiers] = useState([]);
     const [page, setPage] = useState(0);
     const [filterText, setFilterText] = useState("");

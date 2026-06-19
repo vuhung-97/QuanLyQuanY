@@ -7,8 +7,8 @@ import MainLayout from "./components/layout/MainLayout.jsx";
 import DashboardPage from "./pages/Dashboard/DashboardPage.jsx";
 import ProtectedRoute from "./components//common/ProtectedRoute.jsx";
 import AdminRoute from "./components/common/AdminRoute.jsx";
-import PeriodicSchedulePage from "./pages/PeriodicCheckup/PeriodicSchedulePage.jsx";
-import PeriodicCheckupPage from "./pages/PeriodicCheckup/PeriodicCheckupPage.jsx";
+import LapLichPage from "./pages/KhamSucKhoe/LapLichPage.jsx";
+import KhamSucKhoePage from "./pages/KhamSucKhoe/KhamSucKhoePage.jsx";
 import KhamBenhPage from "./pages/KhamBenh/KhamBenhPage.jsx";
 import CapThuocPage from "./pages/KhamBenh/CapThuocPage.jsx";
 import PlaceHolderPage from "./components/common/PlaceHolderPage.jsx";
@@ -41,11 +41,11 @@ export default function App() {
                         />
                         <Route
                             path="kham-dinh-ky/lap-lich"
-                            element={<PeriodicSchedulePage />}
+                            element={<LapLichPage />}
                         />
                         <Route
                             path="kham-dinh-ky/kham-suc-khoe"
-                            element={<PeriodicCheckupPage />}
+                            element={<KhamSucKhoePage />}
                         />
                         <Route
                             path="noi-tru"

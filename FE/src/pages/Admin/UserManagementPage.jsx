@@ -5,28 +5,15 @@ import {
     Button,
     Card,
     CardContent,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    FormControlLabel,
     Grid,
-    MenuItem,
     Stack,
-    Switch,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    TextField,
     Typography,
 } from "@mui/material";
 import {
     Add as AddIcon,
     Delete as DeleteIcon,
 } from "@mui/icons-material";
+import UserFormDialog from "../../components/admin/UserFormDialog.jsx";
 import api from "../../services/api.js";
 import SearchBar from "../../components/common/SearchBar.jsx";
 import FeedbackSnackbar from "../../components/common/FeedbackSnackbar.jsx";
@@ -36,27 +23,16 @@ import TableCard from "../../components/admin/TableCard.jsx";
 import UserTableRow from "../../components/admin/UserTableRow.jsx";
 import ConfirmDialog from "../../components/common/ConfirmDialog.jsx";
 
-const emptyForm = {
-    ten_dang_nhap: "",
-    mat_khau: "",
-    ho_ten: "",
-    id_vai_tro: "",
-    id_quan_nhan: "",
-    trang_thai: true,
-};
-
 export default function UserManagementPage() {
     const [users, setUsers] = useState([]);
     const [roles, setRoles] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const [query, setQuery] = useState("");
     const debouncedQuery = useDebounce(query);
     const [openDialog, setOpenDialog] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
-    const [form, setForm] = useState(emptyForm);
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [deleting, setDeleting] = useState(false);
 
@@ -113,22 +89,12 @@ export default function UserManagementPage() {
 
     const handleOpenCreate = () => {
         setEditingUser(null);
-        setForm(emptyForm);
         setOpenDialog(true);
     };
 
     const handleOpenEdit = (user) => {
         setEditingUser(user);
-        setForm({ ...emptyForm, ...user, mat_khau: "" });
         setOpenDialog(true);
-    };
-
-    const handleChange = (event) => {
-        const { name, value, checked, type } = event.target;
-        setForm((current) => ({
-            ...current,
-            [name]: type === "checkbox" ? checked : value,
-        }));
     };
 
     const handleOpenDelete = (user) => {
@@ -153,43 +119,15 @@ export default function UserManagementPage() {
         }
     };
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        setSaving(true);
-        setError("");
-        try {
-            const payload = { ...form };
-            if (!editingUser) delete payload.id;
-            if (editingUser && !payload.mat_khau) delete payload.mat_khau;
-
-            if (editingUser) {
-                const res = await api.patch(
-                    `/nguoi_dung/${editingUser.id}`,
-                    payload,
-                );
-                setUsers((current) =>
-                    current.map((user) =>
-                        user.id === editingUser.id ? res.data : user,
-                    ),
-                );
-            } else {
-                const res = await api.post("/nguoi_dung", payload);
-                setUsers((current) => [res.data, ...current]);
-            }
-            setOpenDialog(false);
-            setSuccess(
-                editingUser
-                    ? "Cập nhật tài khoản thành công"
-                    : "Thêm tài khoản thành công",
+    const handleDialogSaved = (savedUser, isEdit) => {
+        if (isEdit) {
+            setUsers((current) =>
+                current.map((user) => (user.id === savedUser.id ? savedUser : user)),
             );
-        } catch (err) {
-            setError(
-                err.response?.data?.detail ||
-                    "Không thể lưu tài khoản người dùng.",
-            );
-        } finally {
-            setSaving(false);
+        } else {
+            setUsers((current) => [savedUser, ...current]);
         }
+        setSuccess(isEdit ? "Cập nhật tài khoản thành công" : "Thêm tài khoản thành công");
     };
 
     return (
@@ -292,99 +230,13 @@ export default function UserManagementPage() {
                 </DataTable>
             </TableCard>
 
-            <Dialog
+            <UserFormDialog
                 open={openDialog}
                 onClose={() => setOpenDialog(false)}
-                fullWidth
-                maxWidth="sm"
-            >
-                <Box component="form" onSubmit={handleSubmit}>
-                    <DialogTitle>
-                        {editingUser
-                            ? "Cập nhật tài khoản"
-                            : "Thêm tài khoản người dùng"}
-                    </DialogTitle>
-                    <DialogContent>
-                        <Stack spacing={2} sx={{ pt: 1 }}>
-                            <TextField
-                                name="ten_dang_nhap"
-                                label="Tên đăng nhập"
-                                value={form.ten_dang_nhap}
-                                onChange={handleChange}
-                                required
-                                slotProps={{ htmlInput: { maxLength: 50 } }}
-                            />
-                            <TextField
-                                name="mat_khau"
-                                label={
-                                    editingUser
-                                        ? "Mật khẩu mới (nếu đổi)"
-                                        : "Mật khẩu"
-                                }
-                                type="password"
-                                value={form.mat_khau}
-                                onChange={handleChange}
-                                required={!editingUser}
-                                helperText="Tối thiểu 8 ký tự"
-                                slotProps={{
-                                    htmlInput: { minLength: 8 },
-                                }}
-                            />
-                            <TextField
-                                name="ho_ten"
-                                label="Họ tên"
-                                value={form.ho_ten}
-                                onChange={handleChange}
-                                required
-                                slotProps={{ htmlInput: { maxLength: 100 } }}
-                            />
-                            <TextField
-                                select
-                                name="id_vai_tro"
-                                label="Vai trò"
-                                value={form.id_vai_tro || ""}
-                                onChange={handleChange}
-                            >
-                                <MenuItem value="">Chưa gán</MenuItem>
-                                {roles.map((role) => (
-                                    <MenuItem key={role.id} value={role.id}>
-                                        {role.ten_vai_tro || role.id}
-                                    </MenuItem>
-                                ))}
-                            </TextField>
-                            <TextField
-                                name="id_quan_nhan"
-                                label="Mã quân nhân"
-                                value={form.id_quan_nhan || ""}
-                                onChange={handleChange}
-                                slotProps={{ htmlInput: { maxLength: 20 } }}
-                            />
-                            <FormControlLabel
-                                control={
-                                    <Switch
-                                        name="trang_thai"
-                                        checked={Boolean(form.trang_thai)}
-                                        onChange={handleChange}
-                                    />
-                                }
-                                label="Tài khoản đang hoạt động"
-                            />
-                        </Stack>
-                    </DialogContent>
-                    <DialogActions sx={{ px: 3, pb: 2.5 }}>
-                        <Button onClick={() => setOpenDialog(false)}>
-                            Hủy
-                        </Button>
-                        <Button
-                            type="submit"
-                            variant="contained"
-                            disabled={saving}
-                        >
-                            {saving ? "Đang lưu..." : "Lưu"}
-                        </Button>
-                    </DialogActions>
-                </Box>
-            </Dialog>
+                editingUser={editingUser}
+                roles={roles}
+                onSaved={handleDialogSaved}
+            />
 
             <ConfirmDialog
                 open={!!deleteTarget}

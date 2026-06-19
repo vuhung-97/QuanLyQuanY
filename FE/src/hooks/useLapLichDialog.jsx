@@ -5,7 +5,7 @@ function genKey() {
     return Math.random().toString(36).slice(2, 11);
 }
 
-export default function useScheduleDialog({
+export default function useLapLichDialog({
     open,
     schedule,
     chiTietList,

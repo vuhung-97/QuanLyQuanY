@@ -9,9 +9,9 @@ import {
     fallbackSchedules,
     formatDate,
     getScheduleStatus,
-} from "../components/PeriodicCheckup/periodicUtils.js";
+} from "../components/KhamSucKhoe/periodicUtils.js";
 
-export default function useScheduleData() {
+export default function useLichKhamData() {
     const [schedules, setSchedules] = useState([]);
     const [chiTietMap, setChiTietMap] = useState({});
     const [unitStats, setUnitStats] = useState(null);

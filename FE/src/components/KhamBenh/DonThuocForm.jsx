@@ -246,7 +246,7 @@ function buildHuongDieuTri(item) {
     return result;
 }
 
-export default function PrescriptionForm({
+export default function DonThuocForm({
     open,
     onClose,
     onSave,

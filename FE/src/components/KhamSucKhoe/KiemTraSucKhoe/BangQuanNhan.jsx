@@ -60,7 +60,7 @@ const SoldierRows = memo(function SoldierRows({ soldiers, phieuMap, allUnitLooku
     });
 });
 
-export default function SoldierTable({
+export default function BangQuanNhan({
     soldiers,
     phieuMap,
     loading,

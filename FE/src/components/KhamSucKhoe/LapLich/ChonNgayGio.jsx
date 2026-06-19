@@ -4,7 +4,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import dayjs from "dayjs";
 
-const DateTimeInput = memo(function DateTimeInput({ label, value, onChange, minDate, helperText }) {
+const ChonNgayGio = memo(function ChonNgayGio({ label, value, onChange, minDate, helperText }) {
     const dv = value ? dayjs(value) : null;
     const minDv = minDate ? dayjs(minDate.split("T")[0]) : null;
 
@@ -65,4 +65,4 @@ const DateTimeInput = memo(function DateTimeInput({ label, value, onChange, minD
     );
 });
 
-export default DateTimeInput;
+export default ChonNgayGio;

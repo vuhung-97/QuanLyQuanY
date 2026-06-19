@@ -17,7 +17,7 @@ FE/
     │   ├── Login/              # Đăng nhập
     │   ├── Dashboard/          # Trang chủ
     │   ├── KhamBenh/           # Khám bệnh (KhamBenhPage.jsx, CapThuocPage.jsx)
-    │   ├── PeriodicCheckup/    # Khám định kỳ (SchedulePage, CheckupPage)
+    │   ├── KhamSucKhoe/    # Khám định kỳ (LapLichPage.jsx, KhamSucKhoePage.jsx)
     │   └── Admin/              # Admin (UserManagement, RolePermission, AuditLog)
     │
     ├── components/         # UI building blocks
@@ -42,19 +42,27 @@ FE/
     │   │   └── common/
     │   │
     │   ├── KhamBenh/        # Components cho module Khám bệnh
-    │   │   ├── ExaminationList.jsx   # Danh sách ca khám + DataTable + stat cards
-    │   │   ├── ExaminationForm.jsx   # Dialog khám bệnh (form)
-    │   │   ├── PrescriptionForm.jsx  # Kê đơn thuốc
-    │   │   ├── ReceiveQnDialog.jsx   # Dialog tiếp nhận quân nhân mới
-    │   │   ├── PatientHistory.jsx    # Lịch sử khám
-    │   │   ├── ReferralDialog.jsx    # Chuyển tuyến
-    │   │   ├── AdmissionDialog.jsx   # Nhập viện
+    │   │   ├── DanhSachKhamBenh.jsx  # Danh sách ca khám + DataTable + stat cards
+    │   │   ├── KhamBenhForm.jsx      # Dialog khám bệnh (form)
+    │   │   ├── DonThuocForm.jsx      # Kê đơn thuốc
+    │   │   ├── TiepNhanQnDialog.jsx  # Dialog tiếp nhận quân nhân mới
+    │   │   ├── LichSuKhamBenh.jsx    # Lịch sử khám
+    │   │   ├── ChuyenTuyenDialog.jsx # Chuyển tuyến
+    │   │   ├── NhapVienDialog.jsx    # Nhập viện
     │   │   ├── CapThuocList.jsx      # Danh sách QN chờ cấp thuốc
     │   │   └── CapThuocForm.jsx      # Dialog cấp thuốc + in đơn
     │   │
-    │   ├── PeriodicCheckup/ # Components cho module Khám định kỳ
-    │   │   ├── HealthCheck/          # Form khám sức khỏe (HealthCheckForm.jsx + tabs)
-    │   │   ├── Schedule/             # Lập lịch
+    │   ├── KhamSucKhoe/ # Components cho module Khám định kỳ
+    │   │   ├── KiemTraSucKhoe/          # Form khám sức khỏe (KhamSucKhoeForm.jsx + tabs)
+    │   │   │   ├── KhamSucKhoeMain.jsx
+    │   │   │   ├── KhamSucKhoeForm.jsx
+    │   │   │   ├── BangQuanNhan.jsx
+    │   │   │   └── tabs/ (TienSuTab, LamSangTab, CanLamSangTab, KetLuanTab)
+    │   │   ├── LapLich/             # Lập lịch
+    │   │   │   ├── DanhSachLich.jsx
+    │   │   │   ├── LapLichDialog.jsx
+    │   │   │   ├── ChonNgayGio.jsx
+    │   │   │   └── TongQuanDonVi.jsx
     │   │   └── periodicUtils.js
     │   │
     │   └── admin/           # Components cho module Admin
@@ -66,14 +74,15 @@ FE/
     │       └── TableEmptyRow.jsx
     │
     ├── hooks/              # Custom hooks — tách logic khỏi UI
-    │   ├── useExaminationForm.jsx    # Form khám bệnh
-    │   ├── useExaminationList.jsx    # Danh sách khám bệnh (main list + dialogs)
-    │   ├── useHealthCheckForm.jsx    # Form khám sức khỏe
-    │   ├── useHealthCheckData.jsx    # Data cho khám sức khỏe
-    │   ├── useScheduleDialog.jsx     # Dialog lập lịch
-    │   ├── useScheduleData.jsx       # Data lập lịch
+    │   ├── useKhamBenhForm.jsx       # Form khám bệnh
+    │   ├── useDanhSachKhamBenh.jsx   # Danh sách khám bệnh (main list + dialogs)
+    │   ├── useKhamSucKhoeForm.jsx    # Form khám sức khỏe
+    │   ├── useKhamSucKhoeData.jsx    # Data cho khám sức khỏe
+    │   ├── useLapLichDialog.jsx      # Dialog lập lịch
+    │   ├── useLichKhamData.jsx       # Data lập lịch
     │   ├── usePermissionDiff.js      # So sánh phân quyền
-    │   └── useCapThuoc.jsx           # Cấp thuốc (danh sách chờ, cấp thuốc)
+    │   ├── useCapThuoc.jsx           # Cấp thuốc (danh sách chờ, cấp thuốc)
+    │   └── useDebounce.jsx           # Debounce hook dùng chung
     │
     ├── services/           # API layer
     │   ├── api.js              # Axios instance (baseURL, JWT interceptor, 401 handler)

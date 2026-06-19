@@ -1,7 +1,7 @@
 import { Box, Stack, Typography } from "@mui/material";
-import HealthCheckMain from "../../components/PeriodicCheckup/HealthCheck/HealthCheckMain.jsx";
+import KhamSucKhoeMain from "../../components/KhamSucKhoe/KiemTraSucKhoe/KhamSucKhoeMain.jsx";
 
-export default function PeriodicCheckupPage() {
+export default function KhamSucKhoePage() {
     return (
         <Stack spacing={3}>
             <Box>
@@ -12,7 +12,7 @@ export default function PeriodicCheckupPage() {
                     Tra cứu danh sách quân nhân, nhập kết quả khám và theo dõi tiến độ.
                 </Typography>
             </Box>
-            <HealthCheckMain />
+            <KhamSucKhoeMain />
         </Stack>
     );
 }
