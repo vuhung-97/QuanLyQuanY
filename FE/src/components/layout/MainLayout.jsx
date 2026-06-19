@@ -7,7 +7,7 @@ import Footer from "./footer/Footer.jsx";
 import { useSidebarState } from "./common/hooks.js";
 import AccountSettingsDialog from "./accountSetting/AccountSettingsDialog.jsx";
 import { decodeJWT } from "../../services/api.js";
-import { defaultMenuItems, adminMenuItems } from "./common/menuConfig.jsx";
+import { defaultMenuItems, adminMenuItems, filterMenuByRole } from "./common/menuConfig.jsx";
 import {
     DEFAULT_USER,
     STORAGE_KEYS,
@@ -45,13 +45,12 @@ export default function MainLayout({
         return token ? decodeJWT(token) : null;
     }, []);
 
-    const isAdmin =
-        jwtPayload?.role === "ROLE_ADMIN" || jwtPayload?.role === "ROLE_CNQY";
+    const role = jwtPayload?.role || "";
 
     const filteredMenuItems = useMemo(() => {
-        if (isAdmin) return adminItems;
-        return menuItems;
-    }, [isAdmin]);
+        const items = (role === "ROLE_ADMIN" || role === "ROLE_CNQY") ? adminItems : menuItems;
+        return filterMenuByRole(items, role);
+    }, [role]);
 
     const user = useMemo(() => {
         if (propUser) return propUser;
