@@ -138,7 +138,7 @@ class MedicalExaminationService:
         kb = self.db.query(KhamBenh).filter(KhamBenh.ma_kham_benh == kb_id).first()
         if not kb:
             raise ValueError(f"KhamBenh {kb_id} not found")
-        kb.trang_thai = "đã_khám"
+        kb.trang_thai = "đã_nhận_thuốc"
         self.db.commit()
         self.db.refresh(kb)
         return kb

@@ -284,10 +284,6 @@ export default function PrescriptionForm({
         onClose();
     }, [onSave, onClose]);
 
-    const handlePrint = useCallback(() => {
-        window.print();
-    }, []);
-
     const validCount = rows.length;
 
     return (
@@ -321,13 +317,6 @@ export default function PrescriptionForm({
             </DialogContent>
             <DialogActions sx={{ px: 3, pb: 2.5 }}>
                 <Button onClick={onClose}>Hủy</Button>
-                <Button
-                    variant="outlined"
-                    onClick={handlePrint}
-                    disabled={validCount === 0}
-                >
-                    In đơn thuốc
-                </Button>
                 <Button
                     variant="contained"
                     onClick={handleSave}

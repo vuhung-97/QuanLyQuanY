@@ -117,6 +117,7 @@ const SymptomsSection = memo(function SymptomsSection({
     trieuChung,
     onTrieuChungChange,
     onChipClick,
+    readOnly,
 }) {
     const trieuChungWords = useMemo(
         () => trieuChung.split(/[,;]\s*/).filter(Boolean),
@@ -148,6 +149,7 @@ const SymptomsSection = memo(function SymptomsSection({
                 value={trieuChung}
                 onChange={handleTextFieldChange}
                 placeholder="Nhập triệu chứng..."
+                disabled={readOnly}
             />
             <Typography
                 variant="body2"
@@ -180,6 +182,7 @@ const DiagnosisSection = memo(function DiagnosisSection({
     onChanDoanChange,
     phuongPhap,
     onPhuongPhapChange,
+    readOnly,
 }) {
     return (
         <Grid size={{ xs: 12, md: 6 }}>
@@ -200,6 +203,7 @@ const DiagnosisSection = memo(function DiagnosisSection({
                     fullWidth
                     value={chanDoan}
                     onChange={(e) => onChanDoanChange(e.target.value)}
+                    disabled={readOnly}
                 />
                 <TextField
                     label="Phương pháp điều trị"
@@ -208,6 +212,7 @@ const DiagnosisSection = memo(function DiagnosisSection({
                     fullWidth
                     value={phuongPhap}
                     onChange={(e) => onPhuongPhapChange(e.target.value)}
+                    disabled={readOnly}
                 />
             </Stack>
         </Grid>
@@ -262,7 +267,18 @@ const FormActions = memo(function FormActions({
     onPrescription,
     onReferral,
     onAdmission,
+    isReadOnly,
+    onClose,
 }) {
+    if (isReadOnly) {
+        return (
+            <DialogActions sx={{ px: 3, py: 2 }}>
+                <Button onClick={onClose} sx={{ textTransform: "none" }}>
+                    Đóng
+                </Button>
+            </DialogActions>
+        );
+    }
     return (
         <DialogActions sx={{ px: 3, py: 2, justifyContent: "space-between" }}>
             <Stack direction="row" spacing={1}>
@@ -318,6 +334,7 @@ export default function ExaminationForm({
         qn,
         loading,
         saving,
+        isReadOnly,
         trieuChung,
         setTrieuChung,
         chanDoan,
@@ -384,12 +401,14 @@ export default function ExaminationForm({
                                     trieuChung={trieuChung}
                                     onTrieuChungChange={setTrieuChung}
                                     onChipClick={handleChipClick}
+                                    readOnly={isReadOnly}
                                 />
                                 <DiagnosisSection
                                     chanDoan={chanDoan}
                                     onChanDoanChange={setChanDoan}
                                     phuongPhap={phuongPhap}
                                     onPhuongPhapChange={setPhuongPhap}
+                                    readOnly={isReadOnly}
                                 />
                             </Grid>
 
@@ -405,6 +424,8 @@ export default function ExaminationForm({
                         onPrescription={() => setOpenPrescription(true)}
                         onReferral={() => setOpenReferral(true)}
                         onAdmission={() => setOpenAdmission(true)}
+                        isReadOnly={isReadOnly}
+                        onClose={onClose}
                     />
                 )}
             </Dialog>

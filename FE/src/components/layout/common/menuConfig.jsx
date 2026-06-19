@@ -60,6 +60,12 @@ export const defaultMenuItems = [
                 path: "/kham-benh/Cap-thuoc",
                 icon: <MedicalServicesIcon />,
             },
+            {
+                id: "referral",
+                title: "Chuyển tuyến",
+                path: "/kham-benh/Chuyen-tuyen",
+                icon: <AssignmentTurnedInIcon />,
+            },
         ],
     },
     {

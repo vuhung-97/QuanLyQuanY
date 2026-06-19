@@ -6,21 +6,29 @@ const THOI_DIEM_LABEL_TO_VALUE = {
     "Uống trước ăn": "truoc_an",
     "Trước khi ngủ": "truoc_khi_ngu",
     "Sau khi thức dậy": "sau_khi_thuc_day",
-    "Không": "khong",
+    Không: "khong",
 };
 
 const CACH_DUNG_LABEL_TO_VALUE = {
-    "Uống": "uong",
-    "Bôi": "boi",
-    "Tiêm": "tiem",
-    "Xông": "xong",
-    "Ngậm": "ngam",
+    Uống: "uong",
+    Bôi: "boi",
+    Tiêm: "tiem",
+    Xông: "xong",
+    Ngậm: "ngam",
     "Nhỏ mắt": "nhot",
-    "Khác": "khac",
+    Khác: "khac",
 };
 
 function parseHuongDieuTri(str) {
-    if (!str) return { sang: 0, trua: 0, toi: 0, thoi_diem_dung: "sau_an", cach_su_dung: "uong", ghi_chu: "" };
+    if (!str)
+        return {
+            sang: 0,
+            trua: 0,
+            toi: 0,
+            thoi_diem_dung: "sau_an",
+            cach_su_dung: "uong",
+            ghi_chu: "",
+        };
     const parts = str.split(" | ");
     const lieu = parts[0] || "";
     const thoiDiemLabel = parts[1] || "";
@@ -30,10 +38,8 @@ function parseHuongDieuTri(str) {
     const sang = parseInt(lieuParts[0]?.replace("Sáng: ", "")) || 0;
     const trua = parseInt(lieuParts[1]?.replace("Trưa: ", "")) || 0;
     const toi = parseInt(lieuParts[2]?.replace("Tối: ", "")) || 0;
-    const thoi_diem_dung =
-        THOI_DIEM_LABEL_TO_VALUE[thoiDiemLabel] || "sau_an";
-    const cach_su_dung =
-        CACH_DUNG_LABEL_TO_VALUE[cachDungLabel] || "uong";
+    const thoi_diem_dung = THOI_DIEM_LABEL_TO_VALUE[thoiDiemLabel] || "sau_an";
+    const cach_su_dung = CACH_DUNG_LABEL_TO_VALUE[cachDungLabel] || "uong";
     return { sang, trua, toi, thoi_diem_dung, cach_su_dung, ghi_chu };
 }
 
@@ -45,6 +51,11 @@ export default function useExaminationForm({
     onSaved,
 }) {
     const [exam, setExam] = useState(null);
+    const isReadOnly =
+        exam &&
+        ["đã_nhận_thuốc", "chuyển_tuyến", "nhập_viện"].includes(
+            exam.trang_thai,
+        );
     const [qn, setQn] = useState(null);
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -76,9 +87,7 @@ export default function useExaminationForm({
                 if (data.don_thuoc) {
                     for (const dt of data.don_thuoc) {
                         for (const ct of dt.chi_tiet_don_thuoc || []) {
-                            const parsed = parseHuongDieuTri(
-                                ct.huong_dieu_tri,
-                            );
+                            const parsed = parseHuongDieuTri(ct.huong_dieu_tri);
                             items.push({
                                 ma_thuoc_vtyt: ct.ma_thuoc_vtyt,
                                 ten_thuoc_vtyt: ct.ten_thuoc_vtyt,
@@ -141,63 +150,65 @@ export default function useExaminationForm({
         };
     }, [open, examinationId]);
 
-    const handleSave = useCallback(
-        async () => {
-            if (!exam) return;
-            if (!trieuChung.trim()) {
-                setSnackbar({
-                    open: true,
-                    message: "Vui lòng nhập triệu chứng.",
-                    severity: "warning",
-                });
-                return;
-            }
-            setSaving(true);
-            try {
-                const hasPrescription = prescriptionItems.length > 0;
-                const payload = {
-                    trieu_chung: trieuChung,
-                    chan_doan: chanDoan,
-                    phuong_phap_dieu_tri: phuongPhap,
-                };
+    const handleSave = useCallback(async () => {
+        if (!exam) return;
+        if (!trieuChung.trim()) {
+            setSnackbar({
+                open: true,
+                message: "Vui lòng nhập triệu chứng.",
+                severity: "warning",
+            });
+            return;
+        }
+        setSaving(true);
+        try {
+            const hasPrescription = prescriptionItems.length > 0;
+            const payload = {
+                trieu_chung: trieuChung,
+                chan_doan: chanDoan,
+                phuong_phap_dieu_tri: phuongPhap,
+            };
 
-                let message;
-                if (hasPrescription) {
-                    payload.prescription_items = prescriptionItems;
-                    await khamBenhService.completeExamination(
-                        exam.ma_kham_benh,
-                        payload,
-                    );
-                    message = "Đã lưu và kê đơn thành công.";
-                } else {
-                    const isFull =
-                        chanDoan.trim() &&
-                        phuongPhap.trim();
-                    payload.trang_thai = isFull ? "đã_khám" : "đang_khám";
-                    await khamBenhService.update(exam.ma_kham_benh, payload);
-                    message = "Đã lưu kết quả khám.";
-                }
-
-                setSnackbar({
-                    open: true,
-                    message,
-                    severity: "success",
-                });
-                onSaved?.();
-                setTimeout(onClose, 800);
-            } catch (err) {
-                setSnackbar({
-                    open: true,
-                    message:
-                        err.response?.data?.detail || "Lỗi lưu kết quả khám.",
-                    severity: "error",
-                });
-            } finally {
-                setSaving(false);
+            let message;
+            if (hasPrescription) {
+                payload.prescription_items = prescriptionItems;
+                await khamBenhService.completeExamination(
+                    exam.ma_kham_benh,
+                    payload,
+                );
+                message = "Đã lưu và kê đơn thành công.";
+            } else {
+                const isFull = chanDoan.trim() && phuongPhap.trim();
+                payload.trang_thai = isFull ? "đã_khám" : "đang_khám";
+                await khamBenhService.update(exam.ma_kham_benh, payload);
+                message = "Đã lưu kết quả khám.";
             }
-        },
-        [exam, trieuChung, chanDoan, phuongPhap, prescriptionItems, onSaved, onClose],
-    );
+
+            setSnackbar({
+                open: true,
+                message,
+                severity: "success",
+            });
+            onSaved?.();
+            setTimeout(onClose, 800);
+        } catch (err) {
+            setSnackbar({
+                open: true,
+                message: err.response?.data?.detail || "Lỗi lưu kết quả khám.",
+                severity: "error",
+            });
+        } finally {
+            setSaving(false);
+        }
+    }, [
+        exam,
+        trieuChung,
+        chanDoan,
+        phuongPhap,
+        prescriptionItems,
+        onSaved,
+        onClose,
+    ]);
 
     const handlePrescriptionSave = useCallback((items) => {
         setPrescriptionItems(items);
@@ -238,6 +249,7 @@ export default function useExaminationForm({
         qn,
         loading,
         saving,
+        isReadOnly,
         trieuChung,
         setTrieuChung,
         chanDoan,

@@ -10,6 +10,7 @@ import AdminRoute from "./components/common/AdminRoute.jsx";
 import PeriodicSchedulePage from "./pages/PeriodicCheckup/PeriodicSchedulePage.jsx";
 import PeriodicCheckupPage from "./pages/PeriodicCheckup/PeriodicCheckupPage.jsx";
 import KhamBenhPage from "./pages/KhamBenh/KhamBenhPage.jsx";
+import CapThuocPage from "./pages/KhamBenh/CapThuocPage.jsx";
 import PlaceHolderPage from "./components/common/PlaceHolderPage.jsx";
 import UserManagementPage from "./pages/Admin/UserManagementPage.jsx";
 import RolePermissionPage from "./pages/Admin/RolePermissionPage.jsx";
@@ -67,7 +68,11 @@ export default function App() {
                         />
                         <Route
                             path="kham-benh/Cap-thuoc"
-                            element={<PlaceHolderPage title="Cấp thuốc" />}
+                            element={<CapThuocPage />}
+                        />
+                        <Route
+                            path="kham-benh/Chuyen-tuyen"
+                            element={<PlaceHolderPage title="Chuyển tuyến" />}
                         />
                         <Route
                             path="kho-duoc"

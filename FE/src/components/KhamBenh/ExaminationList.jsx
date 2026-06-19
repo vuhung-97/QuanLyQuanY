@@ -29,6 +29,7 @@ const STATUS_MAP = {
     chờ: { label: "Chờ khám", color: "warning" },
     đang_khám: { label: "Đang khám", color: "info" },
     chờ_nhận_thuốc: { label: "Chờ nhận thuốc", color: "warning" },
+    đã_nhận_thuốc: { label: "Đã nhận thuốc", color: "success" },
     đã_khám: { label: "Đã xong", color: "success" },
     chuyển_tuyến: { label: "Chuyển tuyến", color: "error" },
     nhập_viện: { label: "Nhập viện", color: "secondary" },
@@ -77,8 +78,7 @@ const columns = [
                     sx={{ textTransform: "none" }}
                     onClick={() => onExam(row.ma_kham_benh)}
                 >
-                    {row.trang_thai === "đã_khám" ||
-                    row.trang_thai === "chờ_nhận_thuốc"
+                    {["đã_khám", "chờ_nhận_thuốc", "đã_nhận_thuốc"].includes(row.trang_thai)
                         ? "Xem"
                         : "Khám"}
                 </Button>

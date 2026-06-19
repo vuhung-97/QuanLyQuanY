@@ -52,7 +52,7 @@ export default function useExaminationList() {
         return {
             cho: count("chờ"),
             dangKham: count("đang_khám"),
-            daXong: count("đã_khám") + count("chờ_nhận_thuốc"),
+            daXong: count("đã_khám") + count("chờ_nhận_thuốc") + count("đã_nhận_thuốc"),
             chuyenTuyen: count("chuyển_tuyến") + count("nhập_viện"),
         };
     }, [examinations]);

@@ -16,7 +16,7 @@ FE/
     ├── pages/              # 1 page = 1 route, thin orchestrator
     │   ├── Login/              # Đăng nhập
     │   ├── Dashboard/          # Trang chủ
-    │   ├── KhamBenh/           # Khám bệnh (KhamBenhPage.jsx)
+    │   ├── KhamBenh/           # Khám bệnh (KhamBenhPage.jsx, CapThuocPage.jsx)
     │   ├── PeriodicCheckup/    # Khám định kỳ (SchedulePage, CheckupPage)
     │   └── Admin/              # Admin (UserManagement, RolePermission, AuditLog)
     │
@@ -48,7 +48,9 @@ FE/
     │   │   ├── ReceiveQnDialog.jsx   # Dialog tiếp nhận quân nhân mới
     │   │   ├── PatientHistory.jsx    # Lịch sử khám
     │   │   ├── ReferralDialog.jsx    # Chuyển tuyến
-    │   │   └── AdmissionDialog.jsx   # Nhập viện
+    │   │   ├── AdmissionDialog.jsx   # Nhập viện
+    │   │   ├── CapThuocList.jsx      # Danh sách QN chờ cấp thuốc
+    │   │   └── CapThuocForm.jsx      # Dialog cấp thuốc + in đơn
     │   │
     │   ├── PeriodicCheckup/ # Components cho module Khám định kỳ
     │   │   ├── HealthCheck/          # Form khám sức khỏe (HealthCheckForm.jsx + tabs)
@@ -70,7 +72,8 @@ FE/
     │   ├── useHealthCheckData.jsx    # Data cho khám sức khỏe
     │   ├── useScheduleDialog.jsx     # Dialog lập lịch
     │   ├── useScheduleData.jsx       # Data lập lịch
-    │   └── usePermissionDiff.js      # So sánh phân quyền
+    │   ├── usePermissionDiff.js      # So sánh phân quyền
+    │   └── useCapThuoc.jsx           # Cấp thuốc (danh sách chờ, cấp thuốc)
     │
     ├── services/           # API layer
     │   ├── api.js              # Axios instance (baseURL, JWT interceptor, 401 handler)

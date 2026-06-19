@@ -15,6 +15,7 @@ export const khamBenhService = {
     getQuanNhanDanhSach: (params) =>
         api.get("/quan_nhan/danh-sach/list", { params }),
     getDonViList: (params) => api.get("/don_vi", { params }),
+    list: (params) => api.get("/kham_benh", { params }),
     delete: (id) => api.delete(`/kham_benh/${id}`),
     getQuanNhan: (id) => api.get(`/quan_nhan/${id}`),
     completeExamination: (id, data) =>
