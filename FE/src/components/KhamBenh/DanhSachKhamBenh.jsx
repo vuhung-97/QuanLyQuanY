@@ -78,18 +78,22 @@ const columns = [
                     sx={{ textTransform: "none" }}
                     onClick={() => onExam(row.ma_kham_benh)}
                 >
-                    {["đã_khám", "chờ_nhận_thuốc", "đã_nhận_thuốc"].includes(row.trang_thai)
+                    {["đã_khám", "chờ_nhận_thuốc", "đã_nhận_thuốc"].includes(
+                        row.trang_thai,
+                    )
                         ? "Xem"
                         : "Khám"}
                 </Button>
-                <Button
-                    size="small"
-                    color="error"
-                    sx={{ textTransform: "none", minWidth: 36 }}
-                    onClick={() => onDelete(row.ma_kham_benh)}
-                >
-                    <DeleteIcon fontSize="small" />
-                </Button>
+                {!["đã_khám", "đã_nhận_thuốc"].includes(row.trang_thai) && (
+                    <Button
+                        size="small"
+                        color="error"
+                        sx={{ textTransform: "none", minWidth: 36 }}
+                        onClick={() => onDelete(row.ma_kham_benh)}
+                    >
+                        <DeleteIcon fontSize="small" />
+                    </Button>
+                )}
             </Stack>
         ),
     },
@@ -237,7 +241,9 @@ export default function DanhSachKhamBenh() {
             <KhamBenhForm
                 open={openExamForm}
                 examinationId={selectedExamId}
-                rowData={filtered.find(e => e.ma_kham_benh === selectedExamId)}
+                rowData={filtered.find(
+                    (e) => e.ma_kham_benh === selectedExamId,
+                )}
                 onClose={handleCloseExamForm}
                 onSaved={loadData}
             />
