@@ -1,4 +1,4 @@
-import React from "react";
+import { forwardRef, memo, useCallback, useImperativeHandle, useState } from "react";
 import {
     Card, CardContent, Grid, IconButton, InputAdornment,
     MenuItem, TextField, Tooltip, Typography,
@@ -38,7 +38,18 @@ const cdhaFields = [
     { name: "khac",     label: "Cận lâm sàng khác" },
 ];
 
-const CanLamSangTab = React.memo(({ cls, onClsChange, cardStyle, readOnly = false }) => {
+const CanLamSangTab = memo(forwardRef(function CanLamSangTab({ initialData, cardStyle, readOnly = false }, ref) {
+    const [cls, setCls] = useState({ ...initialData });
+
+    useImperativeHandle(ref, () => ({
+        getData: () => ({ ...cls }),
+    }), [cls]);
+
+    const handleChange = useCallback((e) => {
+        const { name, value } = e.target;
+        setCls((prev) => ({ ...prev, [name]: value }));
+    }, []);
+
     return (
         <>
             <Card sx={cardStyle}>
@@ -55,7 +66,7 @@ const CanLamSangTab = React.memo(({ cls, onClsChange, cardStyle, readOnly = fals
                                             label={f.label}
                                             type="number"
                                             value={cls[f.name]}
-                                            onChange={onClsChange}
+                                            onChange={handleChange}
                                             fullWidth
                                             size="small"
                                             error={outOfRange}
@@ -94,7 +105,7 @@ const CanLamSangTab = React.memo(({ cls, onClsChange, cardStyle, readOnly = fals
                                                 name={f.name}
                                                 label={f.label}
                                                 value={cls[f.name]}
-                                                onChange={onClsChange}
+                                                onChange={handleChange}
                                                 fullWidth
                                                 size="small"
                                                 error={outOfRange}
@@ -111,7 +122,7 @@ const CanLamSangTab = React.memo(({ cls, onClsChange, cardStyle, readOnly = fals
                                                 label={f.label}
                                                 type="number"
                                                 value={cls[f.name]}
-                                                onChange={onClsChange}
+                                                onChange={handleChange}
                                                 fullWidth
                                                 size="small"
                                                 error={outOfRange}
@@ -137,15 +148,15 @@ const CanLamSangTab = React.memo(({ cls, onClsChange, cardStyle, readOnly = fals
                             const isNormal = cls[f.name] === "Bình thường";
                             const handleToggle = () => {
                                 if (readOnly) return;
-                                onClsChange({ target: { name: f.name, value: isNormal ? "" : "Bình thường" } });
+                                const newVal = isNormal ? "" : "Bình thường";
+                                setCls((prev) => ({ ...prev, [f.name]: newVal }));
                             };
                             return (
                                 <Grid size={{ xs: 12, sm: 6 }} key={f.name}>
                                     <TextField
-                                        name={f.name}
                                         label={f.label}
                                         value={cls[f.name]}
-                                        onChange={onClsChange}
+                                        onChange={(e) => setCls((prev) => ({ ...prev, [f.name]: e.target.value }))}
                                         disabled={readOnly || isNormal}
                                         multiline
                                         minRows={2}
@@ -175,6 +186,6 @@ const CanLamSangTab = React.memo(({ cls, onClsChange, cardStyle, readOnly = fals
             </Card>
         </>
     );
-});
+}));
 
 export default CanLamSangTab;

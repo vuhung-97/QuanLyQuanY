@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import api from "../services/api.js";
 import {
     DEFAULT_TS, DEFAULT_LS, DEFAULT_CLS, DEFAULT_KL,
@@ -12,10 +12,14 @@ export default function useHealthCheckForm({
     const [ngayNhapNgu, setNgayNhapNgu] = useState("");
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
-    const [ts, setTs] = useState({ ...DEFAULT_TS });
-    const [ls, setLs] = useState({ ...DEFAULT_LS });
-    const [cls, setCls] = useState({ ...DEFAULT_CLS });
-    const [kl, setKl] = useState({ ...DEFAULT_KL });
+    const tsRef = useRef(null);
+    const lsRef = useRef(null);
+    const clsRef = useRef(null);
+    const klRef = useRef(null);
+    const [initialTS, setInitialTS] = useState(null);
+    const [initialLS, setInitialLS] = useState(null);
+    const [initialCLS, setInitialCLS] = useState(null);
+    const [initialKL, setInitialKL] = useState(null);
 
     const isEdit = Boolean(existingPhieu);
 
@@ -23,62 +27,36 @@ export default function useHealthCheckForm({
         if (open && quanNhan) {
             setNgayNhapNgu(quanNhan.ngay_nhap_ngu || "");
             if (existingPhieu) {
-                setTs(parseTienSu(existingPhieu.tien_su_benh_tat));
-                setLs(parseLamSang(existingPhieu.kham_lam_sang));
-                setCls(parseCanLamSang(existingPhieu.kham_can_lam_sang));
-                setKl(parseKetLuan(existingPhieu.ket_luan));
+                setInitialTS(parseTienSu(existingPhieu.tien_su_benh_tat));
+                setInitialLS(parseLamSang(existingPhieu.kham_lam_sang));
+                setInitialCLS(parseCanLamSang(existingPhieu.kham_can_lam_sang));
+                setInitialKL(parseKetLuan(existingPhieu.ket_luan));
             } else {
-                setTs({ ...DEFAULT_TS });
-                setLs({ ...DEFAULT_LS });
-                setCls({ ...DEFAULT_CLS });
-                setKl({ ...DEFAULT_KL });
+                setInitialTS({ ...DEFAULT_TS });
+                setInitialLS({ ...DEFAULT_LS });
+                setInitialCLS({ ...DEFAULT_CLS });
+                setInitialKL({ ...DEFAULT_KL });
             }
             setError("");
             setActiveTab(0);
         }
     }, [open, quanNhan, existingPhieu]);
 
-    const handleTsChange = useCallback((e) => {
-        const { name, value } = e.target;
-        setTs((prev) => ({ ...prev, [name]: value }));
-    }, []);
-
-    const handleLsChange = useCallback((e) => {
-        const { name, value } = e.target;
-        setLs((prev) => {
-            const updated = { ...prev, [name]: value };
-            if (name === "chieu_cao" || name === "can_nang") {
-                const h = parseFloat(
-                    name === "chieu_cao" ? value : prev.chieu_cao,
-                );
-                const w = parseFloat(
-                    name === "can_nang" ? value : prev.can_nang,
-                );
-                if (h > 0 && w > 0) {
-                    updated.bmi = (w / Math.pow(h / 100, 2)).toFixed(1);
-                } else {
-                    updated.bmi = "";
-                }
-            }
-            return updated;
-        });
-    }, []);
-
-    const handleClsChange = useCallback((e) => {
-        const { name, value } = e.target;
-        setCls((prev) => ({ ...prev, [name]: value }));
-    }, []);
-
-    const handleKlChange = useCallback((e) => {
-        const { name, value } = e.target;
-        setKl((prev) => ({ ...prev, [name]: value }));
-    }, []);
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSaving(true);
         setError("");
         try {
+            if (!initialTS) {
+                setError("Dữ liệu chưa sẵn sàng.");
+                setSaving(false);
+                return;
+            }
+            const ts = tsRef.current?.getData() ?? initialTS;
+            const ls = lsRef.current?.getData() ?? initialLS;
+            const cls = clsRef.current?.getData() ?? initialCLS;
+            const kl = klRef.current?.getData() ?? initialKL;
+
             const phieuData = {
                 ma_quan_nhan: quanNhan.ma_quan_nhan,
                 nam: nam || null,
@@ -118,14 +96,14 @@ export default function useHealthCheckForm({
         ngayNhapNgu,
         saving,
         error,
-        ts,
-        ls,
-        cls,
-        kl,
-        handleTsChange,
-        handleLsChange,
-        handleClsChange,
-        handleKlChange,
+        tsRef,
+        lsRef,
+        clsRef,
+        klRef,
+        initialTS,
+        initialLS,
+        initialCLS,
+        initialKL,
         handleSubmit,
     };
 }

@@ -1,12 +1,9 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import api from "../services/api.js";
 
-const emptyDetail = {
-    ma_don_vi: "",
-    thoi_gian_bat_dau: "",
-    thoi_gian_ket_thuc: "",
-    dia_diem: "",
-};
+function genKey() {
+    return Math.random().toString(36).slice(2, 11);
+}
 
 export default function useScheduleDialog({
     open,
@@ -16,11 +13,10 @@ export default function useScheduleDialog({
     onClose,
 }) {
     const isEdit = Boolean(schedule);
-    const [master, setMaster] = useState({
-        thoi_gian_bat_dau: "",
-        thoi_gian_ket_thuc: "",
-    });
-    const [details, setDetails] = useState([]);
+    const [thoiGianBatDau, setThoiGianBatDau] = useState("");
+    const [thoiGianKetThuc, setThoiGianKetThuc] = useState("");
+    const [rowKeys, setRowKeys] = useState([]);
+    const rowRefs = useRef(new Map());
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
     const [unitOptions, setUnitOptions] = useState([]);
@@ -39,48 +35,36 @@ export default function useScheduleDialog({
     useEffect(() => {
         if (open) {
             if (schedule) {
-                setMaster({
-                    thoi_gian_bat_dau: schedule.thoi_gian_bat_dau || "",
-                    thoi_gian_ket_thuc: schedule.thoi_gian_ket_thuc || "",
-                });
-                setDetails(
-                    (chiTietList || []).map((ct) => ({
-                        ma_don_vi: ct.ma_don_vi || "",
-                        thoi_gian_bat_dau: ct.thoi_gian_bat_dau || "",
-                        thoi_gian_ket_thuc: ct.thoi_gian_ket_thuc || "",
-                        dia_diem: ct.dia_diem || "",
-                    })),
+                setThoiGianBatDau(schedule.thoi_gian_bat_dau || "");
+                setThoiGianKetThuc(schedule.thoi_gian_ket_thuc || "");
+                setRowKeys(
+                    (chiTietList || []).map(() => ({ key: genKey() })),
                 );
             } else {
-                setMaster({ thoi_gian_bat_dau: "", thoi_gian_ket_thuc: "" });
-                setDetails([]);
+                setThoiGianBatDau("");
+                setThoiGianKetThuc("");
+                setRowKeys([]);
             }
+            rowRefs.current = new Map();
             setError("");
         }
     }, [open, schedule, chiTietList]);
 
-    const handleDetailChange = useCallback((index, field, value) => {
-        setDetails((prev) => {
-            const next = [...prev];
-            next[index] = { ...next[index], [field]: value };
-            return next;
-        });
-    }, []);
-
     const addDetail = useCallback(() => {
-        setDetails((prev) => [...prev, { ...emptyDetail }]);
+        setRowKeys((prev) => [...prev, { key: genKey() }]);
     }, []);
 
-    const removeDetail = useCallback((index) => {
-        setDetails((prev) => prev.filter((_, i) => i !== index));
-    }, []);
-
-    const handleMasterChange = useCallback((field, value) => {
-        setMaster((prev) => ({ ...prev, [field]: value }));
+    const removeDetail = useCallback((key) => {
+        setRowKeys((prev) => prev.filter((r) => r.key !== key));
     }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const details = [];
+        rowRefs.current.forEach((ref) => {
+            const d = ref.getData();
+            if (d.ma_don_vi) details.push(d);
+        });
         if (details.length === 0) {
             setError("Vui lòng thêm ít nhất một đơn vị.");
             return;
@@ -88,6 +72,10 @@ export default function useScheduleDialog({
         setSaving(true);
         setError("");
         try {
+            const master = {
+                thoi_gian_bat_dau: thoiGianBatDau,
+                thoi_gian_ket_thuc: thoiGianKetThuc,
+            };
             if (isEdit) {
                 await api.patch(
                     `/lich_kham_sk_nam/${schedule.ma_lich_kham}`,
@@ -153,16 +141,19 @@ export default function useScheduleDialog({
     };
 
     return {
-        master,
-        details,
+        thoiGianBatDau,
+        setThoiGianBatDau,
+        thoiGianKetThuc,
+        setThoiGianKetThuc,
+        rowKeys,
+        rowRefs,
         saving,
         error,
         unitOptions,
         isEdit,
-        handleMasterChange,
-        handleDetailChange,
         addDetail,
         removeDetail,
         handleSubmit,
+        chiTietList,
     };
 }

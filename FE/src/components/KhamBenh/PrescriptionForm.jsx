@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 import {
     Autocomplete,
     Box,
@@ -15,18 +15,9 @@ import {
 import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { khamBenhService } from "../../services/khamBenhService.js";
 
-const EMPTY_ITEM = {
-    ma_thuoc_vtyt: "",
-    ten_thuoc_vtyt: "",
-    don_vi_tinh: "",
-    so_luong: 1,
-    sang: 0,
-    trua: 0,
-    toi: 0,
-    thoi_diem_dung: "sau_an",
-    cach_su_dung: "uong",
-    ghi_chu: "",
-};
+function genKey() {
+    return Math.random().toString(36).slice(2, 11);
+}
 
 const THOI_DIEM_OPTIONS = [
     { value: "sau_an", label: "Sau ăn" },
@@ -46,19 +37,45 @@ const CACH_SU_DUNG_OPTIONS = [
     { value: "khac", label: "Khác" },
 ];
 
-function PrescriptionRow({ item, index, onChange, onRemove }) {
-    const [inputValue, setInputValue] = useState(item.ten_thuoc_vtyt || "");
+const PrescriptionRow = memo(forwardRef(function PrescriptionRow({ initialData, onRemove }, ref) {
+    const [maThuoc, setMaThuoc] = useState(initialData?.ma_thuoc_vtyt ?? "");
+    const [tenThuoc, setTenThuoc] = useState(initialData?.ten_thuoc_vtyt ?? "");
+    const [donViTinh, setDonViTinh] = useState(initialData?.don_vi_tinh ?? "");
+    const [soLuong, setSoLuong] = useState(initialData?.so_luong ?? 1);
+    const [sang, setSang] = useState(initialData?.sang ?? 0);
+    const [trua, setTrua] = useState(initialData?.trua ?? 0);
+    const [toi, setToi] = useState(initialData?.toi ?? 0);
+    const [thoiDiemDung, setThoiDiemDung] = useState(initialData?.thoi_diem_dung ?? "sau_an");
+    const [cachSuDung, setCachSuDung] = useState(initialData?.cach_su_dung ?? "uong");
+    const [ghiChu, setGhiChu] = useState(initialData?.ghi_chu ?? "");
+    const [inputValue, setInputValue] = useState(initialData?.ten_thuoc_vtyt ?? "");
     const [options, setOptions] = useState(
-        item.ma_thuoc_vtyt && item.ten_thuoc_vtyt
+        initialData?.ma_thuoc_vtyt && initialData?.ten_thuoc_vtyt
             ? [
                   {
-                      ma_thuoc_vtyt: item.ma_thuoc_vtyt,
-                      ten_thuoc_vtyt: item.ten_thuoc_vtyt,
-                      don_vi_tinh: item.don_vi_tinh,
+                      ma_thuoc_vtyt: initialData.ma_thuoc_vtyt,
+                      ten_thuoc_vtyt: initialData.ten_thuoc_vtyt,
+                      don_vi_tinh: initialData.don_vi_tinh,
                   },
               ]
             : [],
     );
+
+    useImperativeHandle(ref, () => ({
+        getData: () => ({
+            ma_thuoc_vtyt: maThuoc,
+            ten_thuoc_vtyt: tenThuoc,
+            don_vi_tinh: donViTinh,
+            so_luong: soLuong,
+            sang,
+            trua,
+            toi,
+            thoi_diem_dung: thoiDiemDung,
+            cach_su_dung: cachSuDung,
+            ghi_chu: ghiChu,
+            huong_dieu_tri: buildHuongDieuTri({ sang, trua, toi, thoi_diem_dung: thoiDiemDung, cach_su_dung: cachSuDung, ghi_chu: ghiChu }),
+        }),
+    }), [maThuoc, tenThuoc, donViTinh, soLuong, sang, trua, toi, thoiDiemDung, cachSuDung, ghiChu]);
 
     useEffect(() => {
         if (inputValue.length < 1) {
@@ -75,11 +92,6 @@ function PrescriptionRow({ item, index, onChange, onRemove }) {
         }, 300);
         return () => clearTimeout(timer);
     }, [inputValue]);
-
-    const handleField = useCallback(
-        (field, value) => onChange(index, field, value),
-        [index, onChange],
-    );
 
     return (
         <Stack
@@ -104,22 +116,13 @@ function PrescriptionRow({ item, index, onChange, onRemove }) {
                         }
                         value={
                             options.find(
-                                (o) => o.ma_thuoc_vtyt === item.ma_thuoc_vtyt,
+                                (o) => o.ma_thuoc_vtyt === maThuoc,
                             ) || null
                         }
                         onChange={(_, newVal) => {
-                            handleField(
-                                "ma_thuoc_vtyt",
-                                newVal?.ma_thuoc_vtyt || "",
-                            );
-                            handleField(
-                                "ten_thuoc_vtyt",
-                                newVal?.ten_thuoc_vtyt || "",
-                            );
-                            handleField(
-                                "don_vi_tinh",
-                                newVal?.don_vi_tinh || "",
-                            );
+                            setMaThuoc(newVal?.ma_thuoc_vtyt || "");
+                            setTenThuoc(newVal?.ten_thuoc_vtyt || "");
+                            setDonViTinh(newVal?.don_vi_tinh || "");
                         }}
                         renderInput={(params) => (
                             <TextField {...params} label="Tên thuốc" />
@@ -130,29 +133,26 @@ function PrescriptionRow({ item, index, onChange, onRemove }) {
                     size="small"
                     label="Số lượng"
                     type="number"
-                    value={item.so_luong}
+                    value={soLuong}
                     onChange={(e) =>
-                        handleField(
-                            "so_luong",
-                            Math.max(1, parseInt(e.target.value) || 1),
-                        )
+                        setSoLuong(Math.max(1, parseInt(e.target.value) || 1))
                     }
                     sx={{ width: 100 }}
                     inputProps={{ min: 1 }}
                 />
-                {item.don_vi_tinh && (
+                {donViTinh && (
                     <Typography
                         variant="body2"
                         color="text.secondary"
                         sx={{ minWidth: 50, alignSelf: "center" }}
                     >
-                        ({item.don_vi_tinh})
+                        ({donViTinh})
                     </Typography>
                 )}
                 <IconButton
                     size="small"
                     color="error"
-                    onClick={() => onRemove(index)}
+                    onClick={onRemove}
                 >
                     <DeleteIcon fontSize="small" />
                 </IconButton>
@@ -162,12 +162,9 @@ function PrescriptionRow({ item, index, onChange, onRemove }) {
                     size="small"
                     label="Sáng"
                     type="number"
-                    value={item.sang}
+                    value={sang}
                     onChange={(e) =>
-                        handleField(
-                            "sang",
-                            Math.max(0, parseInt(e.target.value) || 0),
-                        )
+                        setSang(Math.max(0, parseInt(e.target.value) || 0))
                     }
                     sx={{ width: 80 }}
                     inputProps={{ min: 0 }}
@@ -176,12 +173,9 @@ function PrescriptionRow({ item, index, onChange, onRemove }) {
                     size="small"
                     label="Trưa"
                     type="number"
-                    value={item.trua}
+                    value={trua}
                     onChange={(e) =>
-                        handleField(
-                            "trua",
-                            Math.max(0, parseInt(e.target.value) || 0),
-                        )
+                        setTrua(Math.max(0, parseInt(e.target.value) || 0))
                     }
                     sx={{ width: 80 }}
                     inputProps={{ min: 0 }}
@@ -190,12 +184,9 @@ function PrescriptionRow({ item, index, onChange, onRemove }) {
                     size="small"
                     label="Tối"
                     type="number"
-                    value={item.toi}
+                    value={toi}
                     onChange={(e) =>
-                        handleField(
-                            "toi",
-                            Math.max(0, parseInt(e.target.value) || 0),
-                        )
+                        setToi(Math.max(0, parseInt(e.target.value) || 0))
                     }
                     sx={{ width: 80 }}
                     inputProps={{ min: 0 }}
@@ -206,10 +197,10 @@ function PrescriptionRow({ item, index, onChange, onRemove }) {
                     size="small"
                     options={CACH_SU_DUNG_OPTIONS}
                     value={CACH_SU_DUNG_OPTIONS.find(
-                        (o) => o.value === item.cach_su_dung,
+                        (o) => o.value === cachSuDung,
                     )}
                     onChange={(_, v) =>
-                        handleField("cach_su_dung", v?.value || "uong")
+                        setCachSuDung(v?.value || "uong")
                     }
                     getOptionLabel={(o) => o.label}
                     renderInput={(params) => (
@@ -221,10 +212,10 @@ function PrescriptionRow({ item, index, onChange, onRemove }) {
                     size="small"
                     options={THOI_DIEM_OPTIONS}
                     value={THOI_DIEM_OPTIONS.find(
-                        (o) => o.value === item.thoi_diem_dung,
+                        (o) => o.value === thoiDiemDung,
                     )}
                     onChange={(_, v) =>
-                        handleField("thoi_diem_dung", v?.value || "sau_an")
+                        setThoiDiemDung(v?.value || "sau_an")
                     }
                     getOptionLabel={(o) => o.label}
                     renderInput={(params) => (
@@ -235,14 +226,14 @@ function PrescriptionRow({ item, index, onChange, onRemove }) {
                 <TextField
                     size="small"
                     label="Ghi chú"
-                    value={item.ghi_chu}
-                    onChange={(e) => handleField("ghi_chu", e.target.value)}
+                    value={ghiChu}
+                    onChange={(e) => setGhiChu(e.target.value)}
                     sx={{ flex: 1, minWidth: 200 }}
                 />
             </Stack>
         </Stack>
     );
-}
+}));
 
 function buildHuongDieuTri(item) {
     const lieu = `Sáng: ${item.sang} - Trưa: ${item.trua} - Tối: ${item.toi}`;
@@ -261,59 +252,43 @@ export default function PrescriptionForm({
     onSave,
     initialItems,
 }) {
-    const [items, setItems] = useState([]);
+    const [rows, setRows] = useState([]);
+    const rowRefs = useRef(new Map());
 
     useEffect(() => {
         if (open) {
-            setItems(
-                initialItems?.length > 0
-                    ? initialItems.map((it) => ({ ...EMPTY_ITEM, ...it }))
-                    : [{ ...EMPTY_ITEM }],
-            );
+            const next = initialItems?.length > 0
+                ? initialItems.map((it) => ({ key: genKey(), initial: it }))
+                : [{ key: genKey(), initial: null }];
+            setRows(next);
+            rowRefs.current = new Map();
         }
     }, [open, initialItems]);
 
-    const handleItemChange = useCallback((index, field, value) => {
-        setItems((prev) => {
-            const next = [...prev];
-            next[index] = { ...next[index], [field]: value };
-            return next;
-        });
+    const handleRemove = useCallback((key) => {
+        setRows((prev) => (prev.length > 1 ? prev.filter((r) => r.key !== key) : prev));
     }, []);
 
     const addRow = useCallback(() => {
-        setItems((prev) => [...prev, { ...EMPTY_ITEM }]);
-    }, []);
-
-    const removeRow = useCallback((index) => {
-        setItems((prev) =>
-            prev.length > 1 ? prev.filter((_, i) => i !== index) : prev,
-        );
+        setRows((prev) => [...prev, { key: genKey(), initial: null }]);
     }, []);
 
     const handleSave = useCallback(() => {
-        const valid = items.filter((it) => it.ma_thuoc_vtyt);
-        if (valid.length === 0) return;
-        const mapped = valid.map((it) => ({
-            ma_thuoc_vtyt: it.ma_thuoc_vtyt,
-            ten_thuoc_vtyt: it.ten_thuoc_vtyt,
-            don_vi_tinh: it.don_vi_tinh,
-            so_luong: it.so_luong,
-            sang: it.sang,
-            trua: it.trua,
-            toi: it.toi,
-            thoi_diem_dung: it.thoi_diem_dung,
-            cach_su_dung: it.cach_su_dung,
-            ghi_chu: it.ghi_chu,
-            huong_dieu_tri: buildHuongDieuTri(it),
-        }));
-        onSave(mapped);
+        const items = [];
+        rowRefs.current.forEach((ref) => {
+            const data = ref.getData();
+            if (data.ma_thuoc_vtyt) items.push(data);
+        });
+        if (items.length === 0) return;
+        onSave(items);
         onClose();
-    }, [items, onSave, onClose]);
+    }, [onSave, onClose]);
 
     const handlePrint = useCallback(() => {
         window.print();
     }, []);
+
+    const validCount = rows.length;
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -324,13 +299,15 @@ export default function PrescriptionForm({
             </DialogTitle>
             <DialogContent>
                 <Stack spacing={2} sx={{ pt: 1 }}>
-                    {items.map((item, idx) => (
+                    {rows.map(({ key, initial }) => (
                         <PrescriptionRow
-                            key={idx}
-                            item={item}
-                            index={idx}
-                            onChange={handleItemChange}
-                            onRemove={removeRow}
+                            key={key}
+                            ref={(el) => {
+                                if (el) rowRefs.current.set(key, el);
+                                else rowRefs.current.delete(key);
+                            }}
+                            initialData={initial}
+                            onRemove={() => handleRemove(key)}
                         />
                     ))}
                     <Button
@@ -347,18 +324,14 @@ export default function PrescriptionForm({
                 <Button
                     variant="outlined"
                     onClick={handlePrint}
-                    disabled={
-                        items.filter((it) => it.ma_thuoc_vtyt).length === 0
-                    }
+                    disabled={validCount === 0}
                 >
                     In đơn thuốc
                 </Button>
                 <Button
                     variant="contained"
                     onClick={handleSave}
-                    disabled={
-                        items.filter((it) => it.ma_thuoc_vtyt).length === 0
-                    }
+                    disabled={validCount === 0}
                 >
                     Lưu đơn thuốc
                 </Button>

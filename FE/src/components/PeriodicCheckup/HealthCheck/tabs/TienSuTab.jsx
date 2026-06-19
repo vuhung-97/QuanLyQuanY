@@ -1,4 +1,4 @@
-import React from "react";
+import { forwardRef, memo, useCallback, useImperativeHandle, useState } from "react";
 import {
     Box,
     Card,
@@ -44,19 +44,50 @@ const fieldsGiaDinh = [
     { name: "gia_dinh", label: "Gia đình (Bệnh di truyền, bệnh tim mạch, tâm thần...)", multiline: true, minRows: 3, grid: 12 },
 ];
 
-const TienSuTab = React.memo(({ ts, onTsChange, cardStyle, readOnly = false }) => {
+const TienSuTab = memo(forwardRef(function TienSuTab({ initialData, cardStyle, readOnly = false }, ref) {
+    const [banThan, setBanThan] = useState(initialData?.ban_than ?? "");
+    const [diUng, setDiUng] = useState(initialData?.di_ung ?? "");
+    const [khac, setKhac] = useState(initialData?.khac ?? "");
+    const [giaDinh, setGiaDinh] = useState(initialData?.gia_dinh ?? "");
+
+    useImperativeHandle(ref, () => ({
+        getData: () => ({ ban_than: banThan, di_ung: diUng, khac: khac, gia_dinh: giaDinh }),
+    }), [banThan, diUng, khac, giaDinh]);
+
+    const getValue = useCallback((name) => {
+        switch (name) {
+            case "ban_than": return banThan;
+            case "di_ung": return diUng;
+            case "khac": return khac;
+            case "gia_dinh": return giaDinh;
+            default: return "";
+        }
+    }, [banThan, diUng, khac, giaDinh]);
+
+    const getSetter = useCallback((name) => {
+        switch (name) {
+            case "ban_than": return setBanThan;
+            case "di_ung": return setDiUng;
+            case "khac": return setKhac;
+            case "gia_dinh": return setGiaDinh;
+            default: return () => {};
+        }
+    }, []);
+
     const renderField = (f) => {
-        const isNormal = ts[f.name] === "Không";
+        const val = getValue(f.name);
+        const setter = getSetter(f.name);
+        const isNormal = val === "Không";
         const handleToggle = () => {
-            onTsChange({ target: { name: f.name, value: isNormal ? "" : "Không" } });
+            if (readOnly) return;
+            setter(isNormal ? "" : "Không");
         };
         return (
             <Grid size={f.grid} key={f.name}>
                 <TextField
-                    name={f.name}
                     label={f.label}
-                    value={ts[f.name]}
-                    onChange={onTsChange}
+                    value={val}
+                    onChange={(e) => setter(e.target.value)}
                     disabled={readOnly || isNormal}
                     multiline={f.multiline}
                     minRows={f.minRows}
@@ -107,6 +138,6 @@ const TienSuTab = React.memo(({ ts, onTsChange, cardStyle, readOnly = false }) =
             </Card>
         </>
     );
-});
+}));
 
 export default TienSuTab;

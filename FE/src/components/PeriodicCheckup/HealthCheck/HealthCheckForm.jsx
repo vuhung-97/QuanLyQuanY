@@ -122,8 +122,9 @@ export default function HealthCheckForm({
 }) {
     const {
         activeTab, setActiveTab, ngayNhapNgu, saving, error,
-        ts, ls, cls, kl,
-        handleTsChange, handleLsChange, handleClsChange, handleKlChange, handleSubmit,
+        tsRef, lsRef, clsRef, klRef,
+        initialTS, initialLS, initialCLS, initialKL,
+        handleSubmit,
     } = useHealthCheckForm({ open, quanNhan, existingPhieu, nam, onSaved, onClose });
 
     return (
@@ -146,19 +147,19 @@ export default function HealthCheckForm({
                         onTabChange={(_, val) => setActiveTab(val)} />
 
                     <TabPanel value={activeTab} index={0}>
-                        <TienSuTab ts={ts} onTsChange={handleTsChange}
+                        <TienSuTab ref={tsRef} initialData={initialTS}
                             cardStyle={cardStyle} readOnly={readOnly} />
                     </TabPanel>
                     <TabPanel value={activeTab} index={1}>
-                        <LamSangTab ls={ls} onLsChange={handleLsChange}
+                        <LamSangTab ref={lsRef} initialData={initialLS}
                             cardStyle={cardStyle} readOnly={readOnly} />
                     </TabPanel>
                     <TabPanel value={activeTab} index={2}>
-                        <CanLamSangTab cls={cls} onClsChange={handleClsChange}
+                        <CanLamSangTab ref={clsRef} initialData={initialCLS}
                             cardStyle={cardStyle} readOnly={readOnly} />
                     </TabPanel>
                     <TabPanel value={activeTab} index={3}>
-                        <KetLuanTab kl={kl} onKlChange={handleKlChange}
+                        <KetLuanTab ref={klRef} initialData={initialKL}
                             cardStyle={cardStyle} readOnly={readOnly} />
                     </TabPanel>
                 </DialogContent>

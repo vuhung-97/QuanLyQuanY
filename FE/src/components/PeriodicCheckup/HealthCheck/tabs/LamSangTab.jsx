@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { forwardRef, memo, useCallback, useImperativeHandle, useState } from "react";
 import {
     Box,
     Button,
@@ -118,13 +118,12 @@ function SectionTitle({ children }) {
     );
 }
 
-const TheLucField = React.memo(({ field, value, onChange, readOnly }) => {
+const TheLucField = memo(({ field, value, onChange, readOnly }) => {
     const outOfRange = isOutOfRange(field.name, value);
     return (
         <Grid size={{ xs: 6, sm: 4, md: 2 }}>
             <Tooltip title={fieldRanges[field.name]?.tooltip || ""} arrow placement="right">
                 <TextField
-                    name={field.name}
                     label={field.label}
                     type="number"
                     value={value}
@@ -149,12 +148,12 @@ const TheLucField = React.memo(({ field, value, onChange, readOnly }) => {
     );
 });
 
-const ChuyenKhoaRow = React.memo(
-    ({ sp, noteValue, loaiValue, onLsChange, readOnly }) => {
+const ChuyenKhoaRow = memo(
+    ({ sp, noteValue, loaiValue, onChange, readOnly }) => {
         const isNormal = noteValue === "Bình thường";
         const handleToggleNormal = () => {
             if (readOnly) return;
-            onLsChange({
+            onChange({
                 target: { name: `${sp.id}_note`, value: isNormal ? "" : "Bình thường" },
             });
         };
@@ -175,7 +174,7 @@ const ChuyenKhoaRow = React.memo(
                             name={`${sp.id}_note`}
                             label="Kết quả khám"
                             value={noteValue}
-                            onChange={onLsChange}
+                            onChange={onChange}
                             disabled={readOnly || isNormal}
                             fullWidth
                             size="small"
@@ -209,7 +208,7 @@ const ChuyenKhoaRow = React.memo(
                             <Select
                                 name={`${sp.id}_loai`}
                                 value={loaiValue}
-                                onChange={onLsChange}
+                                onChange={onChange}
                                 label="Phân loại"
                                 disabled={readOnly}
                             >
@@ -230,7 +229,7 @@ const ChuyenKhoaRow = React.memo(
     },
 );
 
-const MatNumberField = React.memo(({ name, label, value, onChange, readOnly }) => (
+const MatNumberField = memo(({ name, label, value, onChange, readOnly }) => (
     <Grid size={{ xs: 6, sm: 4, md: true }}>
         <TextField
             name={name}
@@ -256,7 +255,30 @@ const getBmiStatus = (bmiStr) => {
     return { text: "Béo phì", color: "error" };
 };
 
-const LamSangTab = React.memo(({ ls, onLsChange, cardStyle, readOnly = false }) => {
+const LamSangTab = memo(forwardRef(function LamSangTab({ initialData, cardStyle, readOnly = false }, ref) {
+    const [ls, setLs] = useState({ ...initialData });
+
+    useImperativeHandle(ref, () => ({
+        getData: () => ({ ...ls }),
+    }), [ls]);
+
+    const handleChange = useCallback((e) => {
+        const { name, value } = e.target;
+        setLs((prev) => {
+            const updated = { ...prev, [name]: value };
+            if (name === "chieu_cao" || name === "can_nang") {
+                const h = parseFloat(name === "chieu_cao" ? value : prev.chieu_cao);
+                const w = parseFloat(name === "can_nang" ? value : prev.can_nang);
+                if (h > 0 && w > 0) {
+                    updated.bmi = (w / Math.pow(h / 100, 2)).toFixed(1);
+                } else {
+                    updated.bmi = "";
+                }
+            }
+            return updated;
+        });
+    }, []);
+
     const bmiInfo = getBmiStatus(ls.bmi);
     const [showCoKinh, setShowCoKinh] = useState(false);
 
@@ -271,7 +293,7 @@ const LamSangTab = React.memo(({ ls, onLsChange, cardStyle, readOnly = false }) 
                                 key={f.name}
                                 field={f}
                                 value={ls[f.name]}
-                                onChange={onLsChange}
+                                onChange={handleChange}
                                 readOnly={readOnly}
                             />
                         ))}
@@ -311,7 +333,7 @@ const LamSangTab = React.memo(({ ls, onLsChange, cardStyle, readOnly = false }) 
                                 sp={sp}
                                 noteValue={ls[`${sp.id}_note`]}
                                 loaiValue={ls[`${sp.id}_loai`]}
-                                onLsChange={onLsChange}
+                                onChange={handleChange}
                                 readOnly={readOnly}
                             />
                         ))}
@@ -329,7 +351,7 @@ const LamSangTab = React.memo(({ ls, onLsChange, cardStyle, readOnly = false }) 
                                 name={f.name}
                                 label={f.label}
                                 value={ls[f.name]}
-                                onChange={onLsChange}
+                                onChange={handleChange}
                                 readOnly={readOnly}
                             />
                         ))}
@@ -357,7 +379,7 @@ const LamSangTab = React.memo(({ ls, onLsChange, cardStyle, readOnly = false }) 
                                     name={f.name}
                                     label={f.label}
                                     value={ls[f.name]}
-                                    onChange={onLsChange}
+                                    onChange={handleChange}
                                     readOnly={readOnly}
                                 />
                             ))}
@@ -367,7 +389,7 @@ const LamSangTab = React.memo(({ ls, onLsChange, cardStyle, readOnly = false }) 
                                 <Select
                                     name="mat_loai"
                                     value={ls.mat_loai}
-                                    onChange={onLsChange}
+                                    onChange={handleChange}
                                     label="Phân loại mắt"
                                     disabled={readOnly}
                                 >
@@ -384,6 +406,6 @@ const LamSangTab = React.memo(({ ls, onLsChange, cardStyle, readOnly = false }) 
             </Card>
         </>
     );
-});
+}));
 
 export default LamSangTab;

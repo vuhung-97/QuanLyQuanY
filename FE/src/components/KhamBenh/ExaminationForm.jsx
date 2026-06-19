@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { memo, useCallback, useMemo } from "react";
 import {
     Box,
     Button,
@@ -38,7 +38,7 @@ function InfoRow({ label, value }) {
     );
 }
 
-function PatientInfoCard({ qn, exam }) {
+const PatientInfoCard = memo(function PatientInfoCard({ qn, exam }) {
     const examDate = exam?.ngay_kham
         ? new Date(exam.ngay_kham).toLocaleDateString("vi-VN")
         : "--";
@@ -66,14 +66,63 @@ function PatientInfoCard({ qn, exam }) {
             </CardContent>
         </Card>
     );
-}
+});
 
-function SymptomsSection({
-    trieuChung,
-    onTrieuChungChange,
+const CHIP_LIMIT = 30;
+
+const ChipList = memo(function ChipList({
+    filteredSymptoms,
     trieuChungWords,
     onChipClick,
 }) {
+    const handleChipClick = useCallback(
+        (e) => onChipClick(e.currentTarget.dataset.symptom),
+        [onChipClick],
+    );
+    const hasMore = filteredSymptoms.length > CHIP_LIMIT;
+    const visible = hasMore
+        ? filteredSymptoms.slice(0, CHIP_LIMIT)
+        : filteredSymptoms;
+    return (
+        <>
+            {visible.map((s) => {
+                const selected = trieuChungWords.includes(s);
+                return (
+                    <Chip
+                        key={s}
+                        data-symptom={s}
+                        label={s}
+                        size="small"
+                        variant={selected ? "filled" : "outlined"}
+                        color={selected ? "primary" : "default"}
+                        onClick={handleChipClick}
+                        sx={{ cursor: "pointer" }}
+                    />
+                );
+            })}
+            {hasMore && (
+                <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    sx={{ alignSelf: "center" }}
+                >
+                    +{filteredSymptoms.length - CHIP_LIMIT} khác...
+                </Typography>
+            )}
+        </>
+    );
+});
+
+const SymptomsSection = memo(function SymptomsSection({
+    trieuChung,
+    onTrieuChungChange,
+    onChipClick,
+}) {
+    const trieuChungWords = useMemo(
+        () => trieuChung.split(/[,;]\s*/).filter(Boolean),
+        [trieuChung],
+    );
+
     const filteredSymptoms = useMemo(() => {
         const segments = trieuChung.split(/[,;]\s*/);
         const last = segments[segments.length - 1] || "";
@@ -81,6 +130,11 @@ function SymptomsSection({
         const q = last.toLowerCase();
         return symptoms.filter((s) => s.toLowerCase().includes(q));
     }, [trieuChung]);
+
+    const handleTextFieldChange = useCallback(
+        (e) => onTrieuChungChange(e.target.value),
+        [onTrieuChungChange],
+    );
 
     return (
         <Grid size={{ xs: 12, md: 6 }}>
@@ -92,7 +146,7 @@ function SymptomsSection({
                 minRows={4}
                 fullWidth
                 value={trieuChung}
-                onChange={(e) => onTrieuChungChange(e.target.value)}
+                onChange={handleTextFieldChange}
                 placeholder="Nhập triệu chứng..."
             />
             <Typography
@@ -111,26 +165,17 @@ function SymptomsSection({
                     gap: 0.5,
                 }}
             >
-                {filteredSymptoms.map((s) => {
-                    const selected = trieuChungWords.includes(s);
-                    return (
-                        <Chip
-                            key={s}
-                            label={s}
-                            size="small"
-                            variant={selected ? "filled" : "outlined"}
-                            color={selected ? "primary" : "default"}
-                            onClick={() => onChipClick(s)}
-                            sx={{ cursor: "pointer" }}
-                        />
-                    );
-                })}
+                <ChipList
+                    filteredSymptoms={filteredSymptoms}
+                    trieuChungWords={trieuChungWords}
+                    onChipClick={onChipClick}
+                />
             </Box>
         </Grid>
     );
-}
+});
 
-function DiagnosisSection({
+const DiagnosisSection = memo(function DiagnosisSection({
     chanDoan,
     onChanDoanChange,
     phuongPhap,
@@ -167,9 +212,9 @@ function DiagnosisSection({
             </Stack>
         </Grid>
     );
-}
+});
 
-function PrescriptionDisplay({ items }) {
+const PrescriptionDisplay = memo(function PrescriptionDisplay({ items }) {
     if (!items || items.length === 0) return null;
     return (
         <Box>
@@ -208,9 +253,9 @@ function PrescriptionDisplay({ items }) {
             </Stack>
         </Box>
     );
-}
+});
 
-function FormActions({
+const FormActions = memo(function FormActions({
     saving,
     hasPrescription,
     onSave,
@@ -259,7 +304,7 @@ function FormActions({
             </Stack>
         </DialogActions>
     );
-}
+});
 
 export default function ExaminationForm({
     open,
@@ -273,8 +318,13 @@ export default function ExaminationForm({
         qn,
         loading,
         saving,
-        formState,
-        updateField,
+        trieuChung,
+        setTrieuChung,
+        chanDoan,
+        setChanDoan,
+        phuongPhap,
+        setPhuongPhap,
+        prescriptionItems,
         handleSave,
         handlePrescriptionSave,
         handleChipClick,
@@ -290,13 +340,15 @@ export default function ExaminationForm({
         setSnackbar,
     } = useExaminationForm({ open, examinationId, rowData, onClose, onSaved });
 
-    const trieuChungWords = formState.trieuChung
-        .split(/[,;]\s*/)
-        .filter(Boolean);
-
     return (
         <>
-            <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
+            <Dialog
+                open={open}
+                onClose={onClose}
+                maxWidth="lg"
+                fullWidth
+                slotProps={{ paper: { sx: { height: "80vh" } } }}
+            >
                 <DialogTitle>
                     <Stack
                         direction="row"
@@ -329,35 +381,26 @@ export default function ExaminationForm({
 
                             <Grid container spacing={3}>
                                 <SymptomsSection
-                                    trieuChung={formState.trieuChung}
-                                    onTrieuChungChange={(v) =>
-                                        updateField("trieuChung", v)
-                                    }
-                                    trieuChungWords={trieuChungWords}
+                                    trieuChung={trieuChung}
+                                    onTrieuChungChange={setTrieuChung}
                                     onChipClick={handleChipClick}
                                 />
                                 <DiagnosisSection
-                                    chanDoan={formState.chanDoan}
-                                    onChanDoanChange={(v) =>
-                                        updateField("chanDoan", v)
-                                    }
-                                    phuongPhap={formState.phuongPhap}
-                                    onPhuongPhapChange={(v) =>
-                                        updateField("phuongPhap", v)
-                                    }
+                                    chanDoan={chanDoan}
+                                    onChanDoanChange={setChanDoan}
+                                    phuongPhap={phuongPhap}
+                                    onPhuongPhapChange={setPhuongPhap}
                                 />
                             </Grid>
 
-                            <PrescriptionDisplay
-                                items={formState.prescriptionItems}
-                            />
+                            <PrescriptionDisplay items={prescriptionItems} />
                         </Stack>
                     )}
                 </DialogContent>
                 {exam && (
                     <FormActions
                         saving={saving}
-                        hasPrescription={formState.prescriptionItems.length > 0}
+                        hasPrescription={prescriptionItems.length > 0}
                         onSave={handleSave}
                         onPrescription={() => setOpenPrescription(true)}
                         onReferral={() => setOpenReferral(true)}
@@ -386,12 +429,14 @@ export default function ExaminationForm({
                 />
             )}
 
-            <PrescriptionForm
-                open={openPrescription}
-                onClose={() => setOpenPrescription(false)}
-                onSave={handlePrescriptionSave}
-                initialItems={formState.prescriptionItems}
-            />
+            {exam && (
+                <PrescriptionForm
+                    open={openPrescription}
+                    onClose={() => setOpenPrescription(false)}
+                    onSave={handlePrescriptionSave}
+                    initialItems={prescriptionItems}
+                />
+            )}
 
             <FeedbackSnackbar
                 open={snackbar.open}

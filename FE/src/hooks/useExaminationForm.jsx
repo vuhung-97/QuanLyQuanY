@@ -37,13 +37,6 @@ function parseHuongDieuTri(str) {
     return { sang, trua, toi, thoi_diem_dung, cach_su_dung, ghi_chu };
 }
 
-const INITIAL_FORM = {
-    trieuChung: "",
-    chanDoan: "",
-    phuongPhap: "",
-    prescriptionItems: [],
-};
-
 export default function useExaminationForm({
     open,
     examinationId,
@@ -55,7 +48,10 @@ export default function useExaminationForm({
     const [qn, setQn] = useState(null);
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
-    const [formState, setFormState] = useState({ ...INITIAL_FORM });
+    const [trieuChung, setTrieuChung] = useState("");
+    const [chanDoan, setChanDoan] = useState("");
+    const [phuongPhap, setPhuongPhap] = useState("");
+    const [prescriptionItems, setPrescriptionItems] = useState([]);
     const [openPrescription, setOpenPrescription] = useState(false);
     const [openReferral, setOpenReferral] = useState(false);
     const [openAdmission, setOpenAdmission] = useState(false);
@@ -64,10 +60,6 @@ export default function useExaminationForm({
         message: "",
         severity: "success",
     });
-
-    const updateField = useCallback((field, value) => {
-        setFormState((prev) => ({ ...prev, [field]: value }));
-    }, []);
 
     useEffect(() => {
         if (!open || !examinationId) return;
@@ -104,12 +96,10 @@ export default function useExaminationForm({
                     }
                 }
 
-                setFormState({
-                    trieuChung: data.trieu_chung || "",
-                    chanDoan: data.chan_doan || "",
-                    phuongPhap: data.phuong_phap_dieu_tri || "",
-                    prescriptionItems: items,
-                });
+                setTrieuChung(data.trieu_chung || "");
+                setChanDoan(data.chan_doan || "");
+                setPhuongPhap(data.phuong_phap_dieu_tri || "");
+                setPrescriptionItems(items);
                 if (data.ma_quan_nhan) {
                     try {
                         const qnRes = await khamBenhService.getQuanNhan(
@@ -154,7 +144,7 @@ export default function useExaminationForm({
     const handleSave = useCallback(
         async () => {
             if (!exam) return;
-            if (!formState.trieuChung.trim()) {
+            if (!trieuChung.trim()) {
                 setSnackbar({
                     open: true,
                     message: "Vui lòng nhập triệu chứng.",
@@ -164,16 +154,16 @@ export default function useExaminationForm({
             }
             setSaving(true);
             try {
-                const hasPrescription = formState.prescriptionItems.length > 0;
+                const hasPrescription = prescriptionItems.length > 0;
                 const payload = {
-                    trieu_chung: formState.trieuChung,
-                    chan_doan: formState.chanDoan,
-                    phuong_phap_dieu_tri: formState.phuongPhap,
+                    trieu_chung: trieuChung,
+                    chan_doan: chanDoan,
+                    phuong_phap_dieu_tri: phuongPhap,
                 };
 
                 let message;
                 if (hasPrescription) {
-                    payload.prescription_items = formState.prescriptionItems;
+                    payload.prescription_items = prescriptionItems;
                     await khamBenhService.completeExamination(
                         exam.ma_kham_benh,
                         payload,
@@ -181,8 +171,8 @@ export default function useExaminationForm({
                     message = "Đã lưu và kê đơn thành công.";
                 } else {
                     const isFull =
-                        formState.chanDoan.trim() &&
-                        formState.phuongPhap.trim();
+                        chanDoan.trim() &&
+                        phuongPhap.trim();
                     payload.trang_thai = isFull ? "đã_khám" : "đang_khám";
                     await khamBenhService.update(exam.ma_kham_benh, payload);
                     message = "Đã lưu kết quả khám.";
@@ -206,27 +196,28 @@ export default function useExaminationForm({
                 setSaving(false);
             }
         },
-        [exam, formState, onSaved, onClose],
+        [exam, trieuChung, chanDoan, phuongPhap, prescriptionItems, onSaved, onClose],
     );
 
     const handlePrescriptionSave = useCallback((items) => {
-        setFormState((prev) => ({ ...prev, prescriptionItems: items }));
+        setPrescriptionItems(items);
     }, []);
 
     const handleChipClick = useCallback((symptom) => {
-        setFormState((prev) => {
-            const text = prev.trieuChung;
-            if (!text.trim()) return { ...prev, trieuChung: symptom + ", " };
+        setTrieuChung((prev) => {
+            if (!prev.trim()) return symptom + ", ";
 
-            const words = text.split(/[,;]\s*/).filter(Boolean);
-            if (words.includes(symptom)) return prev;
+            const words = prev.split(/[,;]\s*/).filter(Boolean);
+            if (words.includes(symptom)) {
+                const filtered = words.filter((w) => w !== symptom);
+                return filtered.length > 0 ? filtered.join(", ") + ", " : "";
+            }
 
-            const hasTrailingSep = /[,;]\s*$/.test(text);
-            if (hasTrailingSep)
-                return { ...prev, trieuChung: `${text}${symptom}, ` };
+            const hasTrailingSep = /[,;]\s*$/.test(prev);
+            if (hasTrailingSep) return `${prev}${symptom}, `;
 
             words[words.length - 1] = symptom;
-            return { ...prev, trieuChung: words.join(", ") + ", " };
+            return words.join(", ") + ", ";
         });
     }, []);
 
@@ -247,8 +238,14 @@ export default function useExaminationForm({
         qn,
         loading,
         saving,
-        formState,
-        updateField,
+        trieuChung,
+        setTrieuChung,
+        chanDoan,
+        setChanDoan,
+        phuongPhap,
+        setPhuongPhap,
+        prescriptionItems,
+        setPrescriptionItems,
         handleSave,
         handlePrescriptionSave,
         handleChipClick,

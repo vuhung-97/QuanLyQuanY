@@ -1,4 +1,4 @@
-import { memo, useCallback } from "react";
+import { forwardRef, memo, useCallback, useImperativeHandle, useState } from "react";
 import {
     Autocomplete, Box, Button, Dialog, DialogActions, DialogContent,
     DialogTitle, IconButton, Stack, TextField, Typography,
@@ -11,24 +11,22 @@ const getUnitOptionLabel = (o) => `${o.ma_don_vi} - ${o.ten_don_vi}`;
 const isUnitOptionEqual = (o, v) => o.ma_don_vi === v.ma_don_vi;
 const renderUnitInput = (params) => <TextField {...params} label="Chọn đơn vị" />;
 
-const LocationField = memo(function LocationField({ value, onChange }) {
-    return (
-        <TextField
-            size="small"
-            label="Địa điểm"
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-        />
-    );
-});
+const DetailItem = memo(forwardRef(function DetailItem({
+    initialData, unitOptions, onRemove, minDate, maxDate,
+}, ref) {
+    const [maDonVi, setMaDonVi] = useState(initialData?.ma_don_vi ?? "");
+    const [thoiGianBatDau, setThoiGianBatDau] = useState(initialData?.thoi_gian_bat_dau ?? "");
+    const [thoiGianKetThuc, setThoiGianKetThuc] = useState(initialData?.thoi_gian_ket_thuc ?? "");
+    const [diaDiem, setDiaDiem] = useState(initialData?.dia_diem ?? "");
 
-const DetailItem = memo(function DetailItem({
-    index, data, unitOptions, onChange, onRemove, minDate, maxDate,
-}) {
-    const handleLocationChange = useCallback(
-        (val) => onChange(index, "dia_diem", val),
-        [index, onChange],
-    );
+    useImperativeHandle(ref, () => ({
+        getData: () => ({
+            ma_don_vi: maDonVi,
+            thoi_gian_bat_dau: thoiGianBatDau,
+            thoi_gian_ket_thuc: thoiGianKetThuc,
+            dia_diem: diaDiem,
+        }),
+    }), [maDonVi, thoiGianBatDau, thoiGianKetThuc, diaDiem]);
 
     return (
         <Box
@@ -49,12 +47,12 @@ const DetailItem = memo(function DetailItem({
                 }}
             >
                 <Typography variant="body2" fontWeight={600}>
-                    Đơn vị {index + 1}
+                    Đơn vị
                 </Typography>
                 <IconButton
                     size="small"
                     color="error"
-                    onClick={() => onRemove(index)}
+                    onClick={onRemove}
                 >
                     <DeleteIcon fontSize="small" />
                 </IconButton>
@@ -67,15 +65,11 @@ const DetailItem = memo(function DetailItem({
                     isOptionEqualToValue={isUnitOptionEqual}
                     value={
                         unitOptions.find(
-                            (o) => o.ma_don_vi === data.ma_don_vi,
+                            (o) => o.ma_don_vi === maDonVi,
                         ) || null
                     }
                     onChange={(_, newVal) =>
-                        onChange(
-                            index,
-                            "ma_don_vi",
-                            newVal ? newVal.ma_don_vi : "",
-                        )
+                        setMaDonVi(newVal ? newVal.ma_don_vi : "")
                     }
                     renderInput={renderUnitInput}
                 />
@@ -83,20 +77,16 @@ const DetailItem = memo(function DetailItem({
                     <Box sx={{ flex: 1, minWidth: 0 }}>
                         <DateTimeInput
                             label="Bắt đầu"
-                            value={data.thoi_gian_bat_dau}
-                            onChange={(v) =>
-                                onChange(index, "thoi_gian_bat_dau", v)
-                            }
+                            value={thoiGianBatDau}
+                            onChange={setThoiGianBatDau}
                             minDate={minDate}
                         />
                     </Box>
                     <Box sx={{ flex: 1, minWidth: 0 }}>
                         <DateTimeInput
                             label="Kết thúc"
-                            value={data.thoi_gian_ket_thuc}
-                            onChange={(v) =>
-                                onChange(index, "thoi_gian_ket_thuc", v)
-                            }
+                            value={thoiGianKetThuc}
+                            onChange={setThoiGianKetThuc}
                             minDate={minDate}
                         />
                     </Box>
@@ -107,14 +97,16 @@ const DetailItem = memo(function DetailItem({
                         {maxDate?.split("T")[0]}
                     </Typography>
                 )}
-                <LocationField
-                    value={data.dia_diem}
-                    onChange={handleLocationChange}
+                <TextField
+                    size="small"
+                    label="Địa điểm"
+                    value={diaDiem}
+                    onChange={(e) => setDiaDiem(e.target.value)}
                 />
             </Stack>
         </Box>
     );
-});
+}));
 
 export default function ScheduleDialog({
     open,
@@ -124,18 +116,29 @@ export default function ScheduleDialog({
     chiTietList,
 }) {
     const {
-        master,
-        details,
+        thoiGianBatDau,
+        setThoiGianBatDau,
+        thoiGianKetThuc,
+        setThoiGianKetThuc,
+        rowKeys,
+        rowRefs,
         saving,
         error,
         unitOptions,
         isEdit,
-        handleMasterChange,
-        handleDetailChange,
         addDetail,
         removeDetail,
         handleSubmit,
     } = useScheduleDialog({ open, schedule, chiTietList, onSaved, onClose });
+
+    const getInitialData = useCallback(
+        (key) => {
+            if (!chiTietList?.length) return null;
+            const idx = rowKeys.findIndex((r) => r.key === key);
+            return chiTietList[idx] || null;
+        },
+        [chiTietList, rowKeys],
+    );
 
     return (
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
@@ -157,19 +160,15 @@ export default function ScheduleDialog({
                             <Box sx={{ flex: 1, minWidth: 0 }}>
                                 <DateTimeInput
                                     label="Thời gian bắt đầu"
-                                    value={master.thoi_gian_bat_dau}
-                                    onChange={(v) =>
-                                        handleMasterChange("thoi_gian_bat_dau", v)
-                                    }
+                                    value={thoiGianBatDau}
+                                    onChange={setThoiGianBatDau}
                                 />
                             </Box>
                             <Box sx={{ flex: 1, minWidth: 0 }}>
                                 <DateTimeInput
                                     label="Thời gian kết thúc"
-                                    value={master.thoi_gian_ket_thuc}
-                                    onChange={(v) =>
-                                        handleMasterChange("thoi_gian_ket_thuc", v)
-                                    }
+                                    value={thoiGianKetThuc}
+                                    onChange={setThoiGianKetThuc}
                                 />
                             </Box>
                         </Stack>
@@ -190,20 +189,22 @@ export default function ScheduleDialog({
                             </Button>
                         </Stack>
 
-                        {details.map((d, idx) => (
+                        {rowKeys.map(({ key }) => (
                             <DetailItem
-                                key={`${idx}-${d.ma_don_vi || "new"}`}
-                                index={idx}
-                                data={d}
+                                key={key}
+                                ref={(el) => {
+                                    if (el) rowRefs.current.set(key, el);
+                                    else rowRefs.current.delete(key);
+                                }}
+                                initialData={getInitialData(key)}
                                 unitOptions={unitOptions}
-                                onChange={handleDetailChange}
-                                onRemove={removeDetail}
-                                minDate={master.thoi_gian_bat_dau || undefined}
-                                maxDate={master.thoi_gian_ket_thuc || undefined}
+                                onRemove={() => removeDetail(key)}
+                                minDate={thoiGianBatDau || undefined}
+                                maxDate={thoiGianKetThuc || undefined}
                             />
                         ))}
 
-                        {details.length === 0 && (
+                        {rowKeys.length === 0 && (
                             <Typography
                                 color="text.secondary"
                                 sx={{ textAlign: "center", py: 2 }}

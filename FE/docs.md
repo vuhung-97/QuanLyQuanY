@@ -143,6 +143,7 @@ Nếu cần có thể thêm thuộc tính mới vào theme.js
 - Gom fields vào 1 `formState` object
 - Dùng `updateField(name, value)` pattern
 - Logic trong custom hook `use<Feature>Form`
+- Sử dụng `useState` cho các trường nhập liệu
 
 ### Error handling
 
