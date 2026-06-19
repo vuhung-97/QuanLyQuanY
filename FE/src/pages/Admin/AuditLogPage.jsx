@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import useDebounce from "../../hooks/useDebounce.jsx";
 import { Box, Button, Chip, Stack, Tab, TableCell, TableRow, Tabs, Typography } from "@mui/material";
 import {
     Backup as BackupIcon,
@@ -33,6 +34,7 @@ export default function AuditLogPage() {
     const [page, setPage] = useState(1);
     const [totalRecords, setTotalRecords] = useState(0);
     const [query, setQuery] = useState("");
+    const debouncedQuery = useDebounce(query);
     const [backupFiles, setBackupFiles] = useState([]);
     const [creatingBackup, setCreatingBackup] = useState(false);
 
@@ -142,27 +144,30 @@ export default function AuditLogPage() {
         setPage(1);
     };
 
-    const rows = (logs[tab] || []).filter((row) => {
-        const keyword = query.trim().toLowerCase();
-        if (!keyword) return true;
-        const values = [
-            row.id,
-            row.ho_ten,
-            row.id_nguoi_dung,
-            row.hanh_dong,
-            row.ten_bang,
-            row.dia_chi_ip,
-            row.thiet_bi,
-            row.trang_thai_thanh_cong !== undefined
-                ? row.trang_thai_thanh_cong
-                    ? "thành công"
-                    : "thất bại"
-                : null,
-        ];
-        return values
-            .filter(Boolean)
-            .some((value) => String(value).toLowerCase().includes(keyword));
-    });
+    const rows = useMemo(
+        () => (logs[tab] || []).filter((row) => {
+            const keyword = debouncedQuery.trim().toLowerCase();
+            if (!keyword) return true;
+            const values = [
+                row.id,
+                row.ho_ten,
+                row.id_nguoi_dung,
+                row.hanh_dong,
+                row.ten_bang,
+                row.dia_chi_ip,
+                row.thiet_bi,
+                row.trang_thai_thanh_cong !== undefined
+                    ? row.trang_thai_thanh_cong
+                        ? "thành công"
+                        : "thất bại"
+                    : null,
+            ];
+            return values
+                .filter(Boolean)
+                .some((value) => String(value).toLowerCase().includes(keyword));
+        }),
+        [logs, tab, debouncedQuery],
+    );
 
     return (
         <Stack spacing={3}>

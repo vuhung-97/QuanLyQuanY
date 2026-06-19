@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import useDebounce from "./useDebounce.jsx";
 import { khamBenhService } from "../services/khamBenhService.js";
 
 export default function useExaminationList() {
     const [examinations, setExaminations] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchText, setSearchText] = useState("");
+    const debouncedSearchText = useDebounce(searchText);
 
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
     const [confirmDelete, setConfirmDelete] = useState({ open: false, id: null });
@@ -37,15 +39,15 @@ export default function useExaminationList() {
     useEffect(() => { loadData(); }, [loadData]);
 
     const filtered = useMemo(() => {
-        if (!searchText) return examinations;
-        const q = searchText.toLowerCase();
+        if (!debouncedSearchText) return examinations;
+        const q = debouncedSearchText.toLowerCase();
         return examinations.filter(
             (e) =>
                 (e.ma_kham_benh || "").toLowerCase().includes(q) ||
                 (e.ho_ten || "").toLowerCase().includes(q) ||
                 (e.ten_don_vi || "").toLowerCase().includes(q),
         );
-    }, [examinations, searchText]);
+    }, [examinations, debouncedSearchText]);
 
     const statusCounts = useMemo(() => {
         const count = (status) => examinations.filter((e) => e.trang_thai === status).length;

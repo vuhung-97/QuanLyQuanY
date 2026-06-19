@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import useDebounce from "../../hooks/useDebounce.jsx";
 import {
     Box,
     Button,
@@ -52,6 +53,7 @@ export default function UserManagementPage() {
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const [query, setQuery] = useState("");
+    const debouncedQuery = useDebounce(query);
     const [openDialog, setOpenDialog] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
     const [form, setForm] = useState(emptyForm);
@@ -94,7 +96,7 @@ export default function UserManagementPage() {
     }, []);
 
     const filteredUsers = users.filter((user) => {
-        const keyword = query.trim().toLowerCase();
+        const keyword = debouncedQuery.trim().toLowerCase();
         if (!keyword) return true;
         return [
             user.id,

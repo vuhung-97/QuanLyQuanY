@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import useDebounce from "./useDebounce.jsx";
 import { khamBenhService } from "../services/khamBenhService.js";
 
 export default function useCapThuoc() {
     const [examinations, setExaminations] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchText, setSearchText] = useState("");
+    const debouncedSearchText = useDebounce(searchText);
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
     const [selectedExam, setSelectedExam] = useState(null);
     const [examDetail, setExamDetail] = useState(null);
@@ -44,15 +46,15 @@ export default function useCapThuoc() {
     }, [patients]);
 
     const filtered = useMemo(() => {
-        if (!searchText) return patients;
-        const q = searchText.toLowerCase();
+        if (!debouncedSearchText) return patients;
+        const q = debouncedSearchText.toLowerCase();
         return patients.filter(
             (e) =>
                 (e.ma_kham_benh || "").toLowerCase().includes(q) ||
                 (e.ho_ten || "").toLowerCase().includes(q) ||
                 (e.ten_don_vi || "").toLowerCase().includes(q),
         );
-    }, [patients, searchText]);
+    }, [patients, debouncedSearchText]);
 
     const handleOpenForm = useCallback(async (id) => {
         const exam = examinations.find((e) => e.ma_kham_benh === id);

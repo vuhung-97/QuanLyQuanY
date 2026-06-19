@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Button, Card, CardContent, Chip, Stack,
     Tab, TableCell, TableRow, Tabs, Typography } from "@mui/material";
 import { Visibility as VisibilityIcon } from "@mui/icons-material";
@@ -14,6 +15,50 @@ const columns = [
     { key: "tinh_trang", label: "Tình trạng khám" },
     { key: "thao_tac", label: "Thao tác" },
 ];
+
+const SoldierRows = memo(function SoldierRows({ soldiers, phieuMap, allUnitLookup, onEdit, onViewHistory, getTrangThai, statusChipColor }) {
+    return soldiers.map((qn, idx) => {
+        const phieu = phieuMap[qn.ma_quan_nhan];
+        const tt = getTrangThai(phieu);
+        return (
+            <TableRow key={qn.ma_quan_nhan} hover>
+                <TableCell>{idx + 1}</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: "primary.main" }}>
+                    {qn.ma_quan_nhan}
+                </TableCell>
+                <TableCell
+                    sx={{ cursor: "pointer", fontWeight: 600, color: "primary.main",
+                        "&:hover": { textDecoration: "underline" } }}
+                    onClick={() => onViewHistory(qn)}
+                >
+                    {qn.ho_ten || "--"}
+                </TableCell>
+                <TableCell>{allUnitLookup.get(qn.ma_don_vi) || qn.ma_don_vi || "--"}</TableCell>
+                <TableCell>{qn.cap_bac || "--"}</TableCell>
+                <TableCell>{qn.chuc_vu || "--"}</TableCell>
+                <TableCell>
+                    <Chip size="small" label={tt}
+                        sx={{ ...statusChipColor(tt), fontWeight: 700, minWidth: 90 }} />
+                </TableCell>
+                <TableCell>
+                    {tt === "Chưa khám" && (
+                        <Button size="small" variant="contained"
+                            onClick={() => { document.activeElement?.blur(); onEdit(qn); }}>
+                            Khám
+                        </Button>
+                    )}
+                    {(tt === "Đang khám" || tt === "Đã khám") && (
+                        <Button size="small" variant="outlined"
+                            startIcon={<VisibilityIcon />}
+                            onClick={() => { document.activeElement?.blur(); onEdit(qn); }}>
+                            {tt === "Đã khám" ? "Xem" : "Tiếp tục"}
+                        </Button>
+                    )}
+                </TableCell>
+            </TableRow>
+        );
+    });
+});
 
 export default function SoldierTable({
     soldiers,
@@ -35,12 +80,9 @@ export default function SoldierTable({
             <CardContent sx={{ p: "24px !important" }}>
                 <Stack direction={{ xs: "column", md: "row" }} spacing={2}
                     sx={{ mb: 2, justifyContent: "space-between", alignItems: { md: "center" } }}>
-                    <Typography variant="h2">Danh sách quân nhân</Typography>
-                    <SearchBar
-                        value={searchText}
-                        onChange={onSearchChange}
-                        placeholder="Tìm kiếm quân nhân..."
-                    />
+                    <Typography variant="h2" sx={{ whiteSpace: "nowrap" }}>Danh sách quân nhân</Typography>
+                    <SearchBar value={searchText} onChange={onSearchChange}
+                        placeholder="Tìm kiếm quân nhân..." />
                     <Tabs value={filterTab} onChange={onFilterTabChange}
                         sx={{ minHeight: 36, "& .MuiTab-root": { minHeight: 36, py: 0.5 } }}>
                         {filterTabs.map((t) => (
@@ -57,47 +99,10 @@ export default function SoldierTable({
                     getRowKey={(qn) => qn.ma_quan_nhan}
                     minWidth={700}
                 >
-                    {soldiers.map((qn, idx) => {
-                        const phieu = phieuMap[qn.ma_quan_nhan];
-                        const tt = getTrangThai(phieu);
-                        return (
-                            <TableRow key={qn.ma_quan_nhan} hover>
-                                <TableCell>{idx + 1}</TableCell>
-                                <TableCell sx={{ fontWeight: 700, color: "primary.main" }}>
-                                    {qn.ma_quan_nhan}
-                                </TableCell>
-                                <TableCell
-                                    sx={{ cursor: "pointer", fontWeight: 600, color: "primary.main",
-                                        "&:hover": { textDecoration: "underline" } }}
-                                    onClick={() => onViewHistory(qn)}
-                                >
-                                    {qn.ho_ten || "--"}
-                                </TableCell>
-                                <TableCell>{allUnitLookup.get(qn.ma_don_vi) || qn.ma_don_vi || "--"}</TableCell>
-                                <TableCell>{qn.cap_bac || "--"}</TableCell>
-                                <TableCell>{qn.chuc_vu || "--"}</TableCell>
-                                <TableCell>
-                                    <Chip size="small" label={tt}
-                                        sx={{ ...statusChipColor(tt), fontWeight: 700, minWidth: 90 }} />
-                                </TableCell>
-                                <TableCell>
-                                    {tt === "Chưa khám" && (
-                                        <Button size="small" variant="contained"
-                                            onClick={() => { document.activeElement?.blur(); onEdit(qn); }}>
-                                            Khám
-                                        </Button>
-                                    )}
-                                    {(tt === "Đang khám" || tt === "Đã khám") && (
-                                        <Button size="small" variant="outlined"
-                                            startIcon={<VisibilityIcon />}
-                                            onClick={() => { document.activeElement?.blur(); onEdit(qn); }}>
-                                            {tt === "Đã khám" ? "Xem" : "Tiếp tục"}
-                                        </Button>
-                                    )}
-                                </TableCell>
-                            </TableRow>
-                        );
-                    })}
+                    <SoldierRows soldiers={soldiers} phieuMap={phieuMap}
+                        allUnitLookup={allUnitLookup} onEdit={onEdit}
+                        onViewHistory={onViewHistory} getTrangThai={getTrangThai}
+                        statusChipColor={statusChipColor} />
                 </DataTable>
             </CardContent>
         </Card>

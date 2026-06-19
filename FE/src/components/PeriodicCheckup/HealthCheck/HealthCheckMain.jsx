@@ -8,6 +8,7 @@ import {
     PendingActions as PendingActionsIcon,
     PersonAddAlt as PersonAddAltIcon,
 } from "@mui/icons-material";
+import useDebounce from "../../../hooks/useDebounce.jsx";
 import useHealthCheckData from "../../../hooks/useHealthCheckData";
 import api from "../../../services/api.js";
 import {
@@ -153,12 +154,13 @@ export default function HealthCheckMain() {
 
     const [filterTab, setFilterTab] = useState(0);
     const [searchText, setSearchText] = useState("");
+    const debouncedSearchText = useDebounce(searchText);
     const [formDialog, setFormDialog] = useState({ open: false, qn: null, phieu: null });
     const [historyDialog, setHistoryDialog] = useState({ open: false, qn: null });
 
     const filteredSoldiers = useMemo(
-        () => filterSoldiers(soldiers, phieuMap, filterTab, searchText, getTrangThai),
-        [soldiers, phieuMap, filterTab, searchText],
+        () => filterSoldiers(soldiers, phieuMap, filterTab, debouncedSearchText, getTrangThai),
+        [soldiers, phieuMap, filterTab, debouncedSearchText],
     );
 
     const statsItems = useMemo(
