@@ -1,6 +1,6 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, Query
 from sqlalchemy import inspect
 from sqlalchemy.orm import Session
 
@@ -33,13 +33,20 @@ router = create_crud_router(
     dependencies=[Depends(require_permissions("kham_benh:read"))],
     response_model=list[KhamBenhRead],
 )
-def get_kham_benh_hom_nay(db: Session = Depends(get_db)):
-    today = datetime.now().date()
+def get_kham_benh_hom_nay(
+    ngay: str | None = Query(default=None, description="YYYY-MM-DD"),
+    db: Session = Depends(get_db),
+):
+    ngay_date = (
+        datetime.strptime(ngay, "%Y-%m-%d").date()
+        if ngay else datetime.now().date()
+    )
+    ngay_sau = ngay_date + timedelta(days=1)
     records = (
         db.query(KhamBenh, QuanNhan.ho_ten, QuanNhan.ma_don_vi, DonVi.ten_don_vi)
         .join(QuanNhan, KhamBenh.ma_quan_nhan == QuanNhan.ma_quan_nhan)
         .join(DonVi, QuanNhan.ma_don_vi == DonVi.ma_don_vi, isouter=True)
-        .filter(KhamBenh.ngay_kham >= today)
+        .filter(KhamBenh.ngay_kham >= ngay_date, KhamBenh.ngay_kham < ngay_sau)
         .order_by(KhamBenh.ngay_kham.desc())
         .all()
     )

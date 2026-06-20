@@ -1,7 +1,10 @@
 import api from "./api.js";
 
 export const khamBenhService = {
-    getHomNay: (params) => api.get("/kham_benh/hom-nay/danh-sach", { params }),
+    getHomNay: (ngay, params) =>
+        api.get("/kham_benh/hom-nay/danh-sach", {
+            params: { ...(ngay && { ngay }), ...params },
+        }),
     getById: (id) => api.get(`/kham_benh/${id}`),
     getDetail: (id) => api.get(`/kham_benh/${id}/detail`),
     create: (data) => api.post("/kham_benh", data),

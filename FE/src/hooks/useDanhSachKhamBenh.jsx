@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import useDebounce from "./useDebounce.jsx";
 import { khamBenhService } from "../services/khamBenhService.js";
@@ -7,6 +8,7 @@ export default function useDanhSachKhamBenh() {
     const [loading, setLoading] = useState(true);
     const [searchText, setSearchText] = useState("");
     const debouncedSearchText = useDebounce(searchText);
+    const [selectedDate, setSelectedDate] = useState(dayjs());
 
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
     const [confirmDelete, setConfirmDelete] = useState({ open: false, id: null });
@@ -23,7 +25,8 @@ export default function useDanhSachKhamBenh() {
     const loadData = useCallback(async () => {
         setLoading(true);
         try {
-            const res = await khamBenhService.getHomNay();
+            const ngay = selectedDate.format("YYYY-MM-DD");
+            const res = await khamBenhService.getHomNay(ngay);
             setExaminations(res.data || []);
         } catch (err) {
             setSnackbar({
@@ -34,7 +37,7 @@ export default function useDanhSachKhamBenh() {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [selectedDate]);
 
     useEffect(() => { loadData(); }, [loadData]);
 
@@ -118,6 +121,8 @@ export default function useDanhSachKhamBenh() {
         searchText,
         setSearchText,
         filtered,
+        selectedDate,
+        setSelectedDate,
         statusCounts,
         snackbar,
         setSnackbar,

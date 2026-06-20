@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { useMemo } from "react";
 import {
     Button,
@@ -7,6 +8,9 @@ import {
     Stack,
     Typography,
 } from "@mui/material";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import {
     Delete as DeleteIcon,
     Download as DownloadIcon,
@@ -142,6 +146,8 @@ export default function DanhSachKhamBenh() {
         setOpenReceiveDialog,
         handleSelectQN,
         loadData,
+        selectedDate,
+        setSelectedDate,
     } = useDanhSachKhamBenh();
 
     const statItems = useMemo(
@@ -178,11 +184,8 @@ export default function DanhSachKhamBenh() {
         [statusCounts],
     );
 
-    const now = new Date();
-    const todayStr = `${now.getDate().toString().padStart(2, "0")}/${(now.getMonth() + 1).toString().padStart(2, "0")}/${now.getFullYear()}`;
-
     return (
-        <>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
             <StatCardGrid items={statItems} loading={loading} />
 
             <Card sx={{ borderRadius: 3 }}>
@@ -196,9 +199,27 @@ export default function DanhSachKhamBenh() {
                             alignItems: { md: "center" },
                         }}
                     >
-                        <Typography variant="h2">
-                            Danh sách khám ngày {todayStr}
-                        </Typography>
+                        <Stack direction="row" spacing={1.5} alignItems="center">
+                            <Typography variant="h2">
+                                Danh sách khám ngày
+                            </Typography>
+                            <DatePicker
+                                value={selectedDate}
+                                onChange={(v) => v && setSelectedDate(v)}
+                                format="DD/MM/YYYY"
+                                slotProps={{
+                                    textField: {
+                                        size: "small",
+                                        sx: {
+                                            "& .MuiInputBase-input": {
+                                                fontWeight: 600,
+                                                color: "primary.main",
+                                            },
+                                        },
+                                    },
+                                }}
+                            />
+                        </Stack>
                         <Toolbar
                             onReceive={() => setOpenReceiveDialog(true)}
                             onRefresh={loadData}
@@ -213,7 +234,11 @@ export default function DanhSachKhamBenh() {
                         columns={columns}
                         rows={filtered}
                         loading={loading}
-                        emptyMessage="Chưa có ca khám nào hôm nay."
+                        emptyMessage={
+                            selectedDate.isSame(dayjs(), "day")
+                                ? "Chưa có ca khám nào hôm nay."
+                                : `Không có ca khám nào ngày ${selectedDate.format("DD/MM/YYYY")}.`
+                        }
                         rowExtra={{
                             onExam: handleOpenExamForm,
                             onDelete: handleDeleteClick,
@@ -254,6 +279,6 @@ export default function DanhSachKhamBenh() {
                 severity={snackbar.severity}
                 onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
             />
-        </>
+        </LocalizationProvider>
     );
 }
