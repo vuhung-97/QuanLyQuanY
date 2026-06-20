@@ -1,11 +1,11 @@
 import { useState } from "react";
-import AnchorIcon from "@mui/icons-material/Anchor";
 import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
 import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import {
+    alpha,
     Box,
     Button,
     Card,
@@ -18,10 +18,9 @@ import {
     Stack,
     TextField,
     Typography,
-    Alert,
-    Snackbar,
 } from "@mui/material";
 import api, { decodeJWT } from "../../services/api";
+import FeedbackSnackbar from "../../components/common/FeedbackSnackbar.jsx";
 
 export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false);
@@ -78,16 +77,15 @@ export default function LoginPage() {
             }}
         >
             <Box
-                sx={{
+                sx={(theme) => ({
                     position: "relative",
                     display: { xs: "none", md: "flex" },
                     flexDirection: "column",
                     justifyContent: "space-between",
                     p: { md: 5, lg: 7 },
                     color: "white",
-                    background:
-                        "radial-gradient(circle at 18% 20%, rgba(0, 180, 216, 0.45), transparent 28%), linear-gradient(145deg, #06253D 0%, #0B3B60 58%, #0A516F 100%)",
-                }}
+                    background: `radial-gradient(circle at 18% 20%, ${alpha(theme.palette.secondary.main, 0.45)}, transparent 28%), linear-gradient(145deg, ${theme.palette.primary.dark} 0%, ${theme.palette.primary.main} 58%, ${theme.palette.primary.light} 100%)`,
+                })}
             >
                 <Box
                     sx={{
@@ -205,25 +203,24 @@ export default function LoginPage() {
             </Box>
 
             <Box
-                sx={{
+                sx={(theme) => ({
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     p: { xs: 2.5, sm: 4, md: 6 },
-                    background:
-                        "radial-gradient(circle at 85% 15%, rgba(0, 180, 216, 0.14), transparent 30%), #F4F7F9",
-                }}
+                    background: `radial-gradient(circle at 85% 15%, ${alpha(theme.palette.secondary.main, 0.14)}, transparent 30%), ${theme.palette.background.default}`,
+                })}
             >
                 <Card
                     elevation={0}
-                    sx={{
+                    sx={(theme) => ({
                         width: "100%",
                         maxWidth: 460,
                         p: { xs: 3, sm: 4.5 },
                         borderRadius: 4,
-                        boxShadow: "0 24px 70px rgba(11, 59, 96, 0.14)",
-                        border: "1px solid rgba(11, 59, 96, 0.08)",
-                    }}
+                        boxShadow: `0 24px 70px ${alpha(theme.palette.primary.main, 0.14)}`,
+                        border: `1px solid ${alpha(theme.palette.primary.main, 0.08)}`,
+                    })}
                 >
                     <Stack spacing={3}>
                         <Stack
@@ -233,15 +230,15 @@ export default function LoginPage() {
                             }}
                         >
                             <Box
-                                sx={{
+                                sx={(theme) => ({
                                     width: 58,
                                     height: 58,
                                     display: "grid",
                                     placeItems: "center",
                                     borderRadius: 3,
                                     color: "primary.main",
-                                    bgcolor: "rgba(0, 180, 216, 0.12)",
-                                }}
+                                    bgcolor: alpha(theme.palette.secondary.main, 0.12),
+                                })}
                             >
                                 <LocalHospitalIcon fontSize="large" />
                             </Box>
@@ -344,17 +341,15 @@ export default function LoginPage() {
                                     startIcon={
                                         loading ? null : <LockOutlinedIcon />
                                     }
-                                    sx={{
+                                    sx={(theme) => ({
                                         py: 1.35,
                                         bgcolor: "primary.main",
-                                        boxShadow:
-                                            "0 14px 28px rgba(11, 59, 96, 0.24)",
+                                        boxShadow: `0 14px 28px ${alpha(theme.palette.primary.main, 0.24)}`,
                                         "&:hover": {
                                             bgcolor: "primary.dark",
-                                            boxShadow:
-                                                "0 18px 34px rgba(11, 59, 96, 0.3)",
+                                            boxShadow: `0 18px 34px ${alpha(theme.palette.primary.main, 0.3)}`,
                                         },
-                                    }}
+                                    })}
                                 >
                                     {loading
                                         ? "Đang đăng nhập..."
@@ -363,24 +358,12 @@ export default function LoginPage() {
                             </Stack>
                         </Box>
 
-                        <Snackbar
+                        <FeedbackSnackbar
                             open={!!error}
-                            autoHideDuration={5000}
+                            message={error}
+                            severity="error"
                             onClose={() => setError("")}
-                            anchorOrigin={{
-                                vertical: "top",
-                                horizontal: "center",
-                            }}
-                        >
-                            <Alert
-                                severity="error"
-                                variant="filled"
-                                onClose={() => setError("")}
-                                sx={{ borderRadius: 3 }}
-                            >
-                                {error}
-                            </Alert>
-                        </Snackbar>
+                        />
                     </Stack>
                 </Card>
             </Box>

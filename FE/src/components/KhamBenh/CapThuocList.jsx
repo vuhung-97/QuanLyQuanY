@@ -13,7 +13,10 @@ import {
     Refresh as RefreshIcon,
 } from "@mui/icons-material";
 import useCapThuoc from "../../hooks/useCapThuoc.jsx";
-import { buildCapThuocXlsContent, saveWorkbook } from "../../utils/xlsExport.js";
+import {
+    buildCapThuocXlsContent,
+    saveWorkbook,
+} from "../../utils/xlsExport.js";
 import CapThuocForm from "./CapThuocForm.jsx";
 import DataTable from "../common/DataTable.jsx";
 import FeedbackSnackbar from "../common/FeedbackSnackbar.jsx";
@@ -30,7 +33,7 @@ const columns = [
     {
         key: "ma_kham_benh",
         label: "Mã KB",
-        sx: { fontWeight: 700, color: "primary.main" },
+        sx: { color: "primary.main" },
     },
     { key: "ho_ten", label: "Họ tên QN" },
     { key: "don_vi", label: "Đơn vị", render: (row) => row.ten_don_vi || "--" },
@@ -52,9 +55,9 @@ const columns = [
         render: (row) =>
             row.ngay_kham
                 ? new Date(row.ngay_kham).toLocaleDateString("vi-VN", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
                   })
                 : "--",
     },
@@ -64,8 +67,14 @@ const columns = [
         render: (row, _idx, { onDispense }) => (
             <Button
                 size="small"
-                variant={row.trang_thai === "chờ_nhận_thuốc" ? "contained" : "outlined"}
-                color={row.trang_thai === "chờ_nhận_thuốc" ? "primary" : "inherit"}
+                variant={
+                    row.trang_thai === "chờ_nhận_thuốc"
+                        ? "contained"
+                        : "outlined"
+                }
+                color={
+                    row.trang_thai === "chờ_nhận_thuốc" ? "primary" : "inherit"
+                }
                 onClick={() => onDispense(row.ma_kham_benh)}
                 sx={{ textTransform: "none" }}
             >
@@ -119,7 +128,9 @@ export default function CapThuocList() {
         try {
             const wb = buildCapThuocXlsContent(filtered);
             await saveWorkbook(wb, "danh_sach_cap_thuoc.xlsx");
-        } catch { /* ignore */ }
+        } catch {
+            /* ignore */
+        }
     };
 
     return (
@@ -127,7 +138,7 @@ export default function CapThuocList() {
             <StatCardGrid items={statItems} loading={loading} />
 
             <Card sx={{ borderRadius: 3 }}>
-                <CardContent sx={{ p: "24px !important" }}>
+                <CardContent>
                     <Stack
                         direction={{ xs: "column", md: "row" }}
                         spacing={2}
@@ -147,7 +158,7 @@ export default function CapThuocList() {
                                 onClick={handleExport}
                                 sx={{ textTransform: "none" }}
                             >
-                                Xuất Excel
+                                In đơn thuốc
                             </Button>
                             <Button
                                 variant="outlined"

@@ -40,7 +40,7 @@ const columns = [
     {
         key: "ma_kham_benh",
         label: "Mã KB",
-        sx: { fontWeight: 700, color: "primary.main" },
+        sx: { color: "primary.main" },
     },
     { key: "ho_ten", label: "Họ tên QN" },
     { key: "don_vi", label: "Đơn vị", render: (row) => row.ten_don_vi || "--" },
@@ -186,7 +186,7 @@ export default function DanhSachKhamBenh() {
             <StatCardGrid items={statItems} loading={loading} />
 
             <Card sx={{ borderRadius: 3 }}>
-                <CardContent sx={{ p: "24px !important" }}>
+                <CardContent>
                     <Stack
                         direction={{ xs: "column", md: "row" }}
                         spacing={2}

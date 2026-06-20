@@ -4,7 +4,7 @@ export default function TableCard({ loading, children, sx }) {
     return (
         <Card sx={{ borderRadius: 3, ...sx }}>
             {loading && <LinearProgress />}
-            <CardContent sx={{ p: "24px !important" }}>{children}</CardContent>
+            <CardContent>{children}</CardContent>
         </Card>
     );
 }

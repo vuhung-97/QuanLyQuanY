@@ -3,6 +3,7 @@ import { createTheme } from "@mui/material/styles";
 export const theme = createTheme({
     palette: {
         primary: {
+            light: "#0A516F",
             main: "#0B3B60", // Primary Navy
             dark: "#06253D",
         },
@@ -63,6 +64,27 @@ export const theme = createTheme({
                     "&:hover": {
                         boxShadow: "0 4px 12px rgba(0, 180, 216, 0.2)",
                     },
+                },
+            },
+        },
+        MuiCardContent: {
+            styleOverrides: {
+                root: {
+                    padding: "24px",
+                },
+            },
+        },
+        MuiDialogActions: {
+            styleOverrides: {
+                root: {
+                    padding: "0 24px 20px",
+                },
+            },
+        },
+        MuiTableCell: {
+            styleOverrides: {
+                head: {
+                    fontWeight: 700,
                 },
             },
         },

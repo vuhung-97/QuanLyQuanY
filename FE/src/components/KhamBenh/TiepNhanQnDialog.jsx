@@ -20,7 +20,7 @@ const qnColumns = [
     {
         key: "ma_quan_nhan",
         label: "Mã QN",
-        sx: { fontWeight: 700, color: "primary.main" },
+        sx: { color: "primary.main" },
     },
     { key: "ho_ten", label: "Họ tên" },
     { key: "ngay_sinh", label: "Ngày sinh" },

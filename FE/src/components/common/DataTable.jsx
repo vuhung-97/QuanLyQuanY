@@ -32,7 +32,7 @@ export default function DataTable({
                         {columns.map((col) => (
                             <TableCell
                                 key={col.key}
-                                sx={{ fontWeight: 700, color: "text.primary", ...col.sx }}
+                                sx={{ color: "text.primary", ...col.sx }}
                                 align={col.align || "left"}
                             >
                                 {col.label}

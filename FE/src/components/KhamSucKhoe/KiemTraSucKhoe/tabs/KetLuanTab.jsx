@@ -19,7 +19,7 @@ function SectionTitle({ children }) {
         <Typography
             variant="subtitle1"
             fontWeight="bold"
-            color="#0B3B60"
+            color="primary"
             sx={{ mb: 2 }}
         >
             {children}
@@ -69,7 +69,7 @@ const KetLuanTab = memo(forwardRef(function KetLuanTab({ initialData, cardStyle,
 
     return (
         <Card sx={cardStyle}>
-            <CardContent sx={{ p: 3 }}>
+            <CardContent>
                 <SectionTitle>Đánh giá & Phân loại sức khỏe chung</SectionTitle>
                 <Grid container spacing={2}>
                     <Grid size={{ xs: 12, sm: 4 }}>

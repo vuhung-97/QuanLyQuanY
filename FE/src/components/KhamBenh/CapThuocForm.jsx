@@ -192,34 +192,19 @@ export default function CapThuocForm({
                                 >
                                     <TableHead>
                                         <TableRow sx={{ bgcolor: "#F4F7F9" }}>
-                                            <TableCell
-                                                sx={{
-                                                    fontWeight: 700,
-                                                    width: 40,
-                                                }}
-                                            >
+                                            <TableCell sx={{ width: 40 }}>
                                                 STT
                                             </TableCell>
-                                            <TableCell sx={{ fontWeight: 700 }}>
+                                            <TableCell>
                                                 Tên thuốc
                                             </TableCell>
-                                            <TableCell
-                                                sx={{
-                                                    fontWeight: 700,
-                                                    width: 80,
-                                                }}
-                                            >
+                                            <TableCell sx={{ width: 80 }}>
                                                 Số lượng
                                             </TableCell>
-                                            <TableCell
-                                                sx={{
-                                                    fontWeight: 700,
-                                                    width: 80,
-                                                }}
-                                            >
+                                            <TableCell sx={{ width: 80 }}>
                                                 ĐVT
                                             </TableCell>
-                                            <TableCell sx={{ fontWeight: 700 }}>
+                                            <TableCell>
                                                 Hướng dẫn sử dụng
                                             </TableCell>
                                         </TableRow>
@@ -269,7 +254,7 @@ export default function CapThuocForm({
             </DialogContent>
 
             <Box sx={{ "@media print": { display: "none" } }}>
-                <DialogActions sx={{ px: 3, pb: 2.5 }}>
+                <DialogActions>
                     <Button onClick={onClose}>Hủy</Button>
                     <Button
                         variant="outlined"

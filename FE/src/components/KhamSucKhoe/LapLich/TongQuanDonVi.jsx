@@ -77,7 +77,7 @@ export default function TongQuanDonVi({ chiTietMap }) {
 
     return (
         <Card sx={{ borderRadius: 3 }}>
-            <CardContent sx={{ p: "24px !important" }}>
+            <CardContent>
                 <Stack
                     direction={{ xs: "column", md: "row" }}
                     spacing={2}

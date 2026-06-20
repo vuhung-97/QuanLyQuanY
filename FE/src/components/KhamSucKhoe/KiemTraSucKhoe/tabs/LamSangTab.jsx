@@ -110,7 +110,7 @@ function SectionTitle({ children }) {
         <Typography
             variant="subtitle1"
             fontWeight="bold"
-            color="#0B3B60"
+            color="primary"
             sx={{ mb: 2 }}
         >
             {children}
@@ -165,7 +165,7 @@ const ChuyenKhoaRow = memo(
                         <Typography
                             variant="body2"
                             fontWeight="600"
-                            color="#0B3B60"
+                            color="primary"
                         >
                             {sp.label}
                         </Typography>
@@ -286,7 +286,7 @@ const LamSangTab = memo(forwardRef(function LamSangTab({ initialData, cardStyle,
     return (
         <>
             <Card sx={cardStyle}>
-                <CardContent sx={{ p: 3 }}>
+                <CardContent>
                     <SectionTitle>Thể lực & Chỉ số sinh tồn</SectionTitle>
                     <Grid container spacing={2} sx={{ alignItems: "center" }}>
                         {theLucFields.map((f) => (
@@ -325,7 +325,7 @@ const LamSangTab = memo(forwardRef(function LamSangTab({ initialData, cardStyle,
             </Card>
 
             <Card sx={cardStyle}>
-                <CardContent sx={{ p: 3 }}>
+                <CardContent>
                     <SectionTitle>Khám chuyên khoa</SectionTitle>
                     <Grid container spacing={2}>
                         {specialities.map((sp) => (
@@ -343,7 +343,7 @@ const LamSangTab = memo(forwardRef(function LamSangTab({ initialData, cardStyle,
             </Card>
 
             <Card sx={cardStyle}>
-                <CardContent sx={{ p: 3 }}>
+                <CardContent>
                     <SectionTitle>Khám mắt</SectionTitle>
                     <Grid container spacing={2} sx={{ alignItems: "center" }}>
                         {matKhongKinhFields.map((f) => (

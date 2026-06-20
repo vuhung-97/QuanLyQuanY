@@ -1,17 +1,22 @@
 import {
+    AddCircle as AddCircleIcon,
+    AdminPanelSettings as AdminPanelSettingsIcon,
+    Assessment as AssessmentIcon,
+    AssignmentTurnedIn as AssignmentTurnedInIcon,
+    Ballot as BallotIcon,
+    Bed as BedIcon,
     Dashboard as DashboardIcon,
     HealthAndSafety as HealthAndSafetyIcon,
-    PlaylistAddCheck as PlaylistAddCheckIcon,
-    AssignmentTurnedIn as AssignmentTurnedInIcon,
-    Person as PersonIcon,
-    Bed as BedIcon,
-    MedicalServices as MedicalServicesIcon,
-    Inventory2 as InventoryIcon,
-    Assessment as AssessmentIcon,
-    AdminPanelSettings as AdminPanelSettingsIcon,
-    ManageAccounts as ManageAccountsIcon,
-    Security as SecurityIcon,
+    Healing as HealingIcon,
     History as HistoryIcon,
+    Inventory2 as InventoryIcon,
+    ManageAccounts as ManageAccountsIcon,
+    MedicalServices as MedicalServicesIcon,
+    NoteAdd as NoteAddIcon,
+    Person as PersonIcon,
+    PlaylistAddCheck as PlaylistAddCheckIcon,
+    RemoveCircle as RemoveCircleIcon,
+    Security as SecurityIcon,
 } from "@mui/icons-material";
 
 const ALL = ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"];
@@ -19,7 +24,13 @@ const NO_YSI = ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI"];
 const ADMIN = ["ROLE_ADMIN", "ROLE_CNQY"];
 
 export const defaultMenuItems = [
-    { id: "dashboard", title: "Tổng quan", path: "/", icon: <DashboardIcon />, allowedRoles: ALL },
+    {
+        id: "dashboard",
+        title: "Tổng quan",
+        path: "/",
+        icon: <DashboardIcon />,
+        allowedRoles: ALL,
+    },
     {
         id: "periodic-checkup",
         title: "Khám sức khỏe định kỳ",
@@ -49,6 +60,22 @@ export const defaultMenuItems = [
         path: "/noi-tru",
         icon: <BedIcon />,
         allowedRoles: ALL,
+        children: [
+            {
+                id: "inpatient-record",
+                title: "Lập bệnh án",
+                path: "/noi-tru/lap-benh-an",
+                icon: <NoteAddIcon />,
+                allowedRoles: ALL,
+            },
+            {
+                id: "inpatient-treatment",
+                title: "Điều trị",
+                path: "/noi-tru/dieu-tri",
+                icon: <HealingIcon />,
+                allowedRoles: ALL,
+            },
+        ],
     },
     {
         id: "examination",
@@ -82,10 +109,33 @@ export const defaultMenuItems = [
     },
     {
         id: "pharmacy",
-        title: "Kho dược",
+        title: "Thuốc và vật tư y tế",
         path: "/kho-duoc",
         icon: <InventoryIcon />,
         allowedRoles: ALL,
+        children: [
+            {
+                id: "pharmacy-request",
+                title: "Dự trù",
+                path: "/kho-duoc/du-tru",
+                icon: <BallotIcon />,
+                allowedRoles: NO_YSI,
+            },
+            {
+                id: "pharmacy-import",
+                title: "Nhập",
+                path: "/kho-duoc/nhap",
+                icon: <AddCircleIcon />,
+                allowedRoles: NO_YSI,
+            },
+            {
+                id: "pharmacy-export",
+                title: "Xuất",
+                path: "/kho-duoc/xuat",
+                icon: <RemoveCircleIcon />,
+                allowedRoles: NO_YSI,
+            },
+        ],
     },
     {
         id: "reports",

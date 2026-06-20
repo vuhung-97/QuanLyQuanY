@@ -7,7 +7,7 @@ import DataTable from "../../common/DataTable.jsx";
 
 const columns = [
     { key: "stt", label: "STT" },
-    { key: "ma_quan_nhan", label: "Mã QN", sx: { fontWeight: 700, color: "primary.main" } },
+    { key: "ma_quan_nhan", label: "Mã QN", sx: { color: "primary.main" } },
     { key: "ho_ten", label: "Họ tên" },
     { key: "don_vi", label: "Đơn vị" },
     { key: "cap_bac", label: "Cấp bậc" },
@@ -77,7 +77,7 @@ export default function BangQuanNhan({
 }) {
     return (
         <Card sx={{ borderRadius: 3 }}>
-            <CardContent sx={{ p: "24px !important" }}>
+                <CardContent>
                 <Stack direction={{ xs: "column", md: "row" }} spacing={2}
                     sx={{ mb: 2, justifyContent: "space-between", alignItems: { md: "center" } }}>
                     <Typography variant="h2" sx={{ whiteSpace: "nowrap" }}>Danh sách quân nhân</Typography>

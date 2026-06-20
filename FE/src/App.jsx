@@ -50,7 +50,19 @@ export default function App() {
                         <Route
                             path="noi-tru"
                             element={
-                                <PlaceHolderPage title="Quản lý nội trú" />
+                                <Navigate to="/noi-tru/lap-benh-an" replace />
+                            }
+                        />
+                        <Route
+                            path="noi-tru/lap-benh-an"
+                            element={
+                                <PlaceHolderPage title="Lập bệnh án nội trú" />
+                            }
+                        />
+                        <Route
+                            path="noi-tru/dieu-tri"
+                            element={
+                                <PlaceHolderPage title="Điều trị nội trú" />
                             }
                         />
                         <Route
@@ -76,7 +88,21 @@ export default function App() {
                         />
                         <Route
                             path="kho-duoc"
-                            element={<PlaceHolderPage title="Kho dược" />}
+                            element={<Navigate to="/kho-duoc/du-tru" replace />}
+                        />
+                        <Route
+                            path="kho-duoc/du-tru"
+                            element={
+                                <PlaceHolderPage title="Dự trù" />
+                            }
+                        />
+                        <Route
+                            path="kho-duoc/nhap"
+                            element={<PlaceHolderPage title="Nhập kho dược" />}
+                        />
+                        <Route
+                            path="kho-duoc/xuat"
+                            element={<PlaceHolderPage title="Xuất kho dược" />}
                         />
                         <Route
                             path="bao-cao"

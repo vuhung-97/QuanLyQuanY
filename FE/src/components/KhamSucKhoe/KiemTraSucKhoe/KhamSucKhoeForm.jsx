@@ -36,7 +36,7 @@ function FormHeader({ quanNhan }) {
         >
             <Typography
                 fontWeight="bold"
-                color="#0B3B60"
+                color="primary"
                 sx={{
                     display: "flex",
                     alignItems: "center",
@@ -128,17 +128,17 @@ function FormTabBar({ activeTab, onTabChange }) {
                 value={activeTab}
                 onChange={onTabChange}
                 variant="fullWidth"
-                sx={{
+                sx={(theme) => ({
                     "& .MuiTabs-indicator": {
-                        backgroundColor: "#00B4D8",
+                        backgroundColor: theme.palette.secondary.main,
                         height: 3,
                     },
                     "& .MuiTab-root": {
-                        color: "#0B3B60",
+                        color: theme.palette.primary.main,
                         fontWeight: "bold",
-                        "&.Mui-selected": { color: "#00B4D8" },
+                        "&.Mui-selected": { color: theme.palette.secondary.main },
                     },
-                }}
+                })}
             >
                 {tabConfigs.map((t) => (
                     <Tab
@@ -208,7 +208,7 @@ export default function KhamSucKhoeForm({
             onClose={onClose}
             fullWidth
             maxWidth="lg"
-            slotProps={{ paper: { sx: { bgcolor: "#F4F7F9" } } }}
+            slotProps={{ paper: { sx: { bgcolor: (theme) => theme.palette.background.default } } }}
         >
             <Box component="form" onSubmit={handleSubmit}>
                 <FormHeader quanNhan={quanNhan} />
@@ -271,8 +271,6 @@ export default function KhamSucKhoeForm({
 
                 <DialogActions
                     sx={{
-                        px: 3,
-                        pb: 2.5,
                         pt: 1.5,
                         borderTop: "1px solid",
                         borderColor: "divider",

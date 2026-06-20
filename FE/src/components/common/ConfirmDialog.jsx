@@ -24,7 +24,7 @@ export default function ConfirmDialog({
             <DialogContent>
                 <DialogContentText>{message}</DialogContentText>
             </DialogContent>
-            <DialogActions sx={{ px: 3, pb: 2.5 }}>
+            <DialogActions>
                 <Button onClick={onClose} disabled={loading}>
                     Hủy
                 </Button>

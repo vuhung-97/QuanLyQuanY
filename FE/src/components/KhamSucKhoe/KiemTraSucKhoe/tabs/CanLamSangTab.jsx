@@ -8,7 +8,7 @@ import { fieldRanges, isOutOfRange } from "./fieldRanges";
 
 function SectionTitle({ children }) {
     return (
-        <Typography variant="subtitle1" fontWeight="bold" color="#0B3B60" sx={{ mb: 2 }}>
+        <Typography variant="subtitle1" fontWeight="bold" color="primary" sx={{ mb: 2 }}>
             {children}
         </Typography>
     );
@@ -53,7 +53,7 @@ const CanLamSangTab = memo(forwardRef(function CanLamSangTab({ initialData, card
     return (
         <>
             <Card sx={cardStyle}>
-                <CardContent sx={{ p: 3 }}>
+                <CardContent>
                     <SectionTitle>Xét nghiệm máu</SectionTitle>
                     <Grid container spacing={2}>
                         {xetNghiemMauFields.map((f) => {
@@ -91,7 +91,7 @@ const CanLamSangTab = memo(forwardRef(function CanLamSangTab({ initialData, card
             </Card>
 
             <Card sx={cardStyle}>
-                <CardContent sx={{ p: 3 }}>
+                <CardContent>
                     <SectionTitle>Xét nghiệm nước tiểu</SectionTitle>
                     <Grid container spacing={2}>
                         {xetNghiemNuocTieuFields.map((f) => {
@@ -141,7 +141,7 @@ const CanLamSangTab = memo(forwardRef(function CanLamSangTab({ initialData, card
             </Card>
 
             <Card sx={cardStyle}>
-                <CardContent sx={{ p: 3 }}>
+                <CardContent>
                     <SectionTitle>Chẩn đoán hình ảnh & Khác</SectionTitle>
                     <Grid container spacing={2}>
                         {cdhaFields.map((f) => {

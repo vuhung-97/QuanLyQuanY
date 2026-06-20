@@ -315,7 +315,7 @@ export default function DonThuocForm({
                     </Button>
                 </Stack>
             </DialogContent>
-            <DialogActions sx={{ px: 3, pb: 2.5 }}>
+            <DialogActions>
                 <Button onClick={onClose}>Hủy</Button>
                 <Button
                     variant="contained"

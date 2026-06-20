@@ -99,7 +99,7 @@ function ExamRecordHistoryDialog({ open, onClose, quanNhan, onViewPhieu }) {
 
     return (
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-            <DialogTitle component="div" sx={{ fontWeight: "bold", color: "#0B3B60" }}>
+            <DialogTitle component="div" sx={{ fontWeight: "bold", color: "primary.main" }}>
                 Lịch sử khám sức khỏe — {quanNhan?.ho_ten} ({quanNhan?.ma_quan_nhan})
             </DialogTitle>
             <DialogContent>

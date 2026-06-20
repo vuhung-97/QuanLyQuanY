@@ -16,7 +16,7 @@ function SectionTitle({ children }) {
         <Typography
             variant="subtitle1"
             fontWeight="bold"
-            color="#0B3B60"
+            color="primary"
             sx={{ mb: 2 }}
         >
             {children}
@@ -120,7 +120,7 @@ const TienSuTab = memo(forwardRef(function TienSuTab({ initialData, cardStyle, r
     return (
         <>
             <Card sx={cardStyle}>
-                <CardContent sx={{ p: 3 }}>
+                <CardContent>
                     <SectionTitle>Tiền sử bản thân</SectionTitle>
                     <Grid container spacing={2}>
                         {fields.map(renderField)}
@@ -129,7 +129,7 @@ const TienSuTab = memo(forwardRef(function TienSuTab({ initialData, cardStyle, r
             </Card>
 
             <Card sx={cardStyle}>
-                <CardContent sx={{ p: 3 }}>
+                <CardContent>
                     <SectionTitle>Tiền sử gia đình</SectionTitle>
                     <Grid container spacing={2}>
                         {fieldsGiaDinh.map(renderField)}

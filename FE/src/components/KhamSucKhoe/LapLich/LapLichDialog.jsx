@@ -214,7 +214,7 @@ export default function LapLichDialog({
                         )}
                     </Stack>
                 </DialogContent>
-                <DialogActions sx={{ px: 3, pb: 2.5 }}>
+                <DialogActions>
                     <Button onClick={onClose}>Hủy</Button>
                     <Button type="submit" variant="contained" disabled={saving}>
                         {saving

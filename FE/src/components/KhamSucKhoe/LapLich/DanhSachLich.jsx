@@ -163,7 +163,7 @@ export default function DanhSachLich({
 
     return (
         <Card sx={{ borderRadius: 3 }}>
-            <CardContent sx={{ p: "24px !important" }}>
+            <CardContent>
                 <Stack direction={{ xs: "column", md: "row" }} spacing={2}
                     sx={{ mb: 2.5, justifyContent: "space-between" }}>
                     <Box>
