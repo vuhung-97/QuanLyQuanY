@@ -47,7 +47,7 @@ export const defaultMenuItems = [
             },
             {
                 id: "periodic-exam",
-                title: "Khám sức khỏe định kỳ",
+                title: "Khám sức khỏe",
                 path: "/kham-dinh-ky/kham-suc-khoe",
                 icon: <AssignmentTurnedInIcon />,
                 allowedRoles: ALL,
@@ -79,14 +79,14 @@ export const defaultMenuItems = [
     },
     {
         id: "examination",
-        title: "Khám bệnh",
+        title: "Khám bệnh cho quân nhân",
         path: "/kham-benh",
         icon: <MedicalServicesIcon />,
         allowedRoles: ALL,
         children: [
             {
                 id: "examination-list",
-                title: "Khám bệnh cho quân nhân",
+                title: "Khám bệnh",
                 path: "/kham-benh/Kham-benh-cho-quan-nhan",
                 icon: <PersonIcon />,
                 allowedRoles: NO_YSI,
