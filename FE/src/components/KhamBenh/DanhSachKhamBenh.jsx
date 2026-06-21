@@ -8,9 +8,7 @@ import {
     Stack,
     Typography,
 } from "@mui/material";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import DatePicker from "../common/DatePicker.jsx";
 import {
     Delete as DeleteIcon,
     Download as DownloadIcon,
@@ -128,7 +126,8 @@ function Toolbar({ onReceive, onRefresh }) {
 
 export default function DanhSachKhamBenh() {
     const {
-        loading,
+        initialLoading,
+        refreshing,
         searchText,
         setSearchText,
         filtered,
@@ -185,8 +184,8 @@ export default function DanhSachKhamBenh() {
     );
 
     return (
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <StatCardGrid items={statItems} loading={loading} />
+        <>
+            <StatCardGrid items={statItems} loading={initialLoading} />
 
             <Card sx={{ borderRadius: 3 }}>
                 <CardContent>
@@ -199,25 +198,17 @@ export default function DanhSachKhamBenh() {
                             alignItems: { md: "center" },
                         }}
                     >
-                        <Stack direction="row" spacing={1.5} alignItems="center">
+                        <Stack
+                            direction="row"
+                            spacing={1}
+                            sx={{ alignItems: "center" }}
+                        >
                             <Typography variant="h2">
                                 Danh sách khám ngày
                             </Typography>
                             <DatePicker
                                 value={selectedDate}
-                                onChange={(v) => v && setSelectedDate(v)}
-                                format="DD/MM/YYYY"
-                                slotProps={{
-                                    textField: {
-                                        size: "small",
-                                        sx: {
-                                            "& .MuiInputBase-input": {
-                                                fontWeight: 600,
-                                                color: "primary.main",
-                                            },
-                                        },
-                                    },
-                                }}
+                                onChange={setSelectedDate}
                             />
                         </Stack>
                         <Toolbar
@@ -233,7 +224,7 @@ export default function DanhSachKhamBenh() {
                     <DataTable
                         columns={columns}
                         rows={filtered}
-                        loading={loading}
+                        loading={initialLoading || refreshing}
                         emptyMessage={
                             selectedDate.isSame(dayjs(), "day")
                                 ? "Chưa có ca khám nào hôm nay."
@@ -279,6 +270,6 @@ export default function DanhSachKhamBenh() {
                 severity={snackbar.severity}
                 onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
             />
-        </LocalizationProvider>
+        </>
     );
 }

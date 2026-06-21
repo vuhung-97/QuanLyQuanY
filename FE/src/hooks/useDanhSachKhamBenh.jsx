@@ -5,7 +5,8 @@ import { khamBenhService } from "../services/khamBenhService.js";
 
 export default function useDanhSachKhamBenh() {
     const [examinations, setExaminations] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [initialLoading, setInitialLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
     const [searchText, setSearchText] = useState("");
     const debouncedSearchText = useDebounce(searchText);
     const [selectedDate, setSelectedDate] = useState(dayjs());
@@ -23,7 +24,7 @@ export default function useDanhSachKhamBenh() {
     const [openReceiveDialog, setOpenReceiveDialog] = useState(false);
 
     const loadData = useCallback(async () => {
-        setLoading(true);
+        setRefreshing(true);
         try {
             const ngay = selectedDate.format("YYYY-MM-DD");
             const res = await khamBenhService.getHomNay(ngay);
@@ -35,7 +36,8 @@ export default function useDanhSachKhamBenh() {
                 severity: "error",
             });
         } finally {
-            setLoading(false);
+            setRefreshing(false);
+            setInitialLoading(false);
         }
     }, [selectedDate]);
 
@@ -117,7 +119,8 @@ export default function useDanhSachKhamBenh() {
     }, []);
 
     return {
-        loading,
+        initialLoading,
+        refreshing,
         searchText,
         setSearchText,
         filtered,

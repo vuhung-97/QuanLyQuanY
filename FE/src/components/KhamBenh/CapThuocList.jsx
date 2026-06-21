@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { useMemo } from "react";
 import {
     Button,
@@ -7,6 +8,7 @@ import {
     Stack,
     Typography,
 } from "@mui/material";
+import DatePicker from "../common/DatePicker.jsx";
 import {
     Download as DownloadIcon,
     MedicalServices as MedicalServicesIcon,
@@ -86,7 +88,10 @@ const columns = [
 
 export default function CapThuocList() {
     const {
-        loading,
+        initialLoading,
+        refreshing,
+        selectedDate,
+        setSelectedDate,
         searchText,
         setSearchText,
         filtered,
@@ -135,7 +140,7 @@ export default function CapThuocList() {
 
     return (
         <>
-            <StatCardGrid items={statItems} loading={loading} />
+            <StatCardGrid items={statItems} loading={initialLoading} />
 
             <Card sx={{ borderRadius: 3 }}>
                 <CardContent>
@@ -148,9 +153,19 @@ export default function CapThuocList() {
                             alignItems: { md: "center" },
                         }}
                     >
-                        <Typography variant="h2">
-                            Danh sách quân nhân cấp thuốc
-                        </Typography>
+                        <Stack
+                            direction="row"
+                            spacing={1}
+                            sx={{ alignItems: "center" }}
+                        >
+                            <Typography variant="h2">
+                                Danh sách quân nhân cấp thuốc ngày
+                            </Typography>
+                            <DatePicker
+                                value={selectedDate}
+                                onChange={setSelectedDate}
+                            />
+                        </Stack>
                         <Stack direction="row" spacing={1.5}>
                             <Button
                                 variant="outlined"
@@ -178,8 +193,12 @@ export default function CapThuocList() {
                     <DataTable
                         columns={columns}
                         rows={filtered}
-                        loading={loading}
-                        emptyMessage="Không có quân nhân chờ cấp thuốc."
+                        loading={initialLoading || refreshing}
+                        emptyMessage={
+                            selectedDate.isSame(dayjs(), "day")
+                                ? "Không có quân nhân chờ cấp thuốc."
+                                : `Không có quân nhân chờ cấp thuốc ngày ${selectedDate.format("DD/MM/YYYY")}.`
+                        }
                         rowExtra={{ onDispense: handleOpenForm }}
                     />
                 </CardContent>

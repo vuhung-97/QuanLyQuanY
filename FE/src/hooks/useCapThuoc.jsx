@@ -1,10 +1,13 @@
+import dayjs from "dayjs";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import useDebounce from "./useDebounce.jsx";
 import { khamBenhService } from "../services/khamBenhService.js";
 
 export default function useCapThuoc() {
     const [examinations, setExaminations] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [initialLoading, setInitialLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
+    const [selectedDate, setSelectedDate] = useState(dayjs());
     const [searchText, setSearchText] = useState("");
     const debouncedSearchText = useDebounce(searchText);
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
@@ -15,9 +18,10 @@ export default function useCapThuoc() {
     const [dispensing, setDispensing] = useState(false);
 
     const loadData = useCallback(async () => {
-        setLoading(true);
+        setRefreshing(true);
         try {
-            const res = await khamBenhService.getHomNay();
+            const ngay = selectedDate.format("YYYY-MM-DD");
+            const res = await khamBenhService.getHomNay(ngay);
             setExaminations(res.data || []);
         } catch (err) {
             setSnackbar({
@@ -26,9 +30,10 @@ export default function useCapThuoc() {
                 severity: "error",
             });
         } finally {
-            setLoading(false);
+            setRefreshing(false);
+            setInitialLoading(false);
         }
-    }, []);
+    }, [selectedDate]);
 
     useEffect(() => { loadData(); }, [loadData]);
 
@@ -106,7 +111,10 @@ export default function useCapThuoc() {
     }, [selectedExam, handleCloseForm, loadData]);
 
     return {
-        loading,
+        initialLoading,
+        refreshing,
+        selectedDate,
+        setSelectedDate,
         searchText,
         setSearchText,
         filtered,
