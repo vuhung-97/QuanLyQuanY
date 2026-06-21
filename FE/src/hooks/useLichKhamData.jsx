@@ -9,7 +9,7 @@ import {
     fallbackSchedules,
     formatDate,
     getScheduleStatus,
-} from "../components/KhamSucKhoe/periodicUtils.js";
+} from "../components/KhamSucKhoe/KhamSucKhoeUtils.js";
 
 export default function useLichKhamData() {
     const [schedules, setSchedules] = useState([]);

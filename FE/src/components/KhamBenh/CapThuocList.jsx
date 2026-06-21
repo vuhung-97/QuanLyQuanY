@@ -15,10 +15,6 @@ import {
     Refresh as RefreshIcon,
 } from "@mui/icons-material";
 import useCapThuoc from "../../hooks/useCapThuoc.jsx";
-import {
-    buildCapThuocXlsContent,
-    saveWorkbook,
-} from "../../utils/xlsExport.js";
 import CapThuocForm from "./CapThuocForm.jsx";
 import DataTable from "../common/DataTable.jsx";
 import FeedbackSnackbar from "../common/FeedbackSnackbar.jsx";
@@ -129,15 +125,6 @@ export default function CapThuocList() {
         [stats],
     );
 
-    const handleExport = async () => {
-        try {
-            const wb = buildCapThuocXlsContent(filtered);
-            await saveWorkbook(wb, "danh_sach_cap_thuoc.xlsx");
-        } catch {
-            /* ignore */
-        }
-    };
-
     return (
         <>
             <StatCardGrid items={statItems} loading={initialLoading} />
@@ -167,14 +154,6 @@ export default function CapThuocList() {
                             />
                         </Stack>
                         <Stack direction="row" spacing={1.5}>
-                            <Button
-                                variant="outlined"
-                                startIcon={<DownloadIcon />}
-                                onClick={handleExport}
-                                sx={{ textTransform: "none" }}
-                            >
-                                In đơn thuốc
-                            </Button>
                             <Button
                                 variant="outlined"
                                 startIcon={<RefreshIcon />}

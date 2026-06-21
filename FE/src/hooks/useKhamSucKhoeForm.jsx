@@ -1,12 +1,23 @@
 import { useEffect, useRef, useState } from "react";
 import api from "../services/api.js";
 import {
-    DEFAULT_TS, DEFAULT_LS, DEFAULT_CLS, DEFAULT_KL,
-    parseTienSu, parseLamSang, parseCanLamSang, parseKetLuan,
-} from "../components/KhamSucKhoe/KiemTraSucKhoe/healthCheckFormUtils.js";
+    DEFAULT_TS,
+    DEFAULT_LS,
+    DEFAULT_CLS,
+    DEFAULT_KL,
+    parseTienSu,
+    parseLamSang,
+    parseCanLamSang,
+    parseKetLuan,
+} from "../components/KhamSucKhoe/KiemTraSucKhoe/KhamSucKhoeFormUtils.js";
 
 export default function useKhamSucKhoeForm({
-    open, quanNhan, existingPhieu, nam, onSaved, onClose,
+    open,
+    quanNhan,
+    existingPhieu,
+    nam,
+    onSaved,
+    onClose,
 }) {
     const [activeTab, setActiveTab] = useState(0);
     const [ngayNhapNgu, setNgayNhapNgu] = useState("");
@@ -63,9 +74,7 @@ export default function useKhamSucKhoeForm({
                 tien_su_benh_tat: JSON.stringify(ts),
                 kham_lam_sang: JSON.stringify(ls),
                 kham_can_lam_sang: JSON.stringify(cls),
-                ket_luan: Object.values(kl).some(
-                    (v) => v && v !== "Loại 1",
-                )
+                ket_luan: Object.values(kl).some((v) => v && v !== "Loại 1")
                     ? JSON.stringify(kl)
                     : "",
             };
@@ -82,9 +91,7 @@ export default function useKhamSucKhoeForm({
             onSaved(saved.data);
             onClose();
         } catch (err) {
-            setError(
-                err.response?.data?.detail || "Không thể lưu phiếu khám.",
-            );
+            setError(err.response?.data?.detail || "Không thể lưu phiếu khám.");
         } finally {
             setSaving(false);
         }

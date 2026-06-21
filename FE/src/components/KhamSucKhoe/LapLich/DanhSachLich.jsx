@@ -1,16 +1,26 @@
 import { useMemo, useState } from "react";
 import React from "react";
 import {
-    Box, Card, CardContent, Chip, Collapse, IconButton, Stack,
-    TableCell, TableRow, Tooltip, Typography,
+    Box,
+    Card,
+    CardContent,
+    Chip,
+    Collapse,
+    IconButton,
+    Stack,
+    TableCell,
+    TableRow,
+    Tooltip,
+    Typography,
 } from "@mui/material";
 import {
-    Delete as DeleteIcon, Edit as EditIcon,
+    Delete as DeleteIcon,
+    Edit as EditIcon,
     KeyboardArrowDown as ArrowDownIcon,
     KeyboardArrowUp as ArrowUpIcon,
 } from "@mui/icons-material";
 import DataTable from "../../common/DataTable.jsx";
-import { findNearestDetail, formatDateTime } from "../periodicUtils";
+import { findNearestDetail, formatDateTime } from "../KhamSucKhoeUtils.js";
 
 const columns = [
     { key: "expand", label: "", sx: { width: 40 } },
@@ -21,7 +31,13 @@ const columns = [
     { key: "thao_tac", label: "Thao tác" },
 ];
 
-function DetailSubTable({ details, donViLookup, schedule, onEditDetail, onDeleteDetail }) {
+function DetailSubTable({
+    details,
+    donViLookup,
+    schedule,
+    onEditDetail,
+    onDeleteDetail,
+}) {
     return (
         <DataTable
             columns={[
@@ -77,8 +93,17 @@ function DetailSubTable({ details, donViLookup, schedule, onEditDetail, onDelete
 }
 
 function ScheduleTableRow({
-    row, details, isExpanded, onToggle, onEdit, onDelete,
-    onEditDetail, onDeleteDetail, donViLookup, getScheduleStatus, statusColor,
+    row,
+    details,
+    isExpanded,
+    onToggle,
+    onEdit,
+    onDelete,
+    onEditDetail,
+    onDeleteDetail,
+    donViLookup,
+    getScheduleStatus,
+    statusColor,
 }) {
     const currentStatus = getScheduleStatus(row);
     const nearest = findNearestDetail(details);
@@ -109,12 +134,20 @@ function ScheduleTableRow({
                 <TableCell>
                     <Stack direction="row" spacing={0.5}>
                         <Tooltip title="Sửa">
-                            <IconButton size="small" color="primary" onClick={() => onEdit(row)}>
+                            <IconButton
+                                size="small"
+                                color="primary"
+                                onClick={() => onEdit(row)}
+                            >
                                 <EditIcon fontSize="small" />
                             </IconButton>
                         </Tooltip>
                         <Tooltip title="Xóa">
-                            <IconButton size="small" color="error" onClick={() => onDelete(row)}>
+                            <IconButton
+                                size="small"
+                                color="error"
+                                onClick={() => onDelete(row)}
+                            >
                                 <DeleteIcon fontSize="small" />
                             </IconButton>
                         </Tooltip>
@@ -126,7 +159,10 @@ function ScheduleTableRow({
                     <Collapse in={isExpanded} timeout="auto" unmountOnExit>
                         <Box sx={{ p: 2, bgcolor: "grey.50" }}>
                             {details.length === 0 ? (
-                                <Typography color="text.secondary" sx={{ textAlign: "center", py: 1 }}>
+                                <Typography
+                                    color="text.secondary"
+                                    sx={{ textAlign: "center", py: 1 }}
+                                >
                                     Chưa có đơn vị nào trong lịch này.
                                 </Typography>
                             ) : (
@@ -147,8 +183,16 @@ function ScheduleTableRow({
 }
 
 export default function DanhSachLich({
-    schedules, chiTietMap, unitMap, loading, onEdit, onDelete,
-    onEditDetail, onDeleteDetail, getScheduleStatus, statusColor,
+    schedules,
+    chiTietMap,
+    unitMap,
+    loading,
+    onEdit,
+    onDelete,
+    onEditDetail,
+    onDeleteDetail,
+    getScheduleStatus,
+    statusColor,
 }) {
     const donViLookup = useMemo(() => {
         const m = new Map();
@@ -158,23 +202,39 @@ export default function DanhSachLich({
 
     const [expanded, setExpanded] = useState({});
     const toggleExpand = (ma_lich_kham) => {
-        setExpanded((prev) => ({ ...prev, [ma_lich_kham]: !prev[ma_lich_kham] }));
+        setExpanded((prev) => ({
+            ...prev,
+            [ma_lich_kham]: !prev[ma_lich_kham],
+        }));
     };
 
     return (
         <Card sx={{ borderRadius: 3 }}>
             <CardContent>
-                <Stack direction={{ xs: "column", md: "row" }} spacing={2}
-                    sx={{ mb: 2.5, justifyContent: "space-between" }}>
+                <Stack
+                    direction={{ xs: "column", md: "row" }}
+                    spacing={2}
+                    sx={{ mb: 2.5, justifyContent: "space-between" }}
+                >
                     <Box>
-                        <Typography variant="h2">Danh sách lịch khám</Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                        <Typography variant="h2">
+                            Danh sách lịch khám
+                        </Typography>
+                        <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ mt: 0.5 }}
+                        >
                             Tổng số: {schedules.length} lịch
                         </Typography>
                     </Box>
                 </Stack>
-                <DataTable columns={columns} loading={loading}
-                    emptyMessage="Không có lịch khám phù hợp." minWidth={760}>
+                <DataTable
+                    columns={columns}
+                    loading={loading}
+                    emptyMessage="Không có lịch khám phù hợp."
+                    minWidth={760}
+                >
                     {schedules.map((row) => (
                         <ScheduleTableRow
                             key={row.ma_lich_kham}
@@ -182,10 +242,13 @@ export default function DanhSachLich({
                             details={chiTietMap[row.ma_lich_kham] || []}
                             isExpanded={Boolean(expanded[row.ma_lich_kham])}
                             onToggle={() => toggleExpand(row.ma_lich_kham)}
-                            onEdit={onEdit} onDelete={onDelete}
-                            onEditDetail={onEditDetail} onDeleteDetail={onDeleteDetail}
+                            onEdit={onEdit}
+                            onDelete={onDelete}
+                            onEditDetail={onEditDetail}
+                            onDeleteDetail={onDeleteDetail}
                             donViLookup={donViLookup}
-                            getScheduleStatus={getScheduleStatus} statusColor={statusColor}
+                            getScheduleStatus={getScheduleStatus}
+                            statusColor={statusColor}
                         />
                     ))}
                 </DataTable>

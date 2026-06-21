@@ -3,7 +3,10 @@ import { Alert, Box, Button, Stack, Typography } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
 import api from "../../services/api.js";
 import useLichKhamData from "../../hooks/useLichKhamData";
-import { getScheduleStatus, statusColor } from "../../components/KhamSucKhoe/periodicUtils";
+import {
+    getScheduleStatus,
+    statusColor,
+} from "../../components/KhamSucKhoe/KhamSucKhoeUtils.js";
 import DanhSachLich from "../../components/KhamSucKhoe/LapLich/DanhSachLich.jsx";
 import LapLichDialog from "../../components/KhamSucKhoe/LapLich/LapLichDialog.jsx";
 import TongQuanDonVi from "../../components/KhamSucKhoe/LapLich/TongQuanDonVi.jsx";
@@ -12,14 +15,28 @@ import ConfirmDialog from "../../components/common/ConfirmDialog.jsx";
 
 export default function LapLichPage() {
     const {
-        schedules, chiTietMap, unitStats, loading, error, setError,
-        summaryItems, loadSchedules,
+        schedules,
+        chiTietMap,
+        unitStats,
+        loading,
+        error,
+        setError,
+        summaryItems,
+        loadSchedules,
     } = useLichKhamData();
 
     const [query, setQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState("Tất cả");
-    const [dialog, setDialog] = useState({ open: false, schedule: null, chiTietList: [] });
-    const [deleteDialog, setDeleteDialog] = useState({ open: false, schedule: null, detailInfo: null });
+    const [dialog, setDialog] = useState({
+        open: false,
+        schedule: null,
+        chiTietList: [],
+    });
+    const [deleteDialog, setDeleteDialog] = useState({
+        open: false,
+        schedule: null,
+        detailInfo: null,
+    });
 
     const filteredSchedules = schedules.filter((row) => {
         const currentStatus = getScheduleStatus(row);
@@ -108,7 +125,11 @@ export default function LapLichPage() {
                     variant="contained"
                     startIcon={<AddIcon />}
                     onClick={() => {
-                        setDialog({ open: true, schedule: null, chiTietList: [] });
+                        setDialog({
+                            open: true,
+                            schedule: null,
+                            chiTietList: [],
+                        });
                     }}
                     sx={{ px: 2.5, py: 1.1, borderRadius: 2.5 }}
                 >
@@ -144,7 +165,9 @@ export default function LapLichPage() {
 
             <LapLichDialog
                 open={dialog.open}
-                onClose={() => setDialog({ open: false, schedule: null, chiTietList: [] })}
+                onClose={() =>
+                    setDialog({ open: false, schedule: null, chiTietList: [] })
+                }
                 onSaved={handleDialogSaved}
                 schedule={dialog.schedule}
                 chiTietList={dialog.chiTietList}
@@ -159,7 +182,13 @@ export default function LapLichPage() {
                         : `Bạn có chắc muốn xóa lịch khám ${deleteDialog.schedule?.ma_lich_kham}? Hành động này không thể hoàn tác.`
                 }
                 onConfirm={handleDeleteConfirm}
-                onClose={() => setDeleteDialog({ open: false, schedule: null, detailInfo: null })}
+                onClose={() =>
+                    setDeleteDialog({
+                        open: false,
+                        schedule: null,
+                        detailInfo: null,
+                    })
+                }
             />
         </Stack>
     );

@@ -15,7 +15,7 @@ import HistoryIcon from "@mui/icons-material/History";
 import MonitorHeartIcon from "@mui/icons-material/MonitorHeart";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
 import useKhamSucKhoeForm from "../../../hooks/useKhamSucKhoeForm";
-import { cardStyle } from "./healthCheckFormUtils";
+import { cardStyle } from "./KhamSucKhoeFormUtils.js";
 import TienSuTab from "./tabs/TienSuTab";
 import LamSangTab from "./tabs/LamSangTab";
 import CanLamSangTab from "./tabs/CanLamSangTab";
@@ -136,7 +136,9 @@ function FormTabBar({ activeTab, onTabChange }) {
                     "& .MuiTab-root": {
                         color: theme.palette.primary.main,
                         fontWeight: "bold",
-                        "&.Mui-selected": { color: theme.palette.secondary.main },
+                        "&.Mui-selected": {
+                            color: theme.palette.secondary.main,
+                        },
                     },
                 })}
             >
@@ -208,7 +210,13 @@ export default function KhamSucKhoeForm({
             onClose={onClose}
             fullWidth
             maxWidth="lg"
-            slotProps={{ paper: { sx: { bgcolor: (theme) => theme.palette.background.default } } }}
+            slotProps={{
+                paper: {
+                    sx: {
+                        bgcolor: (theme) => theme.palette.background.default,
+                    },
+                },
+            }}
         >
             <Box component="form" onSubmit={handleSubmit}>
                 <FormHeader quanNhan={quanNhan} />

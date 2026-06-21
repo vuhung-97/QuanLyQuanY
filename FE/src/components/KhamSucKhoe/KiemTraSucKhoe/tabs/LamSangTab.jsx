@@ -1,4 +1,10 @@
-import { forwardRef, memo, useCallback, useImperativeHandle, useState } from "react";
+import {
+    forwardRef,
+    memo,
+    useCallback,
+    useImperativeHandle,
+    useState,
+} from "react";
 import {
     Box,
     Button,
@@ -53,29 +59,29 @@ const theLucFields = [
     {
         name: "chieu_cao",
         label: "Chiều cao",
-        step: "0.1",
-        min: "0.1",
+        step: "1",
+        min: "1",
         unit: "cm",
     },
     {
         name: "can_nang",
         label: "Cân nặng",
-        step: "0.1",
-        min: "0.1",
+        step: "1",
+        min: "1",
         unit: "kg",
     },
     {
         name: "vong_nguc",
         label: "Vòng ngực",
-        step: "0.1",
-        min: "0.1",
+        step: "1",
+        min: "1",
         unit: "cm",
     },
     {
         name: "vong_bung",
         label: "Vòng bụng",
-        step: "0.1",
-        min: "0.1",
+        step: "1",
+        min: "1",
         unit: "cm",
     },
     { name: "mach", label: "Mạch", step: "1", min: "1", unit: "lần/phút" },
@@ -122,7 +128,11 @@ const TheLucField = memo(({ field, value, onChange, readOnly }) => {
     const outOfRange = isOutOfRange(field.name, value);
     return (
         <Grid size={{ xs: 6, sm: 4, md: 2 }}>
-            <Tooltip title={fieldRanges[field.name]?.tooltip || ""} arrow placement="right">
+            <Tooltip
+                title={fieldRanges[field.name]?.tooltip || ""}
+                arrow
+                placement="right"
+            >
                 <TextField
                     name={field.name}
                     label={field.label}
@@ -155,7 +165,10 @@ const ChuyenKhoaRow = memo(
         const handleToggleNormal = () => {
             if (readOnly) return;
             onChange({
-                target: { name: `${sp.id}_note`, value: isNormal ? "" : "Bình thường" },
+                target: {
+                    name: `${sp.id}_note`,
+                    value: isNormal ? "" : "Bình thường",
+                },
             });
         };
         return (
@@ -187,7 +200,9 @@ const ChuyenKhoaRow = memo(
                                                 size="small"
                                                 onClick={handleToggleNormal}
                                                 color={
-                                                    isNormal ? "success" : "default"
+                                                    isNormal
+                                                        ? "success"
+                                                        : "default"
                                                 }
                                                 disabled={readOnly}
                                             >
@@ -256,125 +271,120 @@ const getBmiStatus = (bmiStr) => {
     return { text: "Béo phì", color: "error" };
 };
 
-const LamSangTab = memo(forwardRef(function LamSangTab({ initialData, cardStyle, readOnly = false }, ref) {
-    const [ls, setLs] = useState({ ...initialData });
+const LamSangTab = memo(
+    forwardRef(function LamSangTab(
+        { initialData, cardStyle, readOnly = false },
+        ref,
+    ) {
+        const [ls, setLs] = useState({ ...initialData });
 
-    useImperativeHandle(ref, () => ({
-        getData: () => ({ ...ls }),
-    }), [ls]);
+        useImperativeHandle(
+            ref,
+            () => ({
+                getData: () => ({ ...ls }),
+            }),
+            [ls],
+        );
 
-    const handleChange = useCallback((e) => {
-        const { name, value } = e.target;
-        setLs((prev) => {
-            const updated = { ...prev, [name]: value };
-            if (name === "chieu_cao" || name === "can_nang") {
-                const h = parseFloat(name === "chieu_cao" ? value : prev.chieu_cao);
-                const w = parseFloat(name === "can_nang" ? value : prev.can_nang);
-                if (h > 0 && w > 0) {
-                    updated.bmi = (w / Math.pow(h / 100, 2)).toFixed(1);
-                } else {
-                    updated.bmi = "";
+        const handleChange = useCallback((e) => {
+            const { name, value } = e.target;
+            setLs((prev) => {
+                const updated = { ...prev, [name]: value };
+                if (name === "chieu_cao" || name === "can_nang") {
+                    const h = parseFloat(
+                        name === "chieu_cao" ? value : prev.chieu_cao,
+                    );
+                    const w = parseFloat(
+                        name === "can_nang" ? value : prev.can_nang,
+                    );
+                    if (h > 0 && w > 0) {
+                        updated.bmi = (w / Math.pow(h / 100, 2)).toFixed(1);
+                    } else {
+                        updated.bmi = "";
+                    }
                 }
-            }
-            return updated;
-        });
-    }, []);
+                return updated;
+            });
+        }, []);
 
-    const bmiInfo = getBmiStatus(ls.bmi);
-    const [showCoKinh, setShowCoKinh] = useState(false);
+        const bmiInfo = getBmiStatus(ls.bmi);
+        const [showCoKinh, setShowCoKinh] = useState(false);
 
-    return (
-        <>
-            <Card sx={cardStyle}>
-                <CardContent>
-                    <SectionTitle>Thể lực & Chỉ số sinh tồn</SectionTitle>
-                    <Grid container spacing={2} sx={{ alignItems: "center" }}>
-                        {theLucFields.map((f) => (
-                            <TheLucField
-                                key={f.name}
-                                field={f}
-                                value={ls[f.name]}
-                                onChange={handleChange}
-                                readOnly={readOnly}
-                            />
-                        ))}
-                        <Grid size={12}>
-                            <Box
-                                sx={{
-                                    mt: 1,
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: 1.5,
-                                }}
-                            >
-                                <Typography variant="body2" fontWeight="600">
-                                    BMI: {ls.bmi || "—"}
-                                </Typography>
-                                {ls.bmi && (
-                                    <Chip
-                                        label={bmiInfo.text}
-                                        color={bmiInfo.color}
-                                        size="small"
-                                        sx={{ fontWeight: "bold" }}
-                                    />
-                                )}
-                            </Box>
+        return (
+            <>
+                <Card sx={cardStyle}>
+                    <CardContent>
+                        <SectionTitle>Thể lực & Chỉ số sinh tồn</SectionTitle>
+                        <Grid
+                            container
+                            spacing={2}
+                            sx={{ alignItems: "center" }}
+                        >
+                            {theLucFields.map((f) => (
+                                <TheLucField
+                                    key={f.name}
+                                    field={f}
+                                    value={ls[f.name]}
+                                    onChange={handleChange}
+                                    readOnly={readOnly}
+                                />
+                            ))}
+                            <Grid size={12}>
+                                <Box
+                                    sx={{
+                                        mt: 1,
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 1.5,
+                                    }}
+                                >
+                                    <Typography
+                                        variant="body2"
+                                        fontWeight="600"
+                                    >
+                                        BMI: {ls.bmi || "—"}
+                                    </Typography>
+                                    {ls.bmi && (
+                                        <Chip
+                                            label={bmiInfo.text}
+                                            color={bmiInfo.color}
+                                            size="small"
+                                            sx={{ fontWeight: "bold" }}
+                                        />
+                                    )}
+                                </Box>
+                            </Grid>
                         </Grid>
-                    </Grid>
-                </CardContent>
-            </Card>
+                    </CardContent>
+                </Card>
 
-            <Card sx={cardStyle}>
-                <CardContent>
-                    <SectionTitle>Khám chuyên khoa</SectionTitle>
-                    <Grid container spacing={2}>
-                        {specialities.map((sp) => (
-                            <ChuyenKhoaRow
-                                key={sp.id}
-                                sp={sp}
-                                noteValue={ls[`${sp.id}_note`]}
-                                loaiValue={ls[`${sp.id}_loai`]}
-                                onChange={handleChange}
-                                readOnly={readOnly}
-                            />
-                        ))}
-                    </Grid>
-                </CardContent>
-            </Card>
-
-            <Card sx={cardStyle}>
-                <CardContent>
-                    <SectionTitle>Khám mắt</SectionTitle>
-                    <Grid container spacing={2} sx={{ alignItems: "center" }}>
-                        {matKhongKinhFields.map((f) => (
-                            <MatNumberField
-                                key={f.name}
-                                name={f.name}
-                                label={f.label}
-                                value={ls[f.name]}
-                                onChange={handleChange}
-                                readOnly={readOnly}
-                            />
-                        ))}
-                        <Grid size={{ xs: 6, sm: 4, md: true }}>
-                            <Button
-                                size="small"
-                                variant="text"
-                                startIcon={
-                                    showCoKinh ? <ExpandLess /> : <ExpandMore />
-                                }
-                                onClick={() => setShowCoKinh((p) => !p)}
-                                sx={{
-                                    textTransform: "none",
-                                    color: "primary.main",
-                                    fontWeight: 600,
-                                }}
-                            >
-                                Khám có kính
-                            </Button>
+                <Card sx={cardStyle}>
+                    <CardContent>
+                        <SectionTitle>Khám chuyên khoa</SectionTitle>
+                        <Grid container spacing={2}>
+                            {specialities.map((sp) => (
+                                <ChuyenKhoaRow
+                                    key={sp.id}
+                                    sp={sp}
+                                    noteValue={ls[`${sp.id}_note`]}
+                                    loaiValue={ls[`${sp.id}_loai`]}
+                                    onChange={handleChange}
+                                    readOnly={readOnly}
+                                />
+                            ))}
                         </Grid>
-                        {showCoKinh &&
-                            matCoKinhFields.map((f) => (
+                    </CardContent>
+                </Card>
+
+                <Card sx={cardStyle}>
+                    <CardContent>
+                        <SectionTitle>Khám mắt</SectionTitle>
+                        <Grid
+                            container
+                            spacing={2}
+                            sx={{ alignItems: "center" }}
+                        >
+                            {matKhongKinhFields.map((f) => (
                                 <MatNumberField
                                     key={f.name}
                                     name={f.name}
@@ -384,29 +394,62 @@ const LamSangTab = memo(forwardRef(function LamSangTab({ initialData, cardStyle,
                                     readOnly={readOnly}
                                 />
                             ))}
-                        <Grid size={{ xs: 6, sm: 4, md: true }}>
-                            <FormControl fullWidth size="small">
-                                <InputLabel>Phân loại mắt</InputLabel>
-                                <Select
-                                    name="mat_loai"
-                                    value={ls.mat_loai}
-                                    onChange={handleChange}
-                                    label="Phân loại mắt"
-                                    disabled={readOnly}
+                            <Grid size={{ xs: 6, sm: 4, md: true }}>
+                                <Button
+                                    size="small"
+                                    variant="text"
+                                    startIcon={
+                                        showCoKinh ? (
+                                            <ExpandLess />
+                                        ) : (
+                                            <ExpandMore />
+                                        )
+                                    }
+                                    onClick={() => setShowCoKinh((p) => !p)}
+                                    sx={{
+                                        textTransform: "none",
+                                        color: "primary.main",
+                                        fontWeight: 600,
+                                    }}
                                 >
-                                    {PHAN_LOAI_OPTIONS.map((loai) => (
-                                        <MenuItem key={loai} value={loai}>
-                                            {loai}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
+                                    Khám có kính
+                                </Button>
+                            </Grid>
+                            {showCoKinh &&
+                                matCoKinhFields.map((f) => (
+                                    <MatNumberField
+                                        key={f.name}
+                                        name={f.name}
+                                        label={f.label}
+                                        value={ls[f.name]}
+                                        onChange={handleChange}
+                                        readOnly={readOnly}
+                                    />
+                                ))}
+                            <Grid size={{ xs: 6, sm: 4, md: true }}>
+                                <FormControl fullWidth size="small">
+                                    <InputLabel>Phân loại mắt</InputLabel>
+                                    <Select
+                                        name="mat_loai"
+                                        value={ls.mat_loai}
+                                        onChange={handleChange}
+                                        label="Phân loại mắt"
+                                        disabled={readOnly}
+                                    >
+                                        {PHAN_LOAI_OPTIONS.map((loai) => (
+                                            <MenuItem key={loai} value={loai}>
+                                                {loai}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
                         </Grid>
-                    </Grid>
-                </CardContent>
-            </Card>
-        </>
-    );
-}));
+                    </CardContent>
+                </Card>
+            </>
+        );
+    }),
+);
 
 export default LamSangTab;

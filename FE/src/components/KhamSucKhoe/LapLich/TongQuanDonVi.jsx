@@ -13,7 +13,7 @@ import {
 import { Search as SearchIcon } from "@mui/icons-material";
 import api from "../../../services/api.js";
 import DataTable from "../../common/DataTable.jsx";
-import { formatDateTime } from "../periodicUtils";
+import { formatDateTime } from "../KhamSucKhoeUtils.js";
 
 const columns = [
     { key: "ma_don_vi", label: "Mã đơn vị" },

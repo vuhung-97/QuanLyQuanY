@@ -57,13 +57,14 @@ FE/
     │   │   │   ├── KhamSucKhoeMain.jsx
     │   │   │   ├── KhamSucKhoeForm.jsx
     │   │   │   ├── BangQuanNhan.jsx
+    │   │   │   ├── KhamSucKhoeFormUtils.js
     │   │   │   └── tabs/ (TienSuTab, LamSangTab, CanLamSangTab, KetLuanTab)
     │   │   ├── LapLich/             # Lập lịch
     │   │   │   ├── DanhSachLich.jsx
     │   │   │   ├── LapLichDialog.jsx
     │   │   │   ├── ChonNgayGio.jsx
     │   │   │   └── TongQuanDonVi.jsx
-    │   │   └── periodicUtils.js
+    │   │   └── KhamSucKhoeUtils.js
     │   │
     │   └── admin/           # Components cho module Admin
     │       ├── AdminPageHeader.jsx
