@@ -1,20 +1,20 @@
 import { useEffect, useMemo, useState } from "react";
-import useDebounce from "../../hooks/useDebounce.jsx";
+import useDebounce from "@/hooks/useDebounce.jsx";
 import { Box, Button, Chip, Stack, Tab, TableCell, TableRow, Tabs, Typography } from "@mui/material";
 import {
     Backup as BackupIcon,
     Download as DownloadIcon,
     History as HistoryIcon,
 } from "@mui/icons-material";
-import SearchBar from "../../components/common/SearchBar.jsx";
-import { adminService } from "../../services/adminService.js";
-import FeedbackSnackbar from "../../components/common/FeedbackSnackbar.jsx";
-import PaginationWidget from "../../components/common/PaginationWidget.jsx";
-import DataTable from "../../components/common/DataTable.jsx";
-import AdminPageHeader from "../../components/admin/AdminPageHeader.jsx";
-import TableCard from "../../components/admin/TableCard.jsx";
-import AuditDetailDialog from "../../components/admin/AuditDetailDialog.jsx";
-import { formatDateTime } from "../../utils/date.js";
+import SearchBar from "@/components/common/SearchBar.jsx";
+import { adminService } from "@/services/adminService.js";
+import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
+import PaginationWidget from "@/components/common/PaginationWidget.jsx";
+import DataTable from "@/components/common/DataTable.jsx";
+import AdminPageHeader from "@/components/admin/AdminPageHeader.jsx";
+import TableCard from "@/components/admin/TableCard.jsx";
+import AuditDetailDialog from "@/components/admin/AuditDetailDialog.jsx";
+import { formatDateTime } from "@/utils/date.js";
 
 const tabs = [
     { value: "login", label: "Đăng nhập", endpoint: "/nhat_ky_dang_nhap" },

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { khamBenhService } from "../services/khamBenhService.js";
+import { khamBenhService } from "@/services/khamBenhService.js";
 
 const THOI_DIEM_LABEL_TO_VALUE = {
     "Uống sau ăn": "sau_an",

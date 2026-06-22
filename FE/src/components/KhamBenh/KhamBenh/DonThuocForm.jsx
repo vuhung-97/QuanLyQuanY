@@ -24,7 +24,7 @@ import {
     Delete as DeleteIcon,
     MedicalServices as MedicalServicesIcon,
 } from "@mui/icons-material";
-import { khamBenhService } from "../../services/khamBenhService.js";
+import { khamBenhService } from "@/services/khamBenhService.js";
 import KhoThuocDialog from "./KhoThuocDialog.jsx";
 
 function genKey() {

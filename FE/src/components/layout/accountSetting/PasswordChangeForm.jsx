@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, Divider, Stack, TextField, Typography } from "@mui/material";
-import api from "../../../services/api.js";
+import api from "@/services/api.js";
 
 export default function PasswordChangeForm({ onSuccess, onError }) {
     const [matKhauCu, setMatKhauCu] = useState("");

@@ -11,9 +11,9 @@ import {
     Typography,
 } from "@mui/material";
 import { Search as SearchIcon } from "@mui/icons-material";
-import { khamSucKhoeService } from "../../../services/khamSucKhoeService.js";
-import DataTable from "../../common/DataTable.jsx";
-import { formatDateTime } from "../KhamSucKhoeUtils.js";
+import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
+import DataTable from "@/components/common/DataTable.jsx";
+import { formatDateTime } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
 
 const columns = [
     { key: "ma_don_vi", label: "Mã đơn vị" },

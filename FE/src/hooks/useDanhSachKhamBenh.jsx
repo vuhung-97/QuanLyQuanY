@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import useDebounce from "./useDebounce.jsx";
-import { khamBenhService } from "../services/khamBenhService.js";
+import { khamBenhService } from "@/services/khamBenhService.js";
 
 export default function useDanhSachKhamBenh() {
     const [examinations, setExaminations] = useState([]);

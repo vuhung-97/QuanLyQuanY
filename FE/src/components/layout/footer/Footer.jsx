@@ -1,5 +1,5 @@
 import { Box, Stack, Typography, Divider, Link } from "@mui/material";
-import { APP_NAME, APP_VERSION, FONT_SIZE_XS } from "../common/constants.js";
+import { APP_NAME, APP_VERSION, FONT_SIZE_XS } from "@/components/layout/common/constants.js";
 
 export default function Footer({
     copyrightName = APP_NAME,

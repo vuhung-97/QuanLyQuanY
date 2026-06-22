@@ -5,7 +5,7 @@ import {
     DRAWER_WIDTH,
     COLLAPSED_DRAWER_WIDTH,
     HEADER_HEIGHT,
-} from "../common/constants.js";
+} from "@/components/layout/common/constants.js";
 import SidebarItem from "./SidebarItem.jsx";
 import SidebarProfile from "./SidebarProfile.jsx";
 import SidebarFooter from "./SidebarFooter.jsx";

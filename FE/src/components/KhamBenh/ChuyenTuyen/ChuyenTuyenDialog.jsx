@@ -1,5 +1,5 @@
 import { Dialog } from "@mui/material";
-import PlaceHolderPage from "../common/PlaceHolderPage.jsx";
+import PlaceHolderPage from "@/components/common/PlaceHolderPage.jsx";
 
 export default function ChuyenTuyenDialog({ open, onClose }) {
     return (

@@ -15,9 +15,9 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
-import { khamBenhService } from "../../services/khamBenhService.js";
-import SearchBar from "../common/SearchBar.jsx";
-import useDebounce from "../../hooks/useDebounce.jsx";
+import { khamBenhService } from "@/services/khamBenhService.js";
+import SearchBar from "@/components/common/SearchBar.jsx";
+import useDebounce from "@/hooks/useDebounce.jsx";
 
 let cachedAllItems = null;
 

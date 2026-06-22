@@ -29,7 +29,7 @@ export function getScheduleStatus(row) {
     return "Đang thực hiện";
 }
 
-export { formatDate, formatDateTime } from "../../utils/date.js";
+export { formatDate, formatDateTime } from "@/utils/date.js";
 
 export function statusColor(status) {
     if (status === "Đã kết thúc")

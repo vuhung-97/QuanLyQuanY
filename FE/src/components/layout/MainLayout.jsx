@@ -6,7 +6,7 @@ import Sidebar from "./sidebar/Sidebar.jsx";
 import Footer from "./footer/Footer.jsx";
 import { useSidebarState } from "./common/hooks.js";
 import AccountSettingsDialog from "./accountSetting/AccountSettingsDialog.jsx";
-import { decodeJWT } from "../../services/api.js";
+import { decodeJWT } from "@/services/api.js";
 import { defaultMenuItems, adminMenuItems, filterMenuByRole } from "./common/menuConfig.jsx";
 import {
     DEFAULT_USER,

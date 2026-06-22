@@ -13,7 +13,7 @@ import {
     SettingsOutlined as SettingsIcon,
     Logout as LogoutIcon,
 } from "@mui/icons-material";
-import { FONT_SIZE_SM } from "../common/constants.js";
+import { FONT_SIZE_SM } from "@/components/layout/common/constants.js";
 
 function ActionItem({ icon, label, open, onClick }) {
     const theme = useTheme();

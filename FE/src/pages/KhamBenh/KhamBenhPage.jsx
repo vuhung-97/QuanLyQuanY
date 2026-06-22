@@ -1,5 +1,5 @@
 import { Box, Stack, Typography } from "@mui/material";
-import DanhSachKhamBenh from "../../components/KhamBenh/DanhSachKhamBenh.jsx";
+import DanhSachKhamBenh from "@/components/KhamBenh/KhamBenh/DanhSachKhamBenh.jsx";
 
 export default function KhamBenhPage() {
     return (

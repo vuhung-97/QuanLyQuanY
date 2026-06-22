@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import useDebounce from "../../hooks/useDebounce.jsx";
+import useDebounce from "@/hooks/useDebounce.jsx";
 import {
     Box,
     Button,
@@ -13,15 +13,15 @@ import {
     Add as AddIcon,
     Delete as DeleteIcon,
 } from "@mui/icons-material";
-import UserFormDialog from "../../components/admin/UserFormDialog.jsx";
-import { adminService } from "../../services/adminService.js";
-import SearchBar from "../../components/common/SearchBar.jsx";
-import FeedbackSnackbar from "../../components/common/FeedbackSnackbar.jsx";
-import DataTable from "../../components/common/DataTable.jsx";
-import AdminPageHeader from "../../components/admin/AdminPageHeader.jsx";
-import TableCard from "../../components/admin/TableCard.jsx";
-import UserTableRow from "../../components/admin/UserTableRow.jsx";
-import ConfirmDialog from "../../components/common/ConfirmDialog.jsx";
+import UserFormDialog from "@/components/admin/UserFormDialog.jsx";
+import { adminService } from "@/services/adminService.js";
+import SearchBar from "@/components/common/SearchBar.jsx";
+import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
+import DataTable from "@/components/common/DataTable.jsx";
+import AdminPageHeader from "@/components/admin/AdminPageHeader.jsx";
+import TableCard from "@/components/admin/TableCard.jsx";
+import UserTableRow from "@/components/admin/UserTableRow.jsx";
+import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
 
 export default function UserManagementPage() {
     const [users, setUsers] = useState([]);

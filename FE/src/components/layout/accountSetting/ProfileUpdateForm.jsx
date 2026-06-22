@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, Stack, TextField, Typography } from "@mui/material";
-import api from "../../../services/api.js";
+import api from "@/services/api.js";
 
 export default function ProfileUpdateForm({ initialName, onSuccess, onError }) {
     const [hoTen, setHoTen] = useState(initialName ?? "");

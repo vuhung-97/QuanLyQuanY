@@ -1,6 +1,6 @@
 import { alpha, styled } from "@mui/material/styles";
 import { InputBase } from "@mui/material";
-import { SEARCH_INPUT_WIDTH, FONT_SIZE_SM } from "../common/constants.js";
+import { SEARCH_INPUT_WIDTH, FONT_SIZE_SM } from "@/components/layout/common/constants.js";
 
 export const Search = styled("div")(({ theme }) => ({
     position: "relative",

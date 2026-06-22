@@ -20,13 +20,13 @@ import {
     Edit as EditIcon,
     Save as SaveIcon,
 } from "@mui/icons-material";
-import { adminService } from "../../services/adminService.js";
-import FeedbackSnackbar from "../../components/common/FeedbackSnackbar.jsx";
-import AdminPageHeader from "../../components/admin/AdminPageHeader.jsx";
-import TableCard from "../../components/admin/TableCard.jsx";
-import PermissionCard from "../../components/admin/PermissionCard.jsx";
-import usePermissionDiff from "../../hooks/usePermissionDiff.js";
-import RoleFormDialog from "../../components/admin/RoleFormDialog.jsx";
+import { adminService } from "@/services/adminService.js";
+import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
+import AdminPageHeader from "@/components/admin/AdminPageHeader.jsx";
+import TableCard from "@/components/admin/TableCard.jsx";
+import PermissionCard from "@/components/admin/PermissionCard.jsx";
+import usePermissionDiff from "@/hooks/usePermissionDiff.js";
+import RoleFormDialog from "@/components/admin/RoleFormDialog.jsx";
 
 const fallbackRoles = [
     {

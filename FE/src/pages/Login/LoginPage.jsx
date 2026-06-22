@@ -19,8 +19,8 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
-import api from "../../services/api";
-import FeedbackSnackbar from "../../components/common/FeedbackSnackbar.jsx";
+import api from "@/services/api";
+import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 
 export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false);

@@ -8,8 +8,8 @@ import {
     Stack,
     Typography,
 } from "@mui/material";
-import api from "../../../services/api.js";
-import FeedbackSnackbar from "../../common/FeedbackSnackbar.jsx";
+import api from "@/services/api.js";
+import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import ProfileInfo from "./ProfileInfo.jsx";
 import ProfileUpdateForm from "./ProfileUpdateForm.jsx";
 import PasswordChangeForm from "./PasswordChangeForm.jsx";

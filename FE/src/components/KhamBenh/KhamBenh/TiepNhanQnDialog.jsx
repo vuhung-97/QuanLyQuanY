@@ -8,9 +8,9 @@ import {
     TablePagination,
     TextField,
 } from "@mui/material";
-import useDebounce from "../../hooks/useDebounce.jsx";
-import { khamBenhService } from "../../services/khamBenhService.js";
-import DataTable from "../common/DataTable.jsx";
+import useDebounce from "@/hooks/useDebounce.jsx";
+import { khamBenhService } from "@/services/khamBenhService.js";
+import DataTable from "@/components/common/DataTable.jsx";
 
 const ROWS_PER_PAGE = 50;
 const BATCH = 500;

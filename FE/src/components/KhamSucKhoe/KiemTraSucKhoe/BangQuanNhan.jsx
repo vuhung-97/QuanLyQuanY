@@ -2,8 +2,8 @@ import { memo } from "react";
 import { Button, Card, CardContent, Chip, Stack,
     Tab, TableCell, TableRow, Tabs, Typography } from "@mui/material";
 import { Visibility as VisibilityIcon } from "@mui/icons-material";
-import SearchBar from "../../common/SearchBar.jsx";
-import DataTable from "../../common/DataTable.jsx";
+import SearchBar from "@/components/common/SearchBar.jsx";
+import DataTable from "@/components/common/DataTable.jsx";
 
 const columns = [
     { key: "stt", label: "STT" },

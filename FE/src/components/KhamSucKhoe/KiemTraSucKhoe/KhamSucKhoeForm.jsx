@@ -14,7 +14,7 @@ import { Biotech as BiotechIcon } from "@mui/icons-material";
 import HistoryIcon from "@mui/icons-material/History";
 import MonitorHeartIcon from "@mui/icons-material/MonitorHeart";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
-import useKhamSucKhoeForm from "../../../hooks/useKhamSucKhoeForm";
+import useKhamSucKhoeForm from "@/hooks/useKhamSucKhoeForm";
 import { cardStyle } from "./KhamSucKhoeFormUtils.js";
 import TongQuanTab from "./tabs/TongQuanTab";
 import LamSangTab from "./tabs/LamSangTab";

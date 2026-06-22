@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { khamSucKhoeService } from "../services/khamSucKhoeService.js";
+import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
 
 export default function useKhamSucKhoeData() {
     const [schedules, setSchedules] = useState([]);

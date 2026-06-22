@@ -27,7 +27,7 @@ import {
     HEADER_HEIGHT,
     DEFAULT_USER,
     FONT_SIZE_XXL,
-} from "../common/constants.js";
+} from "@/components/layout/common/constants.js";
 import { Search, SearchIconWrapper, StyledInputBase } from "./Header.styles.js";
 
 export default function Header({

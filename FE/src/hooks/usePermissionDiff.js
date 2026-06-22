@@ -1,4 +1,4 @@
-import { adminService } from "../services/adminService.js";
+import { adminService } from "@/services/adminService.js";
 
 export default function usePermissionDiff(
     rolePermissions,

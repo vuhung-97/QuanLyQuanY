@@ -8,18 +8,18 @@ import {
     Stack,
     Typography,
 } from "@mui/material";
-import DatePicker from "../common/DatePicker.jsx";
+import DatePicker from "@/components/common/DatePicker.jsx";
 import {
     Download as DownloadIcon,
     MedicalServices as MedicalServicesIcon,
     Refresh as RefreshIcon,
 } from "@mui/icons-material";
-import useCapThuoc from "../../hooks/useCapThuoc.jsx";
+import useCapThuoc from "@/hooks/useCapThuoc.jsx";
 import CapThuocForm from "./CapThuocForm.jsx";
-import DataTable from "../common/DataTable.jsx";
-import FeedbackSnackbar from "../common/FeedbackSnackbar.jsx";
-import SearchBar from "../common/SearchBar.jsx";
-import StatCardGrid from "../common/StatCardGrid.jsx";
+import DataTable from "@/components/common/DataTable.jsx";
+import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
+import SearchBar from "@/components/common/SearchBar.jsx";
+import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 
 const STATUS_MAP = {
     chờ_nhận_thuốc: { label: "Chờ cấp thuốc", color: "warning" },

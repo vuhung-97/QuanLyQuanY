@@ -8,7 +8,7 @@ import {
     Stack,
     Typography,
 } from "@mui/material";
-import DatePicker from "../common/DatePicker.jsx";
+import DatePicker from "@/components/common/DatePicker.jsx";
 import {
     Delete as DeleteIcon,
     Download as DownloadIcon,
@@ -17,12 +17,12 @@ import {
     PersonAddAlt as PersonAddAltIcon,
     Refresh as RefreshIcon,
 } from "@mui/icons-material";
-import useDanhSachKhamBenh from "../../hooks/useDanhSachKhamBenh.jsx";
-import ConfirmDialog from "../common/ConfirmDialog.jsx";
-import DataTable from "../common/DataTable.jsx";
-import FeedbackSnackbar from "../common/FeedbackSnackbar.jsx";
-import SearchBar from "../common/SearchBar.jsx";
-import StatCardGrid from "../common/StatCardGrid.jsx";
+import useDanhSachKhamBenh from "@/hooks/useDanhSachKhamBenh.jsx";
+import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
+import DataTable from "@/components/common/DataTable.jsx";
+import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
+import SearchBar from "@/components/common/SearchBar.jsx";
+import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import KhamBenhForm from "./KhamBenhForm.jsx";
 
 import TiepNhanQnDialog from "./TiepNhanQnDialog.jsx";

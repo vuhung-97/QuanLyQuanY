@@ -4,7 +4,7 @@ import {
     DialogTitle, IconButton, Stack, TextField, Typography,
 } from "@mui/material";
 import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
-import useLapLichDialog from "../../../hooks/useLapLichDialog";
+import useLapLichDialog from "@/hooks/useLapLichDialog";
 import ChonNgayGio from "./ChonNgayGio.jsx";
 
 const getUnitOptionLabel = (o) => `${o.ma_don_vi} - ${o.ten_don_vi}`;

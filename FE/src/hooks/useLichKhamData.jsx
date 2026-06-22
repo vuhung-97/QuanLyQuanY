@@ -4,12 +4,12 @@ import {
     EventAvailable as EventAvailableIcon,
     Groups as GroupsIcon,
 } from "@mui/icons-material";
-import { khamSucKhoeService } from "../services/khamSucKhoeService.js";
+import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
 import {
     fallbackSchedules,
     formatDate,
     getScheduleStatus,
-} from "../components/KhamSucKhoe/KhamSucKhoeUtils.js";
+} from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
 
 export default function useLichKhamData() {
     const [schedules, setSchedules] = useState([]);

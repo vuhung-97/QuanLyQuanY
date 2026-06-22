@@ -1,5 +1,5 @@
 import { Box, Stack, Typography } from "@mui/material";
-import KhamSucKhoeMain from "../../components/KhamSucKhoe/KiemTraSucKhoe/KhamSucKhoeMain.jsx";
+import KhamSucKhoeMain from "@/components/KhamSucKhoe/KiemTraSucKhoe/KhamSucKhoeMain.jsx";
 
 export default function KhamSucKhoePage() {
     return (

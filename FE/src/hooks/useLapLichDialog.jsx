@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { khamSucKhoeService } from "../services/khamSucKhoeService.js";
+import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
 
 function genKey() {
     return Math.random().toString(36).slice(2, 11);

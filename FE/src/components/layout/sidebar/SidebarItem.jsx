@@ -1,4 +1,4 @@
-import { FONT_SIZE_MD, FONT_SIZE_SM } from "../common/constants.js";
+import { FONT_SIZE_MD, FONT_SIZE_SM } from "@/components/layout/common/constants.js";
 import { useTheme, alpha } from "@mui/material/styles";
 import {
     ListItem,

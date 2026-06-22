@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { khamSucKhoeService } from "../services/khamSucKhoeService.js";
+import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
 import {
     DEFAULT_TS,
     DEFAULT_LS,
@@ -9,7 +9,7 @@ import {
     parseLamSang,
     parseCanLamSang,
     parseKetLuan,
-} from "../components/KhamSucKhoe/KiemTraSucKhoe/KhamSucKhoeFormUtils.js";
+} from "@/components/KhamSucKhoe/KiemTraSucKhoe/KhamSucKhoeFormUtils.js";
 
 export default function useKhamSucKhoeForm({
     open,

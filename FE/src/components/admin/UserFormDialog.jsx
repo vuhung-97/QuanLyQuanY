@@ -12,7 +12,7 @@ import {
     Switch,
     TextField,
 } from "@mui/material";
-import { adminService } from "../../services/adminService.js";
+import { adminService } from "@/services/adminService.js";
 
 const emptyForm = {
     ten_dang_nhap: "",

@@ -1,5 +1,5 @@
 import { Stack, Typography } from "@mui/material";
-import CapThuocList from "../../components/KhamBenh/CapThuocList.jsx";
+import CapThuocList from "@/components/KhamBenh/CapThuoc/CapThuocList.jsx";
 
 export default function CapThuocPage() {
     return (

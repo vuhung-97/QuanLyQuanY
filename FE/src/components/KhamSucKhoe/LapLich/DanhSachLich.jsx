@@ -19,8 +19,8 @@ import {
     KeyboardArrowDown as ArrowDownIcon,
     KeyboardArrowUp as ArrowUpIcon,
 } from "@mui/icons-material";
-import DataTable from "../../common/DataTable.jsx";
-import { findNearestDetail, formatDateTime } from "../KhamSucKhoeUtils.js";
+import DataTable from "@/components/common/DataTable.jsx";
+import { findNearestDetail, formatDateTime } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
 
 const columns = [
     { key: "expand", label: "", sx: { width: 40 } },

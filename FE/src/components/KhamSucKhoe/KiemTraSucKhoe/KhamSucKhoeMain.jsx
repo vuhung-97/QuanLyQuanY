@@ -21,19 +21,19 @@ import {
     PendingActions as PendingActionsIcon,
     PersonAddAlt as PersonAddAltIcon,
 } from "@mui/icons-material";
-import useDebounce from "../../../hooks/useDebounce.jsx";
-import useKhamSucKhoeData from "../../../hooks/useKhamSucKhoeData";
-import { khamSucKhoeService } from "../../../services/khamSucKhoeService.js";
+import useDebounce from "@/hooks/useDebounce.jsx";
+import useKhamSucKhoeData from "@/hooks/useKhamSucKhoeData";
+import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
 import {
     filterSoldiers,
     filterTabs,
     getPhanLoai,
     getTrangThai,
     statusChipColor,
-} from "../KhamSucKhoeUtils.js";
-import { buildXlsContent, saveWorkbook } from "../../../utils/xlsExport";
+} from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
+import { buildXlsContent, saveWorkbook } from "@/utils/xlsExport";
 import BangQuanNhan from "./BangQuanNhan.jsx";
-import StatCardGrid from "../../common/StatCardGrid.jsx";
+import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import KhamSucKhoeForm from "./KhamSucKhoeForm.jsx";
 
 function EmptyState({ show, message }) {

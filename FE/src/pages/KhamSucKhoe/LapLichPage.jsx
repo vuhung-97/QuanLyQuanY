@@ -1,17 +1,17 @@
 import { useState } from "react";
 import { Alert, Box, Button, Stack, Typography } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
-import { khamSucKhoeService } from "../../services/khamSucKhoeService.js";
-import useLichKhamData from "../../hooks/useLichKhamData";
+import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
+import useLichKhamData from "@/hooks/useLichKhamData";
 import {
     getScheduleStatus,
     statusColor,
-} from "../../components/KhamSucKhoe/KhamSucKhoeUtils.js";
-import DanhSachLich from "../../components/KhamSucKhoe/LapLich/DanhSachLich.jsx";
-import LapLichDialog from "../../components/KhamSucKhoe/LapLich/LapLichDialog.jsx";
-import TongQuanDonVi from "../../components/KhamSucKhoe/LapLich/TongQuanDonVi.jsx";
-import StatCardGrid from "../../components/common/StatCardGrid.jsx";
-import ConfirmDialog from "../../components/common/ConfirmDialog.jsx";
+} from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
+import DanhSachLich from "@/components/KhamSucKhoe/LapLich/DanhSachLich.jsx";
+import LapLichDialog from "@/components/KhamSucKhoe/LapLich/LapLichDialog.jsx";
+import TongQuanDonVi from "@/components/KhamSucKhoe/LapLich/TongQuanDonVi.jsx";
+import StatCardGrid from "@/components/common/StatCardGrid.jsx";
+import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
 
 export default function LapLichPage() {
     const {
