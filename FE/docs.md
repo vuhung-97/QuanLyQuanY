@@ -16,86 +16,117 @@ FE/
     ├── pages/              # 1 page = 1 route, thin orchestrator
     │   ├── Login/              # Đăng nhập
     │   ├── Dashboard/          # Trang chủ
-    │   ├── KhamBenh/           # Khám bệnh (KhamBenhPage.jsx, CapThuocPage.jsx)
-    │   ├── KhamSucKhoe/    # Khám định kỳ (LapLichPage.jsx, KhamSucKhoePage.jsx)
+    │   ├── KhamBenhChoQN/      # Khám bệnh cho QN (KhamBenhPage.jsx, CapThuocPage.jsx)
+    │   ├── KhamSucKhoe/        # Khám định kỳ (LapLichPage.jsx, KhamSucKhoePage.jsx)
     │   └── Admin/              # Admin (UserManagement, RolePermission, AuditLog)
     │
     ├── components/         # UI building blocks
     │   ├── common/         #   Dùng chung toàn app
-    │   │   ├── DataTable.jsx         # Bảng dữ liệu (columns, rows, loading, onRowClick)
-    │   │   ├── SearchBar.jsx         # Ô tìm kiếm
-    │   │   ├── ConfirmDialog.jsx     # Dialog xác nhận (xóa...)
-    │   │   ├── FeedbackSnackbar.jsx  # Toast thông báo (success/error/warning)
-    │   │   ├── StatCardGrid.jsx      # Hàng thẻ thống kê
-    │   │   ├── PaginationWidget.jsx  # Điều hướng trang
-    │   │   ├── PlaceHolderPage.jsx   # Trang tạm cho module chưa phát triển
-    │   │   ├── ProtectedRoute.jsx    # Auth guard (JWT)
-    │   │   └── AdminRoute.jsx        # Role guard (admin)
+    │   │   ├── AdminRoute.jsx
+    │   │   ├── ConfirmDialog.jsx
+    │   │   ├── DataTable.jsx
+    │   │   ├── DatePicker.jsx
+    │   │   ├── FeedbackSnackbar.jsx
+    │   │   ├── PaginationWidget.jsx
+    │   │   ├── PlaceHolderPage.jsx
+    │   │   ├── ProtectedRoute.jsx
+    │   │   ├── SearchBar.jsx
+    │   │   └── StatCardGrid.jsx
     │   │
     │   ├── layout/          # Bố cục chính
-    │   │   ├── MainLayout.jsx        # Layout wrapper (sidebar + header + outlet)
-    │   │   ├── sidebar/              # Sidebar: Sidebar.jsx, SidebarItem.jsx,
-    │   │   │                         #   SidebarProfile.jsx, SidebarFooter.jsx
-    │   │   ├── header/               # Header: Header.jsx, Header.styles.js
-    │   │   ├── footer/
+    │   │   ├── index.js
+    │   │   ├── MainLayout.jsx
     │   │   ├── accountSetting/
-    │   │   └── common/
+    │   │   │   ├── AccountSettingsDialog.jsx
+    │   │   │   ├── PasswordChangeForm.jsx
+    │   │   │   ├── ProfileInfo.jsx
+    │   │   │   └── ProfileUpdateForm.jsx
+    │   │   ├── common/
+    │   │   │   ├── constants.js
+    │   │   │   ├── hooks.js
+    │   │   │   └── menuConfig.jsx
+    │   │   ├── footer/
+    │   │   │   └── Footer.jsx
+    │   │   ├── header/
+    │   │   │   ├── Header.jsx
+    │   │   │   └── Header.styles.js
+    │   │   └── sidebar/
+    │   │       ├── Sidebar.jsx
+    │   │       ├── SidebarFooter.jsx
+    │   │       ├── SidebarItem.jsx
+    │   │       └── SidebarProfile.jsx
     │   │
-    │   ├── KhamBenh/        # Components cho module Khám bệnh
-    │   │   ├── DanhSachKhamBenh.jsx  # Danh sách ca khám + DataTable + stat cards
-    │   │   ├── KhamBenhForm.jsx      # Dialog khám bệnh (form)
-    │   │   ├── DonThuocForm.jsx      # Kê đơn thuốc (kèm nút Kho thuốc)
-    │   │   ├── KhoThuocDialog.jsx    # Dialog chọn thuốc từ kho (multi-select + SL)
-    │   │   ├── TiepNhanQnDialog.jsx  # Dialog tiếp nhận quân nhân mới
-    │   │   ├── LichSuKhamBenh.jsx    # Lịch sử khám
-    │   │   ├── ChuyenTuyenDialog.jsx # Chuyển tuyến
-    │   │   ├── NhapVienDialog.jsx    # Nhập viện
-    │   │   ├── CapThuocList.jsx      # Danh sách QN chờ cấp thuốc
-    │   │   └── CapThuocForm.jsx      # Dialog cấp thuốc + in đơn
+    │   ├── KhamBenhChoQN/   # Components cho module Khám bệnh cho QN
+    │   │   ├── KhamBenh/
+    │   │   │   ├── DanhSachKhamBenh.jsx
+    │   │   │   ├── DonThuocForm.jsx
+    │   │   │   ├── KhamBenhForm.jsx
+    │   │   │   ├── KhoThuocDialog.jsx
+    │   │   │   └── TiepNhanQnDialog.jsx
+    │   │   ├── CapThuoc/
+    │   │   │   ├── CapThuocForm.jsx
+    │   │   │   └── CapThuocList.jsx
+    │   │   └── ChuyenTuyen/
+    │   │       ├── ChuyenTuyenDialog.jsx
+    │   │       └── NhapVienDialog.jsx
     │   │
-    │   ├── KhamSucKhoe/ # Components cho module Khám định kỳ
-    │   │   ├── KiemTraSucKhoe/          # Form khám sức khỏe (KhamSucKhoeForm.jsx + tabs)
-    │   │   │   ├── KhamSucKhoeMain.jsx
-    │   │   │   ├── KhamSucKhoeForm.jsx
+    │   ├── KhamSucKhoe/     # Components cho module Khám định kỳ
+    │   │   ├── KhamSucKhoeUtils.js
+    │   │   ├── KiemTraSucKhoe/
     │   │   │   ├── BangQuanNhan.jsx
+    │   │   │   ├── KhamSucKhoeForm.jsx
     │   │   │   ├── KhamSucKhoeFormUtils.js
-    │   │   │   └── tabs/ (TienSuTab, LamSangTab, CanLamSangTab, KetLuanTab)
-    │   │   ├── LapLich/             # Lập lịch
-    │   │   │   ├── DanhSachLich.jsx
-    │   │   │   ├── LapLichDialog.jsx
-    │   │   │   ├── ChonNgayGio.jsx
-    │   │   │   └── TongQuanDonVi.jsx
-    │   │   └── KhamSucKhoeUtils.js
+    │   │   │   ├── KhamSucKhoeMain.jsx
+    │   │   │   └── tabs/
+    │   │   │       ├── CanLamSangTab.jsx
+    │   │   │       ├── fieldRanges.js
+    │   │   │       ├── KetLuanTab.jsx
+    │   │   │       ├── LamSangTab.jsx
+    │   │   │       └── TongQuanTab.jsx
+    │   │   └── LapLich/
+    │   │       ├── ChonNgayGio.jsx
+    │   │       ├── DanhSachLich.jsx
+    │   │       ├── LapLichDialog.jsx
+    │   │       └── TongQuanDonVi.jsx
     │   │
     │   └── admin/           # Components cho module Admin
     │       ├── AdminPageHeader.jsx
-    │       ├── UserTableRow.jsx
-    │       ├── PermissionCard.jsx
-    │       ├── AuditDetailDialog.jsx
     │       ├── TableCard.jsx
-    │       └── TableEmptyRow.jsx
+    │       ├── AuditLog/
+    │       │   ├── AuditDetailDialog.jsx
+    │       │   ├── BackupTab.jsx
+    │       │   ├── DangNhapTab.jsx
+    │       │   └── ThaoTacTab.jsx
+    │       ├── RolePermission/
+    │       │   ├── PermissionCard.jsx
+    │       │   └── RoleFormDialog.jsx
+    │       └── UserManager/
+    │           ├── UserFormDialog.jsx
+    │           └── UserTableRow.jsx
     │
     ├── hooks/              # Custom hooks — tách logic khỏi UI
-    │   ├── useKhamBenhForm.jsx       # Form khám bệnh
-    │   ├── useDanhSachKhamBenh.jsx   # Danh sách khám bệnh (main list + dialogs)
-    │   ├── useKhamSucKhoeForm.jsx    # Form khám sức khỏe
-    │   ├── useKhamSucKhoeData.jsx    # Data cho khám sức khỏe
-    │   ├── useLapLichDialog.jsx      # Dialog lập lịch
-    │   ├── useLichKhamData.jsx       # Data lập lịch
-    │   ├── usePermissionDiff.js      # So sánh phân quyền
-    │   ├── useCapThuoc.jsx           # Cấp thuốc (danh sách chờ, cấp thuốc)
-    │   └── useDebounce.jsx           # Debounce hook dùng chung
+    │   ├── useCapThuoc.jsx
+    │   ├── useDanhSachKhamBenh.jsx
+    │   ├── useDebounce.jsx
+    │   ├── useKhamBenhForm.jsx
+    │   ├── useKhamSucKhoeData.jsx
+    │   ├── useKhamSucKhoeForm.jsx
+    │   ├── useLapLichDialog.jsx
+    │   ├── useLichKhamData.jsx
+    │   └── usePermissionDiff.js
     │
     ├── services/           # API layer
-    │   ├── api.js              # Axios instance (baseURL, JWT interceptor, 401 handler)
-    │   └── khamBenhService.js  # Endpoints cho module Khám bệnh
+    │   ├── adminService.js
+    │   ├── api.js
+    │   ├── khamBenhService.js
+    │   └── khamSucKhoeService.js
     │
     ├── data/               # Dữ liệu tĩnh
     │   └── trieu_chung.json
     │
     ├── utils/              # Helper functions thuần
-    │   ├── date.js             # formatDate, formatDateTime
-    │   └── xlsExport.js        # Xây dựng + download Excel file
+    │   ├── date.js
+    │   └── xlsExport.js
     │
     ├── App.jsx             # Root: BrowserRouter + toàn bộ Routes
     ├── theme.js            # MUI theme (màu sắc, typography, component overrides)

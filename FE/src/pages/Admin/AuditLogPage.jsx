@@ -1,20 +1,20 @@
 import { useEffect, useMemo, useState } from "react";
 import useDebounce from "@/hooks/useDebounce.jsx";
-import { Box, Button, Chip, Stack, Tab, TableCell, TableRow, Tabs, Typography } from "@mui/material";
+import { Button, Chip, Stack, Tab, Tabs } from "@mui/material";
 import {
     Backup as BackupIcon,
-    Download as DownloadIcon,
     History as HistoryIcon,
 } from "@mui/icons-material";
 import SearchBar from "@/components/common/SearchBar.jsx";
 import { adminService } from "@/services/adminService.js";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import PaginationWidget from "@/components/common/PaginationWidget.jsx";
-import DataTable from "@/components/common/DataTable.jsx";
 import AdminPageHeader from "@/components/admin/AdminPageHeader.jsx";
 import TableCard from "@/components/admin/TableCard.jsx";
-import AuditDetailDialog from "@/components/admin/AuditDetailDialog.jsx";
-import { formatDateTime } from "@/utils/date.js";
+import AuditDetailDialog from "@/components/admin/AuditLog/AuditDetailDialog.jsx";
+import DangNhapTab from "@/components/admin/AuditLog/DangNhapTab.jsx";
+import ThaoTacTab from "@/components/admin/AuditLog/ThaoTacTab.jsx";
+import BackupTab from "@/components/admin/AuditLog/BackupTab.jsx";
 
 const tabs = [
     { value: "login", label: "Đăng nhập", endpoint: "/nhat_ky_dang_nhap" },
@@ -224,147 +224,19 @@ export default function AuditLogPage() {
                 </Stack>
 
                 {tab === "login" && (
-                    <DataTable
-                        columns={[
-                            { key: "id", label: "ID" },
-                            { key: "ho_ten", label: "Họ tên" },
-                            { key: "id_nguoi_dung", label: "ID người dùng" },
-                            { key: "thoi_gian", label: "Thời gian" },
-                            { key: "trang_thai", label: "Trạng thái" },
-                            { key: "thiet_bi", label: "Thiết bị" },
-                        ]}
-                        loading={loading}
-                        emptyMessage="Chưa có nhật ký."
-                        minWidth={760}
-                    >
-                        {rows.map((row) => (
-                            <TableRow key={row.id} hover>
-                                <TableCell sx={{ fontWeight: 700 }}>
-                                    {row.id}
-                                </TableCell>
-                                <TableCell>{row.ho_ten || "--"}</TableCell>
-                                <TableCell>
-                                    {row.id_nguoi_dung || "--"}
-                                </TableCell>
-                                <TableCell>
-                                    {formatDateTime(row.thoi_gian)}
-                                </TableCell>
-                                <TableCell>
-                                    <Chip
-                                        size="small"
-                                        label={
-                                            row.trang_thai_thanh_cong
-                                                ? "Thành công"
-                                                : "Thất bại"
-                                        }
-                                        color={
-                                            row.trang_thai_thanh_cong
-                                                ? "success"
-                                                : "error"
-                                        }
-                                    />
-                                </TableCell>
-                                <TableCell>{row.thiet_bi || "--"}</TableCell>
-                            </TableRow>
-                        ))}
-                    </DataTable>
+                    <DangNhapTab rows={rows} loading={loading} />
                 )}
 
                 {tab === "action" && (
-                    <DataTable
-                        columns={[
-                            { key: "id", label: "ID" },
-                            { key: "ho_ten", label: "Họ tên" },
-                            { key: "id_nguoi_dung", label: "ID người dùng" },
-                            { key: "thoi_gian", label: "Thời gian" },
-                            { key: "hanh_dong", label: "Hành động" },
-                            { key: "bang", label: "Bảng" },
-                            { key: "ip", label: "IP" },
-                            { key: "chi_tiet", label: "Chi tiết" },
-                        ]}
-                        loading={loading}
-                        emptyMessage="Chưa có nhật ký."
-                        minWidth={880}
-                    >
-                        {rows.map((row) => (
-                            <TableRow key={row.id} hover>
-                                <TableCell sx={{ fontWeight: 700 }}>
-                                    {row.id}
-                                </TableCell>
-                                <TableCell>{row.ho_ten || "--"}</TableCell>
-                                <TableCell>
-                                    {row.id_nguoi_dung || "--"}
-                                </TableCell>
-                                <TableCell>
-                                    {formatDateTime(row.thoi_gian)}
-                                </TableCell>
-                                <TableCell>
-                                    <Chip
-                                        size="small"
-                                        label={row.hanh_dong || "--"}
-                                        color={
-                                            row.hanh_dong === "CREATE"
-                                                ? "success"
-                                                : row.hanh_dong === "UPDATE"
-                                                  ? "info"
-                                                  : row.hanh_dong === "DELETE"
-                                                    ? "error"
-                                                    : "default"
-                                        }
-                                    />
-                                </TableCell>
-                                <TableCell>{row.ten_bang || "--"}</TableCell>
-                                <TableCell>{row.dia_chi_ip || "--"}</TableCell>
-                                <TableCell>
-                                    <Chip
-                                        label="Xem"
-                                        size="small"
-                                        onClick={() => setDetail(row)}
-                                        clickable
-                                    />
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </DataTable>
+                    <ThaoTacTab rows={rows} loading={loading} onViewDetail={setDetail} />
                 )}
 
                 {tab === "backup" && (
-                    <DataTable
-                        columns={[
-                            { key: "file_name", label: "File name" },
-                            { key: "kich_thuoc", label: "Kích thước" },
-                            { key: "ngay_tao", label: "Ngày tạo" },
-                            { key: "hanh_dong", label: "Hành động" },
-                        ]}
+                    <BackupTab
+                        backupFiles={backupFiles}
                         loading={loading}
-                        emptyMessage="Chưa có file backup."
-                        minWidth={720}
-                    >
-                        {backupFiles.map((file) => (
-                            <TableRow key={file.filename} hover>
-                                <TableCell sx={{ fontWeight: 700 }}>
-                                    {file.filename}
-                                </TableCell>
-                                <TableCell>
-                                    {(file.size / 1024).toFixed(1)} KB
-                                </TableCell>
-                                <TableCell>
-                                    {formatDateTime(file.modified)}
-                                </TableCell>
-                                <TableCell>
-                                    <Button
-                                        size="small"
-                                        startIcon={<DownloadIcon />}
-                                        onClick={() =>
-                                            handleDownload(file.filename)
-                                        }
-                                    >
-                                        Tải về
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </DataTable>
+                        onDownload={handleDownload}
+                    />
                 )}
             </TableCard>
 

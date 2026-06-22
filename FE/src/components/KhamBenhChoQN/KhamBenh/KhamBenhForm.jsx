@@ -17,8 +17,8 @@ import {
 import useKhamBenhForm from "@/hooks/useKhamBenhForm.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import DonThuocForm from "./DonThuocForm.jsx";
-import ChuyenTuyenDialog from "@/components/KhamBenh/ChuyenTuyen/ChuyenTuyenDialog.jsx";
-import NhapVienDialog from "@/components/KhamBenh/ChuyenTuyen/NhapVienDialog.jsx";
+import ChuyenTuyenDialog from "@/components/KhamBenhChoQN/ChuyenTuyen/ChuyenTuyenDialog.jsx";
+import NhapVienDialog from "@/components/KhamBenhChoQN/ChuyenTuyen/NhapVienDialog.jsx";
 import symptoms from "@/data/trieu_chung.json";
 
 function InfoRow({ label, value }) {
