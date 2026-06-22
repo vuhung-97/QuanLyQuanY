@@ -70,7 +70,6 @@ export default function MainLayout({
         }
         try {
             localStorage.removeItem(STORAGE_KEYS.token);
-            localStorage.removeItem(STORAGE_KEYS.tokenExp);
         } catch {}
         navigate("/login");
     };

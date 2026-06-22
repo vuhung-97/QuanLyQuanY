@@ -19,7 +19,7 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
-import api, { decodeJWT } from "../../services/api";
+import api from "../../services/api";
 import FeedbackSnackbar from "../../components/common/FeedbackSnackbar.jsx";
 
 export default function LoginPage() {
@@ -44,11 +44,6 @@ export default function LoginPage() {
             });
             const token = res.data.access_token;
             localStorage.setItem("datamed_access_token", token);
-
-            const payload = decodeJWT(token);
-            if (payload?.exp) {
-                localStorage.setItem("datamed_token_exp", String(payload.exp));
-            }
 
             if (formData.get("remember") === "on") {
                 localStorage.setItem(

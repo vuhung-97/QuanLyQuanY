@@ -16,12 +16,6 @@ export function clearAuth() {
     localStorage.removeItem("datamed_user_role");
 }
 
-export function isTokenExpired() {
-    const exp = localStorage.getItem("datamed_token_exp");
-    if (!exp) return true;
-    return Date.now() >= Number(exp) * 1000;
-}
-
 const api = axios.create({
     baseURL: "http://localhost:8000",
     headers: { "Content-Type": "application/json" },

@@ -29,7 +29,6 @@ export const ROLE_NAME_MAP = {
 
 export const STORAGE_KEYS = {
     token: "datamed_access_token",
-    tokenExp: "datamed_token_exp",
     remember: "datamed_remember",
     sidebarOpen: "datamed_sidebar_open",
 };

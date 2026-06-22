@@ -23,7 +23,6 @@ class Settings(BaseSettings):
     DATABASE_URL: str | None = None
     JWT_SECRET_KEY: str = "jwt:BA8@9r#.30g7"
     JWT_ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     ADMIN_PASSWORD: str = "admin123"
     BACKUP_DIR: str = "backups"
 
