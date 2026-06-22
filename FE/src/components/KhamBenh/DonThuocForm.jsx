@@ -1,4 +1,12 @@
-import { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
+import {
+    forwardRef,
+    memo,
+    useCallback,
+    useEffect,
+    useImperativeHandle,
+    useRef,
+    useState,
+} from "react";
 import {
     Autocomplete,
     Box,
@@ -12,11 +20,38 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
-import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
+import {
+    Delete as DeleteIcon,
+    MedicalServices as MedicalServicesIcon,
+} from "@mui/icons-material";
 import { khamBenhService } from "../../services/khamBenhService.js";
+import KhoThuocDialog from "./KhoThuocDialog.jsx";
 
 function genKey() {
     return Math.random().toString(36).slice(2, 11);
+}
+
+let cachedAllItems = null;
+
+async function fetchAllThuoc() {
+    if (cachedAllItems) return cachedAllItems;
+    const LIMIT = 500;
+    let offset = 0;
+    let all = [];
+    while (true) {
+        const res = await khamBenhService.listThuoc({
+            limit: LIMIT,
+            offset,
+            sort_by: "phan_loai",
+        });
+        const items = res.data || [];
+        if (items.length === 0) break;
+        all = all.concat(items);
+        if (items.length < LIMIT) break;
+        offset += LIMIT;
+    }
+    cachedAllItems = all;
+    return all;
 }
 
 const THOI_DIEM_OPTIONS = [
@@ -37,203 +72,258 @@ const CACH_SU_DUNG_OPTIONS = [
     { value: "khac", label: "Khác" },
 ];
 
-const PrescriptionRow = memo(forwardRef(function PrescriptionRow({ initialData, onRemove }, ref) {
-    const [maThuoc, setMaThuoc] = useState(initialData?.ma_thuoc_vtyt ?? "");
-    const [tenThuoc, setTenThuoc] = useState(initialData?.ten_thuoc_vtyt ?? "");
-    const [donViTinh, setDonViTinh] = useState(initialData?.don_vi_tinh ?? "");
-    const [soLuong, setSoLuong] = useState(initialData?.so_luong ?? 1);
-    const [sang, setSang] = useState(initialData?.sang ?? 0);
-    const [trua, setTrua] = useState(initialData?.trua ?? 0);
-    const [toi, setToi] = useState(initialData?.toi ?? 0);
-    const [thoiDiemDung, setThoiDiemDung] = useState(initialData?.thoi_diem_dung ?? "sau_an");
-    const [cachSuDung, setCachSuDung] = useState(initialData?.cach_su_dung ?? "uong");
-    const [ghiChu, setGhiChu] = useState(initialData?.ghi_chu ?? "");
-    const [inputValue, setInputValue] = useState(initialData?.ten_thuoc_vtyt ?? "");
-    const [options, setOptions] = useState(
-        initialData?.ma_thuoc_vtyt && initialData?.ten_thuoc_vtyt
-            ? [
-                  {
-                      ma_thuoc_vtyt: initialData.ma_thuoc_vtyt,
-                      ten_thuoc_vtyt: initialData.ten_thuoc_vtyt,
-                      don_vi_tinh: initialData.don_vi_tinh,
-                  },
-              ]
-            : [],
-    );
+const PrescriptionRow = memo(
+    forwardRef(function PrescriptionRow({ initialData, onRemove }, ref) {
+        const [maThuoc, setMaThuoc] = useState(
+            initialData?.ma_thuoc_vtyt ?? "",
+        );
+        const [tenThuoc, setTenThuoc] = useState(
+            initialData?.ten_thuoc_vtyt ?? "",
+        );
+        const [donViTinh, setDonViTinh] = useState(
+            initialData?.don_vi_tinh ?? "",
+        );
+        const [soLuong, setSoLuong] = useState(initialData?.so_luong ?? 1);
+        const soLuongMax = initialData?.so_luong_max ?? Infinity;
+        const [sang, setSang] = useState(initialData?.sang ?? 0);
+        const [trua, setTrua] = useState(initialData?.trua ?? 0);
+        const [toi, setToi] = useState(initialData?.toi ?? 0);
+        const [thoiDiemDung, setThoiDiemDung] = useState(
+            initialData?.thoi_diem_dung ?? "sau_an",
+        );
+        const [cachSuDung, setCachSuDung] = useState(
+            initialData?.cach_su_dung ?? "uong",
+        );
+        const [ghiChu, setGhiChu] = useState(initialData?.ghi_chu ?? "");
+        const [inputValue, setInputValue] = useState(
+            initialData?.ten_thuoc_vtyt ?? "",
+        );
+        const [options, setOptions] = useState(
+            initialData?.ma_thuoc_vtyt && initialData?.ten_thuoc_vtyt
+                ? [
+                      {
+                          ma_thuoc_vtyt: initialData.ma_thuoc_vtyt,
+                          ten_thuoc_vtyt: initialData.ten_thuoc_vtyt,
+                          don_vi_tinh: initialData.don_vi_tinh,
+                      },
+                  ]
+                : [],
+        );
 
-    useImperativeHandle(ref, () => ({
-        getData: () => ({
-            ma_thuoc_vtyt: maThuoc,
-            ten_thuoc_vtyt: tenThuoc,
-            don_vi_tinh: donViTinh,
-            so_luong: soLuong,
-            sang,
-            trua,
-            toi,
-            thoi_diem_dung: thoiDiemDung,
-            cach_su_dung: cachSuDung,
-            ghi_chu: ghiChu,
-            huong_dieu_tri: buildHuongDieuTri({ sang, trua, toi, thoi_diem_dung: thoiDiemDung, cach_su_dung: cachSuDung, ghi_chu: ghiChu }),
-        }),
-    }), [maThuoc, tenThuoc, donViTinh, soLuong, sang, trua, toi, thoiDiemDung, cachSuDung, ghiChu]);
+        useImperativeHandle(
+            ref,
+            () => ({
+                getData: () => ({
+                    ma_thuoc_vtyt: maThuoc,
+                    ten_thuoc_vtyt: tenThuoc,
+                    don_vi_tinh: donViTinh,
+                    so_luong: soLuong,
+                    sang,
+                    trua,
+                    toi,
+                    thoi_diem_dung: thoiDiemDung,
+                    cach_su_dung: cachSuDung,
+                    ghi_chu: ghiChu,
+                    huong_dieu_tri: buildHuongDieuTri({
+                        sang,
+                        trua,
+                        toi,
+                        thoi_diem_dung: thoiDiemDung,
+                        cach_su_dung: cachSuDung,
+                        ghi_chu: ghiChu,
+                    }),
+                }),
+            }),
+            [
+                maThuoc,
+                tenThuoc,
+                donViTinh,
+                soLuong,
+                sang,
+                trua,
+                toi,
+                thoiDiemDung,
+                cachSuDung,
+                ghiChu,
+            ],
+        );
 
-    useEffect(() => {
-        if (inputValue.length < 1) {
-            setOptions([]);
-            return;
-        }
-        const timer = setTimeout(async () => {
-            try {
-                const res = await khamBenhService.searchThuoc(inputValue);
-                setOptions(res.data || []);
-            } catch {
+        useEffect(() => {
+            if (inputValue.length < 1) {
                 setOptions([]);
+                return;
             }
-        }, 300);
-        return () => clearTimeout(timer);
-    }, [inputValue]);
+            const timer = setTimeout(async () => {
+                try {
+                    const res = await khamBenhService.searchThuoc(inputValue);
+                    setOptions(res.data || []);
+                } catch {
+                    setOptions([]);
+                }
+            }, 300);
+            return () => clearTimeout(timer);
+        }, [inputValue]);
 
-    return (
-        <Stack
-            spacing={1.5}
-            sx={{
-                p: 2,
-                border: "1px solid",
-                borderColor: "divider",
-                borderRadius: 2,
-            }}
-        >
-            <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
-                <Box sx={{ flex: 2, minWidth: 0 }}>
-                    <Autocomplete
+        return (
+            <Stack
+                spacing={1.5}
+                sx={{
+                    p: 2,
+                    border: "1px solid",
+                    borderColor: "divider",
+                    borderRadius: 2,
+                }}
+            >
+                <Stack
+                    direction="row"
+                    spacing={1}
+                    sx={{ alignItems: "center" }}
+                >
+                    <Box sx={{ flex: 2, minWidth: 0 }}>
+                        <Autocomplete
+                            size="small"
+                            options={options}
+                            inputValue={inputValue}
+                            onInputChange={(_, v) => setInputValue(v)}
+                            getOptionLabel={(o) => o.ten_thuoc_vtyt || ""}
+                            isOptionEqualToValue={(o, v) =>
+                                o.ma_thuoc_vtyt === v.ma_thuoc_vtyt
+                            }
+                            value={
+                                options.find(
+                                    (o) => o.ma_thuoc_vtyt === maThuoc,
+                                ) || null
+                            }
+                            onChange={(_, newVal) => {
+                                setMaThuoc(newVal?.ma_thuoc_vtyt || "");
+                                setTenThuoc(newVal?.ten_thuoc_vtyt || "");
+                                setDonViTinh(newVal?.don_vi_tinh || "");
+                            }}
+                            renderInput={(params) => (
+                                <TextField {...params} label="Tên thuốc" />
+                            )}
+                        />
+                    </Box>
+                    <TextField
                         size="small"
-                        options={options}
-                        inputValue={inputValue}
-                        onInputChange={(_, v) => setInputValue(v)}
-                        getOptionLabel={(o) => o.ten_thuoc_vtyt || ""}
-                        isOptionEqualToValue={(o, v) =>
-                            o.ma_thuoc_vtyt === v.ma_thuoc_vtyt
+                        label={soLuongMax !== Infinity ? `SL (tồn: ${soLuongMax})` : "Số lượng"}
+                        type="number"
+                        value={soLuong}
+                        onChange={(e) =>
+                            setSoLuong(
+                                Math.min(
+                                    soLuongMax,
+                                    Math.max(1, parseInt(e.target.value) || 1),
+                                ),
+                            )
                         }
-                        value={
-                            options.find(
-                                (o) => o.ma_thuoc_vtyt === maThuoc,
-                            ) || null
-                        }
-                        onChange={(_, newVal) => {
-                            setMaThuoc(newVal?.ma_thuoc_vtyt || "");
-                            setTenThuoc(newVal?.ten_thuoc_vtyt || "");
-                            setDonViTinh(newVal?.don_vi_tinh || "");
+                        sx={{ width: 130 }}
+                        slotProps={{
+                            htmlInput: { min: 1, max: soLuongMax },
                         }}
-                        renderInput={(params) => (
-                            <TextField {...params} label="Tên thuốc" />
-                        )}
                     />
-                </Box>
-                <TextField
-                    size="small"
-                    label="Số lượng"
-                    type="number"
-                    value={soLuong}
-                    onChange={(e) =>
-                        setSoLuong(Math.max(1, parseInt(e.target.value) || 1))
-                    }
-                    sx={{ width: 100 }}
-                    inputProps={{ min: 1 }}
-                />
-                {donViTinh && (
-                    <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{ minWidth: 50, alignSelf: "center" }}
-                    >
-                        ({donViTinh})
+                    {donViTinh && (
+                        <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ minWidth: 50, alignSelf: "center" }}
+                        >
+                            ({donViTinh})
+                        </Typography>
+                    )}
+                    <IconButton size="small" color="error" onClick={onRemove}>
+                        <DeleteIcon fontSize="small" />
+                    </IconButton>
+                </Stack>
+                <Stack
+                    direction="row"
+                    spacing={1}
+                    sx={{ alignItems: "center" }}
+                >
+                    <TextField
+                        size="small"
+                        label="Sáng"
+                        type="number"
+                        value={sang}
+                        onChange={(e) =>
+                            setSang(Math.max(0, parseInt(e.target.value) || 0))
+                        }
+                        sx={{ width: 80 }}
+                        slotProps={{ min: 0 }}
+                    />
+                    <TextField
+                        size="small"
+                        label="Trưa"
+                        type="number"
+                        value={trua}
+                        onChange={(e) =>
+                            setTrua(Math.max(0, parseInt(e.target.value) || 0))
+                        }
+                        sx={{ width: 80 }}
+                        slotProps={{ min: 0 }}
+                    />
+                    <TextField
+                        size="small"
+                        label="Tối"
+                        type="number"
+                        value={toi}
+                        onChange={(e) =>
+                            setToi(Math.max(0, parseInt(e.target.value) || 0))
+                        }
+                        sx={{ width: 80 }}
+                        slotProps={{ min: 0 }}
+                    />
+                </Stack>
+                {soLuong > 0 && sang + trua + toi > soLuong && (
+                    <Typography color="error" variant="caption">
+                        Tổng liều ({sang + trua + toi}) vượt quá số lượng thuốc ({soLuong})
                     </Typography>
                 )}
-                <IconButton
-                    size="small"
-                    color="error"
-                    onClick={onRemove}
+                <Stack
+                    direction="row"
+                    spacing={1}
+                    sx={{ alignItems: "center" }}
                 >
-                    <DeleteIcon fontSize="small" />
-                </IconButton>
+                    <Autocomplete
+                        size="small"
+                        options={CACH_SU_DUNG_OPTIONS}
+                        value={CACH_SU_DUNG_OPTIONS.find(
+                            (o) => o.value === cachSuDung,
+                        )}
+                        onChange={(_, v) => setCachSuDung(v?.value || "uong")}
+                        getOptionLabel={(o) => o.label}
+                        renderInput={(params) => (
+                            <TextField {...params} label="Cách sử dụng" />
+                        )}
+                        sx={{ minWidth: 150 }}
+                    />
+                    <Autocomplete
+                        size="small"
+                        options={THOI_DIEM_OPTIONS}
+                        value={THOI_DIEM_OPTIONS.find(
+                            (o) => o.value === thoiDiemDung,
+                        )}
+                        onChange={(_, v) =>
+                            setThoiDiemDung(v?.value || "sau_an")
+                        }
+                        getOptionLabel={(o) => o.label}
+                        renderInput={(params) => (
+                            <TextField {...params} label="Thời điểm dùng" />
+                        )}
+                        sx={{ minWidth: 200 }}
+                    />
+                    <TextField
+                        size="small"
+                        label="Ghi chú"
+                        value={ghiChu}
+                        onChange={(e) => setGhiChu(e.target.value)}
+                        sx={{ flex: 1, minWidth: 200 }}
+                    />
+                </Stack>
             </Stack>
-            <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
-                <TextField
-                    size="small"
-                    label="Sáng"
-                    type="number"
-                    value={sang}
-                    onChange={(e) =>
-                        setSang(Math.max(0, parseInt(e.target.value) || 0))
-                    }
-                    sx={{ width: 80 }}
-                    inputProps={{ min: 0 }}
-                />
-                <TextField
-                    size="small"
-                    label="Trưa"
-                    type="number"
-                    value={trua}
-                    onChange={(e) =>
-                        setTrua(Math.max(0, parseInt(e.target.value) || 0))
-                    }
-                    sx={{ width: 80 }}
-                    inputProps={{ min: 0 }}
-                />
-                <TextField
-                    size="small"
-                    label="Tối"
-                    type="number"
-                    value={toi}
-                    onChange={(e) =>
-                        setToi(Math.max(0, parseInt(e.target.value) || 0))
-                    }
-                    sx={{ width: 80 }}
-                    inputProps={{ min: 0 }}
-                />
-            </Stack>
-            <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
-                <Autocomplete
-                    size="small"
-                    options={CACH_SU_DUNG_OPTIONS}
-                    value={CACH_SU_DUNG_OPTIONS.find(
-                        (o) => o.value === cachSuDung,
-                    )}
-                    onChange={(_, v) =>
-                        setCachSuDung(v?.value || "uong")
-                    }
-                    getOptionLabel={(o) => o.label}
-                    renderInput={(params) => (
-                        <TextField {...params} label="Cách sử dụng" />
-                    )}
-                    sx={{ minWidth: 150 }}
-                />
-                <Autocomplete
-                    size="small"
-                    options={THOI_DIEM_OPTIONS}
-                    value={THOI_DIEM_OPTIONS.find(
-                        (o) => o.value === thoiDiemDung,
-                    )}
-                    onChange={(_, v) =>
-                        setThoiDiemDung(v?.value || "sau_an")
-                    }
-                    getOptionLabel={(o) => o.label}
-                    renderInput={(params) => (
-                        <TextField {...params} label="Thời điểm dùng" />
-                    )}
-                    sx={{ minWidth: 200 }}
-                />
-                <TextField
-                    size="small"
-                    label="Ghi chú"
-                    value={ghiChu}
-                    onChange={(e) => setGhiChu(e.target.value)}
-                    sx={{ flex: 1, minWidth: 200 }}
-                />
-            </Stack>
-        </Stack>
-    );
-}));
+        );
+    }),
+);
 
 function buildHuongDieuTri(item) {
     const lieu = `Sáng: ${item.sang} - Trưa: ${item.trua} - Tối: ${item.toi}`;
@@ -246,39 +336,92 @@ function buildHuongDieuTri(item) {
     return result;
 }
 
-export default function DonThuocForm({
-    open,
-    onClose,
-    onSave,
-    initialItems,
-}) {
+export default function DonThuocForm({ open, onClose, onSave, initialItems }) {
     const [rows, setRows] = useState([]);
     const rowRefs = useRef(new Map());
+    const [openKhoThuoc, setOpenKhoThuoc] = useState(false);
+    const [saveError, setSaveError] = useState("");
+
+    const handleKhoThuocConfirm = useCallback((items) => {
+        setRows((prev) => {
+            const existingMas = new Set(
+                prev.map((r) => r.initial?.ma_thuoc_vtyt).filter(Boolean),
+            );
+            const newItems = items
+                .filter((item) => !existingMas.has(item.ma_thuoc_vtyt))
+                .map((item) => ({
+                    key: genKey(),
+                    initial: {
+                        ma_thuoc_vtyt: item.ma_thuoc_vtyt,
+                        ten_thuoc_vtyt: item.ten_thuoc_vtyt,
+                        don_vi_tinh: item.don_vi_tinh,
+                        so_luong: item.so_luong,
+                        so_luong_max: item.so_luong_max,
+                    },
+                }));
+            return newItems.length === 0 ? prev : [...prev, ...newItems];
+        });
+        setOpenKhoThuoc(false);
+    }, []);
 
     useEffect(() => {
-        if (open) {
-            const next = initialItems?.length > 0
-                ? initialItems.map((it) => ({ key: genKey(), initial: it }))
-                : [{ key: genKey(), initial: null }];
+        if (!open) return;
+        setSaveError("");
+        let cancelled = false;
+
+        (async () => {
+            await fetchAllThuoc();
+            if (cancelled) return;
+
+            const stockByMa = {};
+            cachedAllItems.forEach(
+                (item) => (stockByMa[item.ma_thuoc_vtyt] = item.so_luong),
+            );
+
+            const next =
+                initialItems?.length > 0
+                    ? initialItems.map((it) => ({
+                          key: genKey(),
+                          initial: {
+                              ...it,
+                              so_luong_max:
+                                  stockByMa[it.ma_thuoc_vtyt] ?? Infinity,
+                          },
+                      }))
+                    : [];
             setRows(next);
             rowRefs.current = new Map();
-        }
+        })();
+
+        return () => {
+            cancelled = true;
+        };
     }, [open, initialItems]);
 
     const handleRemove = useCallback((key) => {
-        setRows((prev) => (prev.length > 1 ? prev.filter((r) => r.key !== key) : prev));
-    }, []);
-
-    const addRow = useCallback(() => {
-        setRows((prev) => [...prev, { key: genKey(), initial: null }]);
+        setRows((prev) => prev.filter((r) => r.key !== key));
     }, []);
 
     const handleSave = useCallback(() => {
         const items = [];
+        const errors = [];
+        setSaveError("");
         rowRefs.current.forEach((ref) => {
             const data = ref.getData();
-            if (data.ma_thuoc_vtyt) items.push(data);
+            if (!data.ma_thuoc_vtyt) return;
+            const total = (data.sang || 0) + (data.trua || 0) + (data.toi || 0);
+            if (total > data.so_luong) {
+                errors.push(
+                    `${data.ten_thuoc_vtyt}: tổng liều ${total} > số lượng ${data.so_luong}`,
+                );
+                return;
+            }
+            items.push(data);
         });
+        if (errors.length > 0) {
+            setSaveError(errors.join("\n"));
+            return;
+        }
         if (items.length === 0) return;
         onSave(items);
         onClose();
@@ -288,10 +431,24 @@ export default function DonThuocForm({
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-            <DialogTitle>
-                <Typography variant="h2" sx={{ textAlign: "center" }}>
-                    Kê đơn thuốc
-                </Typography>
+            <DialogTitle
+                sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    fontSize: 22,
+                    fontWeight: 600,
+                }}
+            >
+                Kê đơn thuốc
+                <Button
+                    startIcon={<MedicalServicesIcon />}
+                    variant="outlined"
+                    onClick={() => setOpenKhoThuoc(true)}
+                    size="small"
+                >
+                    Kho thuốc
+                </Button>
             </DialogTitle>
             <DialogContent>
                 <Stack spacing={2} sx={{ pt: 1 }}>
@@ -306,13 +463,14 @@ export default function DonThuocForm({
                             onRemove={() => handleRemove(key)}
                         />
                     ))}
-                    <Button
-                        startIcon={<AddIcon />}
-                        onClick={addRow}
-                        sx={{ alignSelf: "flex-start" }}
-                    >
-                        Thêm thuốc
-                    </Button>
+                    {rows.length === 0 && (
+                        <Typography
+                            color="text.secondary"
+                            sx={{ textAlign: "center", py: 4 }}
+                        >
+                            Đơn thuốc trống
+                        </Typography>
+                    )}
                 </Stack>
             </DialogContent>
             <DialogActions>
@@ -325,6 +483,22 @@ export default function DonThuocForm({
                     Lưu đơn thuốc
                 </Button>
             </DialogActions>
+            {saveError && (
+                <Typography
+                    color="error"
+                    variant="caption"
+                    sx={{ px: 3, pb: 1, whiteSpace: "pre-line" }}
+                >
+                    {saveError}
+                </Typography>
+            )}
+
+            <KhoThuocDialog
+                open={openKhoThuoc}
+                onClose={() => setOpenKhoThuoc(false)}
+                onConfirm={handleKhoThuocConfirm}
+                cachedItems={cachedAllItems}
+            />
         </Dialog>
     );
 }

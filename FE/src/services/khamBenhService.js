@@ -12,8 +12,9 @@ export const khamBenhService = {
     receiveMedicine: (id) => api.post(`/kham_benh/${id}/nhan-thuoc`),
     referPatient: (id, data) => api.post(`/kham_benh/${id}/chuyen-tuyen`, data),
     admitPatient: (id, data) => api.post(`/kham_benh/${id}/nhap-vien`, data),
-    searchThuoc: (keyword) =>
-        api.get(`/thuoc_vtyt/search/value`, { params: { search: keyword } }),
+    searchThuoc: (keyword, limit) =>
+        api.get(`/thuoc_vtyt/search/value`, { params: { search: keyword, limit } }),
+    listThuoc: (params) => api.get("/thuoc_vtyt", { params }),
     getPatientHistory: (qnId) => api.get(`/quan_nhan/${qnId}/lich-su-kham`),
     getQuanNhanDanhSach: (params) =>
         api.get("/quan_nhan/danh-sach/list", { params }),

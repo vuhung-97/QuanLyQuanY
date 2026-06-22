@@ -44,7 +44,8 @@ FE/
     │   ├── KhamBenh/        # Components cho module Khám bệnh
     │   │   ├── DanhSachKhamBenh.jsx  # Danh sách ca khám + DataTable + stat cards
     │   │   ├── KhamBenhForm.jsx      # Dialog khám bệnh (form)
-    │   │   ├── DonThuocForm.jsx      # Kê đơn thuốc
+    │   │   ├── DonThuocForm.jsx      # Kê đơn thuốc (kèm nút Kho thuốc)
+    │   │   ├── KhoThuocDialog.jsx    # Dialog chọn thuốc từ kho (multi-select + SL)
     │   │   ├── TiepNhanQnDialog.jsx  # Dialog tiếp nhận quân nhân mới
     │   │   ├── LichSuKhamBenh.jsx    # Lịch sử khám
     │   │   ├── ChuyenTuyenDialog.jsx # Chuyển tuyến
