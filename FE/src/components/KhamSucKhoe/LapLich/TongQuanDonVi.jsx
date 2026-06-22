@@ -11,7 +11,7 @@ import {
     Typography,
 } from "@mui/material";
 import { Search as SearchIcon } from "@mui/icons-material";
-import api from "../../../services/api.js";
+import { khamSucKhoeService } from "../../../services/khamSucKhoeService.js";
 import DataTable from "../../common/DataTable.jsx";
 import { formatDateTime } from "../KhamSucKhoeUtils.js";
 
@@ -32,9 +32,7 @@ export default function TongQuanDonVi({ chiTietMap }) {
         async function load() {
             setLoading(true);
             try {
-                const res = await api.get("/thong-ke/don-vi", {
-                    params: { limit: 100 },
-                });
+                const res = await khamSucKhoeService.getDonViList();
                 if (!ignore) setUnits(Array.isArray(res.data) ? res.data : []);
             } catch {
             } finally {

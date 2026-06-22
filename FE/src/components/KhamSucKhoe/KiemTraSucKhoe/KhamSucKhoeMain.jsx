@@ -23,7 +23,7 @@ import {
 } from "@mui/icons-material";
 import useDebounce from "../../../hooks/useDebounce.jsx";
 import useKhamSucKhoeData from "../../../hooks/useKhamSucKhoeData";
-import api from "../../../services/api.js";
+import { khamSucKhoeService } from "../../../services/khamSucKhoeService.js";
 import {
     filterSoldiers,
     filterTabs,
@@ -140,7 +140,7 @@ function ExamRecordHistoryDialog({ open, onClose, quanNhan, onViewPhieu }) {
     useEffect(() => {
         if (!open || !quanNhan) return;
         setLoading(true);
-        api.get(`/phieu_kham_suc_khoe/by-ma-quan-nhan/${quanNhan.ma_quan_nhan}`)
+        khamSucKhoeService.getPhieuByMaQuanNhan(quanNhan.ma_quan_nhan)
             .then((res) =>
                 setPhieuList(Array.isArray(res.data) ? res.data : []),
             )
@@ -307,10 +307,8 @@ export default function KhamSucKhoeMain() {
         if (!selectedSchedule) return;
         try {
             const [qnRes, pRes] = await Promise.all([
-                api.get(`/quan_nhan/by-lich-kham/${selectedSchedule}`),
-                api.get(
-                    `/phieu_kham_suc_khoe/latest-by-lich-kham/${selectedSchedule}`,
-                ),
+                khamSucKhoeService.getSoldiersBySchedule(selectedSchedule),
+                khamSucKhoeService.getLatestPhieuBySchedule(selectedSchedule),
             ]);
             const allSoldiers = Array.isArray(qnRes.data) ? qnRes.data : [];
             const allPhieuMap = (

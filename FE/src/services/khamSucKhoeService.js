@@ -1,0 +1,53 @@
+import api from "./api.js";
+
+export const khamSucKhoeService = {
+    getDonViList: (params) =>
+        api.get("/thong-ke/don-vi", { params: { limit: 100, ...params } }),
+
+    getScheduleList: (params) =>
+        api.get("/lich_kham_sk_nam", {
+            params: { limit: 100, offset: 0, sort_by: "thoi_gian_bat_dau", ...params },
+        }),
+
+    getScheduleStats: (scheduleId) =>
+        api.get(`/thong-ke/lich-kham/${scheduleId}`),
+
+    getScheduleDetail: (scheduleId) =>
+        api.get(`/lich_kham_sk_nam/${scheduleId}/chi-tiet`),
+
+    getSoldiersBySchedule: (scheduleId) =>
+        api.get(`/quan_nhan/by-lich-kham/${scheduleId}`),
+
+    getSoldiersByUnit: (unitId) =>
+        api.get(`/quan_nhan/by-don-vi/${unitId}`),
+
+    getLatestPhieuBySchedule: (scheduleId) =>
+        api.get(`/phieu_kham_suc_khoe/latest-by-lich-kham/${scheduleId}`),
+
+    getLatestPhieuByUnit: (unitId) =>
+        api.get(`/phieu_kham_suc_khoe/latest-by-unit/${unitId}`),
+
+    getPhieuByMaQuanNhan: (maQuanNhan) =>
+        api.get(`/phieu_kham_suc_khoe/by-ma-quan-nhan/${maQuanNhan}`),
+
+    createPhieu: (data) => api.post("/phieu_kham_suc_khoe", data),
+
+    updatePhieu: (id, data) =>
+        api.patch(`/phieu_kham_suc_khoe/${id}`, data),
+
+    createSchedule: (data) => api.post("/lich_kham_sk_nam", data),
+
+    updateSchedule: (id, data) =>
+        api.patch(`/lich_kham_sk_nam/${id}`, data),
+
+    deleteSchedule: (id) => api.delete(`/lich_kham_sk_nam/${id}`),
+
+    createScheduleDetail: (scheduleId, data) =>
+        api.post(`/lich_kham_sk_nam/${scheduleId}/chi-tiet`, data),
+
+    updateScheduleDetail: (scheduleId, maDonVi, data) =>
+        api.patch(`/lich_kham_sk_nam/${scheduleId}/chi-tiet/${maDonVi}`, data),
+
+    deleteScheduleDetail: (scheduleId, maDonVi) =>
+        api.delete(`/lich_kham_sk_nam/${scheduleId}/chi-tiet/${maDonVi}`),
+};

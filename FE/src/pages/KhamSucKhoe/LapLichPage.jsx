@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Alert, Box, Button, Stack, Typography } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
-import api from "../../services/api.js";
+import { khamSucKhoeService } from "../../services/khamSucKhoeService.js";
 import useLichKhamData from "../../hooks/useLichKhamData";
 import {
     getScheduleStatus,
@@ -83,13 +83,12 @@ export default function LapLichPage() {
     const handleDeleteConfirm = async () => {
         try {
             if (deleteDialog.detailInfo) {
-                await api.delete(
-                    `/lich_kham_sk_nam/${deleteDialog.schedule.ma_lich_kham}/chi-tiet/${deleteDialog.detailInfo.ma_don_vi}`,
+                await khamSucKhoeService.deleteScheduleDetail(
+                    deleteDialog.schedule.ma_lich_kham,
+                    deleteDialog.detailInfo.ma_don_vi,
                 );
             } else {
-                await api.delete(
-                    `/lich_kham_sk_nam/${deleteDialog.schedule.ma_lich_kham}`,
-                );
+                await khamSucKhoeService.deleteSchedule(deleteDialog.schedule.ma_lich_kham);
             }
             loadSchedules();
             setDeleteDialog({ open: false, schedule: null, detailInfo: null });

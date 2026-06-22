@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import api from "../services/api.js";
+import { khamSucKhoeService } from "../services/khamSucKhoeService.js";
 
 function genKey() {
     return Math.random().toString(36).slice(2, 11);
@@ -23,7 +23,7 @@ export default function useLapLichDialog({
 
     useEffect(() => {
         if (open) {
-            api.get("/thong-ke/don-vi", { params: { limit: 100 } })
+            khamSucKhoeService.getDonViList()
                 .then((res) => {
                     const all = Array.isArray(res.data) ? res.data : [];
                     setUnitOptions(all.filter((u) => !u.ma_don_vi_truc_thuoc));
@@ -77,10 +77,7 @@ export default function useLapLichDialog({
                 thoi_gian_ket_thuc: thoiGianKetThuc,
             };
             if (isEdit) {
-                await api.patch(
-                    `/lich_kham_sk_nam/${schedule.ma_lich_kham}`,
-                    master,
-                );
+                await khamSucKhoeService.updateSchedule(schedule.ma_lich_kham, master);
                 const existing = chiTietList || [];
                 const existingKeys = new Set(
                     existing.map((ct) => ct.ma_don_vi),
@@ -89,8 +86,9 @@ export default function useLapLichDialog({
 
                 for (const d of details) {
                     if (existingKeys.has(d.ma_don_vi)) {
-                        await api.patch(
-                            `/lich_kham_sk_nam/${schedule.ma_lich_kham}/chi-tiet/${d.ma_don_vi}`,
+                        await khamSucKhoeService.updateScheduleDetail(
+                            schedule.ma_lich_kham,
+                            d.ma_don_vi,
                             {
                                 thoi_gian_bat_dau: d.thoi_gian_bat_dau || null,
                                 thoi_gian_ket_thuc:
@@ -99,21 +97,16 @@ export default function useLapLichDialog({
                             },
                         );
                     } else {
-                        await api.post(
-                            `/lich_kham_sk_nam/${schedule.ma_lich_kham}/chi-tiet`,
-                            d,
-                        );
+                        await khamSucKhoeService.createScheduleDetail(schedule.ma_lich_kham, d);
                     }
                 }
                 for (const ct of existing) {
                     if (!newKeys.has(ct.ma_don_vi)) {
-                        await api.delete(
-                            `/lich_kham_sk_nam/${schedule.ma_lich_kham}/chi-tiet/${ct.ma_don_vi}`,
-                        );
+                        await khamSucKhoeService.deleteScheduleDetail(schedule.ma_lich_kham, ct.ma_don_vi);
                     }
                 }
             } else {
-                const res = await api.post("/lich_kham_sk_nam", master);
+                const res = await khamSucKhoeService.createSchedule(master);
                 const ma_lich_kham = res.data?.ma_lich_kham;
                 if (!ma_lich_kham) {
                     setError("Không nhận được mã lịch khám từ server.");
@@ -121,10 +114,7 @@ export default function useLapLichDialog({
                     return;
                 }
                 for (const d of details) {
-                    await api.post(
-                        `/lich_kham_sk_nam/${ma_lich_kham}/chi-tiet`,
-                        d,
-                    );
+                    await khamSucKhoeService.createScheduleDetail(ma_lich_kham, d);
                 }
             }
             onSaved();

@@ -4,7 +4,7 @@ import {
     EventAvailable as EventAvailableIcon,
     Groups as GroupsIcon,
 } from "@mui/icons-material";
-import api from "../services/api.js";
+import { khamSucKhoeService } from "../services/khamSucKhoeService.js";
 import {
     fallbackSchedules,
     formatDate,
@@ -25,14 +25,8 @@ export default function useLichKhamData() {
             setError("");
             try {
                 const [schRes, uvRes] = await Promise.all([
-                    api.get("/lich_kham_sk_nam", {
-                        params: {
-                            limit: 100,
-                            offset: 0,
-                            sort_by: "thoi_gian_bat_dau",
-                        },
-                    }),
-                    api.get("/thong-ke/don-vi", { params: { limit: 100 } }),
+                    khamSucKhoeService.getScheduleList(),
+                    khamSucKhoeService.getDonViList(),
                 ]);
                 if (ignore) return;
                 const masterList = Array.isArray(schRes.data)
@@ -45,9 +39,7 @@ export default function useLichKhamData() {
                 await Promise.all(
                     masterList.map(async (m) => {
                         try {
-                            const ctRes = await api.get(
-                                `/lich_kham_sk_nam/${m.ma_lich_kham}/chi-tiet`,
-                            );
+                            const ctRes = await khamSucKhoeService.getScheduleDetail(m.ma_lich_kham);
                             ctMap[m.ma_lich_kham] = Array.isArray(ctRes.data)
                                 ? ctRes.data
                                 : [];

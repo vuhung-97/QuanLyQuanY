@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import api from "../services/api.js";
+import { khamSucKhoeService } from "../services/khamSucKhoeService.js";
 
 export default function useKhamSucKhoeData() {
     const [schedules, setSchedules] = useState([]);
@@ -36,7 +36,7 @@ export default function useKhamSucKhoeData() {
     }, []);
 
     useEffect(() => {
-        api.get("/thong-ke/don-vi")
+        khamSucKhoeService.getDonViList()
             .then((res) => {
                 const list = Array.isArray(res.data) ? res.data : [];
                 setAllUnitLookup(new Map(list.map((u) => [u.ma_don_vi, u.ten_don_vi])));
@@ -48,9 +48,7 @@ export default function useKhamSucKhoeData() {
         let ignore = false;
         async function load() {
             try {
-                const res = await api.get("/lich_kham_sk_nam", {
-                    params: { limit: 100 },
-                });
+                const res = await khamSucKhoeService.getScheduleList();
                 if (!ignore) {
                     const data = Array.isArray(res.data) ? res.data : [];
                     setSchedules(data);
@@ -80,9 +78,7 @@ export default function useKhamSucKhoeData() {
         let ignore = false;
         async function load() {
             try {
-                const res = await api.get(
-                    `/thong-ke/lich-kham/${selectedSchedule}`,
-                );
+                const res = await khamSucKhoeService.getScheduleStats(selectedSchedule);
                 if (!ignore) {
                     setStats(res.data);
                     setUnits(res.data.danh_sach_don_vi || []);
@@ -110,8 +106,8 @@ export default function useKhamSucKhoeData() {
             try {
                 if (selectedUnit === "__ALL__") {
                     const [qnRes, pRes] = await Promise.all([
-                        api.get(`/quan_nhan/by-lich-kham/${selectedSchedule}`),
-                        api.get(`/phieu_kham_suc_khoe/latest-by-lich-kham/${selectedSchedule}`),
+                        khamSucKhoeService.getSoldiersBySchedule(selectedSchedule),
+                        khamSucKhoeService.getLatestPhieuBySchedule(selectedSchedule),
                     ]);
                     if (!ignore) {
                         setSoldiers(Array.isArray(qnRes.data) ? qnRes.data : []);
@@ -123,17 +119,13 @@ export default function useKhamSucKhoeData() {
                         setPhieuMap(phieuData);
                     }
                 } else {
-                    const qnRes = await api.get(
-                        `/quan_nhan/by-don-vi/${selectedUnit}`,
-                    );
+                    const qnRes = await khamSucKhoeService.getSoldiersByUnit(selectedUnit);
                     const qnList = Array.isArray(qnRes.data) ? qnRes.data : [];
                     if (ignore) return;
 
                     let phieuData = {};
                     try {
-                        const pRes = await api.get(
-                            `/phieu_kham_suc_khoe/latest-by-unit/${selectedUnit}`,
-                        );
+                        const pRes = await khamSucKhoeService.getLatestPhieuByUnit(selectedUnit);
                         const list = Array.isArray(pRes.data) ? pRes.data : [];
                         phieuData = {};
                         for (const p of list) {

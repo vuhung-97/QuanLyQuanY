@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import api from "../services/api.js";
+import { khamSucKhoeService } from "../services/khamSucKhoeService.js";
 import {
     DEFAULT_TS,
     DEFAULT_LS,
@@ -81,12 +81,12 @@ export default function useKhamSucKhoeForm({
 
             let saved;
             if (isEdit) {
-                saved = await api.patch(
-                    `/phieu_kham_suc_khoe/${existingPhieu.ma_phieu_kham}`,
+                saved = await khamSucKhoeService.updatePhieu(
+                    existingPhieu.ma_phieu_kham,
                     phieuData,
                 );
             } else {
-                saved = await api.post("/phieu_kham_suc_khoe", phieuData);
+                saved = await khamSucKhoeService.createPhieu(phieuData);
             }
             onSaved(saved.data);
             onClose();
