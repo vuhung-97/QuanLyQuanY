@@ -16,7 +16,7 @@ import MonitorHeartIcon from "@mui/icons-material/MonitorHeart";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
 import useKhamSucKhoeForm from "../../../hooks/useKhamSucKhoeForm";
 import { cardStyle } from "./KhamSucKhoeFormUtils.js";
-import TienSuTab from "./tabs/TienSuTab";
+import TongQuanTab from "./tabs/TongQuanTab";
 import LamSangTab from "./tabs/LamSangTab";
 import CanLamSangTab from "./tabs/CanLamSangTab";
 import KetLuanTab from "./tabs/KetLuanTab";
@@ -115,7 +115,7 @@ function FormInfoCard({ quanNhan, ngayNhapNgu, unitLookup = new Map() }) {
 }
 
 const tabConfigs = [
-    { icon: <HistoryIcon />, label: "Tiền sử" },
+    { icon: <HistoryIcon />, label: "Tổng quan" },
     { icon: <MonitorHeartIcon />, label: "Lâm sàng" },
     { icon: <BiotechIcon />, label: "Cận lâm sàng" },
     { icon: <AssignmentTurnedInIcon />, label: "Kết luận" },
@@ -244,7 +244,7 @@ export default function KhamSucKhoeForm({
                     />
 
                     <TabPanel value={activeTab} index={0}>
-                        <TienSuTab
+                        <TongQuanTab
                             ref={tsRef}
                             initialData={initialTS}
                             cardStyle={cardStyle}

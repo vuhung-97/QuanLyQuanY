@@ -109,7 +109,6 @@ function SoldierFilterBar({
                         sx={{ minWidth: 250 }}
                         disabled={!selectedSchedule}
                     >
-                        <MenuItem value="">-- Chọn đơn vị --</MenuItem>
                         <MenuItem value="__ALL__">-- Tất cả đơn vị --</MenuItem>
                         {units.map((u) => (
                             <MenuItem key={u.ma_don_vi} value={u.ma_don_vi}>

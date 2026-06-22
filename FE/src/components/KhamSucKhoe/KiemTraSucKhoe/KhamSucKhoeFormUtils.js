@@ -1,8 +1,13 @@
-export const DEFAULT_TS = { ban_than: "", gia_dinh: "", di_ung: "", khac: "" };
-
-export const DEFAULT_LS = {
+export const DEFAULT_TS = {
+    ban_than: "", di_ung: "", khac: "", gia_dinh: "",
     chieu_cao: "", can_nang: "", vong_nguc: "", vong_bung: "",
     mach: "", huyet_ap_tam_thu: "", huyet_ap_tam_truong: "", bmi: "",
+    mat_khong_kinh_trai: "", mat_khong_kinh_phai: "",
+    mat_co_kinh_trai: "", mat_co_kinh_phai: "",
+    mat_loai: "Loại 1",
+};
+
+export const DEFAULT_LS = {
     tim_mach_note: "", tim_mach_loai: "Loại 1",
     ho_hap_note: "", ho_hap_loai: "Loại 1",
     tieu_hoa_note: "", tieu_hoa_loai: "Loại 1",
@@ -16,9 +21,6 @@ export const DEFAULT_LS = {
     phu_san_note: "", phu_san_loai: "Loại 1",
     tai_mui_hong_note: "", tai_mui_hong_loai: "Loại 1",
     rang_ham_mat_note: "", rang_ham_mat_loai: "Loại 1",
-    mat_khong_kinh_trai: "", mat_khong_kinh_phai: "",
-    mat_co_kinh_trai: "", mat_co_kinh_phai: "",
-    mat_loai: "Loại 1",
     khac: "",
 };
 
