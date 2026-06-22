@@ -221,15 +221,17 @@ Composite key dùng dấu phẩy: `{id1},{id2}`.
 
 ### ThuocVtyt (`/thuoc_vtyt`)
 
-| Field | Type | Required | Max |
-|-------|------|----------|-----|
-| `ma_thuoc_vtyt` | string (PK) | ✅ | 10 |
-| `ten_thuoc_vtyt` | string | ✅ | 255 |
-| `don_vi_tinh` | string | ❌ | 50 |
-| `so_luong` | int | ❌ (default: 0) | |
-| `so_lo_han_dung` | string | ❌ | 255 |
-| `nam_san_xuat` | int | ❌ | |
-| `cap_chat_luong` | string | ❌ | 100 |
+| Field | Type | Required | Max | Notes |
+|-------|------|----------|-----|-------|
+| `ma_thuoc_vtyt` | string (PK) | ✅ | 10 | |
+| `ten_thuoc_vtyt` | string | ✅ | 255 | |
+| `don_vi_tinh` | string | ❌ | 50 | |
+| `so_luong` | int | ❌ (default: 0) | | |
+| `so_lo_han_dung` | string | ❌ | 255 | |
+| `nam_san_xuat` | int | ❌ | | |
+| `cap_chat_luong` | string | ❌ | 100 | |
+| `phan_loai` | string | ❌ | 100 | Phân loại thuốc (kháng sinh, vitamin, ...) |
+| `mo_ta` | string | ❌ | | Mô tả chi tiết |
 
 ### DonVi (`/don_vi`)
 

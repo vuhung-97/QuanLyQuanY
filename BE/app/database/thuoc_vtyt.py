@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, String
+from sqlalchemy import Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database.base import Base
@@ -15,3 +15,5 @@ class ThuocVtyt(Base):
     so_lo_han_dung: Mapped[str | None] = mapped_column(String(255), nullable=True)
     nam_san_xuat: Mapped[int | None] = mapped_column(Integer, nullable=True)
     cap_chat_luong: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    phan_loai: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    mo_ta: Mapped[str | None] = mapped_column(Text, nullable=True)

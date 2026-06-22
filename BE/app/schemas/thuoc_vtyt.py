@@ -9,6 +9,8 @@ class ThuocVtytBase(SchemaBase):
     so_lo_han_dung: str | None = Field(default=None, max_length=255)
     nam_san_xuat: int | None = Field(default=None, ge=1900, le=2100)
     cap_chat_luong: str | None = Field(default=None, max_length=100)
+    phan_loai: str | None = Field(default=None, max_length=100)
+    mo_ta: str | None = Field(default=None)
 
 class ThuocVtytCreate(ThuocVtytBase):
     ma_thuoc_vtyt: str | None = None
@@ -20,6 +22,8 @@ class ThuocVtytUpdate(SchemaBase):
     so_lo_han_dung: str | None = Field(default=None, max_length=255)
     nam_san_xuat: int | None = Field(default=None, ge=1900, le=2100)
     cap_chat_luong: str | None = Field(default=None, max_length=100)
+    phan_loai: str | None = Field(default=None, max_length=100)
+    mo_ta: str | None = Field(default=None)
 
 
 class ThuocVtytRead(ThuocVtytBase):
