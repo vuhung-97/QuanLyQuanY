@@ -7,7 +7,7 @@ import {
     History as HistoryIcon,
 } from "@mui/icons-material";
 import SearchBar from "../../components/common/SearchBar.jsx";
-import api from "../../services/api.js";
+import { adminService } from "../../services/adminService.js";
 import FeedbackSnackbar from "../../components/common/FeedbackSnackbar.jsx";
 import PaginationWidget from "../../components/common/PaginationWidget.jsx";
 import DataTable from "../../components/common/DataTable.jsx";
@@ -47,14 +47,12 @@ export default function AuditLogPage() {
             setLoading(true);
             setError("");
             try {
-                const res = await api.get(activeTab.endpoint, {
-                    params: {
-                        limit: ROWS_PER_PAGE,
-                        offset: (page - 1) * ROWS_PER_PAGE,
-                        sort_by: "thoi_gian",
-                        sort_desc: true,
-                        include_total: true,
-                    },
+                const res = await adminService.getAuditLog(activeTab.endpoint, {
+                    limit: ROWS_PER_PAGE,
+                    offset: (page - 1) * ROWS_PER_PAGE,
+                    sort_by: "thoi_gian",
+                    sort_desc: true,
+                    include_total: true,
                 });
                 if (!ignore) {
                     const data = res.data;
@@ -88,7 +86,7 @@ export default function AuditLogPage() {
 
         async function loadFiles() {
             try {
-                const res = await api.get("/backup");
+                const res = await adminService.getBackupList();
                 if (!ignore)
                     setBackupFiles(Array.isArray(res.data) ? res.data : []);
             } catch (err) {
@@ -108,9 +106,7 @@ export default function AuditLogPage() {
 
     const handleDownload = async (filename) => {
         try {
-            const res = await api.get(`/backup/download/${filename}`, {
-                responseType: "blob",
-            });
+            const res = await adminService.downloadBackup(filename);
             const url = URL.createObjectURL(res.data);
             const a = document.createElement("a");
             a.href = url;
@@ -128,9 +124,9 @@ export default function AuditLogPage() {
         setCreatingBackup(true);
         setError("");
         try {
-            await api.post("/backup");
+            await adminService.createBackup();
             setSuccess("Tạo backup thành công");
-            const res = await api.get("/backup");
+            const res = await adminService.getBackupList();
             setBackupFiles(Array.isArray(res.data) ? res.data : []);
         } catch (err) {
             setError(err.response?.data?.detail || "Không thể tạo backup.");

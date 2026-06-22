@@ -12,7 +12,7 @@ import {
     Switch,
     TextField,
 } from "@mui/material";
-import api from "../../services/api.js";
+import { adminService } from "../../services/adminService.js";
 
 const emptyForm = {
     ten_dang_nhap: "",
@@ -55,9 +55,9 @@ export default function UserFormDialog({ open, onClose, editingUser, roles, onSa
 
             let res;
             if (editingUser) {
-                res = await api.patch(`/nguoi_dung/${editingUser.id}`, payload);
+                res = await adminService.updateUser(editingUser.id, payload);
             } else {
-                res = await api.post("/nguoi_dung", payload);
+                res = await adminService.createUser(payload);
             }
             onSaved(res.data, !!editingUser);
             onClose();

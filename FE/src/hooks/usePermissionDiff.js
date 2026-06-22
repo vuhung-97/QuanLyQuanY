@@ -1,4 +1,4 @@
-import api from "../services/api.js";
+import { adminService } from "../services/adminService.js";
 
 export default function usePermissionDiff(
     rolePermissions,
@@ -20,13 +20,13 @@ export default function usePermissionDiff(
 
         await Promise.all([
             ...toAdd.map((id_quyen) =>
-                api.post("/vai_tro_quyen", {
+                adminService.createRolePermission({
                     id_vai_tro: selectedRoleId,
                     id_quyen,
                 }),
             ),
             ...toRemove.map((id_quyen) =>
-                api.delete(`/vai_tro_quyen/${selectedRoleId},${id_quyen}`),
+                adminService.deleteRolePermission(selectedRoleId, id_quyen),
             ),
         ]);
 

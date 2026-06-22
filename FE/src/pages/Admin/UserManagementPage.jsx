@@ -14,7 +14,7 @@ import {
     Delete as DeleteIcon,
 } from "@mui/icons-material";
 import UserFormDialog from "../../components/admin/UserFormDialog.jsx";
-import api from "../../services/api.js";
+import { adminService } from "../../services/adminService.js";
 import SearchBar from "../../components/common/SearchBar.jsx";
 import FeedbackSnackbar from "../../components/common/FeedbackSnackbar.jsx";
 import DataTable from "../../components/common/DataTable.jsx";
@@ -44,10 +44,8 @@ export default function UserManagementPage() {
             setError("");
             try {
                 const [usersRes, rolesRes] = await Promise.all([
-                    api.get("/nguoi_dung", {
-                        params: { limit: 100, offset: 0 },
-                    }),
-                    api.get("/vai_tro", { params: { limit: 100, offset: 0 } }),
+                    adminService.getUserList(),
+                    adminService.getRoleList(),
                 ]);
                 if (!ignore) {
                     setUsers(Array.isArray(usersRes.data) ? usersRes.data : []);
@@ -106,7 +104,7 @@ export default function UserManagementPage() {
         setDeleting(true);
         setError("");
         try {
-            await api.delete(`/nguoi_dung/${deleteTarget.id}`);
+            await adminService.deleteUser(deleteTarget.id);
             setUsers((current) =>
                 current.filter((user) => user.id !== deleteTarget.id),
             );

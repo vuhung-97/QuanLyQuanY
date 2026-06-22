@@ -20,13 +20,13 @@ import {
     Edit as EditIcon,
     Save as SaveIcon,
 } from "@mui/icons-material";
-import api from "../../services/api.js";
+import { adminService } from "../../services/adminService.js";
 import FeedbackSnackbar from "../../components/common/FeedbackSnackbar.jsx";
 import AdminPageHeader from "../../components/admin/AdminPageHeader.jsx";
 import TableCard from "../../components/admin/TableCard.jsx";
 import PermissionCard from "../../components/admin/PermissionCard.jsx";
 import usePermissionDiff from "../../hooks/usePermissionDiff.js";
-import RoleFormDialog from "./RoleFormDialog.jsx";
+import RoleFormDialog from "../../components/admin/RoleFormDialog.jsx";
 
 const fallbackRoles = [
     {
@@ -106,15 +106,9 @@ export default function RolePermissionPage() {
             try {
                 const [rolesRes, permissionsRes, mappingRes] =
                     await Promise.all([
-                        api.get("/vai_tro", {
-                            params: { limit: 100, offset: 0 },
-                        }),
-                        api.get("/quyen", {
-                            params: { limit: 200, offset: 0 },
-                        }),
-                        api.get("/vai_tro_quyen", {
-                            params: { limit: 200, offset: 0 },
-                        }),
+                        adminService.getRoleList(),
+                        adminService.getPermissionList(),
+                        adminService.getRolePermissionMapping(),
                     ]);
                 if (!ignore) {
                     const nextRoles = Array.isArray(rolesRes.data)
@@ -217,17 +211,14 @@ export default function RolePermissionPage() {
         setError("");
         try {
             if (editingRole) {
-                const res = await api.patch(
-                    `/vai_tro/${editingRole.id}`,
-                    formData,
-                );
+                const res = await adminService.updateRole(editingRole.id, formData);
                 setRoles((current) =>
                     current.map((r) =>
                         r.id === editingRole.id ? res.data : r,
                     ),
                 );
             } else {
-                const res = await api.post("/vai_tro", formData);
+                const res = await adminService.createRole(formData);
                 setRoles((current) => [res.data, ...current]);
                 setSelectedRoleId(res.data.id);
             }
