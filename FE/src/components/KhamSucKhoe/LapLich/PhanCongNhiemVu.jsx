@@ -79,7 +79,7 @@ export default function PhanCongNhiemVu({ latestScheduleId }) {
                     {assignments.map((a) => (
                         <TableRow key={a.id} hover>
                             <TableCell sx={{ fontWeight: 600 }}>
-                                {a.ten_nguoi_dung || a.id_nguoi_dung || "--"}
+                                {a.chuc_vu ? `${a.chuc_vu} ${a.ten_nguoi_dung}` : (a.ten_nguoi_dung || a.id_nguoi_dung || "--")}
                             </TableCell>
                             <TableCell>
                                 {a.ten_vai_tro || a.ma_vai_tro || "--"}

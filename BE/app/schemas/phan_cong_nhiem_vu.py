@@ -21,3 +21,4 @@ class PhanCongNhiemVuRead(PhanCongNhiemVuBase):
     ma_lich_kham: str = Field(max_length=10)
     ten_nguoi_dung: str = ""
     ten_vai_tro: str = ""
+    chuc_vu: str = ""
