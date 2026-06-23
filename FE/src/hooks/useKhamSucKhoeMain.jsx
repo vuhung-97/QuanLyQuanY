@@ -3,6 +3,7 @@ import {
     CheckCircle as CheckCircleIcon,
     PendingActions as PendingActionsIcon,
     PersonAddAlt as PersonAddAltIcon,
+    Science as ScienceIcon,
 } from "@mui/icons-material";
 import useDebounce from "@/hooks/useDebounce.jsx";
 import useKhamSucKhoeData from "@/hooks/useKhamSucKhoeData";
@@ -18,6 +19,7 @@ export default function useKhamSucKhoeMain() {
     const {
         soldiers,
         phieuMap,
+        allPhieuMap,
         setPhieuMap,
         setAllPhieuMap,
         stats,
@@ -51,6 +53,11 @@ export default function useKhamSucKhoeMain() {
         qn: null,
     });
 
+    const daTaoMa = useMemo(
+        () => Object.values(allPhieuMap || {}).filter((p) => p.ma_lay_mau).length,
+        [allPhieuMap],
+    );
+
     const filteredSoldiers = useMemo(
         () =>
             filterSoldiers(
@@ -81,6 +88,13 @@ export default function useKhamSucKhoeMain() {
                           icon: <PendingActionsIcon />,
                       },
                       {
+                          label: "Đã tạo mã",
+                          value: daTaoMa,
+                          color: "secondary.main",
+                          bg: "rgba(0, 180, 216, 0.12)",
+                          icon: <ScienceIcon />,
+                      },
+                      {
                           label: "Còn lại",
                           value: stats.con_lai ?? 0,
                           color: "text.secondary",
@@ -89,7 +103,7 @@ export default function useKhamSucKhoeMain() {
                       },
                   ]
                 : [],
-        [stats],
+        [stats, daTaoMa],
     );
 
     useEffect(() => {
@@ -180,6 +194,24 @@ export default function useKhamSucKhoeMain() {
         setHistoryDialog({ open: false, qn: null });
     }, []);
 
+    const handleGenerateBloodCode = useCallback(async (qn) => {
+        try {
+            const nam = selectedScheduleObj
+                ? new Date(selectedScheduleObj.thoi_gian_bat_dau).getFullYear()
+                : null;
+            const res = await khamSucKhoeService.taoMaLayMau({
+                ma_quan_nhan: qn.ma_quan_nhan,
+                ma_lich_kham: selectedSchedule,
+                nam,
+            });
+            const saved = res.data;
+            setPhieuMap((prev) => ({ ...prev, [qn.ma_quan_nhan]: saved }));
+            setAllPhieuMap((prev) => ({ ...prev, [qn.ma_quan_nhan]: saved }));
+        } catch {
+            throw new Error("Không thể tạo mã lấy máu.");
+        }
+    }, [selectedSchedule, selectedScheduleObj, setPhieuMap, setAllPhieuMap]);
+
     const handleSearchChange = useCallback((e) => {
         setSearchText(e.target.value);
     }, []);
@@ -219,6 +251,7 @@ export default function useKhamSucKhoeMain() {
         handleViewPhieu,
         closeFormDialog,
         closeHistoryDialog,
+        handleGenerateBloodCode,
         handleSearchChange,
         handleFilterTabChange,
         filterTabs,

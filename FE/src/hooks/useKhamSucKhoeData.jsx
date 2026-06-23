@@ -220,6 +220,7 @@ export default function useKhamSucKhoeData() {
         units,
         soldiers,
         phieuMap,
+        allPhieuMap,
         setPhieuMap,
         setAllPhieuMap,
         stats,

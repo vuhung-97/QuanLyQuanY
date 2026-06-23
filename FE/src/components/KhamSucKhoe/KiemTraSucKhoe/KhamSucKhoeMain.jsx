@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Stack, Typography } from "@mui/material";
 import useKhamSucKhoeMain from "@/hooks/useKhamSucKhoeMain.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
+import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import BangQuanNhan from "./BangQuanNhan.jsx";
 import KhamSucKhoeForm from "./KhamSucKhoeForm.jsx";
 import DanhSachPhieuKhamFilterBar from "./DanhSachPhieuKhamFilterBar.jsx";
@@ -16,6 +18,8 @@ function EmptyState({ show, message }) {
 }
 
 export default function KhamSucKhoeMain() {
+    const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+    const [generatingCodes, setGeneratingCodes] = useState(new Set());
     const {
         soldiers,
         phieuMap,
@@ -47,10 +51,27 @@ export default function KhamSucKhoeMain() {
         handleViewPhieu,
         closeFormDialog,
         closeHistoryDialog,
+        handleGenerateBloodCode,
         handleSearchChange,
         handleFilterTabChange,
         filterTabs,
     } = useKhamSucKhoeMain();
+
+    const onGenerateBloodCode = async (qn) => {
+        setGeneratingCodes((prev) => new Set(prev).add(qn.ma_quan_nhan));
+        try {
+            await handleGenerateBloodCode(qn);
+            setSnackbar({ open: true, message: "Đã tạo mã lấy máu.", severity: "success" });
+        } catch {
+            setSnackbar({ open: true, message: "Không thể tạo mã lấy máu.", severity: "error" });
+        } finally {
+            setGeneratingCodes((prev) => {
+                const n = new Set(prev);
+                n.delete(qn.ma_quan_nhan);
+                return n;
+            });
+        }
+    };
 
     return (
         <Stack spacing={3}>
@@ -82,6 +103,8 @@ export default function KhamSucKhoeMain() {
                     onFilterTabChange={handleFilterTabChange}
                     onEdit={handleEdit}
                     onViewHistory={handleViewHistory}
+                    onGenerateBloodCode={onGenerateBloodCode}
+                    generatingCodes={generatingCodes}
                     filterTabs={filterTabs}
                 />
             )}
@@ -127,6 +150,13 @@ export default function KhamSucKhoeMain() {
                     editableTabs={editableTabs}
                 />
             )}
+
+            <FeedbackSnackbar
+                open={snackbar.open}
+                message={snackbar.message}
+                severity={snackbar.severity}
+                onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+            />
         </Stack>
     );
 }

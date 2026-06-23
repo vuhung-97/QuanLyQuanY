@@ -12,6 +12,7 @@ class PhieuKhamSucKhoeBase(SchemaBase):
     chan_doan_hinh_anh: str | None = None
     ket_luan: str | None = None
     trang_thai: str | None = None
+    ma_lay_mau: str | None = None
 
 
 class PhieuKhamSucKhoeCreate(PhieuKhamSucKhoeBase):
@@ -28,6 +29,7 @@ class PhieuKhamSucKhoeUpdate(SchemaBase):
     chan_doan_hinh_anh: str | None = None
     ket_luan: str | None = None
     trang_thai: str | None = None
+    ma_lay_mau: str | None = None
 
 
 class PhieuKhamSucKhoeRead(PhieuKhamSucKhoeBase):

@@ -26,6 +26,8 @@ export const khamSucKhoeService = {
     getPhieuBySchedule: (scheduleId) =>
         api.get(`/phieu_kham_suc_khoe/by-lich-kham/${scheduleId}`),
 
+    taoMaLayMau: (data) => api.post("/phieu_kham_suc_khoe/tao-ma-lay-mau", data),
+
     getPhieuByMaQuanNhan: (maQuanNhan) =>
         api.get(`/phieu_kham_suc_khoe/by-ma-quan-nhan/${maQuanNhan}`),
 
