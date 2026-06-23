@@ -39,7 +39,16 @@ const fallbackRoles = [
         ten_vai_tro: "Bác sĩ",
         mo_ta: "Thực hiện khám chữa bệnh",
     },
-    { id: "ROLE_Y_SI", ten_vai_tro: "Y sĩ", mo_ta: "Hỗ trợ nghiệp vụ quân y" },
+    {
+        id: "ROLE_Y_SI",
+        ten_vai_tro: "Y sĩ",
+        mo_ta: "Hỗ trợ nghiệp vụ quân y",
+    },
+    {
+        id: "ROLE_CNQY",
+        ten_vai_tro: "Chủ nhiệm quân y",
+        mo_ta: "Chủ nhiệm quản lý ban quân y",
+    },
 ];
 
 const fallbackPermissions = [
@@ -211,7 +220,10 @@ export default function RolePermissionPage() {
         setError("");
         try {
             if (editingRole) {
-                const res = await adminService.updateRole(editingRole.id, formData);
+                const res = await adminService.updateRole(
+                    editingRole.id,
+                    formData,
+                );
                 setRoles((current) =>
                     current.map((r) =>
                         r.id === editingRole.id ? res.data : r,
