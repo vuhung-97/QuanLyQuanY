@@ -25,11 +25,13 @@ export default function useKhamSucKhoeForm({
     const [error, setError] = useState("");
     const tsRef = useRef(null);
     const lsRef = useRef(null);
-    const clsRef = useRef(null);
+    const xnRef = useRef(null);
+    const cdhaRef = useRef(null);
     const klRef = useRef(null);
     const [initialTS, setInitialTS] = useState(null);
     const [initialLS, setInitialLS] = useState(null);
-    const [initialCLS, setInitialCLS] = useState(null);
+    const [initialXN, setInitialXN] = useState(null);
+    const [initialCDHA, setInitialCDHA] = useState(null);
     const [initialKL, setInitialKL] = useState(null);
 
     const isEdit = Boolean(existingPhieu);
@@ -40,12 +42,14 @@ export default function useKhamSucKhoeForm({
             if (existingPhieu) {
                 setInitialTS(parseTienSu(existingPhieu.tien_su_benh_tat));
                 setInitialLS(parseLamSang(existingPhieu.kham_lam_sang));
-                setInitialCLS(parseCanLamSang(existingPhieu.kham_can_lam_sang));
+                setInitialXN(parseCanLamSang(existingPhieu.kham_can_lam_sang));
+                setInitialCDHA(parseCanLamSang(existingPhieu.kham_can_lam_sang));
                 setInitialKL(parseKetLuan(existingPhieu.ket_luan));
             } else {
                 setInitialTS({ ...DEFAULT_TS });
                 setInitialLS({ ...DEFAULT_LS });
-                setInitialCLS({ ...DEFAULT_CLS });
+                setInitialXN({ ...DEFAULT_CLS });
+                setInitialCDHA({ ...DEFAULT_CLS });
                 setInitialKL({ ...DEFAULT_KL });
             }
             setError("");
@@ -65,7 +69,10 @@ export default function useKhamSucKhoeForm({
             }
             const ts = tsRef.current?.getData() ?? initialTS;
             const ls = lsRef.current?.getData() ?? initialLS;
-            const cls = clsRef.current?.getData() ?? initialCLS;
+            const cls = {
+                ...(xnRef.current?.getData() ?? initialXN),
+                ...(cdhaRef.current?.getData() ?? initialCDHA),
+            };
             const kl = klRef.current?.getData() ?? initialKL;
 
             const phieuData = {
@@ -105,11 +112,13 @@ export default function useKhamSucKhoeForm({
         error,
         tsRef,
         lsRef,
-        clsRef,
+        xnRef,
+        cdhaRef,
         klRef,
         initialTS,
         initialLS,
-        initialCLS,
+        initialXN,
+        initialCDHA,
         initialKL,
         handleSubmit,
     };

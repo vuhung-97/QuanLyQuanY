@@ -1,9 +1,8 @@
 import { forwardRef, memo, useCallback, useImperativeHandle, useState } from "react";
 import {
-    Card, CardContent, Grid, IconButton, InputAdornment,
+    Card, CardContent, Grid, InputAdornment,
     MenuItem, TextField, Tooltip, Typography,
 } from "@mui/material";
-import { CheckCircleOutlined, Undo } from "@mui/icons-material";
 import { fieldRanges, isOutOfRange } from "./fieldRanges";
 
 function SectionTitle({ children }) {
@@ -31,23 +30,16 @@ const xetNghiemNuocTieuFields = [
     { name: "nuoc_tieu_te_bao",  label: "Tế bào nước tiểu" },
 ];
 
-const cdhaFields = [
-    { name: "dien_tim", label: "Điện tim (ECG)" },
-    { name: "x_quang",  label: "X-Quang tim phổi" },
-    { name: "sieu_am",  label: "Siêu âm ổ bụng" },
-    { name: "khac",     label: "Cận lâm sàng khác" },
-];
-
-const CanLamSangTab = memo(forwardRef(function CanLamSangTab({ initialData, cardStyle, readOnly = false }, ref) {
-    const [cls, setCls] = useState({ ...initialData });
+const XetNghiemTab = memo(forwardRef(function XetNghiemTab({ initialData, cardStyle, readOnly = false }, ref) {
+    const [xn, setXn] = useState({ ...initialData });
 
     useImperativeHandle(ref, () => ({
-        getData: () => ({ ...cls }),
-    }), [cls]);
+        getData: () => ({ ...xn }),
+    }), [xn]);
 
     const handleChange = useCallback((e) => {
         const { name, value } = e.target;
-        setCls((prev) => ({ ...prev, [name]: value }));
+        setXn((prev) => ({ ...prev, [name]: value }));
     }, []);
 
     return (
@@ -57,7 +49,7 @@ const CanLamSangTab = memo(forwardRef(function CanLamSangTab({ initialData, card
                     <SectionTitle>Xét nghiệm máu</SectionTitle>
                     <Grid container spacing={2}>
                         {xetNghiemMauFields.map((f) => {
-                            const outOfRange = isOutOfRange(f.name, cls[f.name]);
+                            const outOfRange = isOutOfRange(f.name, xn[f.name]);
                             return (
                                 <Grid size={{ xs: 12, sm: 3 }} key={f.name}>
                                     <Tooltip title={fieldRanges[f.name]?.tooltip || ""} arrow placement="right">
@@ -65,7 +57,7 @@ const CanLamSangTab = memo(forwardRef(function CanLamSangTab({ initialData, card
                                             name={f.name}
                                             label={f.label}
                                             type="number"
-                                            value={cls[f.name]}
+                                            value={xn[f.name]}
                                             onChange={handleChange}
                                             fullWidth
                                             size="small"
@@ -95,7 +87,7 @@ const CanLamSangTab = memo(forwardRef(function CanLamSangTab({ initialData, card
                     <SectionTitle>Xét nghiệm nước tiểu</SectionTitle>
                     <Grid container spacing={2}>
                         {xetNghiemNuocTieuFields.map((f) => {
-                            const outOfRange = isOutOfRange(f.name, cls[f.name]);
+                            const outOfRange = isOutOfRange(f.name, xn[f.name]);
                             return (
                                 <Grid size={{ xs: 12, sm: 4 }} key={f.name}>
                                     <Tooltip title={fieldRanges[f.name]?.tooltip || ""} arrow placement="right">
@@ -104,7 +96,7 @@ const CanLamSangTab = memo(forwardRef(function CanLamSangTab({ initialData, card
                                                 select
                                                 name={f.name}
                                                 label={f.label}
-                                                value={cls[f.name]}
+                                                value={xn[f.name]}
                                                 onChange={handleChange}
                                                 fullWidth
                                                 size="small"
@@ -121,7 +113,7 @@ const CanLamSangTab = memo(forwardRef(function CanLamSangTab({ initialData, card
                                                 name={f.name}
                                                 label={f.label}
                                                 type="number"
-                                                value={cls[f.name]}
+                                                value={xn[f.name]}
                                                 onChange={handleChange}
                                                 fullWidth
                                                 size="small"
@@ -139,53 +131,8 @@ const CanLamSangTab = memo(forwardRef(function CanLamSangTab({ initialData, card
                     </Grid>
                 </CardContent>
             </Card>
-
-            <Card sx={cardStyle}>
-                <CardContent>
-                    <SectionTitle>Chẩn đoán hình ảnh & Khác</SectionTitle>
-                    <Grid container spacing={2}>
-                        {cdhaFields.map((f) => {
-                            const isNormal = cls[f.name] === "Bình thường";
-                            const handleToggle = () => {
-                                if (readOnly) return;
-                                const newVal = isNormal ? "" : "Bình thường";
-                                setCls((prev) => ({ ...prev, [f.name]: newVal }));
-                            };
-                            return (
-                                <Grid size={{ xs: 12, sm: 6 }} key={f.name}>
-                                    <TextField
-                                        label={f.label}
-                                        value={cls[f.name]}
-                                        onChange={(e) => setCls((prev) => ({ ...prev, [f.name]: e.target.value }))}
-                                        disabled={readOnly || isNormal}
-                                        multiline
-                                        minRows={2}
-                                        fullWidth
-                                        slotProps={{
-                                            input: {
-                                                endAdornment: (
-                                                    <InputAdornment position="end">
-                                                        <IconButton
-                                                            size="small"
-                                                            onClick={readOnly ? undefined : handleToggle}
-                                                            color={isNormal ? "success" : "default"}
-                                                            disabled={readOnly}
-                                                        >
-                                                            {isNormal ? <Undo fontSize="small" /> : <CheckCircleOutlined fontSize="small" />}
-                                                        </IconButton>
-                                                    </InputAdornment>
-                                                ),
-                                            },
-                                        }}
-                                    />
-                                </Grid>
-                            );
-                        })}
-                    </Grid>
-                </CardContent>
-            </Card>
         </>
     );
 }));
 
-export default CanLamSangTab;
+export default XetNghiemTab;

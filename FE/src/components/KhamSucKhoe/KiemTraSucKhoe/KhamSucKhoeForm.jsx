@@ -10,7 +10,7 @@ import {
     Tabs,
     Typography,
 } from "@mui/material";
-import { Biotech as BiotechIcon } from "@mui/icons-material";
+import { Biotech as BiotechIcon, DocumentScanner as DocumentScannerIcon } from "@mui/icons-material";
 import HistoryIcon from "@mui/icons-material/History";
 import MonitorHeartIcon from "@mui/icons-material/MonitorHeart";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
@@ -18,7 +18,8 @@ import useKhamSucKhoeForm from "@/hooks/useKhamSucKhoeForm";
 import { cardStyle } from "./KhamSucKhoeFormUtils.js";
 import TongQuanTab from "./tabs/TongQuanTab";
 import LamSangTab from "./tabs/LamSangTab";
-import CanLamSangTab from "./tabs/CanLamSangTab";
+import XetNghiemTab from "./tabs/XetNghiemTab";
+import ChanDoanHinhAnhTab from "./tabs/ChanDoanHinhAnhTab";
 import KetLuanTab from "./tabs/KetLuanTab";
 
 function FormHeader({ quanNhan }) {
@@ -117,7 +118,8 @@ function FormInfoCard({ quanNhan, ngayNhapNgu, unitLookup = new Map() }) {
 const tabConfigs = [
     { icon: <HistoryIcon />, label: "Tổng quan" },
     { icon: <MonitorHeartIcon />, label: "Lâm sàng" },
-    { icon: <BiotechIcon />, label: "Cận lâm sàng" },
+    { icon: <BiotechIcon />, label: "Xét nghiệm" },
+    { icon: <DocumentScannerIcon />, label: "Chẩn đoán hình ảnh" },
     { icon: <AssignmentTurnedInIcon />, label: "Kết luận" },
 ];
 
@@ -188,11 +190,13 @@ export default function KhamSucKhoeForm({
         error,
         tsRef,
         lsRef,
-        clsRef,
+        xnRef,
+        cdhaRef,
         klRef,
         initialTS,
         initialLS,
-        initialCLS,
+        initialXN,
+        initialCDHA,
         initialKL,
         handleSubmit,
     } = useKhamSucKhoeForm({
@@ -260,14 +264,22 @@ export default function KhamSucKhoeForm({
                         />
                     </TabPanel>
                     <TabPanel value={activeTab} index={2}>
-                        <CanLamSangTab
-                            ref={clsRef}
-                            initialData={initialCLS}
+                        <XetNghiemTab
+                            ref={xnRef}
+                            initialData={initialXN}
                             cardStyle={cardStyle}
                             readOnly={readOnly}
                         />
                     </TabPanel>
                     <TabPanel value={activeTab} index={3}>
+                        <ChanDoanHinhAnhTab
+                            ref={cdhaRef}
+                            initialData={initialCDHA}
+                            cardStyle={cardStyle}
+                            readOnly={readOnly}
+                        />
+                    </TabPanel>
+                    <TabPanel value={activeTab} index={4}>
                         <KetLuanTab
                             ref={klRef}
                             initialData={initialKL}

@@ -1,10 +1,4 @@
-import {
-    forwardRef,
-    memo,
-    useCallback,
-    useImperativeHandle,
-    useState,
-} from "react";
+import { forwardRef, memo } from "react";
 import {
     Box,
     Button,
@@ -29,6 +23,7 @@ import {
     Undo,
 } from "@mui/icons-material";
 import { fieldRanges, isOutOfRange } from "./fieldRanges";
+import useTongQuanTab from "@/hooks/useTongQuanTab";
 
 const TIEN_SU_FIELDS = [
     {
@@ -271,44 +266,13 @@ const TongQuanTab = memo(
         { initialData, cardStyle, readOnly = false },
         ref,
     ) {
-        const [data, setData] = useState({ ...initialData });
-        const [showCoKinh, setShowCoKinh] = useState(false);
-
-        useImperativeHandle(
-            ref,
-            () => ({
-                getData: () => ({ ...data }),
-            }),
-            [data],
-        );
-
-        const handleChange = useCallback((e) => {
-            const { name, value } = e.target;
-            setData((prev) => {
-                const updated = { ...prev, [name]: value };
-                if (name === "chieu_cao" || name === "can_nang") {
-                    const h = parseFloat(
-                        name === "chieu_cao" ? value : prev.chieu_cao,
-                    );
-                    const w = parseFloat(
-                        name === "can_nang" ? value : prev.can_nang,
-                    );
-                    if (h > 0 && w > 0) {
-                        updated.bmi = (w / Math.pow(h / 100, 2)).toFixed(1);
-                    } else {
-                        updated.bmi = "";
-                    }
-                }
-                return updated;
-            });
-        }, []);
-
-        const handleToggle = useCallback((name) => {
-            setData((prev) => ({
-                ...prev,
-                [name]: prev[name] === "Không" ? "" : "Không",
-            }));
-        }, []);
+        const {
+            data,
+            showCoKinh,
+            handleChange,
+            handleToggle,
+            toggleCoKinh,
+        } = useTongQuanTab(initialData, ref);
 
         return (
             <>
@@ -370,7 +334,7 @@ const TongQuanTab = memo(
                     onChange={handleChange}
                     readOnly={readOnly}
                     showCoKinh={showCoKinh}
-                    onToggleCoKinh={() => setShowCoKinh((p) => !p)}
+                    onToggleCoKinh={toggleCoKinh}
                 />
             </>
         );
