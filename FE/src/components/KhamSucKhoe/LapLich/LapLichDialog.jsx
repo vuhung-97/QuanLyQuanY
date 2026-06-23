@@ -1,114 +1,22 @@
-import { forwardRef, memo, useCallback, useImperativeHandle, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
-    Autocomplete, Box, Button, Dialog, DialogActions, DialogContent,
-    DialogTitle, FormControl, IconButton, InputLabel, MenuItem, Select,
-    Stack, Table, TableBody, TableCell, TableContainer, TableHead,
-    TableRow, TextField, Typography,
+    Box,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    FormControl,
+    MenuItem,
+    Select,
+    Stack,
+    Divider,
+    TextField,
+    Typography,
 } from "@mui/material";
-import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import useLapLichDialog from "@/hooks/useLapLichDialog";
+import DataTable from "@/components/common/DataTable.jsx";
 import ChonNgayGio from "./ChonNgayGio.jsx";
-
-const getUnitOptionLabel = (o) => `${o.ma_don_vi} - ${o.ten_don_vi}`;
-const isUnitOptionEqual = (o, v) => o.ma_don_vi === v.ma_don_vi;
-const renderUnitInput = (params) => <TextField {...params} label="Chọn đơn vị" />;
-
-const DetailItem = memo(forwardRef(function DetailItem({
-    initialData, unitOptions, onRemove, minDate, maxDate,
-}, ref) {
-    const [maDonVi, setMaDonVi] = useState(initialData?.ma_don_vi ?? "");
-    const [thoiGianBatDau, setThoiGianBatDau] = useState(initialData?.thoi_gian_bat_dau ?? "");
-    const [thoiGianKetThuc, setThoiGianKetThuc] = useState(initialData?.thoi_gian_ket_thuc ?? "");
-    const [diaDiem, setDiaDiem] = useState(initialData?.dia_diem ?? "");
-
-    useImperativeHandle(ref, () => ({
-        getData: () => ({
-            ma_don_vi: maDonVi,
-            thoi_gian_bat_dau: thoiGianBatDau,
-            thoi_gian_ket_thuc: thoiGianKetThuc,
-            dia_diem: diaDiem,
-        }),
-    }), [maDonVi, thoiGianBatDau, thoiGianKetThuc, diaDiem]);
-
-    return (
-        <Box
-            sx={{
-                p: 2,
-                border: "1px solid",
-                borderColor: "divider",
-                borderRadius: 2,
-            }}
-        >
-            <Stack
-                direction="row"
-                spacing={1}
-                sx={{
-                    mb: 1,
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                }}
-            >
-                <Typography variant="body2" fontWeight={600}>
-                    Đơn vị
-                </Typography>
-                <IconButton
-                    size="small"
-                    color="error"
-                    onClick={onRemove}
-                >
-                    <DeleteIcon fontSize="small" />
-                </IconButton>
-            </Stack>
-            <Stack spacing={1.5}>
-                <Autocomplete
-                    size="small"
-                    options={unitOptions}
-                    getOptionLabel={getUnitOptionLabel}
-                    isOptionEqualToValue={isUnitOptionEqual}
-                    value={
-                        unitOptions.find(
-                            (o) => o.ma_don_vi === maDonVi,
-                        ) || null
-                    }
-                    onChange={(_, newVal) =>
-                        setMaDonVi(newVal ? newVal.ma_don_vi : "")
-                    }
-                    renderInput={renderUnitInput}
-                />
-                <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
-                    <Box sx={{ flex: 1, minWidth: 0 }}>
-                        <ChonNgayGio
-                            label="Bắt đầu"
-                            value={thoiGianBatDau}
-                            onChange={setThoiGianBatDau}
-                            minDate={minDate}
-                        />
-                    </Box>
-                    <Box sx={{ flex: 1, minWidth: 0 }}>
-                        <ChonNgayGio
-                            label="Kết thúc"
-                            value={thoiGianKetThuc}
-                            onChange={setThoiGianKetThuc}
-                            minDate={minDate}
-                        />
-                    </Box>
-                </Stack>
-                {minDate && maxDate && (
-                    <Typography variant="caption" color="text.secondary">
-                        Khoảng cho phép: {minDate?.split("T")[0]} →{" "}
-                        {maxDate?.split("T")[0]}
-                    </Typography>
-                )}
-                <TextField
-                    size="small"
-                    label="Địa điểm"
-                    value={diaDiem}
-                    onChange={(e) => setDiaDiem(e.target.value)}
-                />
-            </Stack>
-        </Box>
-    );
-}));
 
 const ROLE_LABELS = {
     tong_quan: "Tổng quan",
@@ -117,6 +25,25 @@ const ROLE_LABELS = {
     chan_doan_hinh_anh: "Chẩn đoán hình ảnh",
     ket_luan: "Kết luận",
 };
+
+function DiaDiemCell({ maDonVi, value, onChange }) {
+    const [local, setLocal] = useState(value || "");
+    useEffect(() => {
+        setLocal(value || "");
+    }, [value]);
+    return (
+        <TextField
+            size="small"
+            value={local}
+            onChange={(e) => setLocal(e.target.value)}
+            onBlur={() => onChange(maDonVi, "dia_diem", local)}
+            fullWidth
+            sx={{ "& .MuiInputBase-root": { fontSize: "0.8rem" } }}
+        />
+    );
+}
+
+const roleOrder = { ROLE_ADMIN: 0, ROLE_CNQY: 1, ROLE_BACSI: 2, ROLE_YSI: 3 };
 
 export default function LapLichDialog({
     open,
@@ -130,57 +57,176 @@ export default function LapLichDialog({
         setThoiGianBatDau,
         thoiGianKetThuc,
         setThoiGianKetThuc,
-        rowKeys,
-        rowRefs,
         saving,
         error,
         unitOptions,
         isEdit,
-        addDetail,
-        removeDetail,
         handleSubmit,
         users,
         vaiTroList,
         assignments,
         handleAssignmentChange,
+        detailData,
+        handleDetailChange,
     } = useLapLichDialog({ open, schedule, chiTietList, onSaved, onClose });
 
-    const getInitialData = useCallback(
-        (key) => {
-            if (!chiTietList?.length) return null;
-            const idx = rowKeys.findIndex((r) => r.key === key);
-            return chiTietList[idx] || null;
-        },
-        [chiTietList, rowKeys],
+    const sortedUsers = useMemo(
+        () =>
+            [...users].sort((a, b) => {
+                const ra = roleOrder[a.id_vai_tro] ?? 99;
+                const rb = roleOrder[b.id_vai_tro] ?? 99;
+                return ra - rb || a.ho_ten.localeCompare(b.ho_ten);
+            }),
+        [users],
     );
 
-    // Sắp xếp user theo vai trò hệ thống
-    const sortedUsers = useMemo(() => {
-        const roleOrder = { ROLE_ADMIN: 0, ROLE_CNQY: 1, ROLE_BACSI: 2, ROLE_YSI: 3 };
-        return [...users].sort((a, b) => {
-            const ra = roleOrder[a.id_vai_tro] ?? 99;
-            const rb = roleOrder[b.id_vai_tro] ?? 99;
-            return ra - rb || a.ho_ten.localeCompare(b.ho_ten);
-        });
-    }, [users]);
+    const phanCongColumns = useMemo(
+        () => [
+            {
+                key: "stt",
+                label: "STT",
+                sx: { width: "5%" },
+                render: (_, idx) => idx + 1,
+            },
+            { key: "ho_ten", label: "Họ tên", sx: { width: "35%" } },
+            {
+                key: "vai_tro",
+                label: "Vai trò hệ thống",
+                sx: { width: "25%" },
+                render: (r) => r.ten_vai_tro || r.id_vai_tro,
+            },
+            {
+                key: "phan_cong",
+                label: "Vai trò tạm thời",
+                sx: { width: "35%" },
+                render: (r) => (
+                    <FormControl fullWidth size="small" sx={{ minWidth: 180 }}>
+                        <Select
+                            value={assignments[r.id] ?? ""}
+                            onChange={(e) =>
+                                handleAssignmentChange(r.id, e.target.value)
+                            }
+                            displayEmpty
+                            renderValue={(v) => (v ? ROLE_LABELS[v] || v : "")}
+                        >
+                            <MenuItem value="">
+                                <em>-- Không --</em>
+                            </MenuItem>
+                            {vaiTroList.map((vt) => (
+                                <MenuItem
+                                    key={vt.ma_vai_tro}
+                                    value={vt.ma_vai_tro}
+                                >
+                                    {vt.ten_vai_tro}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                ),
+            },
+        ],
+        [assignments, vaiTroList, handleAssignmentChange],
+    );
+
+    const lichKhamColumns = useMemo(
+        () => [
+            {
+                key: "ten_don_vi",
+                label: "Tên đơn vị",
+                sx: { fontWeight: 600, width: "15%" },
+            },
+            { key: "tong_quan_so", label: "Quân số", sx: { width: "10%" } },
+            {
+                key: "bat_dau",
+                label: "Thời gian bắt đầu",
+                sx: { width: "20%" },
+                render: (r) => {
+                    const d = detailData[r.ma_don_vi] || {};
+                    return (
+                        <ChonNgayGio
+                            column
+                            value={d.thoi_gian_bat_dau || ""}
+                            onChange={(v) =>
+                                handleDetailChange(
+                                    r.ma_don_vi,
+                                    "thoi_gian_bat_dau",
+                                    v,
+                                )
+                            }
+                        />
+                    );
+                },
+            },
+            {
+                key: "ket_thuc",
+                label: "Thời gian kết thúc",
+                sx: { width: "20%" },
+                render: (r) => {
+                    const d = detailData[r.ma_don_vi] || {};
+                    return (
+                        <ChonNgayGio
+                            column
+                            value={d.thoi_gian_ket_thuc || ""}
+                            onChange={(v) =>
+                                handleDetailChange(
+                                    r.ma_don_vi,
+                                    "thoi_gian_ket_thuc",
+                                    v,
+                                )
+                            }
+                        />
+                    );
+                },
+            },
+            {
+                key: "dia_diem",
+                label: "Địa điểm",
+                sx: { width: "35%" },
+                render: (r) => {
+                    const d = detailData[r.ma_don_vi] || {};
+                    return (
+                        <DiaDiemCell
+                            maDonVi={r.ma_don_vi}
+                            value={d.dia_diem || ""}
+                            onChange={handleDetailChange}
+                        />
+                    );
+                },
+            },
+        ],
+        [detailData, handleDetailChange],
+    );
 
     return (
-        <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+        <Dialog
+            open={open}
+            onClose={onClose}
+            fullWidth
+            maxWidth={false}
+            sx={{ width: "70vw", height: "90vh", m: "auto" }}
+        >
             <Box component="form" onSubmit={handleSubmit}>
-                <DialogTitle variant="h1" sx={{ textAlign: "center" }}>
+                <DialogTitle variant="h5" sx={{ textAlign: "center" }}>
                     {isEdit
                         ? "Sửa lịch khám sức khỏe định kỳ"
                         : "Tạo lịch khám sức khỏe định kỳ"}
                 </DialogTitle>
-                <DialogContent>
+                <DialogContent sx={{ overflow: "auto" }}>
                     {error && (
-                        <Typography color="error" variant="body2" sx={{ mb: 2 }}>
+                        <Typography
+                            color="error"
+                            variant="body2"
+                            sx={{ mb: 2 }}
+                        >
                             {error}
                         </Typography>
                     )}
                     <Stack spacing={1.5} sx={{ pt: 1 }}>
-                        <Typography variant="h2">Thông tin chung</Typography>
-                        <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
+                        <Typography variant="h4">Thông tin chung</Typography>
+                        <Stack
+                            direction={{ xs: "column", sm: "row" }}
+                            spacing={1}
+                        >
                             <Box sx={{ flex: 1, minWidth: 0 }}>
                                 <ChonNgayGio
                                     label="Thời gian bắt đầu"
@@ -197,93 +243,29 @@ export default function LapLichDialog({
                             </Box>
                         </Stack>
 
-                        <Typography variant="h2" sx={{ mt: 2 }}>
+                        <Divider sx={{ my: 2 }} />
+
+                        <Typography variant="h4" sx={{ mt: 2 }}>
                             Phân công nhiệm vụ
                         </Typography>
-                        <TableContainer>
-                            <Table size="small">
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell sx={{ fontWeight: 600 }}>STT</TableCell>
-                                        <TableCell sx={{ fontWeight: 600 }}>Họ tên</TableCell>
-                                        <TableCell sx={{ fontWeight: 600 }}>Vai trò hệ thống</TableCell>
-                                        <TableCell sx={{ fontWeight: 600 }}>Vai trò tạm thời</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {sortedUsers.map((u, idx) => (
-                                        <TableRow key={u.id}>
-                                            <TableCell>{idx + 1}</TableCell>
-                                            <TableCell>{u.ho_ten}</TableCell>
-                                            <TableCell>{u.ten_vai_tro || u.id_vai_tro}</TableCell>
-                                            <TableCell>
-                                                <FormControl fullWidth size="small">
-                                                    <Select
-                                                        value={assignments[u.id] ?? ""}
-                                                        onChange={(e) =>
-                                                            handleAssignmentChange(u.id, e.target.value)
-                                                        }
-                                                        displayEmpty
-                                                        renderValue={(v) =>
-                                                            v ? (ROLE_LABELS[v] || v) : ""
-                                                        }
-                                                    >
-                                                        <MenuItem value="">
-                                                            <em>-- Không --</em>
-                                                        </MenuItem>
-                                                        {vaiTroList.map((vt) => (
-                                                            <MenuItem key={vt.ma_vai_tro} value={vt.ma_vai_tro}>
-                                                                {vt.ten_vai_tro}
-                                                            </MenuItem>
-                                                        ))}
-                                                    </Select>
-                                                </FormControl>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
+                        <DataTable
+                            columns={phanCongColumns}
+                            rows={sortedUsers}
+                            getRowKey={(r) => r.id}
+                            minWidth={undefined}
+                        />
 
-                        <Stack
-                            direction="row"
-                            sx={{
-                                mt: 1,
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                            }}
-                        >
-                            <Typography variant="h2">
-                                Lịch khám theo đơn vị
-                            </Typography>
-                            <Button size="small" startIcon={<AddIcon />} onClick={addDetail}>
-                                Thêm đơn vị
-                            </Button>
-                        </Stack>
+                        <Divider sx={{ my: 2 }} />
 
-                        {rowKeys.map(({ key }) => (
-                            <DetailItem
-                                key={key}
-                                ref={(el) => {
-                                    if (el) rowRefs.current.set(key, el);
-                                    else rowRefs.current.delete(key);
-                                }}
-                                initialData={getInitialData(key)}
-                                unitOptions={unitOptions}
-                                onRemove={() => removeDetail(key)}
-                                minDate={thoiGianBatDau || undefined}
-                                maxDate={thoiGianKetThuc || undefined}
-                            />
-                        ))}
-
-                        {rowKeys.length === 0 && (
-                            <Typography
-                                color="text.secondary"
-                                sx={{ textAlign: "center", py: 2 }}
-                            >
-                                Chưa có đơn vị nào. Nhấn "Thêm đơn vị" để bắt đầu.
-                            </Typography>
-                        )}
+                        <Typography variant="h4" sx={{ mt: 2 }}>
+                            Lịch khám theo đơn vị
+                        </Typography>
+                        <DataTable
+                            columns={lichKhamColumns}
+                            rows={unitOptions}
+                            getRowKey={(r) => r.ma_don_vi}
+                            minWidth={undefined}
+                        />
                     </Stack>
                 </DialogContent>
                 <DialogActions>

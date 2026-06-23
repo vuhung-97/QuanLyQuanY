@@ -4,7 +4,14 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import dayjs from "dayjs";
 
-const ChonNgayGio = memo(function ChonNgayGio({ label, value, onChange, minDate, helperText }) {
+const ChonNgayGio = memo(function ChonNgayGio({
+    label,
+    value,
+    onChange,
+    minDate,
+    helperText,
+    column,
+}) {
     const dv = value ? dayjs(value) : null;
     const minDv = minDate ? dayjs(minDate.split("T")[0]) : null;
 
@@ -13,7 +20,11 @@ const ChonNgayGio = memo(function ChonNgayGio({ label, value, onChange, minDate,
             size: "small",
             sx: {
                 minWidth: 0,
-                "& .MuiInputBase-root": { fontSize: "0.8rem", py: 0.5, px: 0.75 },
+                "& .MuiInputBase-root": {
+                    fontSize: "0.8rem",
+                    py: 0.5,
+                    px: 0.75,
+                },
                 "& .MuiInputAdornment-root": { ml: 0, mr: 0.25 },
                 "& .MuiSvgIcon-root": { fontSize: "1rem" },
             },
@@ -24,15 +35,27 @@ const ChonNgayGio = memo(function ChonNgayGio({ label, value, onChange, minDate,
         <Box>
             <Typography
                 variant="caption"
-                sx={{ mb: 0.25, display: "block", color: "text.secondary", fontSize: "0.7rem" }}
+                sx={{
+                    mb: 0.25,
+                    display: "block",
+                    color: "text.secondary",
+                    fontSize: "0.7rem",
+                }}
             >
                 {label}
             </Typography>
-            <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
+            <Stack
+                direction={column ? "column" : "row"}
+                spacing={column ? 0.5 : 0.5}
+                sx={{ alignItems: column ? undefined : "center" }}
+            >
                 <DatePicker
                     value={dv}
                     onChange={(nv) => {
-                        if (!nv) { onChange(""); return; }
+                        if (!nv) {
+                            onChange("");
+                            return;
+                        }
                         const time = value?.split("T")[1] || "00:00";
                         onChange(`${nv.format("YYYY-MM-DD")}T${time}`);
                     }}
@@ -40,20 +63,25 @@ const ChonNgayGio = memo(function ChonNgayGio({ label, value, onChange, minDate,
                     format="DD/MM/YYYY"
                     reduceAnimations
                     slotProps={slotStyles}
-                    sx={{ flex: 1, minWidth: 0 }}
+                    sx={{ flex: column ? undefined : 1, minWidth: 0 }}
                 />
                 <TimePicker
                     value={dv}
                     onChange={(nv) => {
-                        if (!nv) { onChange(""); return; }
-                        const date = value?.split("T")[0] || dayjs().format("YYYY-MM-DD");
+                        if (!nv) {
+                            onChange("");
+                            return;
+                        }
+                        const date =
+                            value?.split("T")[0] ||
+                            dayjs().format("YYYY-MM-DD");
                         onChange(`${date}T${nv.format("HH:mm")}`);
                     }}
                     format="HH:mm"
                     ampm={false}
                     reduceAnimations
                     slotProps={slotStyles}
-                    sx={{ flex: 1, minWidth: 0 }}
+                    sx={{ flex: column ? undefined : 1, minWidth: 0 }}
                 />
             </Stack>
             {helperText && (

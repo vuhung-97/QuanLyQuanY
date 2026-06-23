@@ -1,9 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
-
-function genKey() {
-    return Math.random().toString(36).slice(2, 11);
-}
 
 export default function useLapLichDialog({
     open,
@@ -15,11 +11,10 @@ export default function useLapLichDialog({
     const isEdit = Boolean(schedule);
     const [thoiGianBatDau, setThoiGianBatDau] = useState("");
     const [thoiGianKetThuc, setThoiGianKetThuc] = useState("");
-    const [rowKeys, setRowKeys] = useState([]);
-    const rowRefs = useRef(new Map());
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
     const [unitOptions, setUnitOptions] = useState([]);
+    const [detailData, setDetailData] = useState({});
 
     // Phân công nhiệm vụ
     const [users, setUsers] = useState([]);
@@ -54,9 +49,15 @@ export default function useLapLichDialog({
             if (schedule) {
                 setThoiGianBatDau(schedule.thoi_gian_bat_dau || "");
                 setThoiGianKetThuc(schedule.thoi_gian_ket_thuc || "");
-                setRowKeys(
-                    (chiTietList || []).map(() => ({ key: genKey() })),
-                );
+                const init = {};
+                for (const ct of (chiTietList || [])) {
+                    init[ct.ma_don_vi] = {
+                        thoi_gian_bat_dau: ct.thoi_gian_bat_dau || "",
+                        thoi_gian_ket_thuc: ct.thoi_gian_ket_thuc || "",
+                        dia_diem: ct.dia_diem || "",
+                    };
+                }
+                setDetailData(init);
                 // Load assignments hiện có
                 khamSucKhoeService.getAssignments(schedule.ma_lich_kham)
                     .then((res) => {
@@ -72,11 +73,10 @@ export default function useLapLichDialog({
             } else {
                 setThoiGianBatDau("");
                 setThoiGianKetThuc("");
-                setRowKeys([]);
+                setDetailData({});
                 setAssignments({});
                 setExistingAssignments([]);
             }
-            rowRefs.current = new Map();
             setError("");
         }
     }, [open, schedule, chiTietList]);
@@ -93,23 +93,27 @@ export default function useLapLichDialog({
         });
     }, []);
 
-    const addDetail = useCallback(() => {
-        setRowKeys((prev) => [...prev, { key: genKey() }]);
-    }, []);
-
-    const removeDetail = useCallback((key) => {
-        setRowKeys((prev) => prev.filter((r) => r.key !== key));
+    const handleDetailChange = useCallback((maDonVi, field, value) => {
+        setDetailData((prev) => ({
+            ...prev,
+            [maDonVi]: {
+                ...(prev[maDonVi] || {
+                    thoi_gian_bat_dau: "",
+                    thoi_gian_ket_thuc: "",
+                    dia_diem: "",
+                }),
+                [field]: value,
+            },
+        }));
     }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const details = [];
-        rowRefs.current.forEach((ref) => {
-            const d = ref.getData();
-            if (d.ma_don_vi) details.push(d);
-        });
+        const details = Object.entries(detailData)
+            .filter(([_, d]) => d.thoi_gian_bat_dau && d.thoi_gian_ket_thuc)
+            .map(([ma_don_vi, d]) => ({ ma_don_vi, ...d }));
         if (details.length === 0) {
-            setError("Vui lòng thêm ít nhất một đơn vị.");
+            setError("Vui lòng nhập ít nhất một đơn vị có thời gian.");
             return;
         }
         setSaving(true);
@@ -211,19 +215,16 @@ export default function useLapLichDialog({
         setThoiGianBatDau,
         thoiGianKetThuc,
         setThoiGianKetThuc,
-        rowKeys,
-        rowRefs,
         saving,
         error,
         unitOptions,
         isEdit,
-        addDetail,
-        removeDetail,
         handleSubmit,
-        chiTietList,
         users,
         vaiTroList,
         assignments,
         handleAssignmentChange,
+        detailData,
+        handleDetailChange,
     };
 }
