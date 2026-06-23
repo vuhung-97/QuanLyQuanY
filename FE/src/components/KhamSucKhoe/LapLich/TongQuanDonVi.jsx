@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
     Box,
     Card,
@@ -11,7 +11,6 @@ import {
     Typography,
 } from "@mui/material";
 import { Search as SearchIcon } from "@mui/icons-material";
-import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
 import DataTable from "@/components/common/DataTable.jsx";
 import { formatDateTime } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
 
@@ -22,56 +21,32 @@ const columns = [
     { key: "lich_da_lap", label: "Lịch đã lập" },
 ];
 
-export default function TongQuanDonVi({ chiTietMap }) {
-    const [units, setUnits] = useState([]);
-    const [loading, setLoading] = useState(true);
+export default function TongQuanDonVi({ chiTietMap, unitStats = [], latestScheduleId }) {
     const [query, setQuery] = useState("");
 
-    useEffect(() => {
-        let ignore = false;
-        async function load() {
-            setLoading(true);
-            try {
-                const res = await khamSucKhoeService.getDonViList();
-                if (!ignore) setUnits(Array.isArray(res.data) ? res.data : []);
-            } catch {
-            } finally {
-                if (!ignore) setLoading(false);
-            }
-        }
-        load();
-        return () => {
-            ignore = true;
-        };
-    }, []);
-
-    const unitScheduleMap = useMemo(() => {
-        const map = {};
-        const allDetails = Object.values(chiTietMap || {}).flat();
-        for (const ct of allDetails) {
-            if (!map[ct.ma_don_vi]) map[ct.ma_don_vi] = [];
-            map[ct.ma_don_vi].push(ct);
-        }
-        return map;
-    }, [chiTietMap]);
+    const scheduleDetails = chiTietMap?.[latestScheduleId] || [];
+    const unitCodes = useMemo(
+        () => new Set(scheduleDetails.map((d) => d.ma_don_vi)),
+        [scheduleDetails],
+    );
 
     const filtered = useMemo(() => {
         const kw = query.trim().toLowerCase();
-        return units.filter((u) => {
-            if (u.ma_don_vi_truc_thuoc) return false;
-            return (
-                !kw ||
-                [u.ma_don_vi, u.ten_don_vi]
-                    .filter(Boolean)
-                    .some((v) => String(v).toLowerCase().includes(kw))
-            );
+        return (unitStats ?? []).filter((u) => {
+            if (!unitCodes.has(u.ma_don_vi)) return false;
+            if (!kw) return true;
+            return [u.ma_don_vi, u.ten_don_vi]
+                .filter(Boolean)
+                .some((v) => String(v).toLowerCase().includes(kw));
         });
-    }, [units, query]);
+    }, [unitStats, unitCodes, query]);
 
     const totalQuanSo = useMemo(
-        () => units.reduce((sum, u) => sum + (u.quan_so || 0), 0),
-        [units],
+        () => filtered.reduce((sum, u) => sum + (u.tong_quan_so || 0), 0),
+        [filtered],
     );
+
+    const loading = !latestScheduleId || unitStats.length === 0;
 
     return (
         <Card sx={{ borderRadius: 3 }}>
@@ -119,20 +94,9 @@ export default function TongQuanDonVi({ chiTietMap }) {
                     minWidth={650}
                 >
                     {filtered.map((row) => {
-                        const unitSchedules =
-                            unitScheduleMap[row.ma_don_vi] || [];
-                        const hasSchedule = unitSchedules.length > 0;
-                        const nearest = hasSchedule
-                            ? unitSchedules.reduce((a, b) => {
-                                  const da = a.thoi_gian_bat_dau
-                                      ? new Date(a.thoi_gian_bat_dau)
-                                      : 0;
-                                  const db = b.thoi_gian_bat_dau
-                                      ? new Date(b.thoi_gian_bat_dau)
-                                      : 0;
-                                  return db > da ? b : a;
-                              })
-                            : null;
+                        const detail = scheduleDetails.find(
+                            (d) => d.ma_don_vi === row.ma_don_vi,
+                        );
                         return (
                             <TableRow key={row.ma_don_vi} hover>
                                 <TableCell
@@ -151,10 +115,10 @@ export default function TongQuanDonVi({ chiTietMap }) {
                                     {row.tong_quan_so ?? "--"}
                                 </TableCell>
                                 <TableCell>
-                                    {hasSchedule ? (
+                                    {detail ? (
                                         <Chip
                                             size="small"
-                                            label={`${formatDateTime(nearest.thoi_gian_bat_dau)} - ${formatDateTime(nearest.thoi_gian_ket_thuc)}`}
+                                            label={`${formatDateTime(detail.thoi_gian_bat_dau)} - ${formatDateTime(detail.thoi_gian_ket_thuc)}`}
                                             sx={{ fontWeight: 600 }}
                                         />
                                     ) : (

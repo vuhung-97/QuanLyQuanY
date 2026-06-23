@@ -75,6 +75,10 @@ export default function useKhamSucKhoeForm({
         }
     }, [open, quanNhan, existingPhieu]);
 
+    useEffect(() => {
+        setActiveTab(allowedTabs[0] ?? 0);
+    }, [allowedTabs]);
+
     const canEdit = (tabIdx) => editableTabs.includes(tabIdx);
 
     const handleSubmit = async (e) => {

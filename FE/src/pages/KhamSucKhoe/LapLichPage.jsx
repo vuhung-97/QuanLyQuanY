@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Alert, Box, Button, Stack, Typography } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
 import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
@@ -10,6 +10,7 @@ import {
 import DanhSachLich from "@/components/KhamSucKhoe/LapLich/DanhSachLich.jsx";
 import LapLichDialog from "@/components/KhamSucKhoe/LapLich/LapLichDialog.jsx";
 import TongQuanDonVi from "@/components/KhamSucKhoe/LapLich/TongQuanDonVi.jsx";
+import PhanCongNhiemVu from "@/components/KhamSucKhoe/LapLich/PhanCongNhiemVu.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
 
@@ -24,6 +25,14 @@ export default function LapLichPage() {
         summaryItems,
         loadSchedules,
     } = useLichKhamData();
+
+    const latestScheduleId = useMemo(
+        () =>
+            schedules.length > 0
+                ? schedules[schedules.length - 1].ma_lich_kham
+                : null,
+        [schedules],
+    );
 
     const [query, setQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState("Tất cả");
@@ -88,7 +97,9 @@ export default function LapLichPage() {
                     deleteDialog.detailInfo.ma_don_vi,
                 );
             } else {
-                await khamSucKhoeService.deleteSchedule(deleteDialog.schedule.ma_lich_kham);
+                await khamSucKhoeService.deleteSchedule(
+                    deleteDialog.schedule.ma_lich_kham,
+                );
             }
             loadSchedules();
             setDeleteDialog({ open: false, schedule: null, detailInfo: null });
@@ -147,7 +158,13 @@ export default function LapLichPage() {
                 sizeOverrides={{ "Thời gian khám": { md: 6 } }}
             />
 
-            <TongQuanDonVi chiTietMap={chiTietMap} />
+            <TongQuanDonVi
+                chiTietMap={chiTietMap}
+                unitStats={unitStats}
+                latestScheduleId={latestScheduleId}
+            />
+
+            <PhanCongNhiemVu latestScheduleId={latestScheduleId} />
 
             <DanhSachLich
                 schedules={filteredSchedules}
