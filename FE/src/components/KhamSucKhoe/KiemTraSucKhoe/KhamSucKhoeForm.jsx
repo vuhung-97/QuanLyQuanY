@@ -15,7 +15,7 @@ import HistoryIcon from "@mui/icons-material/History";
 import MonitorHeartIcon from "@mui/icons-material/MonitorHeart";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
 import useKhamSucKhoeForm from "@/hooks/useKhamSucKhoeForm";
-import { cardStyle } from "./KhamSucKhoeFormUtils.js";
+import { ALL_TABS, cardStyle, ROLE_TAB_ACCESS } from "./KhamSucKhoeFormUtils.js";
 import TongQuanTab from "./tabs/TongQuanTab";
 import LamSangTab from "./tabs/LamSangTab";
 import XetNghiemTab from "./tabs/XetNghiemTab";
@@ -181,7 +181,11 @@ export default function KhamSucKhoeForm({
     unitLookup,
     nam,
     readOnly = false,
+    allowedTabs: allowedTabsProp,
+    editableTabs: editableTabsProp,
 }) {
+    const allowedTabs = allowedTabsProp ?? ALL_TABS;
+    const editableTabs = editableTabsProp ?? ALL_TABS;
     const {
         activeTab,
         setActiveTab,
@@ -206,6 +210,7 @@ export default function KhamSucKhoeForm({
         nam,
         onSaved,
         onClose,
+        editableTabs,
     });
 
     return (
@@ -247,46 +252,56 @@ export default function KhamSucKhoeForm({
                         onTabChange={(_, val) => setActiveTab(val)}
                     />
 
-                    <TabPanel value={activeTab} index={0}>
-                        <TongQuanTab
-                            ref={tsRef}
-                            initialData={initialTS}
-                            cardStyle={cardStyle}
-                            readOnly={readOnly}
-                        />
-                    </TabPanel>
-                    <TabPanel value={activeTab} index={1}>
-                        <LamSangTab
-                            ref={lsRef}
-                            initialData={initialLS}
-                            cardStyle={cardStyle}
-                            readOnly={readOnly}
-                        />
-                    </TabPanel>
-                    <TabPanel value={activeTab} index={2}>
-                        <XetNghiemTab
-                            ref={xnRef}
-                            initialData={initialXN}
-                            cardStyle={cardStyle}
-                            readOnly={readOnly}
-                        />
-                    </TabPanel>
-                    <TabPanel value={activeTab} index={3}>
-                        <ChanDoanHinhAnhTab
-                            ref={cdhaRef}
-                            initialData={initialCDHA}
-                            cardStyle={cardStyle}
-                            readOnly={readOnly}
-                        />
-                    </TabPanel>
-                    <TabPanel value={activeTab} index={4}>
-                        <KetLuanTab
-                            ref={klRef}
-                            initialData={initialKL}
-                            cardStyle={cardStyle}
-                            readOnly={readOnly}
-                        />
-                    </TabPanel>
+                    {allowedTabs.includes(0) && (
+                        <TabPanel value={activeTab} index={0}>
+                            <TongQuanTab
+                                ref={tsRef}
+                                initialData={initialTS}
+                                cardStyle={cardStyle}
+                                readOnly={readOnly || !editableTabs.includes(0)}
+                            />
+                        </TabPanel>
+                    )}
+                    {allowedTabs.includes(1) && (
+                        <TabPanel value={activeTab} index={1}>
+                            <LamSangTab
+                                ref={lsRef}
+                                initialData={initialLS}
+                                cardStyle={cardStyle}
+                                readOnly={readOnly || !editableTabs.includes(1)}
+                            />
+                        </TabPanel>
+                    )}
+                    {allowedTabs.includes(2) && (
+                        <TabPanel value={activeTab} index={2}>
+                            <XetNghiemTab
+                                ref={xnRef}
+                                initialData={initialXN}
+                                cardStyle={cardStyle}
+                                readOnly={readOnly || !editableTabs.includes(2)}
+                            />
+                        </TabPanel>
+                    )}
+                    {allowedTabs.includes(3) && (
+                        <TabPanel value={activeTab} index={3}>
+                            <ChanDoanHinhAnhTab
+                                ref={cdhaRef}
+                                initialData={initialCDHA}
+                                cardStyle={cardStyle}
+                                readOnly={readOnly || !editableTabs.includes(3)}
+                            />
+                        </TabPanel>
+                    )}
+                    {allowedTabs.includes(4) && (
+                        <TabPanel value={activeTab} index={4}>
+                            <KetLuanTab
+                                ref={klRef}
+                                initialData={initialKL}
+                                cardStyle={cardStyle}
+                                readOnly={readOnly || !editableTabs.includes(4)}
+                            />
+                        </TabPanel>
+                    )}
                 </DialogContent>
 
                 <DialogActions

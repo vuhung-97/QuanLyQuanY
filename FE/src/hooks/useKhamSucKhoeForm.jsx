@@ -3,13 +3,26 @@ import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
 import {
     DEFAULT_TS,
     DEFAULT_LS,
-    DEFAULT_CLS,
+    DEFAULT_XN,
+    DEFAULT_CDHA,
     DEFAULT_KL,
     parseTienSu,
     parseLamSang,
-    parseCanLamSang,
+    parseXetNghiem,
+    parseChanDoanHinhAnh,
     parseKetLuan,
+    ALL_TABS,
 } from "@/components/KhamSucKhoe/KiemTraSucKhoe/KhamSucKhoeFormUtils.js";
+
+function getDirty(current, initial) {
+    const dirty = {};
+    for (const key of Object.keys(current)) {
+        if (current[key] !== (initial?.[key] ?? "")) {
+            dirty[key] = current[key];
+        }
+    }
+    return dirty;
+}
 
 export default function useKhamSucKhoeForm({
     open,
@@ -18,6 +31,7 @@ export default function useKhamSucKhoeForm({
     nam,
     onSaved,
     onClose,
+    editableTabs = ALL_TABS,
 }) {
     const [activeTab, setActiveTab] = useState(0);
     const [ngayNhapNgu, setNgayNhapNgu] = useState("");
@@ -42,20 +56,22 @@ export default function useKhamSucKhoeForm({
             if (existingPhieu) {
                 setInitialTS(parseTienSu(existingPhieu.tien_su_benh_tat));
                 setInitialLS(parseLamSang(existingPhieu.kham_lam_sang));
-                setInitialXN(parseCanLamSang(existingPhieu.kham_can_lam_sang));
-                setInitialCDHA(parseCanLamSang(existingPhieu.kham_can_lam_sang));
+                setInitialXN(parseXetNghiem(existingPhieu.xet_nghiem));
+                setInitialCDHA(parseChanDoanHinhAnh(existingPhieu.chan_doan_hinh_anh));
                 setInitialKL(parseKetLuan(existingPhieu.ket_luan));
             } else {
                 setInitialTS({ ...DEFAULT_TS });
                 setInitialLS({ ...DEFAULT_LS });
-                setInitialXN({ ...DEFAULT_CLS });
-                setInitialCDHA({ ...DEFAULT_CLS });
+                setInitialXN({ ...DEFAULT_XN });
+                setInitialCDHA({ ...DEFAULT_CDHA });
                 setInitialKL({ ...DEFAULT_KL });
             }
             setError("");
             setActiveTab(0);
         }
     }, [open, quanNhan, existingPhieu]);
+
+    const canEdit = (tabIdx) => editableTabs.includes(tabIdx);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -67,23 +83,24 @@ export default function useKhamSucKhoeForm({
                 setSaving(false);
                 return;
             }
-            const ts = tsRef.current?.getData() ?? initialTS;
-            const ls = lsRef.current?.getData() ?? initialLS;
-            const cls = {
-                ...(xnRef.current?.getData() ?? initialXN),
-                ...(cdhaRef.current?.getData() ?? initialCDHA),
-            };
-            const kl = klRef.current?.getData() ?? initialKL;
+
+            // Chỉ gửi field thay đổi (dirty) từ tab được edit
+            const ts  = canEdit(0) ? getDirty(tsRef.current?.getData() ?? initialTS, initialTS)  : {};
+            const ls  = canEdit(1) ? getDirty(lsRef.current?.getData() ?? initialLS, initialLS)  : {};
+            const xn  = canEdit(2) ? getDirty(xnRef.current?.getData() ?? initialXN, initialXN)  : {};
+            const cdha= canEdit(3) ? getDirty(cdhaRef.current?.getData() ?? initialCDHA, initialCDHA) : {};
+            const kl  = canEdit(4) ? getDirty(klRef.current?.getData() ?? initialKL, initialKL)  : {};
 
             const phieuData = {
                 ma_quan_nhan: quanNhan.ma_quan_nhan,
                 nam: nam || null,
                 tien_su_benh_tat: JSON.stringify(ts),
                 kham_lam_sang: JSON.stringify(ls),
-                kham_can_lam_sang: JSON.stringify(cls),
+                xet_nghiem: JSON.stringify(xn),
+                chan_doan_hinh_anh: JSON.stringify(cdha),
                 ket_luan: Object.values(kl).some((v) => v && v !== "Loại 1")
                     ? JSON.stringify(kl)
-                    : "",
+                    : JSON.stringify(kl),
             };
 
             let saved;

@@ -50,4 +50,27 @@ export const khamSucKhoeService = {
 
     deleteScheduleDetail: (scheduleId, maDonVi) =>
         api.delete(`/lich_kham_sk_nam/${scheduleId}/chi-tiet/${maDonVi}`),
+
+    // Phân công nhiệm vụ
+    getAssignments: (scheduleId) =>
+        api.get(`/lich_kham_sk_nam/${scheduleId}/phan-cong`),
+
+    createAssignment: (scheduleId, data) =>
+        api.post(`/lich_kham_sk_nam/${scheduleId}/phan-cong`, data),
+
+    updateAssignment: (scheduleId, id, data) =>
+        api.patch(`/lich_kham_sk_nam/${scheduleId}/phan-cong/${id}`, data),
+
+    deleteAssignment: (scheduleId, id) =>
+        api.delete(`/lich_kham_sk_nam/${scheduleId}/phan-cong/${id}`),
+
+    getMyAssignment: (scheduleId) =>
+        api.get("/me/phan-cong", { params: { ma_lich_kham: scheduleId } }),
+
+    // Vai trò tạm thời
+    getVaiTroList: () =>
+        api.get("/vai_tro_tam_thoi", { params: { limit: 50 } }),
+
+    getNguoiDungList: () =>
+        api.get("/nguoi_dung", { params: { limit: 500 } }),
 };

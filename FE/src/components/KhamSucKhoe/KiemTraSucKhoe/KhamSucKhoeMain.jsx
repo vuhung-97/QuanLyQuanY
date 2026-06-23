@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
     Button,
     Card,
@@ -31,6 +31,7 @@ import {
     getTrangThai,
     statusChipColor,
 } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
+import { ALL_TABS, ROLE_TAB_ACCESS } from "./KhamSucKhoeFormUtils.js";
 import { buildXlsContent, saveWorkbook } from "@/utils/xlsExport";
 import BangQuanNhan from "./BangQuanNhan.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
@@ -237,6 +238,8 @@ export default function KhamSucKhoeMain() {
 
     const [filterTab, setFilterTab] = useState(0);
     const [searchText, setSearchText] = useState("");
+    const [allowedTabs, setAllowedTabs] = useState(ALL_TABS);
+    const [editableTabs, setEditableTabs] = useState(ALL_TABS);
     const debouncedSearchText = useDebounce(searchText);
     const [formDialog, setFormDialog] = useState({
         open: false,
@@ -289,6 +292,29 @@ export default function KhamSucKhoeMain() {
                 : [],
         [stats],
     );
+
+    useEffect(() => {
+        if (formDialog.open && selectedSchedule) {
+            khamSucKhoeService.getMyAssignment(selectedSchedule)
+                .then((res) => {
+                    const data = res.data;
+                    if (data && data.ma_vai_tro) {
+                        const access = ROLE_TAB_ACCESS[data.ma_vai_tro];
+                        if (access) {
+                            setAllowedTabs(access.view);
+                            setEditableTabs(access.edit);
+                            return;
+                        }
+                    }
+                    setAllowedTabs(ALL_TABS);
+                    setEditableTabs(ALL_TABS);
+                })
+                .catch(() => {
+                    setAllowedTabs(ALL_TABS);
+                    setEditableTabs(ALL_TABS);
+                });
+        }
+    }, [formDialog.open, selectedSchedule]);
 
     const handleFormSaved = useCallback(
         (savedPhieu) => {
@@ -436,6 +462,8 @@ export default function KhamSucKhoeMain() {
                             : null
                     }
                     readOnly={!!formDialog.phieu}
+                    allowedTabs={allowedTabs}
+                    editableTabs={editableTabs}
                 />
             )}
         </Stack>

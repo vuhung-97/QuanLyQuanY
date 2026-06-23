@@ -24,10 +24,13 @@ export const DEFAULT_LS = {
     khac: "",
 };
 
-export const DEFAULT_CLS = {
+export const DEFAULT_XN = {
     hong_cau: "", bach_cau: "", tieu_cau: "",
     glucose_mau: "", ure: "", creatinin: "", ast: "", alt: "",
     nuoc_tieu_glucose: "", nuoc_tieu_protein: "", nuoc_tieu_te_bao: "",
+};
+
+export const DEFAULT_CDHA = {
     dien_tim: "", x_quang: "", sieu_am: "", khac: "",
 };
 
@@ -66,5 +69,16 @@ function parseWithDefault(str, defaultObj, fallbackKey) {
 
 export const parseTienSu = (str) => parseWithDefault(str, DEFAULT_TS, "ban_than");
 export const parseLamSang = (str) => parseWithDefault(str, DEFAULT_LS, "khac");
-export const parseCanLamSang = (str) => parseWithDefault(str, DEFAULT_CLS, "khac");
+export const parseXetNghiem = (str) => parseWithDefault(str, DEFAULT_XN, "nuoc_tieu_te_bao");
+export const parseChanDoanHinhAnh = (str) => parseWithDefault(str, DEFAULT_CDHA, "khac");
 export const parseKetLuan = (str) => parseWithDefault(str, DEFAULT_KL, "benh_tat_theo_doi");
+
+export const ROLE_TAB_ACCESS = {
+    tong_quan: { edit: [0], view: [0] },
+    lam_sang: { edit: [1], view: [0, 1, 2, 3] },
+    xet_nghiem: { edit: [2], view: [2] },
+    chan_doan_hinh_anh: { edit: [3], view: [3] },
+    ket_luan: { edit: [4], view: [0, 1, 2, 3, 4] },
+};
+
+export const ALL_TABS = [0, 1, 2, 3, 4];

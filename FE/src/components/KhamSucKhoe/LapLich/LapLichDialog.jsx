@@ -1,7 +1,9 @@
-import { forwardRef, memo, useCallback, useImperativeHandle, useState } from "react";
+import { forwardRef, memo, useCallback, useImperativeHandle, useMemo, useState } from "react";
 import {
     Autocomplete, Box, Button, Dialog, DialogActions, DialogContent,
-    DialogTitle, IconButton, Stack, TextField, Typography,
+    DialogTitle, FormControl, IconButton, InputLabel, MenuItem, Select,
+    Stack, Table, TableBody, TableCell, TableContainer, TableHead,
+    TableRow, TextField, Typography,
 } from "@mui/material";
 import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import useLapLichDialog from "@/hooks/useLapLichDialog";
@@ -108,6 +110,14 @@ const DetailItem = memo(forwardRef(function DetailItem({
     );
 }));
 
+const ROLE_LABELS = {
+    tong_quan: "Tổng quan",
+    lam_sang: "Lâm sàng",
+    xet_nghiem: "Xét nghiệm",
+    chan_doan_hinh_anh: "Chẩn đoán hình ảnh",
+    ket_luan: "Kết luận",
+};
+
 export default function LapLichDialog({
     open,
     onClose,
@@ -129,6 +139,10 @@ export default function LapLichDialog({
         addDetail,
         removeDetail,
         handleSubmit,
+        users,
+        vaiTroList,
+        assignments,
+        handleAssignmentChange,
     } = useLapLichDialog({ open, schedule, chiTietList, onSaved, onClose });
 
     const getInitialData = useCallback(
@@ -139,6 +153,16 @@ export default function LapLichDialog({
         },
         [chiTietList, rowKeys],
     );
+
+    // Sắp xếp user theo vai trò hệ thống
+    const sortedUsers = useMemo(() => {
+        const roleOrder = { ROLE_ADMIN: 0, ROLE_CNQY: 1, ROLE_BACSI: 2, ROLE_YSI: 3 };
+        return [...users].sort((a, b) => {
+            const ra = roleOrder[a.id_vai_tro] ?? 99;
+            const rb = roleOrder[b.id_vai_tro] ?? 99;
+            return ra - rb || a.ho_ten.localeCompare(b.ho_ten);
+        });
+    }, [users]);
 
     return (
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
@@ -172,6 +196,54 @@ export default function LapLichDialog({
                                 />
                             </Box>
                         </Stack>
+
+                        <Typography variant="h2" sx={{ mt: 2 }}>
+                            Phân công nhiệm vụ
+                        </Typography>
+                        <TableContainer>
+                            <Table size="small">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell sx={{ fontWeight: 600 }}>STT</TableCell>
+                                        <TableCell sx={{ fontWeight: 600 }}>Họ tên</TableCell>
+                                        <TableCell sx={{ fontWeight: 600 }}>Vai trò hệ thống</TableCell>
+                                        <TableCell sx={{ fontWeight: 600 }}>Vai trò tạm thời</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {sortedUsers.map((u, idx) => (
+                                        <TableRow key={u.id}>
+                                            <TableCell>{idx + 1}</TableCell>
+                                            <TableCell>{u.ho_ten}</TableCell>
+                                            <TableCell>{u.ten_vai_tro || u.id_vai_tro}</TableCell>
+                                            <TableCell>
+                                                <FormControl fullWidth size="small">
+                                                    <Select
+                                                        value={assignments[u.id] ?? ""}
+                                                        onChange={(e) =>
+                                                            handleAssignmentChange(u.id, e.target.value)
+                                                        }
+                                                        displayEmpty
+                                                        renderValue={(v) =>
+                                                            v ? (ROLE_LABELS[v] || v) : ""
+                                                        }
+                                                    >
+                                                        <MenuItem value="">
+                                                            <em>-- Không --</em>
+                                                        </MenuItem>
+                                                        {vaiTroList.map((vt) => (
+                                                            <MenuItem key={vt.ma_vai_tro} value={vt.ma_vai_tro}>
+                                                                {vt.ten_vai_tro}
+                                                            </MenuItem>
+                                                        ))}
+                                                    </Select>
+                                                </FormControl>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
 
                         <Stack
                             direction="row"
