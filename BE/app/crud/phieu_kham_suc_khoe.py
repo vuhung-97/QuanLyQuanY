@@ -4,7 +4,7 @@ from app.crud.base import CRUDBase
 from app.database.phieu_kham_suc_khoe import PhieuKhamSucKhoe
 
 # Các cột JSON cần merge (chỉ ghi đè field có trong request)
-JSON_MERGE_COLUMNS = {"tien_su_benh_tat", "kham_lam_sang", "xet_nghiem", "chan_doan_hinh_anh", "ket_luan"}
+JSON_MERGE_COLUMNS = {"tong_quan", "kham_lam_sang", "xet_nghiem", "chan_doan_hinh_anh", "ket_luan"}
 
 
 def _merge_json(old_val: str | None, new_val: str | None) -> str:

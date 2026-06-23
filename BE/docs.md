@@ -144,8 +144,7 @@ Composite key dùng dấu phẩy: `{id1},{id2}`.
 
 | Method | Path                                                      | Description                                |
 | ------ | --------------------------------------------------------- | ------------------------------------------ |
-| GET    | `/phieu_kham_suc_khoe/latest-by-unit/{ma_don_vi}`         | Phiếu khám mới nhất mỗi QN trong đơn vị    |
-| GET    | `/phieu_kham_suc_khoe/latest-by-lich-kham/{ma_lich_kham}` | Phiếu khám mới nhất mỗi QN trong lịch khám |
+| GET    | `/phieu_kham_suc_khoe/by-lich-kham/{ma_lich_kham}`       | Danh sách phiếu khám theo lịch khám        |
 | GET    | `/phieu_kham_suc_khoe/by-ma-quan-nhan/{ma_quan_nhan}`     | Lịch sử phiếu khám của một QN              |
 
 ### LichKhamSkNam (nested `/chi-tiet`)
@@ -323,7 +322,7 @@ Composite key dùng dấu phẩy: `{id1},{id2}`.
 | `ma_phieu_kham`     | string (PK) | ✅       | 10   |
 | `ma_quan_nhan`      | string      | ❌       | 10   |
 | `nam`               | integer     | ❌       |      |
-| `tien_su_benh_tat`  | string      | ❌       | JSON |
+| `tong_quan`         | string      | ❌       | JSON |
 | `kham_lam_sang`     | string      | ❌       | JSON |
 | `kham_can_lam_sang` | string      | ❌       | JSON |
 | `ket_luan`          | string      | ❌       |      |

@@ -10,9 +10,11 @@ class PhieuKhamSucKhoe(Base):
 
     ma_phieu_kham: Mapped[str] = mapped_column(String(10), primary_key=True, default=lambda: generate_id(10))
     ma_quan_nhan: Mapped[str | None] = mapped_column(String(10), ForeignKey("quan_nhan.ma_quan_nhan", ondelete="CASCADE"), nullable=True)
+    ma_lich_kham: Mapped[str | None] = mapped_column(String(10), ForeignKey("lich_kham_sk_nam.ma_lich_kham", ondelete="SET NULL"), nullable=True)
     nam: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    tien_su_benh_tat: Mapped[str | None] = mapped_column(Text, nullable=True)
+    tong_quan: Mapped[str | None] = mapped_column(Text, nullable=True)
     kham_lam_sang: Mapped[str | None] = mapped_column(Text, nullable=True)
     xet_nghiem: Mapped[str | None] = mapped_column(Text, nullable=True)
     chan_doan_hinh_anh: Mapped[str | None] = mapped_column(Text, nullable=True)
     ket_luan: Mapped[str | None] = mapped_column(Text, nullable=True)
+    trang_thai: Mapped[str | None] = mapped_column(String(20), nullable=True, default="chua_kham")

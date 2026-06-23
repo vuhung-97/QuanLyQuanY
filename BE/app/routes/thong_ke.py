@@ -107,21 +107,14 @@ def thong_ke_lich_kham(
             .scalar()
         ) or 0
 
-        da_kham = (
+        base = (
             db.query(func.count(PhieuKhamSucKhoe.ma_phieu_kham))
             .join(QuanNhan, PhieuKhamSucKhoe.ma_quan_nhan == QuanNhan.ma_quan_nhan)
             .filter(QuanNhan.ma_don_vi.in_(unit_codes))
-            .filter(PhieuKhamSucKhoe.ket_luan.isnot(None))
-            .scalar()
-        ) or 0
-
-        dang_kham = (
-            db.query(func.count(PhieuKhamSucKhoe.ma_phieu_kham))
-            .join(QuanNhan, PhieuKhamSucKhoe.ma_quan_nhan == QuanNhan.ma_quan_nhan)
-            .filter(QuanNhan.ma_don_vi.in_(unit_codes))
-            .filter(PhieuKhamSucKhoe.ket_luan.is_(None))
-            .scalar()
-        ) or 0
+            .filter(PhieuKhamSucKhoe.ma_lich_kham == ma_lich_kham)
+        )
+        da_kham = base.filter(PhieuKhamSucKhoe.trang_thai == "da_kham").scalar() or 0
+        dang_kham = base.filter(PhieuKhamSucKhoe.trang_thai == "dang_kham").scalar() or 0
 
         con_lai = quan_so - da_kham - dang_kham
         if con_lai < 0:
