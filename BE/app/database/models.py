@@ -17,8 +17,10 @@ from app.database.nhat_ky_dang_nhap import NhatKyDangNhap
 from app.database.nhat_ky_thao_tac import NhatKyThaoTac
 from app.database.phieu_cham_soc import PhieuChamSoc
 from app.database.phieu_du_tru import PhieuDuTru
+from app.database.phan_cong_nhiem_vu import PhanCongNhiemVu
 from app.database.phieu_kham_suc_khoe import PhieuKhamSucKhoe
 from app.database.phieu_xuat_kho import PhieuXuatKho
+from app.database.vai_tro_tam_thoi import VaiTroTamThoi
 from app.database.quyen import Quyen
 from app.database.quan_nhan import QuanNhan
 from app.database.ra_benh_xa import RaBenhXa
@@ -47,8 +49,10 @@ MODEL_REGISTRY = {
     "nhat_ky_thao_tac": NhatKyThaoTac,
     "phieu_cham_soc": PhieuChamSoc,
     "phieu_du_tru": PhieuDuTru,
+    "phan_cong_nhiem_vu": PhanCongNhiemVu,
     "phieu_kham_suc_khoe": PhieuKhamSucKhoe,
     "phieu_xuat_kho": PhieuXuatKho,
+    "vai_tro_tam_thoi": VaiTroTamThoi,
     "quyen": Quyen,
     "quan_nhan": QuanNhan,
     "ra_benh_xa": RaBenhXa,
@@ -79,8 +83,10 @@ __all__ = [
     "NhatKyThaoTac",
     "PhieuChamSoc",
     "PhieuDuTru",
+    "PhanCongNhiemVu",
     "PhieuKhamSucKhoe",
     "PhieuXuatKho",
+    "VaiTroTamThoi",
     "Quyen",
     "QuanNhan",
     "RaBenhXa",

@@ -9,7 +9,8 @@ class PhieuKhamSucKhoeBase(SchemaBase):
     nam: int | None = None
     tien_su_benh_tat: str | None = None
     kham_lam_sang: str | None = None
-    kham_can_lam_sang: str | None = None
+    xet_nghiem: str | None = None
+    chan_doan_hinh_anh: str | None = None
     ket_luan: str | None = None
 
 
@@ -22,7 +23,8 @@ class PhieuKhamSucKhoeUpdate(SchemaBase):
     nam: int | None = None
     tien_su_benh_tat: str | None = None
     kham_lam_sang: str | None = None
-    kham_can_lam_sang: str | None = None
+    xet_nghiem: str | None = None
+    chan_doan_hinh_anh: str | None = None
     ket_luan: str | None = None
 
 

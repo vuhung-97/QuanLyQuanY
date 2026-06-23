@@ -13,5 +13,6 @@ class PhieuKhamSucKhoe(Base):
     nam: Mapped[int | None] = mapped_column(Integer, nullable=True)
     tien_su_benh_tat: Mapped[str | None] = mapped_column(Text, nullable=True)
     kham_lam_sang: Mapped[str | None] = mapped_column(Text, nullable=True)
-    kham_can_lam_sang: Mapped[str | None] = mapped_column(Text, nullable=True)
+    xet_nghiem: Mapped[str | None] = mapped_column(Text, nullable=True)
+    chan_doan_hinh_anh: Mapped[str | None] = mapped_column(Text, nullable=True)
     ket_luan: Mapped[str | None] = mapped_column(Text, nullable=True)

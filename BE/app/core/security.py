@@ -38,7 +38,9 @@ RESOURCES = [
     "vai_tro_quyen",
     "nhat_ky_dang_nhap", 
     "nhat_ky_thao_tac", 
-    "nhat_ky_backup"
+    "nhat_ky_backup",
+    "vai_tro_tam_thoi",
+    "phan_cong_nhiem_vu",
 ]
 
 def get_all_permissions():

@@ -16,8 +16,10 @@ from app.routes.nhat_ky_dang_nhap import router as nhat_ky_dang_nhap_router
 from app.routes.nhat_ky_thao_tac import router as nhat_ky_thao_tac_router
 from app.routes.phieu_cham_soc import router as phieu_cham_soc_router
 from app.routes.phieu_du_tru import router as phieu_du_tru_router
+from app.routes.phan_cong_nhiem_vu import router as phan_cong_nhiem_vu_router
 from app.routes.phieu_kham_suc_khoe import router as phieu_kham_suc_khoe_router
 from app.routes.phieu_xuat_kho import router as phieu_xuat_kho_router
+from app.routes.vai_tro_tam_thoi import router as vai_tro_tam_thoi_router
 from app.routes.quan_nhan import router as quan_nhan_router
 from app.routes.quyen import router as quyen_router
 from app.routes.ra_benh_xa import router as ra_benh_xa_router
@@ -44,8 +46,10 @@ RESOURCE_ROUTERS = [
     lich_kham_sk_nam_router,
     phieu_cham_soc_router,
     phieu_du_tru_router,
+    phan_cong_nhiem_vu_router,
     phieu_kham_suc_khoe_router,
     phieu_xuat_kho_router,
+    vai_tro_tam_thoi_router,
     quan_nhan_router,
     ra_benh_xa_router,
     so_nhap_xuat_router,
