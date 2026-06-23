@@ -5,6 +5,23 @@ import { Visibility as VisibilityIcon } from "@mui/icons-material";
 import SearchBar from "@/components/common/SearchBar.jsx";
 import DataTable from "@/components/common/DataTable.jsx";
 
+const TRANG_THAI_LABEL = {
+    chua_kham: "Chưa khám",
+    dang_kham: "Đang khám",
+    da_kham: "Đã khám",
+};
+
+function getStatus(phieu) {
+    if (!phieu) return "Chưa khám";
+    return TRANG_THAI_LABEL[phieu.trang_thai] || "Chưa khám";
+}
+
+const STATUS_CHIP = {
+    "Chưa khám": { bgcolor: "rgba(100, 116, 139, 0.12)", color: "text.secondary" },
+    "Đang khám": { bgcolor: "rgba(245, 158, 11, 0.14)", color: "warning.main" },
+    "Đã khám": { bgcolor: "rgba(16, 185, 129, 0.12)", color: "success.main" },
+};
+
 const columns = [
     { key: "stt", label: "STT" },
     { key: "ma_quan_nhan", label: "Mã QN", sx: { color: "primary.main" } },
@@ -16,10 +33,10 @@ const columns = [
     { key: "thao_tac", label: "Thao tác" },
 ];
 
-const SoldierRows = memo(function SoldierRows({ soldiers, phieuMap, allUnitLookup, onEdit, onViewHistory, getTrangThai, statusChipColor }) {
+const SoldierRows = memo(function SoldierRows({ soldiers, phieuMap, allUnitLookup, onEdit, onViewHistory }) {
     return soldiers.map((qn, idx) => {
         const phieu = phieuMap[qn.ma_quan_nhan];
-        const tt = getTrangThai(phieu);
+        const tt = getStatus(phieu);
         return (
             <TableRow key={qn.ma_quan_nhan} hover>
                 <TableCell>{idx + 1}</TableCell>
@@ -38,7 +55,7 @@ const SoldierRows = memo(function SoldierRows({ soldiers, phieuMap, allUnitLooku
                 <TableCell>{qn.chuc_vu || "--"}</TableCell>
                 <TableCell>
                     <Chip size="small" label={tt}
-                        sx={{ ...statusChipColor(tt), fontWeight: 700, minWidth: 90 }} />
+                        sx={{ ...STATUS_CHIP[tt], fontWeight: 700, minWidth: 90 }} />
                 </TableCell>
                 <TableCell>
                     {tt === "Chưa khám" && (
@@ -71,8 +88,6 @@ export default function BangQuanNhan({
     onFilterTabChange,
     onEdit,
     onViewHistory,
-    getTrangThai,
-    statusChipColor,
     filterTabs,
 }) {
     return (
@@ -101,8 +116,7 @@ export default function BangQuanNhan({
                 >
                     <SoldierRows soldiers={soldiers} phieuMap={phieuMap}
                         allUnitLookup={allUnitLookup} onEdit={onEdit}
-                        onViewHistory={onViewHistory} getTrangThai={getTrangThai}
-                        statusChipColor={statusChipColor} />
+                        onViewHistory={onViewHistory} />
                 </DataTable>
             </CardContent>
         </Card>

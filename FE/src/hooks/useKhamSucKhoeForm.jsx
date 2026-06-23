@@ -28,6 +28,7 @@ export default function useKhamSucKhoeForm({
     open,
     quanNhan,
     existingPhieu,
+    maLichKham,
     nam,
     onSaved,
     onClose,
@@ -54,10 +55,12 @@ export default function useKhamSucKhoeForm({
         if (open && quanNhan) {
             setNgayNhapNgu(quanNhan.ngay_nhap_ngu || "");
             if (existingPhieu) {
-                setInitialTS(parseTienSu(existingPhieu.tien_su_benh_tat));
+                setInitialTS(parseTienSu(existingPhieu.tong_quan));
                 setInitialLS(parseLamSang(existingPhieu.kham_lam_sang));
                 setInitialXN(parseXetNghiem(existingPhieu.xet_nghiem));
-                setInitialCDHA(parseChanDoanHinhAnh(existingPhieu.chan_doan_hinh_anh));
+                setInitialCDHA(
+                    parseChanDoanHinhAnh(existingPhieu.chan_doan_hinh_anh),
+                );
                 setInitialKL(parseKetLuan(existingPhieu.ket_luan));
             } else {
                 setInitialTS({ ...DEFAULT_TS });
@@ -85,22 +88,36 @@ export default function useKhamSucKhoeForm({
             }
 
             // Chỉ gửi field thay đổi (dirty) từ tab được edit
-            const ts  = canEdit(0) ? getDirty(tsRef.current?.getData() ?? initialTS, initialTS)  : {};
-            const ls  = canEdit(1) ? getDirty(lsRef.current?.getData() ?? initialLS, initialLS)  : {};
-            const xn  = canEdit(2) ? getDirty(xnRef.current?.getData() ?? initialXN, initialXN)  : {};
-            const cdha= canEdit(3) ? getDirty(cdhaRef.current?.getData() ?? initialCDHA, initialCDHA) : {};
-            const kl  = canEdit(4) ? getDirty(klRef.current?.getData() ?? initialKL, initialKL)  : {};
+            const ts = canEdit(0)
+                ? getDirty(tsRef.current?.getData() ?? initialTS, initialTS)
+                : {};
+            const ls = canEdit(1)
+                ? getDirty(lsRef.current?.getData() ?? initialLS, initialLS)
+                : {};
+            const xn = canEdit(2)
+                ? getDirty(xnRef.current?.getData() ?? initialXN, initialXN)
+                : {};
+            const cdha = canEdit(3)
+                ? getDirty(
+                      cdhaRef.current?.getData() ?? initialCDHA,
+                      initialCDHA,
+                  )
+                : {};
+            const kl = canEdit(4)
+                ? getDirty(klRef.current?.getData() ?? initialKL, initialKL)
+                : {};
 
+            const hasKetLuan = Object.values(kl).some((v) => v && v !== "");
             const phieuData = {
                 ma_quan_nhan: quanNhan.ma_quan_nhan,
+                ma_lich_kham: maLichKham,
                 nam: nam || null,
-                tien_su_benh_tat: JSON.stringify(ts),
+                tong_quan: JSON.stringify(ts),
                 kham_lam_sang: JSON.stringify(ls),
                 xet_nghiem: JSON.stringify(xn),
                 chan_doan_hinh_anh: JSON.stringify(cdha),
-                ket_luan: Object.values(kl).some((v) => v && v !== "Loại 1")
-                    ? JSON.stringify(kl)
-                    : JSON.stringify(kl),
+                ket_luan: JSON.stringify(kl),
+                trang_thai: hasKetLuan ? "da_kham" : "dang_kham",
             };
 
             let saved;

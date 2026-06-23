@@ -6,9 +6,20 @@ export default function useKhamSucKhoeData() {
     const [units, setUnits] = useState([]);
     const [soldiers, setSoldiers] = useState([]);
     const [phieuMap, setPhieuMap] = useState({});
+    const [allSoldiers, setAllSoldiers] = useState([]);
+    const [allPhieuMap, setAllPhieuMap] = useState({});
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(false);
     const [allUnitLookup, setAllUnitLookup] = useState(new Map());
+    const [unitChildrenMap, setUnitChildrenMap] = useState(new Map());
+
+    function getDescendantCodes(maDonVi) {
+        const codes = [maDonVi];
+        for (const child of (unitChildrenMap.get(maDonVi) || [])) {
+            codes.push(...getDescendantCodes(child));
+        }
+        return codes;
+    }
 
     const [filters, setFilters] = useState({
         schedule: "",
@@ -40,6 +51,15 @@ export default function useKhamSucKhoeData() {
             .then((res) => {
                 const list = Array.isArray(res.data) ? res.data : [];
                 setAllUnitLookup(new Map(list.map((u) => [u.ma_don_vi, u.ten_don_vi])));
+                const cm = new Map();
+                for (const u of list) {
+                    if (u.ma_don_vi_truc_thuoc) {
+                        const parent = u.ma_don_vi_truc_thuoc;
+                        if (!cm.has(parent)) cm.set(parent, []);
+                        cm.get(parent).push(u.ma_don_vi);
+                    }
+                }
+                setUnitChildrenMap(cm);
             })
             .catch(() => {});
     }, []);
@@ -93,8 +113,19 @@ export default function useKhamSucKhoeData() {
         };
     }, [selectedSchedule]);
 
+    const refreshStats = useCallback(async () => {
+        if (!selectedSchedule) return;
+        try {
+            const res = await khamSucKhoeService.getScheduleStats(selectedSchedule);
+            setStats(res.data);
+            setUnits(res.data.danh_sach_don_vi || []);
+        } catch {}
+    }, [selectedSchedule]);
+
     useEffect(() => {
-        if (!selectedUnit) {
+        if (!selectedSchedule) {
+            setAllSoldiers([]);
+            setAllPhieuMap({});
             setSoldiers([]);
             setPhieuMap({});
             setLoading(false);
@@ -104,49 +135,48 @@ export default function useKhamSucKhoeData() {
         async function load() {
             setLoading(true);
             try {
-                if (selectedUnit === "__ALL__") {
-                    const [qnRes, pRes] = await Promise.all([
-                        khamSucKhoeService.getSoldiersBySchedule(selectedSchedule),
-                        khamSucKhoeService.getLatestPhieuBySchedule(selectedSchedule),
-                    ]);
-                    if (!ignore) {
-                        setSoldiers(Array.isArray(qnRes.data) ? qnRes.data : []);
-                        const pList = Array.isArray(pRes.data) ? pRes.data : [];
-                        const phieuData = pList.reduce((acc, p) => {
-                            acc[p.ma_quan_nhan] = p;
-                            return acc;
-                        }, {});
-                        setPhieuMap(phieuData);
-                    }
-                } else {
-                    const qnRes = await khamSucKhoeService.getSoldiersByUnit(selectedUnit);
+                const [qnRes, pRes] = await Promise.all([
+                    khamSucKhoeService.getSoldiersBySchedule(selectedSchedule),
+                    khamSucKhoeService.getPhieuBySchedule(selectedSchedule),
+                ]);
+                if (!ignore) {
                     const qnList = Array.isArray(qnRes.data) ? qnRes.data : [];
-                    if (ignore) return;
-
-                    let phieuData = {};
-                    try {
-                        const pRes = await khamSucKhoeService.getLatestPhieuByUnit(selectedUnit);
-                        const list = Array.isArray(pRes.data) ? pRes.data : [];
-                        phieuData = {};
-                        for (const p of list) {
-                            phieuData[p.ma_quan_nhan] = p;
-                        }
-                    } catch {}
-                    if (!ignore) {
-                        setSoldiers(qnList);
-                        setPhieuMap(phieuData);
-                    }
+                    const pList = Array.isArray(pRes.data) ? pRes.data : [];
+                    const pm = pList.reduce((acc, p) => { acc[p.ma_quan_nhan] = p; return acc; }, {});
+                    setAllSoldiers(qnList);
+                    setAllPhieuMap(pm);
                 }
-            } catch {
-            } finally {
+            } catch {} finally {
                 if (!ignore) setLoading(false);
             }
         }
         load();
-        return () => {
-            ignore = true;
-        };
-    }, [selectedUnit, selectedSchedule]);
+        return () => { ignore = true; };
+    }, [selectedSchedule]);
+
+    useEffect(() => {
+        if (!selectedUnit) {
+            setSoldiers([]);
+            setPhieuMap({});
+            return;
+        }
+        if (allSoldiers.length === 0) return;
+
+        if (selectedUnit === "__ALL__") {
+            setSoldiers(allSoldiers);
+            setPhieuMap(allPhieuMap);
+        } else {
+            const codes = getDescendantCodes(selectedUnit);
+            const filtered = allSoldiers.filter((s) => codes.includes(s.ma_don_vi));
+            const pm = {};
+            for (const s of filtered) {
+                const p = allPhieuMap[s.ma_quan_nhan];
+                if (p) pm[s.ma_quan_nhan] = p;
+            }
+            setSoldiers(filtered);
+            setPhieuMap(pm);
+        }
+    }, [selectedUnit, allSoldiers, allPhieuMap, unitChildrenMap]);
 
     const years = useMemo(
         () =>
@@ -191,6 +221,7 @@ export default function useKhamSucKhoeData() {
         soldiers,
         phieuMap,
         setPhieuMap,
+        setAllPhieuMap,
         stats,
         loading,
         allUnitLookup,
@@ -205,5 +236,6 @@ export default function useKhamSucKhoeData() {
         setSelectedUnit,
         handleYearChange,
         handleScheduleChange,
+        refreshStats,
     };
 }

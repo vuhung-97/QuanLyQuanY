@@ -1,10 +1,20 @@
 import ExcelJS from "exceljs";
 
+const TRANG_THAI_LABEL = {
+    chua_kham: "Chưa khám",
+    dang_kham: "Đang khám",
+    da_kham: "Đã khám",
+};
+
+function getStatusLabel(phieu) {
+    if (!phieu) return "Chưa khám";
+    return TRANG_THAI_LABEL[phieu.trang_thai] || "Chưa khám";
+}
+
 export function buildXlsContent(
     soldiers,
     phieuMap,
     unitLookup,
-    getTrangThai,
     nam,
 ) {
     const title = `DANH SÁCH QUÂN NHÂN CHƯA KHÁM SỨC KHỎE NĂM ${nam || ""}`;
@@ -20,7 +30,7 @@ export function buildXlsContent(
 
     const filtered = soldiers
         .filter((qn) => {
-            const tt = getTrangThai(phieuMap[qn.ma_quan_nhan]);
+            const tt = getStatusLabel(phieuMap[qn.ma_quan_nhan]);
             return tt === "Chưa khám" || tt === "Đang khám";
         })
         .sort((a, b) => {
@@ -91,7 +101,7 @@ export function buildXlsContent(
     });
 
     filtered.forEach((qn, idx) => {
-        const tt = getTrangThai(phieuMap[qn.ma_quan_nhan]);
+        const tt = getStatusLabel(phieuMap[qn.ma_quan_nhan]);
         const donVi = unitLookup.get(qn.ma_don_vi) || qn.ma_don_vi || "";
         const row = ws.getRow(idx + 8);
         const values = [

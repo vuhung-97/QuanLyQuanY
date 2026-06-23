@@ -41,19 +41,6 @@ export function statusColor(status) {
 
 export const filterTabs = ["Tất cả", "Chưa khám", "Đang khám", "Đã khám"];
 
-export function getTrangThai(phieu) {
-    if (!phieu) return "Chưa khám";
-    if (!phieu.ket_luan) return "Đang khám";
-    try {
-        const parsed = JSON.parse(phieu.ket_luan);
-        if (typeof parsed === "object" && parsed !== null) {
-            const hasData = Object.values(parsed).some(v => v && v !== "Loại 1");
-            if (!hasData) return "Đang khám";
-        }
-    } catch {}
-    return "Đã khám";
-}
-
 export function getPhanLoai(phieu) {
     if (!phieu?.ket_luan) return "";
     try {
@@ -62,12 +49,6 @@ export function getPhanLoai(phieu) {
     } catch {
         return "";
     }
-}
-
-export function statusChipColor(tt) {
-    if (tt === "Đã khám") return { bgcolor: "rgba(16, 185, 129, 0.12)", color: "success.main" };
-    if (tt === "Đang khám") return { bgcolor: "rgba(245, 158, 11, 0.14)", color: "warning.main" };
-    return { bgcolor: "rgba(100, 116, 139, 0.12)", color: "text.secondary" };
 }
 
 export function findNearestDetail(details) {
@@ -86,13 +67,14 @@ export function findNearestDetail(details) {
     return nearest;
 }
 
-export function filterSoldiers(soldiers, phieuMap, filterTab, searchText, getTrangThai) {
+export function filterSoldiers(soldiers, phieuMap, filterTab, searchText) {
     return soldiers.filter((qn) => {
-        const tt = getTrangThai(phieuMap[qn.ma_quan_nhan]);
+        const phieu = phieuMap[qn.ma_quan_nhan];
+        const tt = phieu?.trang_thai || "chua_kham";
         if (filterTab === 0) return true;
-        if (filterTab === 1) return tt === "Chưa khám";
-        if (filterTab === 2) return tt === "Đang khám";
-        if (filterTab === 3) return tt === "Đã khám";
+        if (filterTab === 1) return tt === "chua_kham";
+        if (filterTab === 2) return tt === "dang_kham";
+        if (filterTab === 3) return tt === "da_kham";
         return true;
     }).filter((qn) => {
         if (!searchText) return true;
