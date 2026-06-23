@@ -57,7 +57,7 @@ const itemSx = {
     minHeight: 56,
 };
 
-function FormInfoCard({ quanNhan, ngayNhapNgu, unitLookup = new Map() }) {
+function FormInfoCard({ quanNhan, ngayNhapNgu, phieu, unitLookup = new Map() }) {
     const infoFields = [
         {
             label: "Họ và tên",
@@ -79,6 +79,7 @@ function FormInfoCard({ quanNhan, ngayNhapNgu, unitLookup = new Map() }) {
             value: quanNhan?.ngay_sinh || quanNhan?.nam_sinh || "—",
         },
         { label: "Ngày nhập ngũ", value: ngayNhapNgu || "—" },
+        { label: "Mã lấy máu", value: phieu?.ma_lay_mau || "—" },
     ];
     return (
         <Box sx={{ ...cardStyle, mb: 3 }}>
@@ -86,7 +87,7 @@ function FormInfoCard({ quanNhan, ngayNhapNgu, unitLookup = new Map() }) {
                 <Grid container spacing={2} sx={{ alignItems: "stretch" }}>
                     {infoFields.map((field, index) => (
                         <Grid
-                            size={{ xs: 12, sm: 6, md: 2.4 }}
+                            size={{ xs: 12, sm: 6, md: 2 }}
                             key={index}
                             sx={itemSx}
                         >
@@ -249,6 +250,7 @@ export default function KhamSucKhoeForm({
                     <FormInfoCard
                         quanNhan={quanNhan}
                         ngayNhapNgu={ngayNhapNgu}
+                        phieu={existingPhieu}
                         unitLookup={unitLookup}
                     />
 

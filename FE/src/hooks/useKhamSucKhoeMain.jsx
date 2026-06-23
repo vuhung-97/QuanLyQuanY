@@ -13,7 +13,7 @@ import {
     filterTabs,
 } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
 import { ALL_TABS, ROLE_TAB_ACCESS } from "@/components/KhamSucKhoe/KiemTraSucKhoe/KhamSucKhoeFormUtils.js";
-import { buildXlsContent, saveWorkbook } from "@/utils/xlsExport";
+import { buildXlsContent, buildXlsContentChuaLayMau, saveWorkbook } from "@/utils/xlsExport";
 
 export default function useKhamSucKhoeMain() {
     const {
@@ -142,7 +142,7 @@ export default function useKhamSucKhoeMain() {
         [formDialog.qn, setPhieuMap, setAllPhieuMap, refreshStats],
     );
 
-    const handleExport = useCallback(async () => {
+    const handleExport = useCallback(async (type = "chua_hoan_thanh") => {
         if (!selectedSchedule) return;
         try {
             const [qnRes, pRes] = await Promise.all([
@@ -159,13 +159,11 @@ export default function useKhamSucKhoeMain() {
             const nam = selectedScheduleObj?.thoi_gian_bat_dau
                 ? new Date(selectedScheduleObj.thoi_gian_bat_dau).getFullYear()
                 : "";
-            const wb = buildXlsContent(
-                allSoldiers,
-                allPhieuMap,
-                allUnitLookup,
-                nam,
-            );
-            await saveWorkbook(wb, "quan_nhan_chua_hoan_thanh.xlsx");
+            const isChuaLayMau = type === "chua_lay_mau";
+            const wb = isChuaLayMau
+                ? buildXlsContentChuaLayMau(allSoldiers, allPhieuMap, allUnitLookup, nam)
+                : buildXlsContent(allSoldiers, allPhieuMap, allUnitLookup, nam);
+            await saveWorkbook(wb, isChuaLayMau ? "quan_nhan_chua_lay_mau.xlsx" : "quan_nhan_chua_hoan_thanh.xlsx");
         } catch {}
     }, [selectedSchedule, allUnitLookup, selectedScheduleObj]);
 

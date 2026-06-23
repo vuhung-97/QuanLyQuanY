@@ -1,4 +1,5 @@
-import { Button, Card, CardContent, MenuItem, Stack, TextField } from "@mui/material";
+import { useState } from "react";
+import { Button, Card, CardContent, Menu, MenuItem, Stack, TextField } from "@mui/material";
 import { Download as DownloadIcon } from "@mui/icons-material";
 
 export default function DanhSachPhieuKhamFilterBar({
@@ -14,6 +15,7 @@ export default function DanhSachPhieuKhamFilterBar({
     exportEnabled,
     onExport,
 }) {
+    const [anchorEl, setAnchorEl] = useState(null);
     return (
         <Card sx={{ borderRadius: 3 }}>
             <CardContent>
@@ -73,15 +75,29 @@ export default function DanhSachPhieuKhamFilterBar({
                         ))}
                     </TextField>
                     {exportEnabled && (
-                        <Button
-                            variant="outlined"
-                            size="small"
-                            startIcon={<DownloadIcon />}
-                            onClick={onExport}
-                            sx={{ whiteSpace: "nowrap" }}
-                        >
-                            Xuất Excel
-                        </Button>
+                        <>
+                            <Button
+                                variant="outlined"
+                                size="small"
+                                startIcon={<DownloadIcon />}
+                                onClick={(e) => setAnchorEl(e.currentTarget)}
+                                sx={{ whiteSpace: "nowrap" }}
+                            >
+                                Xuất Excel
+                            </Button>
+                            <Menu
+                                anchorEl={anchorEl}
+                                open={Boolean(anchorEl)}
+                                onClose={() => setAnchorEl(null)}
+                            >
+                                <MenuItem onClick={() => { onExport("chua_hoan_thanh"); setAnchorEl(null); }}>
+                                    DS chưa hoàn thành
+                                </MenuItem>
+                                <MenuItem onClick={() => { onExport("chua_lay_mau"); setAnchorEl(null); }}>
+                                    DS chưa lấy máu
+                                </MenuItem>
+                            </Menu>
+                        </>
                     )}
                 </Stack>
             </CardContent>
