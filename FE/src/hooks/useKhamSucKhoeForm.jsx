@@ -32,6 +32,7 @@ export default function useKhamSucKhoeForm({
     nam,
     onSaved,
     onClose,
+    allowedTabs = ALL_TABS,
     editableTabs = ALL_TABS,
 }) {
     const [activeTab, setActiveTab] = useState(0);
@@ -70,7 +71,7 @@ export default function useKhamSucKhoeForm({
                 setInitialKL({ ...DEFAULT_KL });
             }
             setError("");
-            setActiveTab(0);
+            setActiveTab(allowedTabs[0] ?? 0);
         }
     }, [open, quanNhan, existingPhieu]);
 

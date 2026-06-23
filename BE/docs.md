@@ -317,15 +317,18 @@ Composite key dùng dấu phẩy: `{id1},{id2}`.
 
 ### PhieuKhamSucKhoe (`/phieu_kham_suc_khoe`)
 
-| Field               | Type        | Required | Max  |
-| ------------------- | ----------- | -------- | ---- |
-| `ma_phieu_kham`     | string (PK) | ✅       | 10   |
-| `ma_quan_nhan`      | string      | ❌       | 10   |
-| `nam`               | integer     | ❌       |      |
-| `tong_quan`         | string      | ❌       | JSON |
-| `kham_lam_sang`     | string      | ❌       | JSON |
-| `kham_can_lam_sang` | string      | ❌       | JSON |
-| `ket_luan`          | string      | ❌       |      |
+| Field               | Type        | Required | Max  | Notes |
+| ------------------- | ----------- | -------- | ---- | ----- |
+| `ma_phieu_kham`     | string (PK) | ✅       | 10   | |
+| `ma_quan_nhan`      | string      | ❌       | 10   | FK → quan_nhan |
+| `ma_lich_kham`      | string      | ❌       | 10   | FK → lich_kham_sk_nam |
+| `nam`               | integer     | ❌       |      | |
+| `trang_thai`        | string      | ❌       | 20   | `chua_kham` / `dang_kham` / `da_kham` |
+| `tong_quan`         | string      | ❌       | JSON | |
+| `kham_lam_sang`     | string      | ❌       | JSON | |
+| `xet_nghiem`        | string      | ❌       | JSON | |
+| `chan_doan_hinh_anh`| string      | ❌       | JSON | |
+| `ket_luan`          | string      | ❌       | JSON | |
 
 ### PhieuChamSoc (`/phieu_cham_soc`)
 

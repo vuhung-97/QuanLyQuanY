@@ -76,13 +76,18 @@ FE/
     │   │   │   ├── BangQuanNhan.jsx
     │   │   │   ├── KhamSucKhoeForm.jsx
     │   │   │   ├── KhamSucKhoeFormUtils.js
+    │   │   │   ├── DanhSachPhieuKhamFilterBar.jsx
+    │   │   │   ├── KhamSucKhoeForm.jsx
+    │   │   │   ├── KhamSucKhoeFormUtils.js
     │   │   │   ├── KhamSucKhoeMain.jsx
+    │   │   │   ├── LichSuKhamDialog.jsx
     │   │   │   └── tabs/
-    │   │   │       ├── CanLamSangTab.jsx
+    │   │   │       ├── ChanDoanHinhAnhTab.jsx
     │   │   │       ├── fieldRanges.js
     │   │   │       ├── KetLuanTab.jsx
     │   │   │       ├── LamSangTab.jsx
-    │   │   │       └── TongQuanTab.jsx
+    │   │   │       ├── TongQuanTab.jsx
+    │   │   │       └── XetNghiemTab.jsx
     │   │   └── LapLich/
     │   │       ├── ChonNgayGio.jsx
     │   │       ├── DanhSachLich.jsx
@@ -108,9 +113,11 @@ FE/
     │   ├── useCapThuoc.jsx
     │   ├── useDanhSachKhamBenh.jsx
     │   ├── useDebounce.jsx
+    │   ├── useTongQuanTab.jsx
     │   ├── useKhamBenhForm.jsx
     │   ├── useKhamSucKhoeData.jsx
     │   ├── useKhamSucKhoeForm.jsx
+    │   ├── useKhamSucKhoeMain.jsx
     │   ├── useLapLichDialog.jsx
     │   ├── useLichKhamData.jsx
     │   └── usePermissionDiff.js

@@ -123,12 +123,14 @@ const tabConfigs = [
     { icon: <AssignmentTurnedInIcon />, label: "Kết luận" },
 ];
 
-function FormTabBar({ activeTab, onTabChange }) {
+function FormTabBar({ activeTab, onTabChange, allowedTabs }) {
+    const filtered = tabConfigs.filter((_, i) => allowedTabs.includes(i));
+    const handleChange = (_, filteredIdx) => onTabChange(_, allowedTabs[filteredIdx]);
     return (
         <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}>
             <Tabs
-                value={activeTab}
-                onChange={onTabChange}
+                value={allowedTabs.indexOf(activeTab)}
+                onChange={handleChange}
                 variant="fullWidth"
                 sx={(theme) => ({
                     "& .MuiTabs-indicator": {
@@ -144,7 +146,7 @@ function FormTabBar({ activeTab, onTabChange }) {
                     },
                 })}
             >
-                {tabConfigs.map((t) => (
+                {filtered.map((t) => (
                     <Tab
                         key={t.label}
                         icon={t.icon}
@@ -212,6 +214,7 @@ export default function KhamSucKhoeForm({
         nam,
         onSaved,
         onClose,
+        allowedTabs,
         editableTabs,
     });
 
@@ -252,6 +255,7 @@ export default function KhamSucKhoeForm({
                     <FormTabBar
                         activeTab={activeTab}
                         onTabChange={(_, val) => setActiveTab(val)}
+                        allowedTabs={allowedTabs}
                     />
 
                     {allowedTabs.includes(0) && (
