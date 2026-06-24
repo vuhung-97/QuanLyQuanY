@@ -110,6 +110,7 @@ class MedicalExaminationService:
 
         ggt = GiayGioiThieu(
             ma_quan_nhan=kb.ma_quan_nhan,
+            ma_kham_benh=data.get("ma_kham_benh"),
             ten_benh_vien=data.get("ten_benh_vien"),
             can_benh=data.get("can_benh"),
             y_kien_de_nghi=data.get("y_kien_de_nghi"),

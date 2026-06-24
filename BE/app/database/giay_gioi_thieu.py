@@ -12,6 +12,7 @@ class GiayGioiThieu(Base):
 
     ma_giay_gt: Mapped[str] = mapped_column(String(10), primary_key=True, default=lambda: generate_id(10))
     ma_quan_nhan: Mapped[str | None] = mapped_column(String(10), ForeignKey("quan_nhan.ma_quan_nhan", ondelete="CASCADE"), nullable=True)
+    ma_kham_benh: Mapped[str | None] = mapped_column(String(10), ForeignKey("kham_benh.ma_kham_benh", ondelete="SET NULL"), nullable=True)
     ten_benh_vien: Mapped[str | None] = mapped_column(String(255), nullable=True)
     can_benh: Mapped[str | None] = mapped_column(Text, nullable=True)
     y_kien_de_nghi: Mapped[str | None] = mapped_column(Text, nullable=True)

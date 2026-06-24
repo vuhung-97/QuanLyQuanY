@@ -6,6 +6,7 @@ from pydantic import Field
 
 class GiayGioiThieuBase(SchemaBase):
     ma_quan_nhan: str | None = Field(default=None, max_length=10)
+    ma_kham_benh: str | None = Field(default=None, max_length=10)
     ten_benh_vien: str | None = Field(default=None, max_length=255)
     can_benh: str | None = None
     y_kien_de_nghi: str | None = None
