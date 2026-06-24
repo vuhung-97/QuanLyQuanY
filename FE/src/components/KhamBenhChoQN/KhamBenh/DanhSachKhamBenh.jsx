@@ -28,7 +28,7 @@ import KhamBenhForm from "./KhamBenhForm.jsx";
 import TiepNhanQnDialog from "./TiepNhanQnDialog.jsx";
 
 const STATUS_MAP = {
-    chờ: { label: "Chờ khám", color: "warning" },
+    chờ: { label: "Chờ khám", color: "default" },
     đang_khám: { label: "Đang khám", color: "info" },
     chờ_nhận_thuốc: { label: "Chờ nhận thuốc", color: "warning" },
     đã_nhận_thuốc: { label: "Đã nhận thuốc", color: "success" },
