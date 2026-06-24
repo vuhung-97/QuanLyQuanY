@@ -167,6 +167,24 @@ export default function CapThuocForm({
                             </Box>
                         )}
 
+                        {examDetail?.phuong_phap_dieu_tri && (
+                            <Box>
+                                <Typography
+                                    variant="h3"
+                                    sx={{
+                                        mb: 0.5,
+                                        fontWeight: 700,
+                                        color: "primary.main",
+                                    }}
+                                >
+                                    Phương pháp điều trị
+                                </Typography>
+                                <Typography variant="body1">
+                                    {examDetail.phuong_phap_dieu_tri}
+                                </Typography>
+                            </Box>
+                        )}
+
                         <Box>
                             <Typography
                                 variant="h3"
