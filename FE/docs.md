@@ -26,7 +26,9 @@ FE/
     │   │   ├── ConfirmDialog.jsx
     │   │   ├── DataTable.jsx
     │   │   ├── DatePicker.jsx
+    │   │   ├── DonThuoc.jsx
     │   │   ├── FeedbackSnackbar.jsx
+    │   │   ├── FilterModeToggle.jsx
     │   │   ├── PaginationWidget.jsx
     │   │   ├── PlaceHolderPage.jsx
     │   │   ├── ProtectedRoute.jsx
@@ -66,18 +68,17 @@ FE/
     │   │   ├── CapThuoc/
     │   │   │   ├── CapThuocForm.jsx
     │   │   │   └── CapThuocList.jsx
-│   │   └── ChuyenTuyen/
-│   │       ├── ChuyenTuyenDialog.jsx
-│   │       ├── ChuyenTuyenList.jsx
-│   │       ├── ChuyenTuyenForm.jsx
-│   │       └── NhapVienDialog.jsx
+    │   │   └── ChuyenTuyen/
+    │   │       ├── ChuyenTuyenDialog.jsx
+    │   │       ├── ChuyenTuyenForm.jsx
+    │   │       ├── ChuyenTuyenList.jsx
+    │   │       ├── ChuyenTuyenPrint.jsx
+    │   │       └── NhapVienDialog.jsx
     │   │
     │   ├── KhamSucKhoe/     # Components cho module Khám định kỳ
     │   │   ├── KhamSucKhoeUtils.js
     │   │   ├── KiemTraSucKhoe/
     │   │   │   ├── BangQuanNhan.jsx
-    │   │   │   ├── KhamSucKhoeForm.jsx
-    │   │   │   ├── KhamSucKhoeFormUtils.js
     │   │   │   ├── DanhSachPhieuKhamFilterBar.jsx
     │   │   │   ├── KhamSucKhoeForm.jsx
     │   │   │   ├── KhamSucKhoeFormUtils.js
@@ -94,6 +95,7 @@ FE/
     │   │       ├── ChonNgayGio.jsx
     │   │       ├── DanhSachLich.jsx
     │   │       ├── LapLichDialog.jsx
+    │   │       ├── PhanCongNhiemVu.jsx
     │   │       └── TongQuanDonVi.jsx
     │   │
     │   └── admin/           # Components cho module Admin
@@ -112,18 +114,19 @@ FE/
     │           └── UserTableRow.jsx
     │
     ├── hooks/              # Custom hooks — tách logic khỏi UI
-│   ├── useCapThuoc.jsx
-│   ├── useChuyenTuyen.jsx
-│   ├── useDanhSachKhamBenh.jsx
+    │   ├── useCapThuoc.jsx
+    │   ├── useChuyenTuyen.jsx
+    │   ├── useDanhSachKhamBenh.jsx
     │   ├── useDebounce.jsx
-    │   ├── useTongQuanTab.jsx
+    │   ├── useFilterModePagination.jsx
     │   ├── useKhamBenhForm.jsx
     │   ├── useKhamSucKhoeData.jsx
     │   ├── useKhamSucKhoeForm.jsx
     │   ├── useKhamSucKhoeMain.jsx
     │   ├── useLapLichDialog.jsx
     │   ├── useLichKhamData.jsx
-    │   └── usePermissionDiff.js
+    │   ├── usePermissionDiff.js
+    │   └── useTongQuanTab.jsx
     │
     ├── services/           # API layer
     │   ├── adminService.js
