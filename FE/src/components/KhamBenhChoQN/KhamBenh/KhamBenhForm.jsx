@@ -19,6 +19,7 @@ import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import DonThuocForm from "./DonThuocForm.jsx";
 import NhapVienDialog from "@/components/KhamBenhChoQN/ChuyenTuyen/NhapVienDialog.jsx";
 import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
+import DonThuocTable from "@/components/common/DonThuoc.jsx";
 import symptoms from "@/data/trieu_chung.json";
 
 function InfoRow({ label, value }) {
@@ -219,47 +220,6 @@ const DiagnosisSection = memo(function DiagnosisSection({
     );
 });
 
-const PrescriptionDisplay = memo(function PrescriptionDisplay({ items }) {
-    if (!items || items.length === 0) return null;
-    return (
-        <Box>
-            <Typography variant="h3" sx={{ mb: 1.5, color: "text.primary" }}>
-                Đơn thuốc đã kê
-            </Typography>
-            <Stack spacing={1}>
-                {items.map((it, i) => (
-                    <Box
-                        key={i}
-                        sx={{
-                            display: "flex",
-                            gap: 2,
-                            p: 1.5,
-                            border: "1px solid",
-                            borderColor: "divider",
-                            borderRadius: 1,
-                        }}
-                    >
-                        <Typography
-                            variant="body2"
-                            fontWeight={600}
-                            sx={{ minWidth: 200 }}
-                        >
-                            {it.ten_thuoc_vtyt}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                            SL: {it.so_luong}
-                            {it.don_vi_tinh ? ` (${it.don_vi_tinh})` : ""}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                            {it.huong_dieu_tri}
-                        </Typography>
-                    </Box>
-                ))}
-            </Stack>
-        </Box>
-    );
-});
-
 const FormActions = memo(function FormActions({
     saving,
     hasPrescription,
@@ -417,7 +377,7 @@ export default function KhamBenhForm({
                                 />
                             </Grid>
 
-                            <PrescriptionDisplay items={prescriptionItems} />
+                            <DonThuocTable rows={prescriptionItems} heading="Đơn thuốc đã kê" hideWhenEmpty />
                         </Stack>
                     )}
                 </DialogContent>

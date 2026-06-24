@@ -17,6 +17,17 @@ import {
     Typography,
 } from "@mui/material";
 import DatePicker from "@/components/common/DatePicker.jsx";
+import DonThuocTable from "@/components/common/DonThuoc.jsx";
+import ChuyenTuyenPrint from "./ChuyenTuyenPrint.jsx";
+
+const sectionSx = { mb: 1, fontWeight: 700, color: "text.primary" };
+function SectionHeading({ children }) {
+    return (
+        <Typography variant="h3" sx={sectionSx}>
+            {children}
+        </Typography>
+    );
+}
 
 export default function ChuyenTuyenForm({
     open,
@@ -127,7 +138,7 @@ export default function ChuyenTuyenForm({
                             textAlign: "center",
                         }}
                     >
-                        Giấy giới thiệu
+                        Thông tin chuyển tuyến
                     </Typography>
                 </DialogTitle>
             </Box>
@@ -148,401 +159,215 @@ export default function ChuyenTuyenForm({
                         Không tìm thấy thông tin.
                     </Typography>
                 ) : (
-                    <Stack spacing={2.5}>
-                        {/* ===== PRINT HEADER ===== */}
-                        <Box
-                            className="print-only-header"
-                            sx={{
-                                display: "none",
-                                "@media print": { display: "block", mb: 3 },
-                            }}
+                    <>
+                        <Stack
+                            spacing={2.5}
+                            sx={{ "@media print": { display: "none" } }}
                         >
-                            <Typography
-                                variant="h3"
-                                sx={{
-                                    fontWeight: 700,
-                                    textAlign: "center",
-                                    mb: 2,
-                                }}
-                            >
-                                GIẤY GIỚI THIỆU
-                            </Typography>
-                            <Typography
-                                variant="body1"
-                                sx={{ textAlign: "center", msTouchSelect: 2 }}
-                            >
-                                Kính gửi:{" "}
-                                {tenBenhVien ||
-                                    "................................"}
-                            </Typography>
-                        </Box>
-
-                        {/* ===== A. PATIENT INFO ===== */}
-                        <Box>
-                            <Typography
-                                variant="h3"
-                                sx={{
-                                    mb: 1,
-                                    fontWeight: 700,
-                                    color: "text.primary",
-                                }}
-                            >
-                                Thông tin quân nhân
-                            </Typography>
-                            <Stack spacing={0.5}>
-                                <Typography variant="body1">
-                                    <strong>Họ tên:</strong>{" "}
-                                    {selectedExam.ho_ten || "--"}
-                                </Typography>
-                                <Typography variant="body1">
-                                    <strong>Đơn vị:</strong>{" "}
-                                    {selectedExam.ten_don_vi || "--"}
-                                </Typography>
-                                <Typography variant="body1">
-                                    <strong>Mã KB:</strong>{" "}
-                                    {selectedExam.ma_kham_benh || "--"}
-                                </Typography>
-                                <Typography variant="body1">
-                                    <strong>Ngày khám:</strong>{" "}
-                                    {selectedExam.ngay_kham
-                                        ? new Date(
-                                              selectedExam.ngay_kham,
-                                          ).toLocaleDateString("vi-VN")
-                                        : "--"}
-                                </Typography>
-                            </Stack>
-                        </Box>
-
-                        {/* ===== B. SYMPTOMS & DIAGNOSIS ===== */}
-                        {examDetail?.trieu_chung && (
+                            {/* ===== A. PATIENT INFO ===== */}
                             <Box>
-                                <Typography
-                                    variant="h3"
-                                    sx={{
-                                        mb: 1,
-                                        fontWeight: 700,
-                                        color: "text.primary",
-                                    }}
-                                >
-                                    Triệu chứng
-                                </Typography>
-                                <Typography variant="body1">
-                                    {examDetail.trieu_chung}
-                                </Typography>
-                            </Box>
-                        )}
-
-                        {examDetail?.chan_doan && (
-                            <Box>
-                                <Typography
-                                    variant="h3"
-                                    sx={{
-                                        mb: 1,
-                                        fontWeight: 700,
-                                        color: "text.primary",
-                                    }}
-                                >
-                                    Chẩn đoán
-                                </Typography>
-                                <Typography variant="body1">
-                                    {examDetail.chan_doan}
-                                </Typography>
-                            </Box>
-                        )}
-
-                        {examDetail?.phuong_phap_dieu_tri && (
-                            <Box>
-                                <Typography
-                                    variant="h3"
-                                    sx={{
-                                        mb: 1,
-                                        fontWeight: 700,
-                                        color: "text.primary",
-                                    }}
-                                >
-                                    Phương pháp điều trị
-                                </Typography>
-                                <Typography variant="body1">
-                                    {examDetail.phuong_phap_dieu_tri}
-                                </Typography>
-                            </Box>
-                        )}
-
-                        {/* ===== C. PRESCRIPTION ===== */}
-                        {prescriptionRows.length > 0 && (
-                            <Box>
-                                <Typography
-                                    variant="h3"
-                                    sx={{
-                                        mb: 1,
-                                        fontWeight: 700,
-                                        color: "text.primary",
-                                    }}
-                                >
-                                    Đơn thuốc đã kê
-                                </Typography>
-                                <Table
-                                    size="small"
-                                    sx={{
-                                        border: "1px solid",
-                                        borderColor: "divider",
-                                    }}
-                                >
-                                    <TableHead>
-                                        <TableRow sx={{ bgcolor: "#F4F7F9" }}>
-                                            <TableCell sx={{ width: 40 }}>
-                                                STT
-                                            </TableCell>
-                                            <TableCell>Tên thuốc</TableCell>
-                                            <TableCell sx={{ width: 80 }}>
-                                                Số lượng
-                                            </TableCell>
-                                            <TableCell sx={{ width: 60 }}>
-                                                ĐVT
-                                            </TableCell>
-                                            <TableCell>
-                                                Hướng dẫn sử dụng
-                                            </TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {prescriptionRows.map((row, i) => (
-                                            <TableRow key={i}>
-                                                <TableCell>{i + 1}</TableCell>
-                                                <TableCell
-                                                    sx={{ fontWeight: 600 }}
-                                                >
-                                                    {row.ten_thuoc}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {row.so_luong}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {row.don_vi_tinh}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {row.huong_dieu_tri ||
-                                                        row.lieu}
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </Box>
-                        )}
-
-                        {/* ===== D. CHUYỂN TUYẾN INPUTS ===== */}
-                        <Box>
-                            <Typography
-                                variant="h3"
-                                sx={{
-                                    mb: 1,
-                                    fontWeight: 700,
-                                    color: "text.primary",
-                                }}
-                            >
-                                Thông tin chuyển tuyến
-                            </Typography>
-                            <Stack spacing={2}>
-                                <TextField
-                                    label="Đơn vị chuyển đến"
-                                    value={tenBenhVien}
-                                    onChange={(e) =>
-                                        setTenBenhVien(e.target.value)
-                                    }
-                                    fullWidth
-                                    size="small"
-                                />
-                                <TextField
-                                    label="Ý kiến đề nghị"
-                                    value={yKienDeNghi}
-                                    onChange={(e) =>
-                                        setYKienDeNghi(e.target.value)
-                                    }
-                                    multiline
-                                    minRows={2}
-                                    fullWidth
-                                    size="small"
-                                />
-                            </Stack>
-                        </Box>
-
-                        {/* ===== E. SAU KHI VỀ INPUTS ===== */}
-                        <Box>
-                            <Typography
-                                variant="h3"
-                                sx={{
-                                    mb: 1,
-                                    fontWeight: 700,
-                                    color: "text.primary",
-                                }}
-                            >
-                                Sau khi quân nhân về
-                            </Typography>
-                            <Stack spacing={2}>
-                                <Stack
-                                    direction="row"
-                                    spacing={2}
-                                    sx={{ alignItems: "center" }}
-                                >
-                                    <Typography
-                                        variant="body2"
-                                        sx={{ minWidth: 220 }}
-                                    >
-                                        Thời gian đến bệnh viện, bệnh xá:
-                                    </Typography>
-                                    <DatePicker
-                                        value={thoiGianDen}
-                                        onChange={setThoiGianDen}
-                                        size="small"
-                                    />
-                                </Stack>
-                                <TextField
-                                    label="Chẩn đoán"
-                                    value={chanDoan}
-                                    onChange={(e) =>
-                                        setChanDoan(e.target.value)
-                                    }
-                                    multiline
-                                    minRows={2}
-                                    fullWidth
-                                    size="small"
-                                />
-                                <TextField
-                                    label="Quyết định của y sinh"
-                                    value={quyetDinhYSinh}
-                                    onChange={(e) =>
-                                        setQuyetDinhYSinh(e.target.value)
-                                    }
-                                    multiline
-                                    minRows={2}
-                                    fullWidth
-                                    size="small"
-                                />
-                                <Stack
-                                    direction="row"
-                                    spacing={2}
-                                    sx={{ alignItems: "center" }}
-                                >
-                                    <Typography
-                                        variant="body2"
-                                        sx={{ minWidth: 220 }}
-                                    >
-                                        Ngày về:
-                                    </Typography>
-                                    <DatePicker
-                                        value={ngayVe}
-                                        onChange={setNgayVe}
-                                        size="small"
-                                    />
-                                </Stack>
-                                <TextField
-                                    label="Chẩn đoán lúc về"
-                                    value={chanDoanLucVe}
-                                    onChange={(e) =>
-                                        setChanDoanLucVe(e.target.value)
-                                    }
-                                    multiline
-                                    minRows={2}
-                                    fullWidth
-                                    size="small"
-                                />
-                                <TextField
-                                    label="Kết quả hướng điều trị"
-                                    value={ketQuaDieuTri}
-                                    onChange={(e) =>
-                                        setKetQuaDieuTri(e.target.value)
-                                    }
-                                    multiline
-                                    minRows={2}
-                                    fullWidth
-                                    size="small"
-                                />
-                            </Stack>
-                        </Box>
-
-                        {/* ===== PRINT SIGNATURE ===== */}
-                        <Box
-                            className="print-only-signature"
-                            sx={{
-                                display: "none",
-                                "@media print": { display: "block", mt: 4 },
-                            }}
-                        >
-                            <Typography variant="body2">
-                                Ngày ... tháng ... năm ...
-                            </Typography>
-                            <Typography
-                                variant="body2"
-                                sx={{ mt: 4, textAlign: "right" }}
-                            >
-                                Y sĩ/Bác sĩ
-                            </Typography>
-                            <Typography
-                                variant="body2"
-                                sx={{ textAlign: "right" }}
-                            >
-                                (ký, ghi rõ họ tên)
-                            </Typography>
-                        </Box>
-
-                        {/* ===== PRINT PAGE 2 ===== */}
-                        <Box
-                            className="print-page-2"
-                            sx={{
-                                display: "none",
-                                "@media print": {
-                                    display: "block",
-                                    pageBreakBefore: "always",
-                                    mt: 4,
-                                },
-                            }}
-                        >
-                            <Typography
-                                variant="h3"
-                                sx={{
-                                    fontWeight: 700,
-                                    textAlign: "center",
-                                    mb: 4,
-                                }}
-                            >
-                                TRANG TIẾP THEO
-                            </Typography>
-                            <Stack spacing={4}>
-                                <Box>
+                                <SectionHeading>
+                                    Thông tin quân nhân
+                                </SectionHeading>
+                                <Stack spacing={0.5}>
                                     <Typography variant="body1">
-                                        <strong>
+                                        <strong>Họ và tên:</strong>{" "}
+                                        {selectedExam.ho_ten || "--"}
+                                    </Typography>
+                                    <Typography variant="body1">
+                                        <strong>Tuổi:</strong>{" "}
+                                        {selectedExam.ngay_sinh
+                                            ? new Date().getFullYear() -
+                                              new Date(
+                                                  selectedExam.ngay_sinh,
+                                              ).getFullYear()
+                                            : "--"}
+                                    </Typography>
+                                    <Typography variant="body1">
+                                        <strong>Cấp bậc:</strong>{" "}
+                                        {selectedExam.cap_bac || "--"}
+                                    </Typography>
+                                    <Typography variant="body1">
+                                        <strong>Chức vụ:</strong>{" "}
+                                        {selectedExam.chuc_vu || "--"}
+                                    </Typography>
+                                    <Typography variant="body1">
+                                        <strong>Đơn vị:</strong>{" "}
+                                        {selectedExam.ten_don_vi || "--"}
+                                    </Typography>
+                                    <Typography variant="body1">
+                                        <strong>Mã KB:</strong>{" "}
+                                        {selectedExam.ma_kham_benh || "--"}
+                                    </Typography>
+                                    <Typography variant="body1">
+                                        <strong>Ngày khám:</strong>{" "}
+                                        {selectedExam.ngay_kham
+                                            ? new Date(
+                                                  selectedExam.ngay_kham,
+                                              ).toLocaleDateString("vi-VN")
+                                            : "--"}
+                                    </Typography>
+                                </Stack>
+                            </Box>
+
+                            {/* ===== B. SYMPTOMS & DIAGNOSIS ===== */}
+                            {examDetail?.trieu_chung && (
+                                <Box>
+                                    <SectionHeading>Triệu chứng</SectionHeading>
+                                    <Typography variant="body1">
+                                        {examDetail.trieu_chung}
+                                    </Typography>
+                                </Box>
+                            )}
+
+                            {examDetail?.chan_doan && (
+                                <Box>
+                                    <SectionHeading>Chẩn đoán</SectionHeading>
+                                    <Typography variant="body1">
+                                        {examDetail.chan_doan}
+                                    </Typography>
+                                </Box>
+                            )}
+
+                            {examDetail?.phuong_phap_dieu_tri && (
+                                <Box>
+                                    <SectionHeading>
+                                        Phương pháp điều trị
+                                    </SectionHeading>
+                                    <Typography variant="body1">
+                                        {examDetail.phuong_phap_dieu_tri}
+                                    </Typography>
+                                </Box>
+                            )}
+
+                            <DonThuocTable
+                                rows={prescriptionRows}
+                                heading="Đơn thuốc đã kê"
+                                hideWhenEmpty
+                            />
+
+                            {/* ===== D. CHUYỂN TUYẾN INPUTS ===== */}
+                            <Box>
+                                <SectionHeading>Chuyển tuyến</SectionHeading>
+                                <Stack spacing={2}>
+                                    <TextField
+                                        label="Đơn vị chuyển đến"
+                                        value={tenBenhVien}
+                                        onChange={(e) =>
+                                            setTenBenhVien(e.target.value)
+                                        }
+                                        fullWidth
+                                        size="small"
+                                    />
+                                    <TextField
+                                        label="Ý kiến đề nghị"
+                                        value={yKienDeNghi}
+                                        onChange={(e) =>
+                                            setYKienDeNghi(e.target.value)
+                                        }
+                                        multiline
+                                        minRows={2}
+                                        fullWidth
+                                        size="small"
+                                    />
+                                </Stack>
+                            </Box>
+
+                            {/* ===== E. SAU KHI VỀ INPUTS ===== */}
+                            <Box>
+                                <SectionHeading>
+                                    Sau khi quân nhân về
+                                </SectionHeading>
+                                <Stack spacing={2}>
+                                    <Stack
+                                        direction="row"
+                                        spacing={2}
+                                        sx={{ alignItems: "center" }}
+                                    >
+                                        <Typography
+                                            variant="body2"
+                                            sx={{ minWidth: 220 }}
+                                        >
                                             Thời gian đến bệnh viện, bệnh xá:
-                                        </strong>
-                                    </Typography>
-                                    <Typography variant="body1">
-                                        {thoiGianDen?.format(
-                                            "DD/MM/YYYY HH:mm",
-                                        ) ||
-                                            "........................................"}
-                                    </Typography>
-                                </Box>
-                                <Box>
-                                    <Typography variant="body1">
-                                        <strong>Chẩn đoán:</strong>
-                                    </Typography>
-                                    <Typography variant="body1">
-                                        {chanDoan ||
-                                            "........................................"}
-                                    </Typography>
-                                </Box>
-                                <Box>
-                                    <Typography variant="body1">
-                                        <strong>Quyết định của y sinh:</strong>
-                                    </Typography>
-                                    <Typography variant="body1">
-                                        {quyetDinhYSinh ||
-                                            "........................................"}
-                                    </Typography>
-                                </Box>
-                            </Stack>
-                        </Box>
-                    </Stack>
+                                        </Typography>
+                                        <DatePicker
+                                            value={thoiGianDen}
+                                            onChange={setThoiGianDen}
+                                            size="small"
+                                        />
+                                    </Stack>
+                                    <TextField
+                                        label="Chẩn đoán"
+                                        value={chanDoan}
+                                        onChange={(e) =>
+                                            setChanDoan(e.target.value)
+                                        }
+                                        multiline
+                                        minRows={2}
+                                        fullWidth
+                                        size="small"
+                                    />
+                                    <TextField
+                                        label="Quyết định của y sinh"
+                                        value={quyetDinhYSinh}
+                                        onChange={(e) =>
+                                            setQuyetDinhYSinh(e.target.value)
+                                        }
+                                        multiline
+                                        minRows={2}
+                                        fullWidth
+                                        size="small"
+                                    />
+                                    <Stack
+                                        direction="row"
+                                        spacing={2}
+                                        sx={{ alignItems: "center" }}
+                                    >
+                                        <Typography
+                                            variant="body2"
+                                            sx={{ minWidth: 220 }}
+                                        >
+                                            Ngày về:
+                                        </Typography>
+                                        <DatePicker
+                                            value={ngayVe}
+                                            onChange={setNgayVe}
+                                            size="small"
+                                        />
+                                    </Stack>
+                                    <TextField
+                                        label="Chẩn đoán lúc về"
+                                        value={chanDoanLucVe}
+                                        onChange={(e) =>
+                                            setChanDoanLucVe(e.target.value)
+                                        }
+                                        multiline
+                                        minRows={2}
+                                        fullWidth
+                                        size="small"
+                                    />
+                                    <TextField
+                                        label="Kết quả hướng điều trị"
+                                        value={ketQuaDieuTri}
+                                        onChange={(e) =>
+                                            setKetQuaDieuTri(e.target.value)
+                                        }
+                                        multiline
+                                        minRows={2}
+                                        fullWidth
+                                        size="small"
+                                    />
+                                </Stack>
+                            </Box>
+                        </Stack>
+
+                        <ChuyenTuyenPrint
+                            selectedExam={selectedExam}
+                            examDetail={examDetail}
+                            tenBenhVien={tenBenhVien}
+                            yKienDeNghi={yKienDeNghi}
+                        />
+                    </>
                 )}
             </DialogContent>
 

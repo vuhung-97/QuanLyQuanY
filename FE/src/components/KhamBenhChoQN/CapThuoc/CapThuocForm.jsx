@@ -7,13 +7,9 @@ import {
     DialogContent,
     DialogTitle,
     Stack,
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableRow,
     Typography,
 } from "@mui/material";
+import DonThuocTable from "@/components/common/DonThuoc.jsx";
 
 const THOI_DIEM_LABEL = {
     sau_an: "Sau ăn",
@@ -191,100 +187,11 @@ export default function CapThuocForm({
                             </Box>
                         )}
 
-                        <Box>
-                            <Typography
-                                variant="h3"
-                                sx={{
-                                    mb: 1,
-                                    fontWeight: 700,
-                                    color: "text.primary",
-                                }}
-                            >
-                                Đơn thuốc
-                            </Typography>
-                            {prescriptionRows.length === 0 ? (
-                                <Typography color="text.secondary">
-                                    Không có thuốc trong đơn.
-                                </Typography>
-                            ) : (
-                                <Table
-                                    size="small"
-                                    sx={{
-                                        border: "1px solid",
-                                        borderColor: "divider",
-                                    }}
-                                >
-                                    <TableHead>
-                                        <TableRow sx={{ bgcolor: "#F4F7F9" }}>
-                                            <TableCell sx={{ width: 40 }}>
-                                                STT
-                                            </TableCell>
-                                            <TableCell>Tên thuốc</TableCell>
-                                            <TableCell sx={{ width: 80 }}>
-                                                Số lượng
-                                            </TableCell>
-                                            <TableCell sx={{ width: 80 }}>
-                                                ĐVT
-                                            </TableCell>
-                                            <TableCell>
-                                                Hướng dẫn sử dụng
-                                            </TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {prescriptionRows.map((row, i) => (
-                                            <TableRow key={i}>
-                                                <TableCell>{i + 1}</TableCell>
-                                                <TableCell
-                                                    sx={{ fontWeight: 600 }}
-                                                >
-                                                    {row.ten_thuoc}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {row.so_luong}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {row.don_vi_tinh}
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Stack spacing={0.5}>
-                                                        {row.lieu && (
-                                                            <Typography variant="body2">
-                                                                <strong>
-                                                                    Liều:
-                                                                </strong>{" "}
-                                                                {row.lieu}
-                                                            </Typography>
-                                                        )}
-                                                        <Typography variant="body2">
-                                                            <strong>
-                                                                Cách dùng:
-                                                            </strong>{" "}
-                                                            {row.cach_dung ||
-                                                                "Uống"}
-                                                            {" | "}
-                                                            <strong>
-                                                                Thời điểm:
-                                                            </strong>{" "}
-                                                            {row.thoi_diem ||
-                                                                "Sau ăn"}
-                                                        </Typography>
-                                                        {row.ghi_chu && (
-                                                            <Typography variant="body2">
-                                                                <strong>
-                                                                    Ghi chú:
-                                                                </strong>{" "}
-                                                                {row.ghi_chu}
-                                                            </Typography>
-                                                        )}
-                                                    </Stack>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            )}
-                        </Box>
+                        <DonThuocTable
+                            rows={prescriptionRows}
+                            heading="Đơn thuốc"
+                            emptyMessage="Không có thuốc trong đơn."
+                        />
                     </Stack>
                 )}
             </DialogContent>

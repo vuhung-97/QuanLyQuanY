@@ -8,7 +8,7 @@ from app.database.kham_benh import KhamBenh
 class KhamBenhCRUD(CRUDBase[KhamBenh, None, None]):
     def delete(self, db: Session, item_id: str, nguoi_dung_id: str | None = None) -> None:
         row = self.get(db, item_id)
-        if row.trang_thai in ("đã_khám", "đã_nhận_thuốc", "chuyển_tuyến", "nhập_viện"):
+        if row.trang_thai in ("đã_khám", "đã_nhận_thuốc"):
             raise HTTPException(
                 status_code=400,
                 detail="Không thể xoá ca khám đã kết thúc.",

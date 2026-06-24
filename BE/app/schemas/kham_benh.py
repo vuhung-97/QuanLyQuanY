@@ -30,5 +30,8 @@ class KhamBenhUpdate(SchemaBase):
 class KhamBenhRead(KhamBenhBase):
     ma_kham_benh: str = Field(max_length=10)
     ho_ten: str | None = None
+    cap_bac: str | None = None
+    chuc_vu: str | None = None
+    ngay_sinh: str | None = None
     ma_don_vi: str | None = None
     ten_don_vi: str | None = None

@@ -152,6 +152,24 @@ export default function useKhamBenhForm({
         };
     }, [open, examinationId]);
 
+    const persistExamData = useCallback(async (status) => {
+        const hasPrescription = prescriptionItems.length > 0;
+        const payload = {
+            trieu_chung: trieuChung,
+            chan_doan: chanDoan,
+            phuong_phap_dieu_tri: phuongPhap,
+        };
+        if (hasPrescription) {
+            await khamBenhService.completeExamination(exam.ma_kham_benh, {
+                ...payload,
+                prescription_items: prescriptionItems,
+            });
+        } else {
+            if (status) payload.trang_thai = status;
+            await khamBenhService.update(exam.ma_kham_benh, payload);
+        }
+    }, [exam, trieuChung, chanDoan, phuongPhap, prescriptionItems]);
+
     const handleSave = useCallback(async () => {
         if (!exam) return;
         if (!trieuChung.trim()) {
@@ -165,32 +183,15 @@ export default function useKhamBenhForm({
         setSaving(true);
         try {
             const hasPrescription = prescriptionItems.length > 0;
-            const payload = {
-                trieu_chung: trieuChung,
-                chan_doan: chanDoan,
-                phuong_phap_dieu_tri: phuongPhap,
-            };
+            const isFull = chanDoan.trim() && phuongPhap.trim();
+            const status = hasPrescription ? null : (isFull ? "đã_khám" : "đang_khám");
+            await persistExamData(status);
 
-            let message;
-            if (hasPrescription) {
-                payload.prescription_items = prescriptionItems;
-                await khamBenhService.completeExamination(
-                    exam.ma_kham_benh,
-                    payload,
-                );
-                message = "Đã lưu và kê đơn thành công.";
-            } else {
-                const isFull = chanDoan.trim() && phuongPhap.trim();
-                payload.trang_thai = isFull ? "đã_khám" : "đang_khám";
-                await khamBenhService.update(exam.ma_kham_benh, payload);
-                message = "Đã lưu kết quả khám.";
-            }
+            const message = hasPrescription
+                ? "Đã lưu và kê đơn thành công."
+                : "Đã lưu kết quả khám.";
 
-            setSnackbar({
-                open: true,
-                message,
-                severity: "success",
-            });
+            setSnackbar({ open: true, message, severity: "success" });
             onSaved?.();
             setTimeout(onClose, 800);
         } catch (err) {
@@ -202,15 +203,7 @@ export default function useKhamBenhForm({
         } finally {
             setSaving(false);
         }
-    }, [
-        exam,
-        trieuChung,
-        chanDoan,
-        phuongPhap,
-        prescriptionItems,
-        onSaved,
-        onClose,
-    ]);
+    }, [exam, trieuChung, chanDoan, phuongPhap, prescriptionItems, persistExamData, onSaved, onClose]);
 
     const handlePrescriptionSave = useCallback((items) => {
         setPrescriptionItems(items);
@@ -240,8 +233,17 @@ export default function useKhamBenhForm({
 
     const handleReferConfirm = useCallback(async () => {
         if (!exam || !qn) return;
+        if (!trieuChung.trim()) {
+            setSnackbar({
+                open: true,
+                message: "Vui lòng nhập triệu chứng.",
+                severity: "warning",
+            });
+            return;
+        }
         setReferring(true);
         try {
+            await persistExamData();
             await khamBenhService.referPatient(exam.ma_kham_benh, {
                 ma_quan_nhan: qn.ma_quan_nhan,
                 ma_kham_benh: exam.ma_kham_benh,
@@ -264,7 +266,7 @@ export default function useKhamBenhForm({
         } finally {
             setReferring(false);
         }
-    }, [exam, qn, onSaved, onClose]);
+    }, [exam, qn, trieuChung, chanDoan, phuongPhap, prescriptionItems, persistExamData, onSaved, onClose]);
 
     const handleReferSaved = useCallback(() => {
         setOpenReferral(false);
