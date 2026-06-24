@@ -9,7 +9,7 @@ export default function KhamBenhPage() {
                     Khám, chữa bệnh cho quân nhân
                 </Typography>
                 <Typography sx={{ mt: 0.75, color: "text.secondary" }}>
-                    Tiếp nhận, khám bệnh, kê đơn thuốc, chuyển tuyến và quản lý nội trú.
+                    Tiếp nhận, khám bệnh, kê đơn thuốc, chuyển tuyến.
                 </Typography>
             </Box>
             <DanhSachKhamBenh />

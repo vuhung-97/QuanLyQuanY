@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import useDebounce from "./useDebounce.jsx";
+import useFilterModePagination from "./useFilterModePagination.jsx";
 import { khamBenhService } from "@/services/khamBenhService.js";
 
 export default function useCapThuoc() {
@@ -10,6 +11,16 @@ export default function useCapThuoc() {
     const [selectedDate, setSelectedDate] = useState(dayjs());
     const [searchText, setSearchText] = useState("");
     const debouncedSearchText = useDebounce(searchText);
+    const {
+        filterMode,
+        handleFilterModeChange,
+        page,
+        setPage,
+        totalRecords,
+        setTotalRecords,
+        ROWS_PER_PAGE,
+        offset,
+    } = useFilterModePagination();
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
     const [selectedExam, setSelectedExam] = useState(null);
     const [examDetail, setExamDetail] = useState(null);
@@ -20,9 +31,16 @@ export default function useCapThuoc() {
     const loadData = useCallback(async () => {
         setRefreshing(true);
         try {
-            const ngay = selectedDate.format("YYYY-MM-DD");
-            const res = await khamBenhService.getHomNay(ngay);
-            setExaminations(res.data || []);
+            if (filterMode === "theo_ngay") {
+                const ngay = selectedDate.format("YYYY-MM-DD");
+                const res = await khamBenhService.getHomNay(ngay);
+                setExaminations(res.data || []);
+                setTotalRecords(0);
+            } else {
+                const res = await khamBenhService.getAll({ limit: ROWS_PER_PAGE, offset });
+                setExaminations(res.data.data || []);
+                setTotalRecords(res.data.total || 0);
+            }
         } catch (err) {
             setSnackbar({
                 open: true,
@@ -33,7 +51,7 @@ export default function useCapThuoc() {
             setRefreshing(false);
             setInitialLoading(false);
         }
-    }, [selectedDate]);
+    }, [filterMode, selectedDate, offset, ROWS_PER_PAGE]);
 
     useEffect(() => { loadData(); }, [loadData]);
 
@@ -130,5 +148,12 @@ export default function useCapThuoc() {
         handleDispense,
         dispensing,
         loadData,
+        filterMode,
+        handleFilterModeChange,
+        page,
+        setPage,
+        totalRecords,
+        ROWS_PER_PAGE,
+        offset,
     };
 }

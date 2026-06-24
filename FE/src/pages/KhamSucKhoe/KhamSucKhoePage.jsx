@@ -9,7 +9,8 @@ export default function KhamSucKhoePage() {
                     Khám sức khỏe định kỳ
                 </Typography>
                 <Typography sx={{ mt: 0.75, color: "text.secondary" }}>
-                    Tra cứu danh sách quân nhân, nhập kết quả khám và theo dõi tiến độ.
+                    Tra cứu danh sách quân nhân, nhập kết quả khám và theo dõi
+                    tiến độ.
                 </Typography>
             </Box>
             <KhamSucKhoeMain />

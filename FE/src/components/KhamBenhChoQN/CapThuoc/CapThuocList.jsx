@@ -8,7 +8,8 @@ import {
     Stack,
     Typography,
 } from "@mui/material";
-import DatePicker from "@/components/common/DatePicker.jsx";
+import FilterModeToggle from "@/components/common/FilterModeToggle.jsx";
+import PaginationWidget from "@/components/common/PaginationWidget.jsx";
 import {
     Download as DownloadIcon,
     MedicalServices as MedicalServicesIcon,
@@ -27,7 +28,7 @@ const STATUS_MAP = {
 };
 
 const columns = [
-    { key: "stt", label: "STT", render: (row, idx) => idx + 1 },
+    { key: "stt", label: "STT", render: (row, idx, extra) => (extra?.offset || 0) + idx + 1 },
     {
         key: "ma_kham_benh",
         label: "Mã KB",
@@ -103,6 +104,13 @@ export default function CapThuocList() {
         handleDispense,
         dispensing,
         loadData,
+        filterMode,
+        handleFilterModeChange,
+        page,
+        setPage,
+        totalRecords,
+        ROWS_PER_PAGE,
+        offset,
     } = useCapThuoc();
 
     const statItems = useMemo(
@@ -146,11 +154,13 @@ export default function CapThuocList() {
                             sx={{ alignItems: "center" }}
                         >
                             <Typography variant="h2">
-                                Danh sách quân nhân cấp thuốc ngày
+                                Danh sách quân nhân cấp thuốc
                             </Typography>
-                            <DatePicker
-                                value={selectedDate}
-                                onChange={setSelectedDate}
+                            <FilterModeToggle
+                                filterMode={filterMode}
+                                onChange={handleFilterModeChange}
+                                selectedDate={selectedDate}
+                                onDateChange={setSelectedDate}
                             />
                         </Stack>
                         <Stack direction="row" spacing={1.5}>
@@ -174,12 +184,23 @@ export default function CapThuocList() {
                         rows={filtered}
                         loading={initialLoading || refreshing}
                         emptyMessage={
-                            selectedDate.isSame(dayjs(), "day")
-                                ? "Không có quân nhân chờ cấp thuốc."
-                                : `Không có quân nhân chờ cấp thuốc ngày ${selectedDate.format("DD/MM/YYYY")}.`
+                            filterMode === "tat_ca"
+                                ? "Không có quân nhân cấp thuốc."
+                                : selectedDate.isSame(dayjs(), "day")
+                                    ? "Không có quân nhân chờ cấp thuốc."
+                                    : `Không có quân nhân chờ cấp thuốc ngày ${selectedDate.format("DD/MM/YYYY")}.`
                         }
-                        rowExtra={{ onDispense: handleOpenForm }}
+                        rowExtra={{ onDispense: handleOpenForm, offset }}
                     />
+                    {filterMode === "tat_ca" && totalRecords > 0 && (
+                        <PaginationWidget
+                            page={page}
+                            totalRecords={totalRecords}
+                            rowsPerPage={ROWS_PER_PAGE}
+                            onChange={setPage}
+                            sx={{ mt: 2 }}
+                        />
+                    )}
                 </CardContent>
             </Card>
 

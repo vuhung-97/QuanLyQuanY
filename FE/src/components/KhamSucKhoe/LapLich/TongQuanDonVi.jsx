@@ -21,7 +21,11 @@ const columns = [
     { key: "lich_da_lap", label: "Lịch đã lập" },
 ];
 
-export default function TongQuanDonVi({ chiTietMap, unitStats = [], latestScheduleId }) {
+export default function TongQuanDonVi({
+    chiTietMap,
+    unitStats = [],
+    latestScheduleId,
+}) {
     const [query, setQuery] = useState("");
 
     const scheduleDetails = chiTietMap?.[latestScheduleId] || [];
@@ -61,7 +65,9 @@ export default function TongQuanDonVi({ chiTietMap, unitStats = [], latestSchedu
                     }}
                 >
                     <Box>
-                        <Typography variant="h2">Lịch khám gần nhất</Typography>
+                        <Typography variant="h2">
+                            Lịch khám cuối cùng
+                        </Typography>
                         <Typography
                             variant="body2"
                             color="text.secondary"

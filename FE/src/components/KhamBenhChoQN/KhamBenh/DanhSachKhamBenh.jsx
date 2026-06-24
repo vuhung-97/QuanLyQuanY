@@ -8,7 +8,7 @@ import {
     Stack,
     Typography,
 } from "@mui/material";
-import DatePicker from "@/components/common/DatePicker.jsx";
+import FilterModeToggle from "@/components/common/FilterModeToggle.jsx";
 import {
     Delete as DeleteIcon,
     Download as DownloadIcon,
@@ -21,6 +21,7 @@ import useDanhSachKhamBenh from "@/hooks/useDanhSachKhamBenh.jsx";
 import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
 import DataTable from "@/components/common/DataTable.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
+import PaginationWidget from "@/components/common/PaginationWidget.jsx";
 import SearchBar from "@/components/common/SearchBar.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import KhamBenhForm from "./KhamBenhForm.jsx";
@@ -38,7 +39,11 @@ const STATUS_MAP = {
 };
 
 const columns = [
-    { key: "stt", label: "STT", render: (row, idx) => idx + 1 },
+    {
+        key: "stt",
+        label: "STT",
+        render: (row, idx, extra) => (extra?.offset || 0) + idx + 1,
+    },
     {
         key: "ma_kham_benh",
         label: "Mã KB",
@@ -60,14 +65,27 @@ const columns = [
     },
     {
         key: "ngay_kham",
-        label: "Giờ vào",
+        label: "Ngày khám",
         render: (row) =>
-            row.ngay_kham
-                ? new Date(row.ngay_kham).toLocaleTimeString("vi-VN", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                  })
-                : "--",
+            row.ngay_kham ? (
+                <Stack>
+                    <Typography variant="body2" sx={{ lineHeight: 1.3 }}>
+                        {new Date(row.ngay_kham).toLocaleDateString("vi-VN")}
+                    </Typography>
+                    <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        sx={{ lineHeight: 1.3 }}
+                    >
+                        {new Date(row.ngay_kham).toLocaleTimeString("vi-VN", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                        })}
+                    </Typography>
+                </Stack>
+            ) : (
+                "--"
+            ),
     },
     {
         key: "thao_tac",
@@ -148,6 +166,13 @@ export default function DanhSachKhamBenh() {
         loadData,
         selectedDate,
         setSelectedDate,
+        filterMode,
+        handleFilterModeChange,
+        page,
+        setPage,
+        totalRecords,
+        ROWS_PER_PAGE,
+        offset,
     } = useDanhSachKhamBenh();
 
     const statItems = useMemo(
@@ -204,12 +229,12 @@ export default function DanhSachKhamBenh() {
                             spacing={1}
                             sx={{ alignItems: "center" }}
                         >
-                            <Typography variant="h2">
-                                Danh sách khám ngày
-                            </Typography>
-                            <DatePicker
-                                value={selectedDate}
-                                onChange={setSelectedDate}
+                            <Typography variant="h2">Danh sách khám</Typography>
+                            <FilterModeToggle
+                                filterMode={filterMode}
+                                onChange={handleFilterModeChange}
+                                selectedDate={selectedDate}
+                                onDateChange={setSelectedDate}
                             />
                         </Stack>
                         <Toolbar
@@ -227,15 +252,27 @@ export default function DanhSachKhamBenh() {
                         rows={filtered}
                         loading={initialLoading || refreshing}
                         emptyMessage={
-                            selectedDate.isSame(dayjs(), "day")
-                                ? "Chưa có ca khám nào hôm nay."
-                                : `Không có ca khám nào ngày ${selectedDate.format("DD/MM/YYYY")}.`
+                            filterMode === "tat_ca"
+                                ? "Không có ca khám nào."
+                                : selectedDate.isSame(dayjs(), "day")
+                                  ? "Chưa có ca khám nào hôm nay."
+                                  : `Không có ca khám nào ngày ${selectedDate.format("DD/MM/YYYY")}.`
                         }
                         rowExtra={{
                             onExam: handleOpenExamForm,
                             onDelete: handleDeleteClick,
+                            offset,
                         }}
                     />
+                    {filterMode === "tat_ca" && totalRecords > 0 && (
+                        <PaginationWidget
+                            page={page}
+                            totalRecords={totalRecords}
+                            rowsPerPage={ROWS_PER_PAGE}
+                            onChange={setPage}
+                            sx={{ mt: 2 }}
+                        />
+                    )}
                 </CardContent>
             </Card>
 

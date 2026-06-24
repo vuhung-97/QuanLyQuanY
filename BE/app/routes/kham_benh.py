@@ -29,6 +29,37 @@ router = create_crud_router(
 
 
 @router.get(
+    "/all/danh-sach",
+    dependencies=[Depends(require_permissions("kham_benh:read"))],
+)
+def get_kham_benh_all(
+    limit: int = Query(default=100, ge=1, le=500),
+    offset: int = Query(default=0, ge=0),
+    db: Session = Depends(get_db),
+):
+    base_query = (
+        db.query(KhamBenh, QuanNhan.ho_ten, QuanNhan.cap_bac, QuanNhan.chuc_vu, QuanNhan.ngay_sinh, QuanNhan.ma_don_vi, DonVi.ten_don_vi)
+        .join(QuanNhan, KhamBenh.ma_quan_nhan == QuanNhan.ma_quan_nhan)
+        .join(DonVi, QuanNhan.ma_don_vi == DonVi.ma_don_vi, isouter=True)
+        .order_by(KhamBenh.ngay_kham.desc())
+    )
+    total = base_query.count()
+    records = base_query.offset(offset).limit(limit).all()
+    result = []
+    for kb, ho_ten, cap_bac, chuc_vu, ngay_sinh, ma_don_vi, ten_don_vi in records:
+        d = {c.key: getattr(kb, c.key) for c in inspect(KhamBenh).columns}
+        d["ho_ten"] = ho_ten
+        d["cap_bac"] = cap_bac
+        d["chuc_vu"] = chuc_vu
+        d["ngay_sinh"] = str(ngay_sinh) if ngay_sinh else None
+        d["ma_don_vi"] = ma_don_vi
+        d["ten_don_vi"] = ten_don_vi
+        d["trang_thai"] = d["trang_thai"] or "chờ"
+        result.append(d)
+    return {"data": result, "total": total}
+
+
+@router.get(
     "/hom-nay/danh-sach",
     dependencies=[Depends(require_permissions("kham_benh:read"))],
     response_model=list[KhamBenhRead],

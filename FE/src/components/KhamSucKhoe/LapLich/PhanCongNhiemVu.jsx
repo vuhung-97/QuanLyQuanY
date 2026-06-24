@@ -30,7 +30,8 @@ export default function PhanCongNhiemVu({ latestScheduleId }) {
         async function load() {
             setLoading(true);
             try {
-                const res = await khamSucKhoeService.getAssignments(latestScheduleId);
+                const res =
+                    await khamSucKhoeService.getAssignments(latestScheduleId);
                 if (!ignore) {
                     setAssignments(Array.isArray(res.data) ? res.data : []);
                 }
@@ -54,10 +55,9 @@ export default function PhanCongNhiemVu({ latestScheduleId }) {
                     spacing={1.5}
                     sx={{ mb: 2.5, alignItems: "center" }}
                 >
-                    <AssignmentIcon color="primary" />
                     <Box>
                         <Typography variant="h2">
-                            Phân công nhiệm vụ
+                            Phân công cuối cùng
                         </Typography>
                         <Typography
                             variant="body2"
@@ -79,7 +79,11 @@ export default function PhanCongNhiemVu({ latestScheduleId }) {
                     {assignments.map((a) => (
                         <TableRow key={a.id} hover>
                             <TableCell sx={{ fontWeight: 600 }}>
-                                {a.chuc_vu ? `${a.chuc_vu} ${a.ten_nguoi_dung}` : (a.ten_nguoi_dung || a.id_nguoi_dung || "--")}
+                                {a.chuc_vu
+                                    ? `${a.chuc_vu} ${a.ten_nguoi_dung}`
+                                    : a.ten_nguoi_dung ||
+                                      a.id_nguoi_dung ||
+                                      "--"}
                             </TableCell>
                             <TableCell>
                                 {a.ten_vai_tro || a.ma_vai_tro || "--"}
