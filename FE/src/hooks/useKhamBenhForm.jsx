@@ -67,7 +67,7 @@ export default function useKhamBenhForm({
     const [openReferral, setOpenReferral] = useState(false);
     const [confirmReferral, setConfirmReferral] = useState({ open: false });
     const [referring, setReferring] = useState(false);
-    const [openAdmission, setOpenAdmission] = useState(false);
+    const [confirmAdmission, setConfirmAdmission] = useState({ open: false });
     const [snackbar, setSnackbar] = useState({
         open: false,
         message: "",
@@ -274,11 +274,44 @@ export default function useKhamBenhForm({
         onClose();
     }, [onSaved, onClose]);
 
-    const handleAdmissionSaved = useCallback(() => {
-        setOpenAdmission(false);
-        onSaved?.();
-        onClose();
-    }, [onSaved, onClose]);
+    const handleAdmissionClick = useCallback(() => {
+        setConfirmAdmission({ open: true });
+    }, []);
+
+    const handleAdmissionConfirm = useCallback(async () => {
+        if (!exam) return;
+        if (!trieuChung.trim()) {
+            setSnackbar({
+                open: true,
+                message: "Vui lòng nhập triệu chứng.",
+                severity: "warning",
+            });
+            return;
+        }
+        setSaving(true);
+        try {
+            await persistExamData();
+            await khamBenhService.admitPatient(exam.ma_kham_benh);
+            setSnackbar({
+                open: true,
+                message: "Đã chuyển sang nhập viện.",
+                severity: "success",
+            });
+            setConfirmAdmission({ open: false });
+            onSaved?.();
+            setTimeout(onClose, 800);
+        } catch (err) {
+            setSnackbar({
+                open: true,
+                message: typeof err.response?.data?.detail === "string"
+                    ? err.response.data.detail
+                    : "Lỗi nhập viện.",
+                severity: "error",
+            });
+        } finally {
+            setSaving(false);
+        }
+    }, [exam, trieuChung, chanDoan, phuongPhap, prescriptionItems, persistExamData, onSaved, onClose]);
 
     return {
         exam,
@@ -306,10 +339,11 @@ export default function useKhamBenhForm({
         referring,
         handleReferClick,
         handleReferConfirm,
-        openAdmission,
-        setOpenAdmission,
         handleReferSaved,
-        handleAdmissionSaved,
+        confirmAdmission,
+        setConfirmAdmission,
+        handleAdmissionClick,
+        handleAdmissionConfirm,
         snackbar,
         setSnackbar,
     };

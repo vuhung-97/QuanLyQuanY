@@ -29,6 +29,14 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
+function normalizeApiError(error) {
+    const detail = error.response?.data?.detail;
+    if (detail && typeof detail !== "string") {
+        error.response.data.detail = JSON.stringify(detail);
+    }
+    return error;
+}
+
 api.interceptors.response.use(
     (res) => res,
     (error) => {
@@ -39,7 +47,7 @@ api.interceptors.response.use(
             clearAuth();
             window.location.href = "/login";
         }
-        return Promise.reject(error);
+        return Promise.reject(normalizeApiError(error));
     },
 );
 

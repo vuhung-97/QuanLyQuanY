@@ -161,9 +161,9 @@ def chuyen_tuyen(id: str, data: dict, db: Session = Depends(get_db)):
     "/{id}/nhap-vien",
     dependencies=[Depends(require_permissions("kham_benh:update"))],
 )
-def nhap_vien(id: str, data: dict, db: Session = Depends(get_db)):
+def nhap_vien(id: str, db: Session = Depends(get_db)):
     service = MedicalExaminationService(db)
-    return service.admit_patient(id, data)
+    return service.admit_patient(id)
 
 
 @router.post(

@@ -17,7 +17,6 @@ import {
 import useKhamBenhForm from "@/hooks/useKhamBenhForm.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import DonThuocForm from "./DonThuocForm.jsx";
-import NhapVienDialog from "@/components/KhamBenhChoQN/ChuyenTuyen/NhapVienDialog.jsx";
 import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
 import DonThuocTable from "@/components/common/DonThuoc.jsx";
 import symptoms from "@/data/trieu_chung.json";
@@ -314,10 +313,11 @@ export default function KhamBenhForm({
         referring,
         handleReferClick,
         handleReferConfirm,
-        openAdmission,
-        setOpenAdmission,
         handleReferSaved,
-        handleAdmissionSaved,
+        confirmAdmission,
+        setConfirmAdmission,
+        handleAdmissionClick,
+        handleAdmissionConfirm,
         snackbar,
         setSnackbar,
     } = useKhamBenhForm({ open, examinationId, rowData, onClose, onSaved });
@@ -388,7 +388,7 @@ export default function KhamBenhForm({
                         onSave={handleSave}
                         onPrescription={() => setOpenPrescription(true)}
                         onReferral={handleReferClick}
-                        onAdmission={() => setOpenAdmission(true)}
+                        onAdmission={handleAdmissionClick}
                         isReadOnly={isReadOnly}
                         onClose={onClose}
                     />
@@ -406,15 +406,16 @@ export default function KhamBenhForm({
                 onClose={() => setConfirmReferral({ open: false })}
             />
 
-            {exam && (
-                <NhapVienDialog
-                    open={openAdmission}
-                    examinationId={exam.ma_kham_benh}
-                    qnId={qn?.ma_quan_nhan}
-                    onClose={() => setOpenAdmission(false)}
-                    onSaved={handleAdmissionSaved}
-                />
-            )}
+            <ConfirmDialog
+                open={confirmAdmission.open}
+                title="Xác nhận nhập viện"
+                message="Xác nhận chuyển quân nhân này sang nội trú?"
+                confirmLabel="Nhập viện"
+                confirmColor="info"
+                loading={saving}
+                onConfirm={handleAdmissionConfirm}
+                onClose={() => setConfirmAdmission({ open: false })}
+            />
 
             {exam && (
                 <DonThuocForm

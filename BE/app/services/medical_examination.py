@@ -75,33 +75,15 @@ class MedicalExaminationService:
         self.db.refresh(kb)
         return kb
 
-    def admit_patient(self, kb_id: str, data: dict) -> dict:
+    def admit_patient(self, kb_id: str) -> dict:
         kb = self.db.query(KhamBenh).filter(KhamBenh.ma_kham_benh == kb_id).first()
         if not kb:
             raise ValueError(f"KhamBenh {kb_id} not found")
 
-        ba = BenhAn(
-            ma_quan_nhan=kb.ma_quan_nhan,
-            ngoai_kieu=data.get("ngoai_kieu"),
-            doi_tuong=data.get("doi_tuong"),
-            quan_ly_nguoi_benh=data.get("quan_ly_nguoi_benh"),
-            chan_doan=data.get("chan_doan"),
-        )
-        self.db.add(ba)
-        self.db.flush()
-
-        bnrv = BenhNhanRaVao(
-            ma_benh_an=ba.ma_benh_an,
-            ly_do=data.get("ly_do"),
-            ngay_vao=datetime.now().date(),
-        )
-        self.db.add(bnrv)
-
         kb.trang_thai = "nhập_viện"
         self.db.commit()
-        self.db.refresh(ba)
-        self.db.refresh(bnrv)
-        return {"kham_benh": kb, "benh_an": ba, "benh_nhan_ra_vao": bnrv}
+        self.db.refresh(kb)
+        return kb
 
     def refer_patient(self, kb_id: str, data: dict) -> dict:
         kb = self.db.query(KhamBenh).filter(KhamBenh.ma_kham_benh == kb_id).first()
