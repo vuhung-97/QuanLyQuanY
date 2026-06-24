@@ -68,6 +68,10 @@ export default function useDanhSachKhamBenh() {
         setConfirmDelete({ open: true, id });
     }, []);
 
+    const handleDeleteCancel = useCallback(() => {
+        setConfirmDelete({ open: false, id: null });
+    }, []);
+
     const handleDeleteConfirm = useCallback(async () => {
         try {
             await khamBenhService.delete(confirmDelete.id);
@@ -131,6 +135,7 @@ export default function useDanhSachKhamBenh() {
         setSnackbar,
         confirmDelete,
         handleDeleteClick,
+        handleDeleteCancel,
         handleDeleteConfirm,
         openExamForm,
         selectedExamId,

@@ -17,8 +17,8 @@ import {
 import useKhamBenhForm from "@/hooks/useKhamBenhForm.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import DonThuocForm from "./DonThuocForm.jsx";
-import ChuyenTuyenDialog from "@/components/KhamBenhChoQN/ChuyenTuyen/ChuyenTuyenDialog.jsx";
 import NhapVienDialog from "@/components/KhamBenhChoQN/ChuyenTuyen/NhapVienDialog.jsx";
+import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
 import symptoms from "@/data/trieu_chung.json";
 
 function InfoRow({ label, value }) {
@@ -349,6 +349,11 @@ export default function KhamBenhForm({
         setOpenPrescription,
         openReferral,
         setOpenReferral,
+        confirmReferral,
+        setConfirmReferral,
+        referring,
+        handleReferClick,
+        handleReferConfirm,
         openAdmission,
         setOpenAdmission,
         handleReferSaved,
@@ -422,7 +427,7 @@ export default function KhamBenhForm({
                         hasPrescription={prescriptionItems.length > 0}
                         onSave={handleSave}
                         onPrescription={() => setOpenPrescription(true)}
-                        onReferral={() => setOpenReferral(true)}
+                        onReferral={handleReferClick}
                         onAdmission={() => setOpenAdmission(true)}
                         isReadOnly={isReadOnly}
                         onClose={onClose}
@@ -430,15 +435,16 @@ export default function KhamBenhForm({
                 )}
             </Dialog>
 
-            {exam && (
-                <ChuyenTuyenDialog
-                    open={openReferral}
-                    examinationId={exam.ma_kham_benh}
-                    qnId={qn?.ma_quan_nhan}
-                    onClose={() => setOpenReferral(false)}
-                    onSaved={handleReferSaved}
-                />
-            )}
+            <ConfirmDialog
+                open={confirmReferral.open}
+                title="Xác nhận chuyển tuyến"
+                message="Bạn có chắc muốn chuyển tuyến quân nhân này?"
+                confirmLabel="Chuyển tuyến"
+                confirmColor="warning"
+                loading={referring}
+                onConfirm={handleReferConfirm}
+                onClose={() => setConfirmReferral({ open: false })}
+            />
 
             {exam && (
                 <NhapVienDialog

@@ -65,6 +65,8 @@ export default function useKhamBenhForm({
     const [prescriptionItems, setPrescriptionItems] = useState([]);
     const [openPrescription, setOpenPrescription] = useState(false);
     const [openReferral, setOpenReferral] = useState(false);
+    const [confirmReferral, setConfirmReferral] = useState({ open: false });
+    const [referring, setReferring] = useState(false);
     const [openAdmission, setOpenAdmission] = useState(false);
     const [snackbar, setSnackbar] = useState({
         open: false,
@@ -232,6 +234,38 @@ export default function useKhamBenhForm({
         });
     }, []);
 
+    const handleReferClick = useCallback(() => {
+        setConfirmReferral({ open: true });
+    }, []);
+
+    const handleReferConfirm = useCallback(async () => {
+        if (!exam || !qn) return;
+        setReferring(true);
+        try {
+            await khamBenhService.referPatient(exam.ma_kham_benh, {
+                ma_quan_nhan: qn.ma_quan_nhan,
+                ma_kham_benh: exam.ma_kham_benh,
+            });
+            setSnackbar({
+                open: true,
+                message: "Đã chuyển tuyến thành công.",
+                severity: "success",
+            });
+            setConfirmReferral({ open: false });
+            onSaved?.();
+            setTimeout(onClose, 800);
+        } catch (err) {
+            setSnackbar({
+                open: true,
+                message:
+                    err.response?.data?.detail || "Lỗi chuyển tuyến.",
+                severity: "error",
+            });
+        } finally {
+            setReferring(false);
+        }
+    }, [exam, qn, onSaved, onClose]);
+
     const handleReferSaved = useCallback(() => {
         setOpenReferral(false);
         onSaved?.();
@@ -265,6 +299,11 @@ export default function useKhamBenhForm({
         setOpenPrescription,
         openReferral,
         setOpenReferral,
+        confirmReferral,
+        setConfirmReferral,
+        referring,
+        handleReferClick,
+        handleReferConfirm,
         openAdmission,
         setOpenAdmission,
         handleReferSaved,

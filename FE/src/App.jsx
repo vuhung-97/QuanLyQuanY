@@ -11,6 +11,7 @@ import LapLichPage from "./pages/KhamSucKhoe/LapLichPage.jsx";
 import KhamSucKhoePage from "./pages/KhamSucKhoe/KhamSucKhoePage.jsx";
 import KhamBenhPage from "./pages/KhamBenhChoQN/KhamBenhPage.jsx";
 import CapThuocPage from "./pages/KhamBenhChoQN/CapThuocPage.jsx";
+import ChuyenTuyenPage from "./pages/KhamBenhChoQN/ChuyenTuyenPage.jsx";
 import PlaceHolderPage from "./components/common/PlaceHolderPage.jsx";
 import UserManagementPage from "./pages/Admin/UserManagementPage.jsx";
 import RolePermissionPage from "./pages/Admin/RolePermissionPage.jsx";
@@ -84,7 +85,7 @@ export default function App() {
                         />
                         <Route
                             path="kham-benh/Chuyen-tuyen"
-                            element={<PlaceHolderPage title="Chuyển tuyến" />}
+                            element={<ChuyenTuyenPage />}
                         />
                         <Route
                             path="kho-duoc"

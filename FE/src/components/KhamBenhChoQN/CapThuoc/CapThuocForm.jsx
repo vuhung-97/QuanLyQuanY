@@ -84,14 +84,20 @@ export default function CapThuocForm({
             }}
         >
             <Box sx={{ "@media print": { display: "none" } }}>
-                <DialogTitle>
-                    <Typography variant="h2">
+                <DialogTitle sx={{ pb: 0 }}>
+                    <Typography
+                        sx={{
+                            fontSize: 22,
+                            fontWeight: 600,
+                            textAlign: "center",
+                        }}
+                    >
                         {isDaNhanThuoc ? "Đơn thuốc đã cấp" : "Cấp thuốc"}
                     </Typography>
                 </DialogTitle>
             </Box>
 
-            <DialogContent>
+            <DialogContent sx={{ pt: 0 }}>
                 {loading ? (
                     <Typography
                         color="text.secondary"
@@ -120,7 +126,7 @@ export default function CapThuocForm({
                                 sx={{
                                     mb: 1.5,
                                     fontWeight: 700,
-                                    color: "primary.main",
+                                    color: "text.primary",
                                 }}
                             >
                                 Thông tin quân nhân
@@ -156,7 +162,7 @@ export default function CapThuocForm({
                                     sx={{
                                         mb: 0.5,
                                         fontWeight: 700,
-                                        color: "primary.main",
+                                        color: "text.primary",
                                     }}
                                 >
                                     Chẩn đoán
@@ -174,7 +180,7 @@ export default function CapThuocForm({
                                     sx={{
                                         mb: 0.5,
                                         fontWeight: 700,
-                                        color: "primary.main",
+                                        color: "text.primary",
                                     }}
                                 >
                                     Phương pháp điều trị
@@ -191,7 +197,7 @@ export default function CapThuocForm({
                                 sx={{
                                     mb: 1,
                                     fontWeight: 700,
-                                    color: "primary.main",
+                                    color: "text.primary",
                                 }}
                             >
                                 Đơn thuốc
@@ -213,9 +219,7 @@ export default function CapThuocForm({
                                             <TableCell sx={{ width: 40 }}>
                                                 STT
                                             </TableCell>
-                                            <TableCell>
-                                                Tên thuốc
-                                            </TableCell>
+                                            <TableCell>Tên thuốc</TableCell>
                                             <TableCell sx={{ width: 80 }}>
                                                 Số lượng
                                             </TableCell>
@@ -246,17 +250,31 @@ export default function CapThuocForm({
                                                     <Stack spacing={0.5}>
                                                         {row.lieu && (
                                                             <Typography variant="body2">
-                                                                <strong>Liều:</strong> {row.lieu}
+                                                                <strong>
+                                                                    Liều:
+                                                                </strong>{" "}
+                                                                {row.lieu}
                                                             </Typography>
                                                         )}
                                                         <Typography variant="body2">
-                                                            <strong>Cách dùng:</strong> {row.cach_dung || "Uống"}
+                                                            <strong>
+                                                                Cách dùng:
+                                                            </strong>{" "}
+                                                            {row.cach_dung ||
+                                                                "Uống"}
                                                             {" | "}
-                                                            <strong>Thời điểm:</strong> {row.thoi_diem || "Sau ăn"}
+                                                            <strong>
+                                                                Thời điểm:
+                                                            </strong>{" "}
+                                                            {row.thoi_diem ||
+                                                                "Sau ăn"}
                                                         </Typography>
                                                         {row.ghi_chu && (
                                                             <Typography variant="body2">
-                                                                <strong>Ghi chú:</strong> {row.ghi_chu}
+                                                                <strong>
+                                                                    Ghi chú:
+                                                                </strong>{" "}
+                                                                {row.ghi_chu}
                                                             </Typography>
                                                         )}
                                                     </Stack>

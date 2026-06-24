@@ -24,4 +24,17 @@ export const khamBenhService = {
     getQuanNhan: (id) => api.get(`/quan_nhan/${id}`),
     completeExamination: (id, data) =>
         api.post(`/kham_benh/${id}/hoan-tat`, data),
+
+    getGiayGioiThieu: (params) => api.get("/giay_gioi_thieu", { params }),
+    getGiayGioiThieuByKhamBenh: (maKhamBenh) =>
+        api.get(`/giay_gioi_thieu/by-kham-benh/${maKhamBenh}`),
+    createGiayGioiThieu: (data) => api.post("/giay_gioi_thieu", data),
+    updateGiayGioiThieu: (id, data) =>
+        api.patch(`/giay_gioi_thieu/${id}`, data),
+
+    getDiTuyenSauDieuTri: (params) =>
+        api.get("/di_tuyen_sau_dieu_tri", { params }),
+    createDiTuyenSauDieuTri: (data) => api.post("/di_tuyen_sau_dieu_tri", data),
+    updateDiTuyenSauDieuTri: (id, data) =>
+        api.patch(`/di_tuyen_sau_dieu_tri/${id}`, data),
 };

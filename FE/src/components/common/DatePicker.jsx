@@ -4,7 +4,8 @@ import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 
-export default function DatePicker({ value, onChange }) {
+export default function DatePicker({ value, onChange, size = "large" }) {
+    const isSmall = size === "small";
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DesktopDatePicker
@@ -15,16 +16,16 @@ export default function DatePicker({ value, onChange }) {
                     textField: {
                         size: "small",
                         sx: {
-                            "& fieldset": { border: "none" },
-                            width: 200,
+                            "& fieldset": { border: isSmall ? undefined : "none" },
+                            width: isSmall ? 160 : 200,
                         },
                         slotProps: {
                             input: {
                                 sx: {
-                                    px: 0,
-                                    fontSize: 22,
-                                    fontWeight: 600,
-                                    color: "primary.dark",
+                                    px: isSmall ? 1 : 0,
+                                    fontSize: isSmall ? 14 : 22,
+                                    fontWeight: isSmall ? 400 : 600,
+                                    color: isSmall ? "text.primary" : "primary.dark",
                                 },
                             },
                         },
@@ -32,7 +33,7 @@ export default function DatePicker({ value, onChange }) {
                     openPickerButton: {
                         sx: {
                             m: 0,
-                            "& .MuiSvgIcon-root": { fontSize: 32 },
+                            "& .MuiSvgIcon-root": { fontSize: isSmall ? 20 : 32 },
                         },
                     },
                 }}

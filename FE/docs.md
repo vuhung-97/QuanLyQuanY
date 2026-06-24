@@ -16,7 +16,7 @@ FE/
     ├── pages/              # 1 page = 1 route, thin orchestrator
     │   ├── Login/              # Đăng nhập
     │   ├── Dashboard/          # Trang chủ
-    │   ├── KhamBenhChoQN/      # Khám bệnh cho QN (KhamBenhPage.jsx, CapThuocPage.jsx)
+    │   ├── KhamBenhChoQN/      # Khám bệnh cho QN (KhamBenhPage.jsx, CapThuocPage.jsx, ChuyenTuyenPage.jsx)
     │   ├── KhamSucKhoe/        # Khám định kỳ (LapLichPage.jsx, KhamSucKhoePage.jsx)
     │   └── Admin/              # Admin (UserManagement, RolePermission, AuditLog)
     │
@@ -66,9 +66,11 @@ FE/
     │   │   ├── CapThuoc/
     │   │   │   ├── CapThuocForm.jsx
     │   │   │   └── CapThuocList.jsx
-    │   │   └── ChuyenTuyen/
-    │   │       ├── ChuyenTuyenDialog.jsx
-    │   │       └── NhapVienDialog.jsx
+│   │   └── ChuyenTuyen/
+│   │       ├── ChuyenTuyenDialog.jsx
+│   │       ├── ChuyenTuyenList.jsx
+│   │       ├── ChuyenTuyenForm.jsx
+│   │       └── NhapVienDialog.jsx
     │   │
     │   ├── KhamSucKhoe/     # Components cho module Khám định kỳ
     │   │   ├── KhamSucKhoeUtils.js
@@ -110,8 +112,9 @@ FE/
     │           └── UserTableRow.jsx
     │
     ├── hooks/              # Custom hooks — tách logic khỏi UI
-    │   ├── useCapThuoc.jsx
-    │   ├── useDanhSachKhamBenh.jsx
+│   ├── useCapThuoc.jsx
+│   ├── useChuyenTuyen.jsx
+│   ├── useDanhSachKhamBenh.jsx
     │   ├── useDebounce.jsx
     │   ├── useTongQuanTab.jsx
     │   ├── useKhamBenhForm.jsx

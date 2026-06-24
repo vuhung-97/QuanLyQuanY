@@ -136,6 +136,7 @@ export default function DanhSachKhamBenh() {
         setSnackbar,
         confirmDelete,
         handleDeleteClick,
+        handleDeleteCancel,
         handleDeleteConfirm,
         openExamForm,
         selectedExamId,
@@ -251,7 +252,7 @@ export default function DanhSachKhamBenh() {
                 confirmLabel="Xóa"
                 confirmColor="error"
                 onConfirm={handleDeleteConfirm}
-                onClose={() => setConfirmDelete({ open: false, id: null })}
+                onClose={handleDeleteCancel}
             />
 
             <KhamBenhForm
