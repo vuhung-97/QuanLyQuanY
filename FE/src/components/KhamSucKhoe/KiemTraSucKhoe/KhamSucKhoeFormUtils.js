@@ -1,37 +1,72 @@
 export const DEFAULT_TS = {
-    ban_than: "", di_ung: "", khac: "", gia_dinh: "",
-    chieu_cao: "", can_nang: "", vong_nguc: "", vong_bung: "",
-    mach: "", huyet_ap_tam_thu: "", huyet_ap_tam_truong: "", bmi: "",
-    mat_khong_kinh_trai: "", mat_khong_kinh_phai: "",
-    mat_co_kinh_trai: "", mat_co_kinh_phai: "",
+    ban_than: "",
+    di_ung: "",
+    khac: "",
+    gia_dinh: "",
+    chieu_cao: "",
+    can_nang: "",
+    vong_nguc: "",
+    vong_bung: "",
+    mach: "",
+    huyet_ap_tam_thu: "",
+    huyet_ap_tam_truong: "",
+    bmi: "",
+    mat_khong_kinh_trai: "",
+    mat_khong_kinh_phai: "",
+    mat_co_kinh_trai: "",
+    mat_co_kinh_phai: "",
     mat_loai: "Loại 1",
 };
 
 export const DEFAULT_LS = {
-    tim_mach_note: "", tim_mach_loai: "Loại 1",
-    ho_hap_note: "", ho_hap_loai: "Loại 1",
-    tieu_hoa_note: "", tieu_hoa_loai: "Loại 1",
-    than_tiet_nieu_sinh_duc_nam_note: "", than_tiet_nieu_sinh_duc_nam_loai: "Loại 1",
-    tam_than_than_kinh_note: "", tam_than_than_kinh_loai: "Loại 1",
-    co_xuong_khop_note: "", co_xuong_khop_loai: "Loại 1",
-    noi_tiet_chuyen_hoa_mien_dich_note: "", noi_tiet_chuyen_hoa_mien_dich_loai: "Loại 1",
-    benh_mau_note: "", benh_mau_loai: "Loại 1",
-    ngoai_khoa_note: "", ngoai_khoa_loai: "Loại 1",
-    da_lieu_note: "", da_lieu_loai: "Loại 1",
-    phu_san_note: "", phu_san_loai: "Loại 1",
-    tai_mui_hong_note: "", tai_mui_hong_loai: "Loại 1",
-    rang_ham_mat_note: "", rang_ham_mat_loai: "Loại 1",
+    tim_mach_note: "",
+    tim_mach_loai: "Loại 1",
+    ho_hap_note: "",
+    ho_hap_loai: "Loại 1",
+    tieu_hoa_note: "",
+    tieu_hoa_loai: "Loại 1",
+    than_tiet_nieu_sinh_duc_nam_note: "",
+    than_tiet_nieu_sinh_duc_nam_loai: "Loại 1",
+    tam_than_than_kinh_note: "",
+    tam_than_than_kinh_loai: "Loại 1",
+    co_xuong_khop_note: "",
+    co_xuong_khop_loai: "Loại 1",
+    noi_tiet_chuyen_hoa_mien_dich_note: "",
+    noi_tiet_chuyen_hoa_mien_dich_loai: "Loại 1",
+    benh_mau_note: "",
+    benh_mau_loai: "Loại 1",
+    ngoai_khoa_note: "",
+    ngoai_khoa_loai: "Loại 1",
+    da_lieu_note: "",
+    da_lieu_loai: "Loại 1",
+    phu_san_note: "",
+    phu_san_loai: "Loại 1",
+    tai_mui_hong_note: "",
+    tai_mui_hong_loai: "Loại 1",
+    rang_ham_mat_note: "",
+    rang_ham_mat_loai: "Loại 1",
     khac: "",
 };
 
 export const DEFAULT_XN = {
-    hong_cau: "", bach_cau: "", tieu_cau: "",
-    glucose_mau: "", ure: "", creatinin: "", ast: "", alt: "",
-    nuoc_tieu_glucose: "", nuoc_tieu_protein: "", nuoc_tieu_te_bao: "",
+    hong_cau: "",
+    bach_cau: "",
+    tieu_cau: "",
+    glucose_mau: "",
+    ure: "",
+    creatinin: "",
+    ast: "",
+    alt: "",
+    nuoc_tieu_glucose: "",
+    nuoc_tieu_protein: "",
+    nuoc_tieu_te_bao: "",
 };
 
 export const DEFAULT_CDHA = {
-    dien_tim: "", x_quang: "", sieu_am: "", khac: "",
+    dien_tim: "",
+    x_quang: "",
+    sieu_am: "",
+    khac: "",
 };
 
 export const DEFAULT_KL = {
@@ -46,7 +81,6 @@ export const cardStyle = {
     boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)",
     border: "1px solid",
     borderColor: "divider",
-    mb: 3,
     bgcolor: "background.paper",
 };
 
@@ -67,11 +101,15 @@ function parseWithDefault(str, defaultObj, fallbackKey) {
     return { ...defaultObj, [fallbackKey]: str };
 }
 
-export const parseTienSu = (str) => parseWithDefault(str, DEFAULT_TS, "ban_than");
+export const parseTienSu = (str) =>
+    parseWithDefault(str, DEFAULT_TS, "ban_than");
 export const parseLamSang = (str) => parseWithDefault(str, DEFAULT_LS, "khac");
-export const parseXetNghiem = (str) => parseWithDefault(str, DEFAULT_XN, "nuoc_tieu_te_bao");
-export const parseChanDoanHinhAnh = (str) => parseWithDefault(str, DEFAULT_CDHA, "khac");
-export const parseKetLuan = (str) => parseWithDefault(str, DEFAULT_KL, "benh_tat_theo_doi");
+export const parseXetNghiem = (str) =>
+    parseWithDefault(str, DEFAULT_XN, "nuoc_tieu_te_bao");
+export const parseChanDoanHinhAnh = (str) =>
+    parseWithDefault(str, DEFAULT_CDHA, "khac");
+export const parseKetLuan = (str) =>
+    parseWithDefault(str, DEFAULT_KL, "benh_tat_theo_doi");
 
 export const ROLE_TAB_ACCESS = {
     tong_quan: { edit: [0], view: [0] },
