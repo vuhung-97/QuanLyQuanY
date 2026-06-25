@@ -10,6 +10,7 @@ import {
 import {
     Bed as BedIcon,
     CheckCircle as CheckCircleIcon,
+    HourglassEmpty as HourglassEmptyIcon,
     Refresh as RefreshIcon,
     Visibility as VisibilityIcon,
     ExitToApp as ExitToAppIcon,
@@ -129,6 +130,13 @@ export default function DanhSachNoiTru() {
 
     const statItems = useMemo(
         () => [
+            {
+                label: "Chờ nhập viện",
+                value: stats.choNhapVien,
+                icon: <HourglassEmptyIcon />,
+                color: "#F59E0B",
+                bg: "#FEF3C7",
+            },
             {
                 label: "Đang điều trị",
                 value: stats.dangDieuTri,

@@ -18,6 +18,7 @@ export default function useDanhSachNoiTru() {
     const [confirmRaVien, setConfirmRaVien] = useState({ open: false, benhAnId: null });
     const [openChiTiet, setOpenChiTiet] = useState(false);
     const [selectedBenhAnId, setSelectedBenhAnId] = useState(null);
+    const [choNhapVienCount, setChoNhapVienCount] = useState(0);
 
     const offset = useMemo(
         () => (filterMode === "tat_ca" ? (page - 1) * ROWS_PER_PAGE : 0),
@@ -33,11 +34,15 @@ export default function useDanhSachNoiTru() {
         setRefreshing(true);
         try {
             const trang_thai = filterMode === "dang_dieu_tri" ? "đang_điều_trị" : undefined;
-            const res = await noiTruService.getDanhSachNoiTru({
-                trang_thai, limit: ROWS_PER_PAGE, offset,
-            });
-            setExaminations(res.data.data || []);
-            setTotalRecords(res.data.total || 0);
+            const [resNoiTru, resChoNhapVien] = await Promise.all([
+                noiTruService.getDanhSachNoiTru({
+                    trang_thai, limit: ROWS_PER_PAGE, offset,
+                }),
+                noiTruService.getDanhSachNhapVien({ limit: 1, offset: 0 }),
+            ]);
+            setExaminations(resNoiTru.data.data || []);
+            setTotalRecords(resNoiTru.data.total || 0);
+            setChoNhapVienCount(resChoNhapVien.data.total || 0);
         } catch (err) {
             setSnackbar({
                 open: true,
@@ -56,8 +61,8 @@ export default function useDanhSachNoiTru() {
         const all = examinations;
         const dangDieuTri = all.filter((e) => e.trang_thai === "đang_điều_trị").length;
         const daRaVien = all.filter((e) => e.trang_thai === "đã_ra_viện").length;
-        return { dangDieuTri, daRaVien };
-    }, [examinations]);
+        return { dangDieuTri, daRaVien, choNhapVien: choNhapVienCount };
+    }, [examinations, choNhapVienCount]);
 
     const filtered = useMemo(() => {
         if (!debouncedSearchText) return examinations;
