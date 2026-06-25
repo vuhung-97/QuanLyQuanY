@@ -40,3 +40,14 @@ class BenhAnUpdate(SchemaBase):
 
 class BenhAnRead(BenhAnBase):
     ma_benh_an: str = Field(max_length=10)
+
+
+class BenhAnReadDetail(BenhAnRead):
+    ho_ten: str | None = None
+    cap_bac: str | None = None
+    chuc_vu: str | None = None
+    so_dien_thoai: str | None = None
+    so_the_bhyt: str | None = None
+    ten_don_vi: str | None = None
+    ten_buong: str | None = None
+    ten_giuong: str | None = None
