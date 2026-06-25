@@ -16,12 +16,14 @@ import {
 } from "@mui/icons-material";
 import FilterModeToggle from "@/components/common/FilterModeToggle.jsx";
 import useDanhSachNoiTru from "@/hooks/useDanhSachNoiTru.jsx";
-import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
 import DataTable from "@/components/common/DataTable.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import PaginationWidget from "@/components/common/PaginationWidget.jsx";
+import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
 import SearchBar from "@/components/common/SearchBar.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
+import ChiTietBenhAn from "./ChiTietBenhAn.jsx";
+import RaVienDialog from "./RaVienDialog.jsx";
 
 const STATUS_MAP = {
     đang_điều_trị: { label: "Đang điều trị", color: "info" },
@@ -49,7 +51,11 @@ const columns = [
                 ? new Date(row.ngay_vao).toLocaleDateString("vi-VN")
                 : "--",
     },
-    { key: "chan_doan", label: "Chẩn đoán", render: (row) => row.chan_doan || "--" },
+    {
+        key: "chan_doan",
+        label: "Chẩn đoán",
+        render: (row) => row.chan_doan || "--",
+    },
     {
         key: "trang_thai",
         label: "Trạng thái",
@@ -108,6 +114,9 @@ export default function DanhSachNoiTru() {
         handleRaVienCancel,
         handleRaVienConfirm,
         handleOpenChiTiet,
+        handleCloseChiTiet,
+        openChiTiet,
+        selectedBenhAnId,
         loadData,
         filterMode,
         handleFilterModeChange,
@@ -204,13 +213,19 @@ export default function DanhSachNoiTru() {
                 </CardContent>
             </Card>
 
-            <ConfirmDialog
+            <ChiTietBenhAn
+                open={openChiTiet}
+                benhAnId={selectedBenhAnId}
+                onClose={handleCloseChiTiet}
+            />
+
+            <RaVienDialog
                 open={confirmRaVien.open}
-                title="Xác nhận ra viện"
-                message="Xác nhận cho bệnh nhân này ra viện?"
-                confirmLabel="Ra viện"
-                confirmColor="error"
-                onConfirm={() => handleRaVienConfirm({})}
+                benhAn={filtered.find(
+                    (e) => e.ma_benh_an === confirmRaVien.benhAnId,
+                )}
+                saving={false}
+                onConfirm={handleRaVienConfirm}
                 onClose={handleRaVienCancel}
             />
 
