@@ -198,6 +198,18 @@ export default function ChiTietBenhAn({ open, benhAnId, onClose }) {
                                                     label="Đối tượng:"
                                                     value={benhAn.doi_tuong}
                                                 />
+                                                <InfoRow
+                                                    label="Ngày nhập viện:"
+                                                    value={
+                                                        benhAn.ngay_nhap_vien
+                                                            ? new Date(
+                                                                  benhAn.ngay_nhap_vien,
+                                                              ).toLocaleDateString(
+                                                                  "vi-VN",
+                                                              )
+                                                            : "--"
+                                                    }
+                                                />
                                             </Stack>
                                         </CardContent>
                                     </Card>

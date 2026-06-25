@@ -15,6 +15,7 @@ import ChuyenTuyenPage from "./pages/KhamBenhChoQN/ChuyenTuyenPage.jsx";
 import PlaceHolderPage from "./components/common/PlaceHolderPage.jsx";
 import DanhSachNoiTruPage from "./pages/NoiTru/DanhSachNoiTruPage.jsx";
 import LapBenhAnPage from "./pages/NoiTru/LapBenhAnPage.jsx";
+import QuanLyPhongGiuongPage from "./pages/NoiTru/QuanLyPhongGiuongPage.jsx";
 import UserManagementPage from "./pages/Admin/UserManagementPage.jsx";
 import RolePermissionPage from "./pages/Admin/RolePermissionPage.jsx";
 import AuditLogPage from "./pages/Admin/AuditLogPage.jsx";
@@ -63,6 +64,10 @@ export default function App() {
                         <Route
                             path="noi-tru/lap-benh-an"
                             element={<LapBenhAnPage />}
+                        />
+                        <Route
+                            path="noi-tru/quan-ly-phong-giuong"
+                            element={<QuanLyPhongGiuongPage />}
                         />
                         <Route
                             path="kham-benh"

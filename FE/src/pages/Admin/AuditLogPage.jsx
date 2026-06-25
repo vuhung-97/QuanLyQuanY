@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import useDebounce from "@/hooks/useDebounce.jsx";
 import { Button, Chip, Stack, Tab, Tabs } from "@mui/material";
 import {
@@ -24,6 +24,21 @@ const tabs = [
 
 const ROWS_PER_PAGE = 100;
 
+function SearchBarWrapper({ onSearch, placeholder }) {
+    const [value, setValue] = useState("");
+    const debouncedValue = useDebounce(value, 300);
+    useEffect(() => {
+        onSearch(debouncedValue);
+    }, [debouncedValue, onSearch]);
+    return (
+        <SearchBar
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            placeholder={placeholder}
+        />
+    );
+}
+
 export default function AuditLogPage() {
     const [tab, setTab] = useState("login");
     const [logs, setLogs] = useState({ login: [], action: [], backup: [] });
@@ -33,8 +48,8 @@ export default function AuditLogPage() {
     const [detail, setDetail] = useState(null);
     const [page, setPage] = useState(1);
     const [totalRecords, setTotalRecords] = useState(0);
-    const [query, setQuery] = useState("");
-    const debouncedQuery = useDebounce(query);
+    const [searchTerm, setSearchTerm] = useState("");
+    const handleSearch = useCallback((term) => setSearchTerm(term), []);
     const [backupFiles, setBackupFiles] = useState([]);
     const [creatingBackup, setCreatingBackup] = useState(false);
 
@@ -141,28 +156,31 @@ export default function AuditLogPage() {
     };
 
     const rows = useMemo(
-        () => (logs[tab] || []).filter((row) => {
-            const keyword = debouncedQuery.trim().toLowerCase();
-            if (!keyword) return true;
-            const values = [
-                row.id,
-                row.ho_ten,
-                row.id_nguoi_dung,
-                row.hanh_dong,
-                row.ten_bang,
-                row.dia_chi_ip,
-                row.thiet_bi,
-                row.trang_thai_thanh_cong !== undefined
-                    ? row.trang_thai_thanh_cong
-                        ? "thành công"
-                        : "thất bại"
-                    : null,
-            ];
-            return values
-                .filter(Boolean)
-                .some((value) => String(value).toLowerCase().includes(keyword));
-        }),
-        [logs, tab, debouncedQuery],
+        () =>
+            (logs[tab] || []).filter((row) => {
+                const keyword = searchTerm.trim().toLowerCase();
+                if (!keyword) return true;
+                const values = [
+                    row.id,
+                    row.ho_ten,
+                    row.id_nguoi_dung,
+                    row.hanh_dong,
+                    row.ten_bang,
+                    row.dia_chi_ip,
+                    row.thiet_bi,
+                    row.trang_thai_thanh_cong !== undefined
+                        ? row.trang_thai_thanh_cong
+                            ? "thành công"
+                            : "thất bại"
+                        : null,
+                ];
+                return values
+                    .filter(Boolean)
+                    .some((value) =>
+                        String(value).toLowerCase().includes(keyword),
+                    );
+            }),
+        [logs, tab, searchTerm],
     );
 
     return (
@@ -210,9 +228,8 @@ export default function AuditLogPage() {
                     spacing={2}
                     sx={{ mb: 2, justifyContent: "space-between" }}
                 >
-                    <SearchBar
-                        value={query}
-                        onChange={(event) => setQuery(event.target.value)}
+                    <SearchBarWrapper
+                        onSearch={handleSearch}
                         placeholder="Tìm ID, họ tên, hành động, bảng, IP..."
                     />
                     <PaginationWidget
@@ -228,7 +245,11 @@ export default function AuditLogPage() {
                 )}
 
                 {tab === "action" && (
-                    <ThaoTacTab rows={rows} loading={loading} onViewDetail={setDetail} />
+                    <ThaoTacTab
+                        rows={rows}
+                        loading={loading}
+                        onViewDetail={setDetail}
+                    />
                 )}
 
                 {tab === "backup" && (

@@ -1,18 +1,18 @@
 import { Box, Stack, Typography } from "@mui/material";
-import DanhSachNoiTru from "@/components/NoiTru/DanhSachNoiTru/DanhSachNoiTru.jsx";
+import QuanLyPhongGiuong from "@/components/NoiTru/QuanLyPhongGiuong/QuanLyPhongGiuong.jsx";
 
-export default function DanhSachNoiTruPage() {
+export default function QuanLyPhongGiuongPage() {
     return (
         <Stack spacing={3}>
             <Box>
                 <Typography variant="h1" sx={{ color: "text.primary" }}>
-                    Danh sách nội trú
+                    Quản lý phòng/giường
                 </Typography>
                 <Typography sx={{ mt: 0.75, color: "text.secondary" }}>
-                    Theo dõi, quản lý bệnh nhân đang điều trị nội trú.
+                    Quản lý buồng bệnh và giường bệnh trong nội trú.
                 </Typography>
             </Box>
-            <DanhSachNoiTru />
+            <QuanLyPhongGiuong />
         </Stack>
     );
 }

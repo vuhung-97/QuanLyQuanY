@@ -29,4 +29,14 @@ export const noiTruService = {
     getBuong: (params) => api.get("/buong", { params }),
     getGiuongTrong: (maBuong) => api.get("/giuong/trong", { params: { ma_buong: maBuong } }),
 
+    createBuong: (data) => api.post("/buong", data),
+    updateBuong: (id, data) => api.patch(`/buong/${id}`, data),
+    deleteBuong: (id) => api.delete(`/buong/${id}`),
+
+    getGiuongQuanLy: (params) => api.get("/giuong/quan-ly/phong", { params }),
+    createGiuong: (data) => api.post("/giuong", data),
+    updateGiuong: (id, data) => api.patch(`/giuong/${id}`, data),
+    deleteGiuong: (id) => api.delete(`/giuong/${id}`),
+
+    chuyenGiuong: (maGiuong, data) => api.post(`/giuong/${maGiuong}/chuyen`, data),
 };

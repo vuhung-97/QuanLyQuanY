@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import {
+    Box,
     Button,
     Card,
     CardContent,
@@ -45,17 +46,22 @@ const columns = [
     { key: "ho_ten", label: "Họ tên QN" },
     { key: "don_vi", label: "Đơn vị", render: (row) => row.ten_don_vi || "--" },
     {
-        key: "ngay_vao",
-        label: "Ngày vào",
+        key: "ngay_nhap_vien",
+        label: "Ngày nhập viện",
         render: (row) =>
-            row.ngay_vao
-                ? new Date(row.ngay_vao).toLocaleDateString("vi-VN")
+            row.ngay_nhap_vien
+                ? new Date(row.ngay_nhap_vien).toLocaleDateString("vi-VN")
                 : "--",
     },
     {
         key: "chan_doan",
         label: "Chẩn đoán",
-        render: (row) => row.chan_doan || "--",
+        sx: { maxWidth: { xs: 120, md: 250 } },
+        render: (row) => (
+            <Box sx={{ maxHeight: 100, overflow: "auto", whiteSpace: "normal", wordBreak: "break-word" }}>
+                {row.chan_doan || "--"}
+            </Box>
+        ),
     },
     {
         key: "trang_thai",
