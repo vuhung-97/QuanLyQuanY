@@ -1,4 +1,7 @@
-import { FONT_SIZE_MD, FONT_SIZE_SM } from "@/components/layout/common/constants.js";
+import {
+    FONT_SIZE_MD,
+    FONT_SIZE_SM,
+} from "@/components/layout/common/constants.js";
 import { useTheme, alpha } from "@mui/material/styles";
 import {
     ListItem,
@@ -37,7 +40,7 @@ export default function SidebarItem({
                     minHeight: 48,
                     justifyContent: open ? "initial" : "center",
                     px: 2,
-                    pl: open ? 2 + depth * 2 : 2,
+                    pl: open ? 2 + depth * 3 : 2,
                     borderRadius: 2.5,
                     bgcolor: active ? activeBg : "transparent",
                     color: active
@@ -60,7 +63,9 @@ export default function SidebarItem({
                         minWidth: 0,
                         mr: open ? 2 : 0,
                         justifyContent: "center",
-                        color: active ? theme.palette.common.white : alpha(theme.palette.common.white, 0.7),
+                        color: active
+                            ? theme.palette.common.white
+                            : alpha(theme.palette.common.white, 0.7),
                     }}
                 >
                     {item.icon}
