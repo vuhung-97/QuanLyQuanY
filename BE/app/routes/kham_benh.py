@@ -4,7 +4,7 @@ from fastapi import Depends, HTTPException, Query
 from sqlalchemy import inspect
 from sqlalchemy.orm import Session
 
-from app.core.dependencies import require_permissions
+from app.core.dependencies import get_current_user, require_permissions
 from app.crud.kham_benh import kham_benh_crud
 from app.database.benh_an import BenhAn
 from app.database.chi_tiet_don_thuoc import ChiTietDonThuoc
@@ -162,9 +162,9 @@ def chuyen_tuyen(id: str, data: dict, db: Session = Depends(get_db)):
     "/{id}/nhap-vien",
     dependencies=[Depends(require_permissions("kham_benh:update"))],
 )
-def nhap_vien(id: str, db: Session = Depends(get_db)):
+def nhap_vien(id: str, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
     service = MedicalExaminationService(db)
-    return service.admit_patient(id)
+    return service.admit_patient(id, nguoi_dung_id=current_user.id)
 
 
 @router.post(
@@ -187,7 +187,7 @@ def get_danh_sach_nhap_vien(
     db: Session = Depends(get_db),
 ):
     base_query = (
-        db.query(KhamBenh, QuanNhan.ho_ten, QuanNhan.cap_bac, QuanNhan.chuc_vu, QuanNhan.ngay_sinh, QuanNhan.ma_don_vi, DonVi.ten_don_vi)
+        db.query(KhamBenh, QuanNhan.ho_ten, QuanNhan.cap_bac, QuanNhan.chuc_vu, QuanNhan.ngay_sinh, QuanNhan.gioi_tinh, QuanNhan.nghe_nghiep, QuanNhan.so_the_bhyt, QuanNhan.ma_don_vi, DonVi.ten_don_vi)
         .join(QuanNhan, KhamBenh.ma_quan_nhan == QuanNhan.ma_quan_nhan)
         .join(DonVi, QuanNhan.ma_don_vi == DonVi.ma_don_vi, isouter=True)
         .outerjoin(BenhAn, KhamBenh.ma_kham_benh == BenhAn.ma_kham_benh)
@@ -197,12 +197,15 @@ def get_danh_sach_nhap_vien(
     total = base_query.count()
     records = base_query.offset(offset).limit(limit).all()
     result = []
-    for kb, ho_ten, cap_bac, chuc_vu, ngay_sinh, ma_don_vi, ten_don_vi in records:
+    for kb, ho_ten, cap_bac, chuc_vu, ngay_sinh, gioi_tinh, nghe_nghiep, so_the_bhyt, ma_don_vi, ten_don_vi in records:
         d = {c.key: getattr(kb, c.key) for c in inspect(KhamBenh).columns}
         d["ho_ten"] = ho_ten
         d["cap_bac"] = cap_bac
         d["chuc_vu"] = chuc_vu
         d["ngay_sinh"] = str(ngay_sinh) if ngay_sinh else None
+        d["gioi_tinh"] = gioi_tinh
+        d["nghe_nghiep"] = nghe_nghiep
+        d["so_the_bhyt"] = so_the_bhyt
         d["ma_don_vi"] = ma_don_vi
         d["ten_don_vi"] = ten_don_vi
         result.append(d)

@@ -1,5 +1,6 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
+from sqlalchemy import inspect
 from sqlalchemy.orm import Session
 
 from app.database.benh_an import BenhAn
@@ -9,11 +10,24 @@ from app.database.di_tuyen_sau_dieu_tri import DiTuyenSauDieuTri
 from app.database.don_thuoc import DonThuoc
 from app.database.giay_gioi_thieu import GiayGioiThieu
 from app.database.kham_benh import KhamBenh
+from app.database.nhat_ky_thao_tac import NhatKyThaoTac
 
 
 class MedicalExaminationService:
     def __init__(self, db: Session):
         self.db = db
+
+    def _log(self, hanh_dong: str, nguoi_dung_id: str | None, ten_bang: str, du_lieu_cu: dict | None = None, du_lieu_moi: dict | None = None):
+        log = NhatKyThaoTac(
+            id_nguoi_dung=nguoi_dung_id,
+            thoi_gian=datetime.now(timezone.utc),
+            hanh_dong=hanh_dong,
+            ten_bang=ten_bang,
+            du_lieu_cu=du_lieu_cu,
+            du_lieu_moi=du_lieu_moi,
+        )
+        self.db.add(log)
+        self.db.commit()
 
     def start_examination(self, qn_id: str) -> KhamBenh:
         previous_count = (
@@ -75,7 +89,7 @@ class MedicalExaminationService:
         self.db.refresh(kb)
         return kb
 
-    def create_benh_an(self, kb_id: str, data: dict) -> BenhAn:
+    def create_benh_an(self, kb_id: str, data: dict, nguoi_dung_id: str | None = None) -> BenhAn:
         kb = self.db.query(KhamBenh).filter(KhamBenh.ma_kham_benh == kb_id).first()
         if not kb:
             raise ValueError(f"KhamBenh {kb_id} not found")
@@ -86,7 +100,7 @@ class MedicalExaminationService:
             ma_quan_nhan=kb.ma_quan_nhan,
             ma_kham_benh=kb_id,
             trang_thai="đang_điều_trị",
-            ngay_nhap_vien=datetime.now().date(),
+            ngay_nhap_vien=data.get("ngay_nhap_vien", datetime.now().date()),
             ngoai_kieu=data.get("ngoai_kieu"),
             doi_tuong=data.get("doi_tuong"),
             quan_ly_nguoi_benh=data.get("quan_ly_nguoi_benh"),
@@ -105,14 +119,18 @@ class MedicalExaminationService:
         self.db.add(bnrv)
         self.db.commit()
         self.db.refresh(ba)
+
+        self._log("CREATE", nguoi_dung_id, "benh_an", du_lieu_moi={c.key: getattr(ba, c.key) for c in inspect(BenhAn).columns})
         return ba
 
-    def discharge_patient(self, ba_id: str, data: dict) -> BenhAn:
+    def discharge_patient(self, ba_id: str, data: dict, nguoi_dung_id: str | None = None) -> BenhAn:
         ba = self.db.query(BenhAn).filter(BenhAn.ma_benh_an == ba_id).first()
         if not ba:
             raise ValueError(f"BenhAn {ba_id} not found")
         if ba.trang_thai == "đã_ra_viện":
             raise ValueError("Bệnh án đã đóng.")
+
+        old = {c.key: getattr(ba, c.key) for c in inspect(BenhAn).columns}
 
         ba.tinh_trang_ra_vien = data.get("tinh_trang_ra_vien")
         ba.chi_tiet_benh_an = data.get("chi_tiet_benh_an", ba.chi_tiet_benh_an)
@@ -127,9 +145,12 @@ class MedicalExaminationService:
 
         self.db.commit()
         self.db.refresh(ba)
+
+        new = {c.key: getattr(ba, c.key) for c in inspect(BenhAn).columns}
+        self._log("UPDATE", nguoi_dung_id, "benh_an", du_lieu_cu=old, du_lieu_moi=new)
         return ba
 
-    def admit_patient(self, kb_id: str) -> dict:
+    def admit_patient(self, kb_id: str, nguoi_dung_id: str | None = None) -> dict:
         kb = self.db.query(KhamBenh).filter(KhamBenh.ma_kham_benh == kb_id).first()
         if not kb:
             raise ValueError(f"KhamBenh {kb_id} not found")
@@ -137,6 +158,7 @@ class MedicalExaminationService:
         kb.trang_thai = "nhập_viện"
         self.db.commit()
         self.db.refresh(kb)
+        self._log("UPDATE", nguoi_dung_id, "kham_benh", du_lieu_moi={c.key: getattr(kb, c.key) for c in inspect(KhamBenh).columns})
         return kb
 
     def refer_patient(self, kb_id: str, data: dict) -> dict:

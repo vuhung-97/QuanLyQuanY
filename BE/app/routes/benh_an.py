@@ -2,7 +2,7 @@ from fastapi import Depends, HTTPException, Query
 from sqlalchemy import inspect
 from sqlalchemy.orm import Session
 
-from app.core.dependencies import require_permissions
+from app.core.dependencies import get_current_user, require_permissions
 from app.crud.benh_an import benh_an_crud
 from app.database.benh_an import BenhAn
 from app.database.benh_nhan_ra_vao import BenhNhanRaVao
@@ -34,17 +34,17 @@ router = create_crud_router(
     dependencies=[Depends(require_permissions("benh_an:create"))],
     status_code=201,
 )
-def create_benh_an(data: dict, db: Session = Depends(get_db)):
+def create_benh_an(data: dict, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
     ma_kham_benh = data.get("ma_kham_benh")
     if ma_kham_benh:
         service = MedicalExaminationService(db)
         try:
-            ba = service.create_benh_an(ma_kham_benh, data)
+            ba = service.create_benh_an(ma_kham_benh, data, nguoi_dung_id=current_user.id)
         except ValueError as e:
             raise HTTPException(status_code=400, detail=str(e))
         return {c.key: getattr(ba, c.key) for c in inspect(BenhAn).columns}
     payload = BenhAnCreate(**data)
-    ba = benh_an_crud.create(db, payload)
+    ba = benh_an_crud.create(db, payload, nguoi_dung_id=current_user.id)
     return {c.key: getattr(ba, c.key) for c in inspect(BenhAn).columns}
 
 
@@ -96,10 +96,10 @@ def get_benh_an_by_kham_benh(ma_kham_benh: str, db: Session = Depends(get_db)):
     "/{id}/ra-vien",
     dependencies=[Depends(require_permissions("benh_an:update"))],
 )
-def ra_vien(id: str, data: dict, db: Session = Depends(get_db)):
+def ra_vien(id: str, data: dict, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
     service = MedicalExaminationService(db)
     try:
-        ba = service.discharge_patient(id, data)
+        ba = service.discharge_patient(id, data, nguoi_dung_id=current_user.id)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     return {c.key: getattr(ba, c.key) for c in inspect(BenhAn).columns}
