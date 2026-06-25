@@ -86,6 +86,7 @@ class MedicalExaminationService:
             ma_quan_nhan=kb.ma_quan_nhan,
             ma_kham_benh=kb_id,
             trang_thai="đang_điều_trị",
+            ngay_nhap_vien=datetime.now().date(),
             ngoai_kieu=data.get("ngoai_kieu"),
             doi_tuong=data.get("doi_tuong"),
             quan_ly_nguoi_benh=data.get("quan_ly_nguoi_benh"),

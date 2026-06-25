@@ -1,4 +1,6 @@
-from sqlalchemy import ForeignKey, String, Text
+from datetime import date
+
+from sqlalchemy import Date, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database.base import Base
@@ -16,6 +18,7 @@ class BenhAn(Base):
         nullable=True,
     )
     trang_thai: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    ngay_nhap_vien: Mapped[date | None] = mapped_column(Date, nullable=True)
     ngoai_kieu: Mapped[str | None] = mapped_column(String(100), nullable=True)
     doi_tuong: Mapped[str | None] = mapped_column(String(100), nullable=True)
     quan_ly_nguoi_benh: Mapped[str | None] = mapped_column(Text, nullable=True)

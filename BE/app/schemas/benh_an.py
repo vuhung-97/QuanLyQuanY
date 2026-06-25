@@ -1,3 +1,5 @@
+from datetime import date
+
 from app.schemas.base import SchemaBase
 from pydantic import Field
 
@@ -6,6 +8,7 @@ class BenhAnBase(SchemaBase):
     ma_quan_nhan: str | None = Field(default=None, max_length=10)
     ma_kham_benh: str | None = Field(default=None, max_length=10)
     trang_thai: str | None = None
+    ngay_nhap_vien: date | None = None
     ngoai_kieu: str | None = Field(default=None, max_length=100)
     doi_tuong: str | None = Field(default=None, max_length=100)
     quan_ly_nguoi_benh: str | None = None
@@ -23,6 +26,7 @@ class BenhAnUpdate(SchemaBase):
     ma_quan_nhan: str | None = None
     ma_kham_benh: str | None = None
     trang_thai: str | None = None
+    ngay_nhap_vien: date | None = None
     ngoai_kieu: str | None = None
     doi_tuong: str | None = None
     quan_ly_nguoi_benh: str | None = None
