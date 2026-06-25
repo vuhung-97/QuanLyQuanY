@@ -6,6 +6,7 @@ from pydantic import Field
 
 class BenhNhanRaVaoBase(SchemaBase):
     ma_benh_an: str | None = Field(default=None, max_length=10)
+    ma_kham_benh: str | None = Field(default=None, max_length=10)
     ngay_thang_nam: date | None = None
     ly_do: str | None = None
     ngay_vao: date | None = None
@@ -18,6 +19,7 @@ class BenhNhanRaVaoCreate(BenhNhanRaVaoBase):
 
 class BenhNhanRaVaoUpdate(SchemaBase):
     ma_benh_an: str | None = None
+    ma_kham_benh: str | None = None
     ngay_thang_nam: date | None = None
     ly_do: str | None = None
     ngay_vao: date | None = None

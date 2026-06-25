@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.core.dependencies import require_permissions
 from app.crud.kham_benh import kham_benh_crud
+from app.database.benh_an import BenhAn
 from app.database.chi_tiet_don_thuoc import ChiTietDonThuoc
 from app.database.don_thuoc import DonThuoc
 from app.database.don_vi import DonVi
@@ -174,3 +175,35 @@ def nhap_vien(id: str, db: Session = Depends(get_db)):
 def hoan_tat_kham(id: str, data: dict, db: Session = Depends(get_db)):
     service = MedicalExaminationService(db)
     return service.complete_examination(id, data)
+
+
+@router.get(
+    "/nhap-vien/danh-sach",
+    dependencies=[Depends(require_permissions("kham_benh:read"))],
+)
+def get_danh_sach_nhap_vien(
+    limit: int = Query(default=100, ge=1, le=500),
+    offset: int = Query(default=0, ge=0),
+    db: Session = Depends(get_db),
+):
+    base_query = (
+        db.query(KhamBenh, QuanNhan.ho_ten, QuanNhan.cap_bac, QuanNhan.chuc_vu, QuanNhan.ngay_sinh, QuanNhan.ma_don_vi, DonVi.ten_don_vi)
+        .join(QuanNhan, KhamBenh.ma_quan_nhan == QuanNhan.ma_quan_nhan)
+        .join(DonVi, QuanNhan.ma_don_vi == DonVi.ma_don_vi, isouter=True)
+        .outerjoin(BenhAn, KhamBenh.ma_kham_benh == BenhAn.ma_kham_benh)
+        .filter(KhamBenh.trang_thai == "nhập_viện", BenhAn.ma_kham_benh.is_(None))
+        .order_by(KhamBenh.ngay_kham.desc())
+    )
+    total = base_query.count()
+    records = base_query.offset(offset).limit(limit).all()
+    result = []
+    for kb, ho_ten, cap_bac, chuc_vu, ngay_sinh, ma_don_vi, ten_don_vi in records:
+        d = {c.key: getattr(kb, c.key) for c in inspect(KhamBenh).columns}
+        d["ho_ten"] = ho_ten
+        d["cap_bac"] = cap_bac
+        d["chuc_vu"] = chuc_vu
+        d["ngay_sinh"] = str(ngay_sinh) if ngay_sinh else None
+        d["ma_don_vi"] = ma_don_vi
+        d["ten_don_vi"] = ten_don_vi
+        result.append(d)
+    return {"data": result, "total": total}

@@ -12,6 +12,11 @@ class BenhNhanRaVao(Base):
 
     ma_ra_vao: Mapped[str] = mapped_column(String(10), primary_key=True, default=lambda: generate_id(10))
     ma_benh_an: Mapped[str | None] = mapped_column(String(10), ForeignKey("benh_an.ma_benh_an", ondelete="CASCADE"), nullable=True)
+    ma_kham_benh: Mapped[str | None] = mapped_column(
+        String(10),
+        ForeignKey("kham_benh.ma_kham_benh", ondelete="CASCADE"),
+        nullable=True,
+    )
     ngay_thang_nam: Mapped[date | None] = mapped_column(Date, server_default=func.current_date(), nullable=True)
     ly_do: Mapped[str | None] = mapped_column(Text, nullable=True)
     ngay_vao: Mapped[date | None] = mapped_column(Date, nullable=True)

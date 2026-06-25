@@ -75,6 +75,59 @@ class MedicalExaminationService:
         self.db.refresh(kb)
         return kb
 
+    def create_benh_an(self, kb_id: str, data: dict) -> BenhAn:
+        kb = self.db.query(KhamBenh).filter(KhamBenh.ma_kham_benh == kb_id).first()
+        if not kb:
+            raise ValueError(f"KhamBenh {kb_id} not found")
+        if kb.trang_thai != "nhập_viện":
+            raise ValueError("Chưa được chỉ định nhập viện.")
+
+        ba = BenhAn(
+            ma_quan_nhan=kb.ma_quan_nhan,
+            ma_kham_benh=kb_id,
+            trang_thai="đang_điều_trị",
+            ngoai_kieu=data.get("ngoai_kieu"),
+            doi_tuong=data.get("doi_tuong"),
+            quan_ly_nguoi_benh=data.get("quan_ly_nguoi_benh"),
+            chan_doan=data.get("chan_doan", kb.chan_doan),
+            chi_tiet_benh_an=data.get("chi_tiet_benh_an"),
+        )
+        self.db.add(ba)
+        self.db.flush()
+
+        bnrv = BenhNhanRaVao(
+            ma_benh_an=ba.ma_benh_an,
+            ma_kham_benh=kb_id,
+            ly_do=data.get("ly_do"),
+            ngay_vao=datetime.now().date(),
+        )
+        self.db.add(bnrv)
+        self.db.commit()
+        self.db.refresh(ba)
+        return ba
+
+    def discharge_patient(self, ba_id: str, data: dict) -> BenhAn:
+        ba = self.db.query(BenhAn).filter(BenhAn.ma_benh_an == ba_id).first()
+        if not ba:
+            raise ValueError(f"BenhAn {ba_id} not found")
+        if ba.trang_thai == "đã_ra_viện":
+            raise ValueError("Bệnh án đã đóng.")
+
+        ba.tinh_trang_ra_vien = data.get("tinh_trang_ra_vien")
+        ba.chi_tiet_benh_an = data.get("chi_tiet_benh_an", ba.chi_tiet_benh_an)
+        ba.tong_ket_benh_an = data.get("tong_ket_benh_an")
+        ba.trang_thai = "đã_ra_viện"
+
+        bnrv = self.db.query(BenhNhanRaVao).filter(
+            BenhNhanRaVao.ma_benh_an == ba_id
+        ).first()
+        if bnrv:
+            bnrv.ngay_ra = data.get("ngay_ra", datetime.now().date())
+
+        self.db.commit()
+        self.db.refresh(ba)
+        return ba
+
     def admit_patient(self, kb_id: str) -> dict:
         kb = self.db.query(KhamBenh).filter(KhamBenh.ma_kham_benh == kb_id).first()
         if not kb:

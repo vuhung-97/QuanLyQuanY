@@ -10,6 +10,12 @@ class BenhAn(Base):
 
     ma_benh_an: Mapped[str] = mapped_column(String(10), primary_key=True, default=lambda: generate_id(10))
     ma_quan_nhan: Mapped[str | None] = mapped_column(String(10), ForeignKey("quan_nhan.ma_quan_nhan", ondelete="CASCADE"), nullable=True)
+    ma_kham_benh: Mapped[str | None] = mapped_column(
+        String(10),
+        ForeignKey("kham_benh.ma_kham_benh", ondelete="CASCADE"),
+        nullable=True,
+    )
+    trang_thai: Mapped[str | None] = mapped_column(String(20), nullable=True)
     ngoai_kieu: Mapped[str | None] = mapped_column(String(100), nullable=True)
     doi_tuong: Mapped[str | None] = mapped_column(String(100), nullable=True)
     quan_ly_nguoi_benh: Mapped[str | None] = mapped_column(Text, nullable=True)
