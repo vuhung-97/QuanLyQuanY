@@ -4,6 +4,11 @@ from app.schemas.base import SchemaBase
 from pydantic import Field
 
 
+class ChiTietPhieuChamSocItem(SchemaBase):
+    ma_thuoc_vtyt: str = Field(max_length=10)
+    so_luong: int | None = None
+
+
 class PhieuChamSocBase(SchemaBase):
     ma_benh_an: str | None = Field(default=None, max_length=10)
     so_giuong: str | None = Field(default=None, max_length=50)
@@ -15,6 +20,7 @@ class PhieuChamSocBase(SchemaBase):
 
 class PhieuChamSocCreate(PhieuChamSocBase):
     ma_phieu_cs: str | None = None
+    chi_tiet: list[ChiTietPhieuChamSocItem] = []
 
 
 class PhieuChamSocUpdate(SchemaBase):
