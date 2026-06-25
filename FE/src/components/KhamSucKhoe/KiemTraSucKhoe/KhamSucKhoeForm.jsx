@@ -10,12 +10,19 @@ import {
     Tabs,
     Typography,
 } from "@mui/material";
-import { Biotech as BiotechIcon, DocumentScanner as DocumentScannerIcon } from "@mui/icons-material";
+import {
+    Biotech as BiotechIcon,
+    DocumentScanner as DocumentScannerIcon,
+} from "@mui/icons-material";
 import HistoryIcon from "@mui/icons-material/History";
 import MonitorHeartIcon from "@mui/icons-material/MonitorHeart";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
 import useKhamSucKhoeForm from "@/hooks/useKhamSucKhoeForm";
-import { ALL_TABS, cardStyle, ROLE_TAB_ACCESS } from "./KhamSucKhoeFormUtils.js";
+import {
+    ALL_TABS,
+    cardStyle,
+    ROLE_TAB_ACCESS,
+} from "./KhamSucKhoeFormUtils.js";
 import TongQuanTab from "./tabs/TongQuanTab";
 import LamSangTab from "./tabs/LamSangTab";
 import XetNghiemTab from "./tabs/XetNghiemTab";
@@ -57,7 +64,12 @@ const itemSx = {
     minHeight: 56,
 };
 
-function FormInfoCard({ quanNhan, ngayNhapNgu, phieu, unitLookup = new Map() }) {
+function FormInfoCard({
+    quanNhan,
+    ngayNhapNgu,
+    phieu,
+    unitLookup = new Map(),
+}) {
     const infoFields = [
         {
             label: "Họ và tên",
@@ -126,7 +138,8 @@ const tabConfigs = [
 
 function FormTabBar({ activeTab, onTabChange, allowedTabs }) {
     const filtered = tabConfigs.filter((_, i) => allowedTabs.includes(i));
-    const handleChange = (_, filteredIdx) => onTabChange(_, allowedTabs[filteredIdx]);
+    const handleChange = (_, filteredIdx) =>
+        onTabChange(_, allowedTabs[filteredIdx]);
     return (
         <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}>
             <Tabs
@@ -232,6 +245,7 @@ export default function KhamSucKhoeForm({
                     },
                 },
             }}
+            sx={{ "& .MuiDialog-paper": { height: "90vh" } }}
         >
             <Box component="form" onSubmit={handleSubmit}>
                 <FormHeader quanNhan={quanNhan} />
