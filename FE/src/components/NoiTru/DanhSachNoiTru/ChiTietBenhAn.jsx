@@ -8,6 +8,7 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
+    Grid,
     Stack,
     Tab,
     Tabs,
@@ -20,17 +21,18 @@ import PhieuChamSocList from "./PhieuChamSocList.jsx";
 import PhieuChamSocForm from "./PhieuChamSocForm.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 
-function InfoRow({ label, value }) {
+function InfoItem({ label, value }) {
     return (
         <Box>
-            <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{ fontWeight: 800 }}
+            <Box
+                variant="caption"
+                sx={{ fontSize: 12, color: "text.secondary" }}
             >
                 {label}
-            </Typography>
-            <Box variant="body1">{value || "--"}</Box>
+            </Box>
+            <Box variant="body1" sx={{ fontWeight: 500 }}>
+                {value ?? "--"}
+            </Box>
         </Box>
     );
 }
@@ -75,7 +77,7 @@ export default function ChiTietBenhAn({ open, benhAnId, onClose }) {
         if (!open || !benhAnId) return;
         setLoading(true);
         noiTruService
-            .getBenhAn(benhAnId)
+            .getBenhAnChiTiet(benhAnId)
             .then((res) => setBenhAn(res.data || res))
             .catch(() => setBenhAn(null))
             .finally(() => setLoading(false));
@@ -99,9 +101,38 @@ export default function ChiTietBenhAn({ open, benhAnId, onClose }) {
         return Object.values(map);
     }, [records]);
 
+    const headerFields = [
+        { label: "Mã BA", value: benhAn?.ma_benh_an },
+        { label: "Mã QN", value: benhAn?.ma_quan_nhan },
+        {
+            label: "Ngày nhập viện",
+            value: benhAn?.ngay_nhap_vien
+                ? new Date(benhAn.ngay_nhap_vien).toLocaleDateString("vi-VN")
+                : "--",
+        },
+        {
+            label: "Trạng thái",
+            value: benhAn && <TinhTrangChip trangThai={benhAn.trang_thai} />,
+        },
+        { label: "Buồng", value: benhAn?.ten_buong },
+        { label: "Giường", value: benhAn?.ten_giuong },
+        { label: "Họ tên", value: benhAn?.ho_ten },
+        { label: "Cấp bậc", value: benhAn?.cap_bac },
+        { label: "Chức vụ", value: benhAn?.chuc_vu },
+        { label: "Đơn vị", value: benhAn?.ten_don_vi },
+        { label: "Số ĐT", value: benhAn?.so_dien_thoai },
+        { label: "Mã BHYT", value: benhAn?.so_the_bhyt },
+    ];
+
     return (
         <>
-            <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
+            <Dialog
+                open={open}
+                onClose={onClose}
+                maxWidth="lg"
+                fullWidth
+                sx={{ "& .MuiDialog-paper": { height: "90vh" } }}
+            >
                 <DialogTitle>
                     <Typography
                         sx={{
@@ -135,32 +166,16 @@ export default function ChiTietBenhAn({ open, benhAnId, onClose }) {
                                 sx={{ borderRadius: 2, bgcolor: "#F8FAFC" }}
                             >
                                 <CardContent>
-                                    <Stack
-                                        direction="row"
-                                        spacing={2}
-                                        sx={{
-                                            "& > *": { flex: 1, minWidth: 0 },
-                                        }}
-                                    >
-                                        <InfoRow
-                                            label="Mã bệnh án:"
-                                            value={benhAn.ma_benh_an}
-                                        />
-                                        <InfoRow
-                                            label="Mã QN:"
-                                            value={benhAn.ma_quan_nhan}
-                                        />
-                                        <InfoRow
-                                            label="Trạng thái:"
-                                            value={
-                                                <TinhTrangChip
-                                                    trangThai={
-                                                        benhAn.trang_thai
-                                                    }
+                                    <Grid container spacing={2}>
+                                        {headerFields.map((f, i) => (
+                                            <Grid size={{ xs: 2 }} key={i}>
+                                                <InfoItem
+                                                    label={f.label}
+                                                    value={f.value}
                                                 />
-                                            }
-                                        />
-                                    </Stack>
+                                            </Grid>
+                                        ))}
+                                    </Grid>
                                 </CardContent>
                             </Card>
 
@@ -190,15 +205,15 @@ export default function ChiTietBenhAn({ open, benhAnId, onClose }) {
                                                     },
                                                 }}
                                             >
-                                                <InfoRow
+                                                <InfoItem
                                                     label="Ngoại kiều:"
                                                     value={benhAn.ngoai_kieu}
                                                 />
-                                                <InfoRow
+                                                <InfoItem
                                                     label="Đối tượng:"
                                                     value={benhAn.doi_tuong}
                                                 />
-                                                <InfoRow
+                                                <InfoItem
                                                     label="Ngày nhập viện:"
                                                     value={
                                                         benhAn.ngay_nhap_vien
@@ -219,17 +234,17 @@ export default function ChiTietBenhAn({ open, benhAnId, onClose }) {
                                     >
                                         <CardContent>
                                             <Stack spacing={1.5}>
-                                                <InfoRow
+                                                <InfoItem
                                                     label="Chẩn đoán:"
                                                     value={benhAn.chan_doan}
                                                 />
-                                                <InfoRow
+                                                <InfoItem
                                                     label="Quản lý NB:"
                                                     value={
                                                         benhAn.quan_ly_nguoi_benh
                                                     }
                                                 />
-                                                <InfoRow
+                                                <InfoItem
                                                     label="Chi tiết BA:"
                                                     value={
                                                         benhAn.chi_tiet_benh_an
