@@ -1,5 +1,5 @@
 import { Box, Stack, Typography } from "@mui/material";
-import LapBenhAnList from "@/components/NoiTru/LapBenhAnList.jsx";
+import LapBenhAnList from "@/components/NoiTru/LapBenhAn/LapBenhAnList.jsx";
 
 export default function LapBenhAnPage() {
     return (

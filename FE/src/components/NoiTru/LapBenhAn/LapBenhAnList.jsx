@@ -21,6 +21,8 @@ const columns = [
         sx: { color: "primary.main" },
     },
     { key: "ho_ten", label: "Họ tên QN" },
+    { key: "cap_bac", label: "Cấp bậc", render: (row) => row.cap_bac || "--" },
+    { key: "chuc_vu", label: "Chức vụ", render: (row) => row.chuc_vu || "--" },
     {
         key: "ten_don_vi",
         label: "Đơn vị",

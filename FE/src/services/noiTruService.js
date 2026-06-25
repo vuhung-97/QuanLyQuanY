@@ -25,4 +25,8 @@ export const noiTruService = {
         api.get(`/thuoc_vtyt/search/value`, {
             params: { search: keyword, limit },
         }),
+
+    getBuong: (params) => api.get("/buong", { params }),
+    getGiuongTrong: (maBuong) => api.get("/giuong/trong", { params: { ma_buong: maBuong } }),
+
 };
