@@ -187,7 +187,7 @@ def get_danh_sach_nhap_vien(
     db: Session = Depends(get_db),
 ):
     base_query = (
-        db.query(KhamBenh, QuanNhan.ho_ten, QuanNhan.cap_bac, QuanNhan.chuc_vu, QuanNhan.ngay_sinh, QuanNhan.gioi_tinh, QuanNhan.nghe_nghiep, QuanNhan.so_the_bhyt, QuanNhan.ma_don_vi, DonVi.ten_don_vi)
+        db.query(KhamBenh, QuanNhan.ho_ten, QuanNhan.cap_bac, QuanNhan.chuc_vu, QuanNhan.ngay_sinh, QuanNhan.gioi_tinh, QuanNhan.nghe_nghiep, QuanNhan.so_dien_thoai, QuanNhan.so_the_bhyt, QuanNhan.ma_don_vi, DonVi.ten_don_vi)
         .join(QuanNhan, KhamBenh.ma_quan_nhan == QuanNhan.ma_quan_nhan)
         .join(DonVi, QuanNhan.ma_don_vi == DonVi.ma_don_vi, isouter=True)
         .outerjoin(BenhAn, KhamBenh.ma_kham_benh == BenhAn.ma_kham_benh)
@@ -197,7 +197,7 @@ def get_danh_sach_nhap_vien(
     total = base_query.count()
     records = base_query.offset(offset).limit(limit).all()
     result = []
-    for kb, ho_ten, cap_bac, chuc_vu, ngay_sinh, gioi_tinh, nghe_nghiep, so_the_bhyt, ma_don_vi, ten_don_vi in records:
+    for kb, ho_ten, cap_bac, chuc_vu, ngay_sinh, gioi_tinh, nghe_nghiep, so_dien_thoai, so_the_bhyt, ma_don_vi, ten_don_vi in records:
         d = {c.key: getattr(kb, c.key) for c in inspect(KhamBenh).columns}
         d["ho_ten"] = ho_ten
         d["cap_bac"] = cap_bac
@@ -205,6 +205,7 @@ def get_danh_sach_nhap_vien(
         d["ngay_sinh"] = str(ngay_sinh) if ngay_sinh else None
         d["gioi_tinh"] = gioi_tinh
         d["nghe_nghiep"] = nghe_nghiep
+        d["so_dien_thoai"] = so_dien_thoai
         d["so_the_bhyt"] = so_the_bhyt
         d["ma_don_vi"] = ma_don_vi
         d["ten_don_vi"] = ten_don_vi

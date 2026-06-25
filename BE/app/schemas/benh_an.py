@@ -6,6 +6,8 @@ from pydantic import Field
 
 class BenhAnBase(SchemaBase):
     ma_quan_nhan: str | None = Field(default=None, max_length=10)
+    ma_buong: str | None = Field(default=None, max_length=10)
+    ma_giuong: str | None = Field(default=None, max_length=10)
     ma_kham_benh: str | None = Field(default=None, max_length=10)
     trang_thai: str | None = None
     ngay_nhap_vien: date | None = None

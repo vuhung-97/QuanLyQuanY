@@ -1,4 +1,5 @@
 from app.routes.benh_an import router as benh_an_router
+from app.routes.buong import router as buong_router
 from app.routes.benh_nhan_ra_vao import router as benh_nhan_ra_vao_router
 from app.routes.chi_tiet_don_thuoc import router as chi_tiet_don_thuoc_router
 from app.routes.chi_tiet_du_tru import router as chi_tiet_du_tru_router
@@ -8,6 +9,7 @@ from app.routes.di_tuyen_sau_dieu_tri import router as di_tuyen_sau_dieu_tri_rou
 from app.routes.don_thuoc import router as don_thuoc_router
 from app.routes.don_vi import router as don_vi_router
 from app.routes.giay_gioi_thieu import router as giay_gioi_thieu_router
+from app.routes.giuong import router as giuong_router
 from app.routes.kham_benh import router as kham_benh_router
 from app.routes.lich_kham_sk_nam import router as lich_kham_sk_nam_router
 from app.routes.nguoi_dung import router as nguoi_dung_router
@@ -33,6 +35,7 @@ from app.routes.thong_ke import router as thong_ke_router
 
 RESOURCE_ROUTERS = [
     benh_an_router,
+    buong_router,
     benh_nhan_ra_vao_router,
     chi_tiet_don_thuoc_router,
     chi_tiet_du_tru_router,
@@ -42,6 +45,7 @@ RESOURCE_ROUTERS = [
     don_thuoc_router,
     don_vi_router,
     giay_gioi_thieu_router,
+    giuong_router,
     kham_benh_router,
     lich_kham_sk_nam_router,
     phieu_cham_soc_router,

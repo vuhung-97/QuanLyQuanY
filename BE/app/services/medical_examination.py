@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 
 from sqlalchemy import inspect
 from sqlalchemy.orm import Session
@@ -9,6 +9,7 @@ from app.database.chi_tiet_don_thuoc import ChiTietDonThuoc
 from app.database.di_tuyen_sau_dieu_tri import DiTuyenSauDieuTri
 from app.database.don_thuoc import DonThuoc
 from app.database.giay_gioi_thieu import GiayGioiThieu
+from app.database.giuong import Giuong
 from app.database.kham_benh import KhamBenh
 from app.database.nhat_ky_thao_tac import NhatKyThaoTac
 
@@ -17,14 +18,20 @@ class MedicalExaminationService:
     def __init__(self, db: Session):
         self.db = db
 
+    @staticmethod
+    def _serialize(val):
+        if isinstance(val, (datetime, date)):
+            return val.isoformat()
+        return val
+
     def _log(self, hanh_dong: str, nguoi_dung_id: str | None, ten_bang: str, du_lieu_cu: dict | None = None, du_lieu_moi: dict | None = None):
         log = NhatKyThaoTac(
             id_nguoi_dung=nguoi_dung_id,
             thoi_gian=datetime.now(timezone.utc),
             hanh_dong=hanh_dong,
             ten_bang=ten_bang,
-            du_lieu_cu=du_lieu_cu,
-            du_lieu_moi=du_lieu_moi,
+            du_lieu_cu={k: self._serialize(v) for k, v in du_lieu_cu.items()} if du_lieu_cu else None,
+            du_lieu_moi={k: self._serialize(v) for k, v in du_lieu_moi.items()} if du_lieu_moi else None,
         )
         self.db.add(log)
         self.db.commit()
@@ -96,6 +103,14 @@ class MedicalExaminationService:
         if kb.trang_thai != "nhập_viện":
             raise ValueError("Chưa được chỉ định nhập viện.")
 
+        ma_buong = data.get("ma_buong") or None
+        ma_giuong = data.get("ma_giuong") or None
+        giuong = None
+        if ma_giuong:
+            giuong = self.db.query(Giuong).filter(Giuong.ma_giuong == ma_giuong).first()
+            if not giuong or giuong.trang_thai != "trống":
+                raise ValueError("Giường không hợp lệ hoặc đã có người.")
+
         ba = BenhAn(
             ma_quan_nhan=kb.ma_quan_nhan,
             ma_kham_benh=kb_id,
@@ -106,9 +121,15 @@ class MedicalExaminationService:
             quan_ly_nguoi_benh=data.get("quan_ly_nguoi_benh"),
             chan_doan=data.get("chan_doan", kb.chan_doan),
             chi_tiet_benh_an=data.get("chi_tiet_benh_an"),
+            ma_buong=ma_buong,
+            ma_giuong=ma_giuong,
         )
         self.db.add(ba)
         self.db.flush()
+
+        if giuong:
+            giuong.trang_thai = "có người"
+            self.db.flush()
 
         bnrv = BenhNhanRaVao(
             ma_benh_an=ba.ma_benh_an,
@@ -136,6 +157,11 @@ class MedicalExaminationService:
         ba.chi_tiet_benh_an = data.get("chi_tiet_benh_an", ba.chi_tiet_benh_an)
         ba.tong_ket_benh_an = data.get("tong_ket_benh_an")
         ba.trang_thai = "đã_ra_viện"
+
+        if ba.ma_giuong:
+            giuong = self.db.query(Giuong).filter(Giuong.ma_giuong == ba.ma_giuong).first()
+            if giuong:
+                giuong.trang_thai = "trống"
 
         bnrv = self.db.query(BenhNhanRaVao).filter(
             BenhNhanRaVao.ma_benh_an == ba_id
