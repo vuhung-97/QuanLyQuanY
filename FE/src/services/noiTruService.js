@@ -8,6 +8,7 @@ export const noiTruService = {
         api.get("/kham_benh/nhap-vien/danh-sach", { params }),
 
     getBenhAn: (id) => api.get(`/benh_an/${id}`),
+    getBenhAnChiTiet: (id) => api.get(`/benh_an/${id}/chi-tiet`),
     getBenhAnByKhamBenh: (maKhamBenh) =>
         api.get(`/benh_an/by-kham-benh/${maKhamBenh}`),
     createBenhAn: (data) => api.post("/benh_an", data),
