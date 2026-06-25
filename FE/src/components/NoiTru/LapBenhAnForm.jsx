@@ -17,7 +17,11 @@ import {
 function InfoRow({ label, value }) {
     return (
         <Box>
-            <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 800 }}>
+            <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ fontWeight: 800 }}
+            >
                 {label}
             </Typography>
             <Typography variant="body1" sx={{ textAlign: "center" }}>
@@ -31,10 +35,20 @@ const PatientInfoCard = memo(function PatientInfoCard({ exam }) {
     return (
         <Card variant="outlined" sx={{ borderRadius: 2, bgcolor: "#F8FAFC" }}>
             <CardContent>
-                <Stack direction="row" spacing={2} sx={{ "& > *": { flex: 1, minWidth: 0 } }}>
-                    <InfoRow label="QN:" value={`${exam.ho_ten || ""} - ${exam.ma_quan_nhan || ""}`} />
+                <Stack
+                    direction="row"
+                    spacing={2}
+                    sx={{ "& > *": { flex: 1, minWidth: 0 } }}
+                >
+                    <InfoRow
+                        label="QN:"
+                        value={`${exam.ho_ten || ""} - ${exam.ma_quan_nhan || ""}`}
+                    />
                     <InfoRow label="Đơn vị:" value={exam.ten_don_vi || "--"} />
-                    <InfoRow label="Chẩn đoán:" value={exam.chan_doan || "--"} />
+                    <InfoRow
+                        label="Chẩn đoán:"
+                        value={exam.chan_doan || "--"}
+                    />
                 </Stack>
             </CardContent>
         </Card>
@@ -68,7 +82,11 @@ export default function LapBenhAnForm({ open, exam, saving, onSave, onClose }) {
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
             <DialogTitle>
-                <Typography variant="h2">Lập bệnh án nội trú</Typography>
+                <Typography
+                    sx={{ fontSize: 20, fontWeight: 700, textAlign: "center" }}
+                >
+                    Lập bệnh án nội trú
+                </Typography>
             </DialogTitle>
             <DialogContent dividers>
                 {exam && (
@@ -81,7 +99,12 @@ export default function LapBenhAnForm({ open, exam, saving, onSave, onClose }) {
                                     label="Ngoại kiều"
                                     fullWidth
                                     value={formState.ngoai_kieu}
-                                    onChange={(e) => updateField("ngoai_kieu", e.target.value)}
+                                    onChange={(e) =>
+                                        updateField(
+                                            "ngoai_kieu",
+                                            e.target.value,
+                                        )
+                                    }
                                 />
                             </Grid>
                             <Grid size={{ xs: 12, md: 6 }}>
@@ -89,7 +112,9 @@ export default function LapBenhAnForm({ open, exam, saving, onSave, onClose }) {
                                     label="Đối tượng"
                                     fullWidth
                                     value={formState.doi_tuong}
-                                    onChange={(e) => updateField("doi_tuong", e.target.value)}
+                                    onChange={(e) =>
+                                        updateField("doi_tuong", e.target.value)
+                                    }
                                 />
                             </Grid>
                             <Grid size={{ xs: 12 }}>
@@ -99,7 +124,12 @@ export default function LapBenhAnForm({ open, exam, saving, onSave, onClose }) {
                                     minRows={2}
                                     fullWidth
                                     value={formState.quan_ly_nguoi_benh}
-                                    onChange={(e) => updateField("quan_ly_nguoi_benh", e.target.value)}
+                                    onChange={(e) =>
+                                        updateField(
+                                            "quan_ly_nguoi_benh",
+                                            e.target.value,
+                                        )
+                                    }
                                 />
                             </Grid>
                             <Grid size={{ xs: 12 }}>
@@ -109,13 +139,21 @@ export default function LapBenhAnForm({ open, exam, saving, onSave, onClose }) {
                                     minRows={3}
                                     fullWidth
                                     value={formState.chi_tiet_benh_an}
-                                    onChange={(e) => updateField("chi_tiet_benh_an", e.target.value)}
+                                    onChange={(e) =>
+                                        updateField(
+                                            "chi_tiet_benh_an",
+                                            e.target.value,
+                                        )
+                                    }
                                 />
                             </Grid>
                         </Grid>
 
                         <Box>
-                            <Typography variant="h3" sx={{ mb: 1.5, color: "text.primary" }}>
+                            <Typography
+                                variant="h3"
+                                sx={{ mb: 1.5, color: "text.primary" }}
+                            >
                                 Chỉ số sinh tồn
                             </Typography>
                             <Grid container spacing={2}>
@@ -125,7 +163,12 @@ export default function LapBenhAnForm({ open, exam, saving, onSave, onClose }) {
                                         type="number"
                                         fullWidth
                                         value={formState.nhiet_do}
-                                        onChange={(e) => updateField("nhiet_do", e.target.value)}
+                                        onChange={(e) =>
+                                            updateField(
+                                                "nhiet_do",
+                                                e.target.value,
+                                            )
+                                        }
                                     />
                                 </Grid>
                                 <Grid size={{ xs: 3, md: 1.5 }}>
@@ -134,7 +177,12 @@ export default function LapBenhAnForm({ open, exam, saving, onSave, onClose }) {
                                         type="number"
                                         fullWidth
                                         value={formState.ha_tam_thu}
-                                        onChange={(e) => updateField("ha_tam_thu", e.target.value)}
+                                        onChange={(e) =>
+                                            updateField(
+                                                "ha_tam_thu",
+                                                e.target.value,
+                                            )
+                                        }
                                     />
                                 </Grid>
                                 <Grid size={{ xs: 3, md: 1.5 }}>
@@ -143,7 +191,12 @@ export default function LapBenhAnForm({ open, exam, saving, onSave, onClose }) {
                                         type="number"
                                         fullWidth
                                         value={formState.ha_tam_truong}
-                                        onChange={(e) => updateField("ha_tam_truong", e.target.value)}
+                                        onChange={(e) =>
+                                            updateField(
+                                                "ha_tam_truong",
+                                                e.target.value,
+                                            )
+                                        }
                                     />
                                 </Grid>
                                 <Grid size={{ xs: 6, md: 3 }}>
@@ -152,7 +205,12 @@ export default function LapBenhAnForm({ open, exam, saving, onSave, onClose }) {
                                         type="number"
                                         fullWidth
                                         value={formState.nhip_tim}
-                                        onChange={(e) => updateField("nhip_tim", e.target.value)}
+                                        onChange={(e) =>
+                                            updateField(
+                                                "nhip_tim",
+                                                e.target.value,
+                                            )
+                                        }
                                     />
                                 </Grid>
                                 <Grid size={{ xs: 6, md: 3 }}>
@@ -161,7 +219,12 @@ export default function LapBenhAnForm({ open, exam, saving, onSave, onClose }) {
                                         type="number"
                                         fullWidth
                                         value={formState.nhip_tho}
-                                        onChange={(e) => updateField("nhip_tho", e.target.value)}
+                                        onChange={(e) =>
+                                            updateField(
+                                                "nhip_tho",
+                                                e.target.value,
+                                            )
+                                        }
                                     />
                                 </Grid>
                             </Grid>
@@ -173,7 +236,9 @@ export default function LapBenhAnForm({ open, exam, saving, onSave, onClose }) {
                                     label="Số giường"
                                     fullWidth
                                     value={formState.so_giuong}
-                                    onChange={(e) => updateField("so_giuong", e.target.value)}
+                                    onChange={(e) =>
+                                        updateField("so_giuong", e.target.value)
+                                    }
                                 />
                             </Grid>
                             <Grid size={{ xs: 6 }}>
@@ -181,7 +246,9 @@ export default function LapBenhAnForm({ open, exam, saving, onSave, onClose }) {
                                     label="Buồng"
                                     fullWidth
                                     value={formState.buong}
-                                    onChange={(e) => updateField("buong", e.target.value)}
+                                    onChange={(e) =>
+                                        updateField("buong", e.target.value)
+                                    }
                                 />
                             </Grid>
                             <Grid size={{ xs: 12 }}>
@@ -191,7 +258,9 @@ export default function LapBenhAnForm({ open, exam, saving, onSave, onClose }) {
                                     minRows={2}
                                     fullWidth
                                     value={formState.ly_do}
-                                    onChange={(e) => updateField("ly_do", e.target.value)}
+                                    onChange={(e) =>
+                                        updateField("ly_do", e.target.value)
+                                    }
                                 />
                             </Grid>
                         </Grid>

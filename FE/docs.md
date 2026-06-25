@@ -99,7 +99,7 @@ FE/
     │   │       ├── PhanCongNhiemVu.jsx
     │   │       └── TongQuanDonVi.jsx
     │   │
-    │   └── NoiTru/           # Components cho module Nội trú (DanhSachNoiTru.jsx, LapBenhAnList.jsx, LapBenhAnForm.jsx)
+    │   └── NoiTru/           # Components cho module Nội trú (DanhSachNoiTru.jsx, LapBenhAnList.jsx, LapBenhAnForm.jsx, ChiTietBenhAn.jsx, PhieuChamSocForm.jsx, PhieuChamSocList.jsx, ThemThuocDialog.jsx, RaVienDialog.jsx)
     │   └── admin/           # Components cho module Admin
     │       ├── AdminPageHeader.jsx
     │       ├── TableCard.jsx

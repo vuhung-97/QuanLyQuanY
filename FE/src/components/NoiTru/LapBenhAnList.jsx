@@ -1,10 +1,4 @@
-import {
-    Button,
-    Card,
-    CardContent,
-    Stack,
-    Typography,
-} from "@mui/material";
+import { Button, Card, CardContent, Stack, Typography } from "@mui/material";
 import {
     NoteAdd as NoteAddIcon,
     Refresh as RefreshIcon,
@@ -27,7 +21,11 @@ const columns = [
         sx: { color: "primary.main" },
     },
     { key: "ho_ten", label: "Họ tên QN" },
-    { key: "ten_don_vi", label: "Đơn vị", render: (row) => row.ten_don_vi || "--" },
+    {
+        key: "ten_don_vi",
+        label: "Đơn vị",
+        render: (row) => row.ten_don_vi || "--",
+    },
     {
         key: "ngay_kham",
         label: "Ngày chỉ định",
@@ -84,7 +82,7 @@ export default function LapBenhAnList() {
                             alignItems: { md: "center" },
                         }}
                     >
-                        <Typography variant="h2">
+                        <Typography sx={{ fontSize: 22, fontWeight: 700 }}>
                             Quân nhân chờ lập bệnh án
                         </Typography>
                         <Button
