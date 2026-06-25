@@ -14,7 +14,9 @@ from app.database.quan_nhan import QuanNhan
 from app.database.session import get_db
 from app.database.thuoc_vtyt import ThuocVtyt
 from app.routes.base import create_crud_router
-from app.schemas.benh_an import BenhAnCreate
+from app.database.buong import Buong
+from app.database.giuong import Giuong
+from app.schemas.benh_an import BenhAnCreate, BenhAnReadDetail
 from app.services.medical_examination import MedicalExaminationService
 
 
@@ -103,6 +105,46 @@ def ra_vien(id: str, data: dict, db: Session = Depends(get_db), current_user = D
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     return {c.key: getattr(ba, c.key) for c in inspect(BenhAn).columns}
+
+
+@router.get(
+    "/{id}/chi-tiet",
+    dependencies=[Depends(require_permissions("benh_an:read"))],
+    response_model=BenhAnReadDetail,
+)
+def get_benh_an_chi_tiet(id: str, db: Session = Depends(get_db)):
+    result = (
+        db.query(
+            BenhAn,
+            QuanNhan.ho_ten,
+            QuanNhan.cap_bac,
+            QuanNhan.chuc_vu,
+            QuanNhan.so_dien_thoai,
+            QuanNhan.so_the_bhyt,
+            DonVi.ten_don_vi,
+            Buong.ten_buong,
+            Giuong.ten_giuong,
+        )
+        .join(QuanNhan, BenhAn.ma_quan_nhan == QuanNhan.ma_quan_nhan, isouter=True)
+        .join(DonVi, QuanNhan.ma_don_vi == DonVi.ma_don_vi, isouter=True)
+        .join(Buong, BenhAn.ma_buong == Buong.ma_buong, isouter=True)
+        .join(Giuong, BenhAn.ma_giuong == Giuong.ma_giuong, isouter=True)
+        .filter(BenhAn.ma_benh_an == id)
+        .first()
+    )
+    if not result:
+        raise HTTPException(status_code=404, detail="Không tìm thấy bệnh án.")
+    ba, ho_ten, cap_bac, chuc_vu, so_dien_thoai, so_the_bhyt, ten_don_vi, ten_buong, ten_giuong = result
+    d = {c.key: getattr(ba, c.key) for c in inspect(BenhAn).columns}
+    d["ho_ten"] = ho_ten
+    d["cap_bac"] = cap_bac
+    d["chuc_vu"] = chuc_vu
+    d["so_dien_thoai"] = so_dien_thoai
+    d["so_the_bhyt"] = so_the_bhyt
+    d["ten_don_vi"] = ten_don_vi
+    d["ten_buong"] = ten_buong
+    d["ten_giuong"] = ten_giuong
+    return d
 
 
 @router.get(
