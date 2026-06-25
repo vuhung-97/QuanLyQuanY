@@ -13,6 +13,8 @@ import KhamBenhPage from "./pages/KhamBenhChoQN/KhamBenhPage.jsx";
 import CapThuocPage from "./pages/KhamBenhChoQN/CapThuocPage.jsx";
 import ChuyenTuyenPage from "./pages/KhamBenhChoQN/ChuyenTuyenPage.jsx";
 import PlaceHolderPage from "./components/common/PlaceHolderPage.jsx";
+import DanhSachNoiTruPage from "./pages/NoiTru/DanhSachNoiTruPage.jsx";
+import LapBenhAnPage from "./pages/NoiTru/LapBenhAnPage.jsx";
 import UserManagementPage from "./pages/Admin/UserManagementPage.jsx";
 import RolePermissionPage from "./pages/Admin/RolePermissionPage.jsx";
 import AuditLogPage from "./pages/Admin/AuditLogPage.jsx";
@@ -51,20 +53,16 @@ export default function App() {
                         <Route
                             path="noi-tru"
                             element={
-                                <Navigate to="/noi-tru/lap-benh-an" replace />
+                                <Navigate to="/noi-tru/danh-sach" replace />
                             }
+                        />
+                        <Route
+                            path="noi-tru/danh-sach"
+                            element={<DanhSachNoiTruPage />}
                         />
                         <Route
                             path="noi-tru/lap-benh-an"
-                            element={
-                                <PlaceHolderPage title="Lập bệnh án nội trú" />
-                            }
-                        />
-                        <Route
-                            path="noi-tru/dieu-tri"
-                            element={
-                                <PlaceHolderPage title="Điều trị nội trú" />
-                            }
+                            element={<LapBenhAnPage />}
                         />
                         <Route
                             path="kham-benh"

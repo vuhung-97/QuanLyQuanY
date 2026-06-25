@@ -18,6 +18,7 @@ FE/
     │   ├── Dashboard/          # Trang chủ
     │   ├── KhamBenhChoQN/      # Khám bệnh cho QN (KhamBenhPage.jsx, CapThuocPage.jsx, ChuyenTuyenPage.jsx)
     │   ├── KhamSucKhoe/        # Khám định kỳ (LapLichPage.jsx, KhamSucKhoePage.jsx)
+    │   ├── NoiTru/             # Nội trú (DanhSachNoiTruPage.jsx, LapBenhAnPage.jsx)
     │   └── Admin/              # Admin (UserManagement, RolePermission, AuditLog)
     │
     ├── components/         # UI building blocks
@@ -98,6 +99,7 @@ FE/
     │   │       ├── PhanCongNhiemVu.jsx
     │   │       └── TongQuanDonVi.jsx
     │   │
+    │   └── NoiTru/           # Components cho module Nội trú (DanhSachNoiTru.jsx)
     │   └── admin/           # Components cho module Admin
     │       ├── AdminPageHeader.jsx
     │       ├── TableCard.jsx
@@ -117,6 +119,7 @@ FE/
     │   ├── useCapThuoc.jsx
     │   ├── useChuyenTuyen.jsx
     │   ├── useDanhSachKhamBenh.jsx
+    │   ├── useDanhSachNoiTru.jsx
     │   ├── useDebounce.jsx
     │   ├── useFilterModePagination.jsx
     │   ├── useKhamBenhForm.jsx
@@ -132,6 +135,7 @@ FE/
     │   ├── adminService.js
     │   ├── api.js
     │   ├── khamBenhService.js
+    │   ├── noiTruService.js
     │   └── khamSucKhoeService.js
     │
     ├── data/               # Dữ liệu tĩnh

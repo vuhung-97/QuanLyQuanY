@@ -62,17 +62,17 @@ export const defaultMenuItems = [
         allowedRoles: ALL,
         children: [
             {
+                id: "inpatient-list",
+                title: "Danh sách nội trú",
+                path: "/noi-tru/danh-sach",
+                icon: <BedIcon />,
+                allowedRoles: ALL,
+            },
+            {
                 id: "inpatient-record",
                 title: "Lập bệnh án",
                 path: "/noi-tru/lap-benh-an",
                 icon: <NoteAddIcon />,
-                allowedRoles: ALL,
-            },
-            {
-                id: "inpatient-treatment",
-                title: "Điều trị",
-                path: "/noi-tru/dieu-tri",
-                icon: <HealingIcon />,
                 allowedRoles: ALL,
             },
         ],
