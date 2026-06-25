@@ -1,5 +1,5 @@
 import { Box, Stack, Typography } from "@mui/material";
-import PlaceHolderPage from "@/components/common/PlaceHolderPage.jsx";
+import LapBenhAnList from "@/components/NoiTru/LapBenhAnList.jsx";
 
 export default function LapBenhAnPage() {
     return (
@@ -12,7 +12,7 @@ export default function LapBenhAnPage() {
                     Tiếp nhận quân nhân từ chỉ định nhập viện, lập bệnh án.
                 </Typography>
             </Box>
-            <PlaceHolderPage title="Lập bệnh án nội trú" />
+            <LapBenhAnList />
         </Stack>
     );
 }

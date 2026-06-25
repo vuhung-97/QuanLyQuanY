@@ -99,7 +99,7 @@ FE/
     │   │       ├── PhanCongNhiemVu.jsx
     │   │       └── TongQuanDonVi.jsx
     │   │
-    │   └── NoiTru/           # Components cho module Nội trú (DanhSachNoiTru.jsx)
+    │   └── NoiTru/           # Components cho module Nội trú (DanhSachNoiTru.jsx, LapBenhAnList.jsx, LapBenhAnForm.jsx)
     │   └── admin/           # Components cho module Admin
     │       ├── AdminPageHeader.jsx
     │       ├── TableCard.jsx
@@ -121,6 +121,7 @@ FE/
     │   ├── useDanhSachKhamBenh.jsx
     │   ├── useDanhSachNoiTru.jsx
     │   ├── useDebounce.jsx
+    │   ├── useLapBenhAn.jsx
     │   ├── useFilterModePagination.jsx
     │   ├── useKhamBenhForm.jsx
     │   ├── useKhamSucKhoeData.jsx
