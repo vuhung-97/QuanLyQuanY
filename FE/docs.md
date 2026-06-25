@@ -18,7 +18,7 @@ FE/
     │   ├── Dashboard/          # Trang chủ
     │   ├── KhamBenhChoQN/      # Khám bệnh cho QN (KhamBenhPage.jsx, CapThuocPage.jsx, ChuyenTuyenPage.jsx)
     │   ├── KhamSucKhoe/        # Khám định kỳ (LapLichPage.jsx, KhamSucKhoePage.jsx)
-    │   ├── NoiTru/             # Nội trú (DanhSachNoiTruPage.jsx, LapBenhAnPage.jsx)
+    │   ├── NoiTru/             # Nội trú (DanhSachNoiTruPage.jsx, LapBenhAnPage.jsx, QuanLyPhongGiuongPage.jsx)
     │   └── Admin/              # Admin (UserManagement, RolePermission, AuditLog)
     │
     ├── components/         # UI building blocks
@@ -99,7 +99,20 @@ FE/
     │   │       ├── PhanCongNhiemVu.jsx
     │   │       └── TongQuanDonVi.jsx
     │   │
-    │   └── NoiTru/           # Components cho module Nội trú (DanhSachNoiTru.jsx, LapBenhAnList.jsx, LapBenhAnForm.jsx, ChiTietBenhAn.jsx, PhieuChamSocForm.jsx, PhieuChamSocList.jsx, ThemThuocDialog.jsx, RaVienDialog.jsx)
+    │   ├── NoiTru/           # Components cho module Nội trú
+    │   │   ├── DanhSachNoiTru/
+    │   │   │   ├── ChiTietBenhAn.jsx
+    │   │   │   ├── DanhSachNoiTru.jsx
+    │   │   │   ├── PhieuChamSocForm.jsx
+    │   │   │   ├── PhieuChamSocList.jsx
+    │   │   │   ├── RaVienDialog.jsx
+    │   │   │   └── ThemThuocDialog.jsx
+    │   │   ├── LapBenhAn/
+    │   │   │   ├── LapBenhAnForm.jsx
+    │   │   │   └── LapBenhAnList.jsx
+    │   │   └── QuanLyPhongGiuong/
+    │   │       ├── BuongDialog.jsx
+    │   │       └── QuanLyPhongGiuong.jsx
     │   └── admin/           # Components cho module Admin
     │       ├── AdminPageHeader.jsx
     │       ├── TableCard.jsx
@@ -130,6 +143,7 @@ FE/
     │   ├── useLapLichDialog.jsx
     │   ├── useLichKhamData.jsx
     │   ├── usePermissionDiff.js
+    │   ├── useQuanLyPhongGiuong.jsx
     │   └── useTongQuanTab.jsx
     │
     ├── services/           # API layer
