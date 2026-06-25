@@ -1,23 +1,13 @@
 import {
-    AddCircle as AddCircleIcon,
     AdminPanelSettings as AdminPanelSettingsIcon,
     Assessment as AssessmentIcon,
-    AssignmentTurnedIn as AssignmentTurnedInIcon,
-    Ballot as BallotIcon,
     Bed as BedIcon,
+    Circle as CircleIcon,
     Dashboard as DashboardIcon,
     HealthAndSafety as HealthAndSafetyIcon,
     Healing as HealingIcon,
-    History as HistoryIcon,
     Inventory2 as InventoryIcon,
-    ManageAccounts as ManageAccountsIcon,
     MedicalServices as MedicalServicesIcon,
-    MeetingRoom as MeetingRoomIcon,
-    NoteAdd as NoteAddIcon,
-    Person as PersonIcon,
-    PlaylistAddCheck as PlaylistAddCheckIcon,
-    RemoveCircle as RemoveCircleIcon,
-    Security as SecurityIcon,
 } from "@mui/icons-material";
 
 const ALL = ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"];
@@ -38,19 +28,19 @@ export const defaultMenuItems = [
         path: "/kham-dinh-ky",
         icon: <HealthAndSafetyIcon />,
         allowedRoles: ALL,
-        children: [
+            children: [
             {
                 id: "periodic-schedule",
                 title: "Lập lịch khám",
                 path: "/kham-dinh-ky/lap-lich",
-                icon: <PlaylistAddCheckIcon />,
+                icon: <CircleIcon sx={{ fontSize: 12 }} />,
                 allowedRoles: NO_YSI,
             },
             {
                 id: "periodic-exam",
                 title: "Khám sức khỏe",
                 path: "/kham-dinh-ky/kham-suc-khoe",
-                icon: <AssignmentTurnedInIcon />,
+                icon: <CircleIcon sx={{ fontSize: 12 }} />,
                 allowedRoles: ALL,
             },
         ],
@@ -61,26 +51,26 @@ export const defaultMenuItems = [
         path: "/noi-tru",
         icon: <BedIcon />,
         allowedRoles: ALL,
-        children: [
+            children: [
             {
                 id: "inpatient-list",
                 title: "Danh sách nội trú",
                 path: "/noi-tru/danh-sach",
-                icon: <BedIcon />,
+                icon: <CircleIcon sx={{ fontSize: 12 }} />,
                 allowedRoles: ALL,
             },
             {
                 id: "inpatient-record",
                 title: "Lập bệnh án",
                 path: "/noi-tru/lap-benh-an",
-                icon: <NoteAddIcon />,
+                icon: <CircleIcon sx={{ fontSize: 12 }} />,
                 allowedRoles: ALL,
             },
             {
                 id: "inpatient-bed",
                 title: "Quản lý phòng/giường",
                 path: "/noi-tru/quan-ly-phong-giuong",
-                icon: <MeetingRoomIcon />,
+                icon: <CircleIcon sx={{ fontSize: 12 }} />,
                 allowedRoles: ALL,
             },
         ],
@@ -91,26 +81,26 @@ export const defaultMenuItems = [
         path: "/kham-benh",
         icon: <MedicalServicesIcon />,
         allowedRoles: ALL,
-        children: [
+            children: [
             {
                 id: "examination-list",
                 title: "Khám bệnh",
                 path: "/kham-benh/Kham-benh-cho-quan-nhan",
-                icon: <PersonIcon />,
+                icon: <CircleIcon sx={{ fontSize: 12 }} />,
                 allowedRoles: NO_YSI,
             },
             {
                 id: "medicine-dispensing",
                 title: "Cấp thuốc",
                 path: "/kham-benh/Cap-thuoc",
-                icon: <MedicalServicesIcon />,
+                icon: <CircleIcon sx={{ fontSize: 12 }} />,
                 allowedRoles: ALL,
             },
             {
                 id: "referral",
                 title: "Chuyển tuyến",
                 path: "/kham-benh/Chuyen-tuyen",
-                icon: <AssignmentTurnedInIcon />,
+                icon: <CircleIcon sx={{ fontSize: 12 }} />,
                 allowedRoles: ALL,
             },
         ],
@@ -121,26 +111,26 @@ export const defaultMenuItems = [
         path: "/kho-duoc",
         icon: <InventoryIcon />,
         allowedRoles: ALL,
-        children: [
+            children: [
             {
                 id: "pharmacy-request",
                 title: "Dự trù",
                 path: "/kho-duoc/du-tru",
-                icon: <BallotIcon />,
+                icon: <CircleIcon sx={{ fontSize: 12 }} />,
                 allowedRoles: NO_YSI,
             },
             {
                 id: "pharmacy-import",
                 title: "Nhập",
                 path: "/kho-duoc/nhap",
-                icon: <AddCircleIcon />,
+                icon: <CircleIcon sx={{ fontSize: 12 }} />,
                 allowedRoles: NO_YSI,
             },
             {
                 id: "pharmacy-export",
                 title: "Xuất",
                 path: "/kho-duoc/xuat",
-                icon: <RemoveCircleIcon />,
+                icon: <CircleIcon sx={{ fontSize: 12 }} />,
                 allowedRoles: NO_YSI,
             },
         ],
@@ -162,26 +152,26 @@ export const adminMenuItems = [
         path: "/admin",
         icon: <AdminPanelSettingsIcon />,
         allowedRoles: ADMIN,
-        children: [
+            children: [
             {
                 id: "admin-users",
                 title: "Tài khoản người dùng",
                 path: "/admin/nguoi-dung",
-                icon: <ManageAccountsIcon />,
+                icon: <CircleIcon sx={{ fontSize: 12 }} />,
                 allowedRoles: ADMIN,
             },
             {
                 id: "admin-permissions",
                 title: "Vai trò & phân quyền",
                 path: "/admin/phan-quyen",
-                icon: <SecurityIcon />,
+                icon: <CircleIcon sx={{ fontSize: 12 }} />,
                 allowedRoles: ADMIN,
             },
             {
                 id: "admin-audit",
                 title: "Nhật ký hệ thống",
                 path: "/admin/nhat-ky",
-                icon: <HistoryIcon />,
+                icon: <CircleIcon sx={{ fontSize: 12 }} />,
                 allowedRoles: ADMIN,
             },
         ],
