@@ -11,18 +11,12 @@ import {
     Divider,
     FormControl,
     Grid,
-    IconButton,
-    InputAdornment,
     InputLabel,
     MenuItem,
     Select,
-    TextField,
     Typography,
 } from "@mui/material";
-import {
-    CheckCircleOutlined,
-    Undo,
-} from "@mui/icons-material";
+import NormalToggleField from "@/components/common/NormalToggleField";
 
 const specialities = [
     { id: "tim_mach", label: "Tim mạch" },
@@ -63,16 +57,6 @@ function SectionTitle({ children }) {
 
 const ChuyenKhoaRow = memo(
     ({ sp, noteValue, loaiValue, onChange, readOnly }) => {
-        const isNormal = noteValue === "Bình thường";
-        const handleToggleNormal = () => {
-            if (readOnly) return;
-            onChange({
-                target: {
-                    name: `${sp.id}_note`,
-                    value: isNormal ? "" : "Bình thường",
-                },
-            });
-        };
         return (
             <Grid size={12}>
                 <Grid container spacing={2} sx={{ alignItems: "center" }}>
@@ -86,38 +70,13 @@ const ChuyenKhoaRow = memo(
                         </Typography>
                     </Grid>
                     <Grid size={{ xs: 12, sm: 6 }}>
-                        <TextField
+                        <NormalToggleField
                             name={`${sp.id}_note`}
                             label="Kết quả khám"
                             value={noteValue}
                             onChange={onChange}
-                            disabled={readOnly || isNormal}
-                            fullWidth
+                            readOnly={readOnly}
                             size="small"
-                            slotProps={{
-                                input: {
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                size="small"
-                                                onClick={handleToggleNormal}
-                                                color={
-                                                    isNormal
-                                                        ? "success"
-                                                        : "default"
-                                                }
-                                                disabled={readOnly}
-                                            >
-                                                {isNormal ? (
-                                                    <Undo fontSize="small" />
-                                                ) : (
-                                                    <CheckCircleOutlined fontSize="small" />
-                                                )}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
-                                },
-                            }}
                         />
                     </Grid>
                     <Grid size={{ xs: 12, sm: 3 }}>

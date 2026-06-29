@@ -7,7 +7,6 @@ import {
     Chip,
     FormControl,
     Grid,
-    IconButton,
     InputAdornment,
     InputLabel,
     MenuItem,
@@ -15,13 +14,10 @@ import {
     TextField,
     Tooltip,
     Typography,
+    Stack,
 } from "@mui/material";
-import {
-    CheckCircleOutlined,
-    ExpandLess,
-    ExpandMore,
-    Undo,
-} from "@mui/icons-material";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
+import NormalToggleField from "@/components/common/NormalToggleField";
 import { fieldRanges, isOutOfRange } from "./fieldRanges";
 import useTongQuanTab from "@/hooks/useTongQuanTab";
 
@@ -57,8 +53,20 @@ const THE_LUC_FIELDS = [
 
 const VITAL_SIGNS_FIELDS = [
     { name: "mach", label: "Mạch", step: "1", min: "1", unit: "lần/phút" },
-    { name: "huyet_ap_tam_thu", label: "HA Tâm thu", step: "1", min: "1", unit: "mmHg" },
-    { name: "huyet_ap_tam_truong", label: "HA Tâm trương", step: "1", min: "1", unit: "mmHg" },
+    {
+        name: "huyet_ap_tam_thu",
+        label: "HA Tâm thu",
+        step: "1",
+        min: "1",
+        unit: "mmHg",
+    },
+    {
+        name: "huyet_ap_tam_truong",
+        label: "HA Tâm trương",
+        step: "1",
+        min: "1",
+        unit: "mmHg",
+    },
 ];
 
 const MAT_KHONG_KINH_FIELDS = [
@@ -147,88 +155,45 @@ const MatNumberField = memo(({ name, label, value, onChange, readOnly }) => (
     </Grid>
 ));
 
-const TienSuField = memo(({ field, value, onChange, onToggle, readOnly }) => {
-    const isNormal = value === "Không";
-    return (
-        <Grid size={field.grid}>
-            <TextField
-                label={field.label}
-                value={value}
-                onChange={onChange}
-                disabled={readOnly || isNormal}
-                name={field.name}
-                multiline={field.multiline}
-                minRows={field.minRows}
-                fullWidth
-                slotProps={{
-                    input: {
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <IconButton
-                                    size="small"
-                                    onClick={readOnly ? undefined : () => onToggle(field.name)}
-                                    color={isNormal ? "success" : "default"}
-                                    disabled={readOnly}
-                                >
-                                    {isNormal ? (
-                                        <Undo fontSize="small" />
-                                    ) : (
-                                        <CheckCircleOutlined fontSize="small" />
-                                    )}
-                                </IconButton>
-                            </InputAdornment>
-                        ),
-                    },
-                }}
-            />
-        </Grid>
-    );
-});
-
 const BmiDisplay = memo(({ bmi }) => {
     const info = getBmiStatus(bmi);
     return (
         <Grid size={12}>
-            <Box sx={{ mt: 1, display: "flex", alignItems: "center", gap: 1.5 }}>
+            <Box
+                sx={{ mt: 1, display: "flex", alignItems: "center", gap: 1.5 }}
+            >
                 <Typography variant="body2" fontWeight="600">
                     BMI: {bmi || "—"}
                 </Typography>
                 {bmi && (
-                    <Chip label={info.text} color={info.color} size="small" sx={{ fontWeight: "bold" }} />
+                    <Chip
+                        label={info.text}
+                        color={info.color}
+                        size="small"
+                        sx={{ fontWeight: "bold" }}
+                    />
                 )}
             </Box>
         </Grid>
     );
 });
 
-const MatKhamSection = memo(({ data, onChange, readOnly, showCoKinh, onToggleCoKinh }) => (
-    <Card sx={{ borderRadius: 2, boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)", border: "1px solid", borderColor: "divider", mb: 3, bgcolor: "background.paper" }}>
-        <CardContent>
-            <SectionTitle>Khám mắt</SectionTitle>
-            <Grid container spacing={2} sx={{ alignItems: "center" }}>
-                {MAT_KHONG_KINH_FIELDS.map((f) => (
-                    <MatNumberField
-                        key={f.name}
-                        name={f.name}
-                        label={f.label}
-                        value={data[f.name]}
-                        onChange={onChange}
-                        readOnly={readOnly}
-                    />
-                ))}
-                <Grid size={{ xs: 6, sm: 4, md: true }}>
-                    <Button
-                        size="small"
-                        variant="text"
-                        startIcon={showCoKinh ? <ExpandLess /> : <ExpandMore />}
-                        onClick={onToggleCoKinh}
-                        sx={{ textTransform: "none", color: "primary.main", fontWeight: 600 }}
-                    >
-                        Khám có kính
-                    </Button>
-                </Grid>
-                {showCoKinh &&
-                    MAT_CO_KINH_FIELDS.map((f) => (
+const MatKhamSection = memo(
+    ({ data, onChange, readOnly, showCoKinh, onToggleCoKinh }) => (
+        <Card
+            sx={{
+                borderRadius: 2,
+                boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)",
+                border: "1px solid",
+                borderColor: "divider",
+                mb: 3,
+                bgcolor: "background.paper",
+            }}
+        >
+            <CardContent>
+                <SectionTitle>Khám mắt</SectionTitle>
+                <Grid container spacing={2} sx={{ alignItems: "center" }}>
+                    {MAT_KHONG_KINH_FIELDS.map((f) => (
                         <MatNumberField
                             key={f.name}
                             name={f.name}
@@ -238,57 +203,88 @@ const MatKhamSection = memo(({ data, onChange, readOnly, showCoKinh, onToggleCoK
                             readOnly={readOnly}
                         />
                     ))}
-                <Grid size={{ xs: 6, sm: 4, md: true }}>
-                    <FormControl fullWidth size="small">
-                        <InputLabel>Phân loại mắt</InputLabel>
-                        <Select
-                            name="mat_loai"
-                            value={data.mat_loai ?? "Loại 1"}
-                            onChange={onChange}
-                            label="Phân loại mắt"
-                            disabled={readOnly}
+                    <Grid size={{ xs: 6, sm: 4, md: true }}>
+                        <Button
+                            size="small"
+                            variant="text"
+                            startIcon={
+                                showCoKinh ? <ExpandLess /> : <ExpandMore />
+                            }
+                            onClick={onToggleCoKinh}
+                            sx={{
+                                textTransform: "none",
+                                color: "primary.main",
+                                fontWeight: 600,
+                            }}
                         >
-                            {PHAN_LOAI_OPTIONS.map((loai) => (
-                                <MenuItem key={loai} value={loai}>
-                                    {loai}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
+                            Khám có kính
+                        </Button>
+                    </Grid>
+                    {showCoKinh &&
+                        MAT_CO_KINH_FIELDS.map((f) => (
+                            <MatNumberField
+                                key={f.name}
+                                name={f.name}
+                                label={f.label}
+                                value={data[f.name]}
+                                onChange={onChange}
+                                readOnly={readOnly}
+                            />
+                        ))}
+                    <Grid size={{ xs: 6, sm: 4, md: true }}>
+                        <FormControl fullWidth size="small">
+                            <InputLabel>Phân loại mắt</InputLabel>
+                            <Select
+                                name="mat_loai"
+                                value={data.mat_loai ?? "Loại 1"}
+                                onChange={onChange}
+                                label="Phân loại mắt"
+                                disabled={readOnly}
+                            >
+                                {PHAN_LOAI_OPTIONS.map((loai) => (
+                                    <MenuItem key={loai} value={loai}>
+                                        {loai}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </Grid>
                 </Grid>
-            </Grid>
-        </CardContent>
-    </Card>
-));
+            </CardContent>
+        </Card>
+    ),
+);
 
 const TongQuanTab = memo(
     forwardRef(function TongQuanTab(
         { initialData, cardStyle, readOnly = false },
         ref,
     ) {
-        const {
-            data,
-            showCoKinh,
-            handleChange,
-            handleToggle,
-            toggleCoKinh,
-        } = useTongQuanTab(initialData, ref);
+        const { data, showCoKinh, handleChange, toggleCoKinh } = useTongQuanTab(
+            initialData,
+            ref,
+        );
 
         return (
-            <>
+            <Stack spacing={2}>
                 <Card sx={cardStyle}>
                     <CardContent>
                         <SectionTitle>Tiền sử</SectionTitle>
                         <Grid container spacing={2}>
                             {TIEN_SU_FIELDS.map((f) => (
-                                <TienSuField
-                                    key={f.name}
-                                    field={f}
-                                    value={data[f.name]}
-                                    onChange={handleChange}
-                                    onToggle={handleToggle}
-                                    readOnly={readOnly}
-                                />
+                                <Grid size={f.grid} key={f.name}>
+                                    <NormalToggleField
+                                        label={f.label}
+                                        name={f.name}
+                                        value={data[f.name]}
+                                        onChange={handleChange}
+                                        readOnly={readOnly}
+                                        size="small"
+                                        normalText="Không"
+                                        multiline={f.multiline}
+                                        minRows={f.minRows}
+                                    />
+                                </Grid>
                             ))}
                         </Grid>
                     </CardContent>
@@ -297,7 +293,11 @@ const TongQuanTab = memo(
                 <Card sx={cardStyle}>
                     <CardContent>
                         <SectionTitle>Thể lực</SectionTitle>
-                        <Grid container spacing={2} sx={{ alignItems: "center" }}>
+                        <Grid
+                            container
+                            spacing={2}
+                            sx={{ alignItems: "center" }}
+                        >
                             {THE_LUC_FIELDS.map((f) => (
                                 <TheLucField
                                     key={f.name}
@@ -315,7 +315,11 @@ const TongQuanTab = memo(
                 <Card sx={cardStyle}>
                     <CardContent>
                         <SectionTitle>Chỉ số sinh tồn</SectionTitle>
-                        <Grid container spacing={2} sx={{ alignItems: "center" }}>
+                        <Grid
+                            container
+                            spacing={2}
+                            sx={{ alignItems: "center" }}
+                        >
                             {VITAL_SIGNS_FIELDS.map((f) => (
                                 <TheLucField
                                     key={f.name}
@@ -336,7 +340,7 @@ const TongQuanTab = memo(
                     showCoKinh={showCoKinh}
                     onToggleCoKinh={toggleCoKinh}
                 />
-            </>
+            </Stack>
         );
     }),
 );
