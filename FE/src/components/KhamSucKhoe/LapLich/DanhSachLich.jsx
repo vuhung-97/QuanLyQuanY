@@ -6,7 +6,10 @@ import {
     CardContent,
     Chip,
     Collapse,
+    FormControl,
     IconButton,
+    MenuItem,
+    Select,
     Stack,
     TableCell,
     TableRow,
@@ -209,6 +212,22 @@ export default function DanhSachLich({
         }));
     };
 
+    const [year, setYear] = useState("Tất cả");
+
+    const availableYears = useMemo(() => {
+        const years = new Set(
+            schedules.map((s) => new Date(s.thoi_gian_bat_dau).getFullYear()),
+        );
+        return ["Tất cả", ...Array.from(years).sort()];
+    }, [schedules]);
+
+    const filteredSchedules = useMemo(() => {
+        if (year === "Tất cả") return schedules;
+        return schedules.filter(
+            (s) => new Date(s.thoi_gian_bat_dau).getFullYear() === Number(year),
+        );
+    }, [schedules, year]);
+
     return (
         <Card sx={{ borderRadius: 3 }}>
             <CardContent>
@@ -226,9 +245,20 @@ export default function DanhSachLich({
                             color="text.secondary"
                             sx={{ mt: 0.5 }}
                         >
-                            Tổng số: {schedules.length} lịch
+                            Tổng số: {filteredSchedules.length} lịch
                         </Typography>
                     </Box>
+                    <FormControl size="small" sx={{ minWidth: 100 }}>
+                        <Select
+                            value={year}
+                            onChange={(e) => setYear(e.target.value)}
+                            sx={{ textTransform: "none" }}
+                        >
+                            {availableYears.map((y) => (
+                                <MenuItem key={y} value={y}>{y}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
                 </Stack>
                 <DataTable
                     columns={columns}
@@ -236,7 +266,7 @@ export default function DanhSachLich({
                     emptyMessage="Không có lịch khám phù hợp."
                     minWidth={760}
                 >
-                    {schedules.map((row) => (
+                    {filteredSchedules.map((row) => (
                         <ScheduleTableRow
                             key={row.ma_lich_kham}
                             row={row}

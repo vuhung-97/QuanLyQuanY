@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import {
     Box,
     Card,
@@ -7,10 +7,8 @@ import {
     Stack,
     TableCell,
     TableRow,
-    TextField,
     Typography,
 } from "@mui/material";
-import { Search as SearchIcon } from "@mui/icons-material";
 import DataTable from "@/components/common/DataTable.jsx";
 import { formatDateTime } from "@/utils/date.js";
 
@@ -26,28 +24,20 @@ export default function TongQuanDonVi({
     unitStats = [],
     latestScheduleId,
 }) {
-    const [query, setQuery] = useState("");
-
     const scheduleDetails = chiTietMap?.[latestScheduleId] || [];
     const unitCodes = useMemo(
         () => new Set(scheduleDetails.map((d) => d.ma_don_vi)),
         [scheduleDetails],
     );
 
-    const filtered = useMemo(() => {
-        const kw = query.trim().toLowerCase();
-        return (unitStats ?? []).filter((u) => {
-            if (!unitCodes.has(u.ma_don_vi)) return false;
-            if (!kw) return true;
-            return [u.ma_don_vi, u.ten_don_vi]
-                .filter(Boolean)
-                .some((v) => String(v).toLowerCase().includes(kw));
-        });
-    }, [unitStats, unitCodes, query]);
+    const scheduleUnits = useMemo(
+        () => (unitStats ?? []).filter((u) => unitCodes.has(u.ma_don_vi)),
+        [unitStats, unitCodes],
+    );
 
     const totalQuanSo = useMemo(
-        () => filtered.reduce((sum, u) => sum + (u.tong_quan_so || 0), 0),
-        [filtered],
+        () => scheduleUnits.reduce((sum, u) => sum + (u.tong_quan_so || 0), 0),
+        [scheduleUnits],
     );
 
     const loading = !latestScheduleId || unitStats.length === 0;
@@ -76,22 +66,6 @@ export default function TongQuanDonVi({
                             Tổng quân số: <strong>{totalQuanSo}</strong> QN
                         </Typography>
                     </Box>
-                    <TextField
-                        size="small"
-                        placeholder="Tìm đơn vị..."
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        slotProps={{
-                            input: {
-                                startAdornment: (
-                                    <SearchIcon
-                                        sx={{ mr: 1, color: "text.secondary" }}
-                                    />
-                                ),
-                            },
-                        }}
-                        sx={{ minWidth: { xs: "100%", sm: 280 } }}
-                    />
                 </Stack>
                 <DataTable
                     columns={columns}
@@ -99,7 +73,7 @@ export default function TongQuanDonVi({
                     emptyMessage="Không có đơn vị nào."
                     minWidth={650}
                 >
-                    {filtered.map((row) => {
+                    {scheduleUnits.map((row) => {
                         const detail = scheduleDetails.find(
                             (d) => d.ma_don_vi === row.ma_don_vi,
                         );
