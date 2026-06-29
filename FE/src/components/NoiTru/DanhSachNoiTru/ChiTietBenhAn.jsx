@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
     Box,
     Button,
@@ -14,12 +14,13 @@ import {
     Tabs,
     Typography,
 } from "@mui/material";
-import { Add as AddIcon } from "@mui/icons-material";
 import { noiTruService } from "@/services/noiTruService.js";
 import usePhieuChamSoc from "@/hooks/usePhieuChamSoc.jsx";
-import PhieuChamSocList from "./PhieuChamSocList.jsx";
 import PhieuChamSocForm from "./PhieuChamSocForm.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
+import TongQuanTab from "./tabs/TongQuanTab.jsx";
+import DienBienTab from "./tabs/DienBienTab.jsx";
+import ThuocTab from "./tabs/ThuocTab.jsx";
 
 function InfoItem({ label, value }) {
     return (
@@ -188,190 +189,15 @@ export default function ChiTietBenhAn({ open, benhAnId, onClose }) {
                                 <Tab label="Thuốc" />
                             </Tabs>
 
-                            {tabIndex === 0 && (
-                                <Stack spacing={2}>
-                                    <Card
-                                        variant="outlined"
-                                        sx={{ borderRadius: 2 }}
-                                    >
-                                        <CardContent>
-                                            <Stack
-                                                direction="row"
-                                                spacing={2}
-                                                sx={{
-                                                    "& > *": {
-                                                        flex: 1,
-                                                        minWidth: 0,
-                                                    },
-                                                }}
-                                            >
-                                                <InfoItem
-                                                    label="Ngoại kiều:"
-                                                    value={benhAn.ngoai_kieu}
-                                                />
-                                                <InfoItem
-                                                    label="Đối tượng:"
-                                                    value={benhAn.doi_tuong}
-                                                />
-                                                <InfoItem
-                                                    label="Ngày nhập viện:"
-                                                    value={
-                                                        benhAn.ngay_nhap_vien
-                                                            ? new Date(
-                                                                  benhAn.ngay_nhap_vien,
-                                                              ).toLocaleDateString(
-                                                                  "vi-VN",
-                                                              )
-                                                            : "--"
-                                                    }
-                                                />
-                                            </Stack>
-                                        </CardContent>
-                                    </Card>
-                                    <Card
-                                        variant="outlined"
-                                        sx={{ borderRadius: 2 }}
-                                    >
-                                        <CardContent>
-                                            <Stack spacing={1.5}>
-                                                <InfoItem
-                                                    label="Chẩn đoán:"
-                                                    value={benhAn.chan_doan}
-                                                />
-                                                <InfoItem
-                                                    label="Quản lý NB:"
-                                                    value={
-                                                        benhAn.quan_ly_nguoi_benh
-                                                    }
-                                                />
-                                                <InfoItem
-                                                    label="Chi tiết BA:"
-                                                    value={
-                                                        benhAn.chi_tiet_benh_an
-                                                    }
-                                                />
-                                            </Stack>
-                                        </CardContent>
-                                    </Card>
-                                </Stack>
-                            )}
-
+                            {tabIndex === 0 && <TongQuanTab benhAn={benhAn} />}
                             {tabIndex === 1 && (
-                                <Stack spacing={2}>
-                                    <Button
-                                        variant="contained"
-                                        startIcon={<AddIcon />}
-                                        onClick={() => handleOpenForm(null)}
-                                        sx={{
-                                            textTransform: "none",
-                                            alignSelf: "flex-start",
-                                        }}
-                                    >
-                                        Thêm phiếu chăm sóc
-                                    </Button>
-                                    <PhieuChamSocList
-                                        records={records}
-                                        onEdit={handleOpenForm}
-                                    />
-                                </Stack>
+                                <DienBienTab
+                                    records={records}
+                                    onAddNew={() => handleOpenForm(null)}
+                                    onEdit={handleOpenForm}
+                                />
                             )}
-
-                            {tabIndex === 2 && (
-                                <Stack spacing={1}>
-                                    {aggregatedThuoc.length === 0 ? (
-                                        <Typography color="text.secondary">
-                                            Chưa có thuốc nào.
-                                        </Typography>
-                                    ) : (
-                                        <table
-                                            style={{
-                                                width: "100%",
-                                                borderCollapse: "collapse",
-                                            }}
-                                        >
-                                            <thead>
-                                                <tr
-                                                    style={{
-                                                        background: "#F4F7F9",
-                                                    }}
-                                                >
-                                                    <th
-                                                        style={{
-                                                            padding: 8,
-                                                            textAlign: "left",
-                                                        }}
-                                                    >
-                                                        STT
-                                                    </th>
-                                                    <th
-                                                        style={{
-                                                            padding: 8,
-                                                            textAlign: "left",
-                                                        }}
-                                                    >
-                                                        Tên thuốc
-                                                    </th>
-                                                    <th
-                                                        style={{
-                                                            padding: 8,
-                                                            textAlign: "left",
-                                                        }}
-                                                    >
-                                                        SL
-                                                    </th>
-                                                    <th
-                                                        style={{
-                                                            padding: 8,
-                                                            textAlign: "left",
-                                                        }}
-                                                    >
-                                                        ĐVT
-                                                    </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {aggregatedThuoc.map(
-                                                    (item, idx) => (
-                                                        <tr key={idx}>
-                                                            <td
-                                                                style={{
-                                                                    padding: 8,
-                                                                }}
-                                                            >
-                                                                {idx + 1}
-                                                            </td>
-                                                            <td
-                                                                style={{
-                                                                    padding: 8,
-                                                                }}
-                                                            >
-                                                                {
-                                                                    item.ten_thuoc_vtyt
-                                                                }
-                                                            </td>
-                                                            <td
-                                                                style={{
-                                                                    padding: 8,
-                                                                }}
-                                                            >
-                                                                {item.so_luong}
-                                                            </td>
-                                                            <td
-                                                                style={{
-                                                                    padding: 8,
-                                                                }}
-                                                            >
-                                                                {item.don_vi_tinh ||
-                                                                    "--"}
-                                                            </td>
-                                                        </tr>
-                                                    ),
-                                                )}
-                                            </tbody>
-                                        </table>
-                                    )}
-                                </Stack>
-                            )}
+                            {tabIndex === 2 && <ThuocTab aggregatedThuoc={aggregatedThuoc} />}
                         </Stack>
                     )}
                 </DialogContent>

@@ -1,16 +1,7 @@
 import { useMemo } from "react";
-import {
-    Button,
-    Stack,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Typography,
-} from "@mui/material";
+import { Button } from "@mui/material";
 import { Edit as EditIcon } from "@mui/icons-material";
+import DataTable from "@/components/common/DataTable.jsx";
 
 export default function PhieuChamSocList({ records, onEdit }) {
     const sorted = useMemo(() => {
@@ -22,65 +13,80 @@ export default function PhieuChamSocList({ records, onEdit }) {
         });
     }, [records]);
 
-    if (!records || records.length === 0) {
-        return (
-            <Typography color="text.secondary" sx={{ py: 2 }}>
-                Chưa có phiếu chăm sóc nào.
-            </Typography>
-        );
-    }
+    const columns = useMemo(() => [
+        { key: "stt", label: "STT", render: (_, idx) => idx + 1, sx: { width: 40 } },
+        {
+            key: "thoi_gian",
+            label: "Ngày",
+            render: (row) => {
+                if (!row.thoi_gian) return "--";
+                const d = new Date(row.thoi_gian);
+                const ngay = d.toLocaleDateString("vi-VN");
+                const gio = d.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
+                return (
+                    <>
+                        {ngay}<br />
+                        {gio}
+                    </>
+                );
+            },
+            sx: { width: 150 },
+        },
+        { key: "so_giuong", label: "Giường", render: (row) => row.so_giuong || "--", sx: { width: 80 } },
+        { key: "buong", label: "Phòng", render: (row) => row.buong || "--", sx: { width: 80 } },
+        {
+            key: "nguoi_thuc_hien",
+            label: "Người TH",
+            render: (row) => {
+                const ten = row.ten_nguoi_thuc_hien;
+                const vaiTro = row.vai_tro_nguoi_thuc_hien;
+                return ten ? `${ten}${vaiTro ? ` (${vaiTro})` : ""}` : "--";
+            },
+            sx: { width: 140 },
+        },
+        {
+            key: "theo_doi_dien_bien",
+            label: "Diễn biến",
+            render: (row) => row.theo_doi_dien_bien || "--",
+            sx: { maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis" },
+        },
+        {
+            key: "thuc_hien_y_lenh",
+            label: "Y lệnh",
+            render: (row) => row.thuc_hien_y_lenh || "--",
+            sx: { maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis" },
+        },
+        {
+            key: "thuoc",
+            label: "Thuốc",
+            render: (row) =>
+                row.chi_tiet && row.chi_tiet.length > 0
+                    ? `${row.chi_tiet.length} loại`
+                    : "--",
+            sx: { width: 120 },
+        },
+        {
+            key: "sua",
+            label: "Sửa",
+            render: (row) => (
+                <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={() => onEdit?.(row)}
+                    sx={{ textTransform: "none", minWidth: 36 }}
+                >
+                    <EditIcon fontSize="small" />
+                </Button>
+            ),
+            sx: { width: 60 },
+        },
+    ], [onEdit]);
 
     return (
-        <TableContainer>
-            <Table size="small" sx={{ border: "1px solid", borderColor: "divider" }}>
-                <TableHead>
-                    <TableRow sx={{ bgcolor: "#F4F7F9" }}>
-                        <TableCell sx={{ width: 40 }}>STT</TableCell>
-                        <TableCell sx={{ width: 140 }}>Ngày</TableCell>
-                        <TableCell sx={{ width: 80 }}>Giường</TableCell>
-                        <TableCell sx={{ width: 80 }}>Phòng</TableCell>
-                        <TableCell>Diễn biến</TableCell>
-                        <TableCell>Y lệnh</TableCell>
-                        <TableCell sx={{ width: 120 }}>Thuốc</TableCell>
-                        <TableCell sx={{ width: 60 }}>Sửa</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {sorted.map((pcs, idx) => (
-                        <TableRow key={pcs.ma_phieu_cs || idx}>
-                            <TableCell>{idx + 1}</TableCell>
-                            <TableCell>
-                                {pcs.thoi_gian
-                                    ? new Date(pcs.thoi_gian).toLocaleDateString("vi-VN")
-                                    : "--"}
-                            </TableCell>
-                            <TableCell>{pcs.so_giuong || "--"}</TableCell>
-                            <TableCell>{pcs.buong || "--"}</TableCell>
-                            <TableCell sx={{ maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis" }}>
-                                {pcs.theo_doi_dien_bien || "--"}
-                            </TableCell>
-                            <TableCell sx={{ maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis" }}>
-                                {pcs.thuc_hien_y_lenh || "--"}
-                            </TableCell>
-                            <TableCell>
-                                {pcs.chi_tiet && pcs.chi_tiet.length > 0
-                                    ? `${pcs.chi_tiet.length} loại`
-                                    : "--"}
-                            </TableCell>
-                            <TableCell>
-                                <Button
-                                    size="small"
-                                    variant="outlined"
-                                    onClick={() => onEdit?.(pcs)}
-                                    sx={{ textTransform: "none", minWidth: 36 }}
-                                >
-                                    <EditIcon fontSize="small" />
-                                </Button>
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
+        <DataTable
+            columns={columns}
+            rows={sorted}
+            emptyMessage="Chưa có phiếu chăm sóc nào."
+        />
     );
 }

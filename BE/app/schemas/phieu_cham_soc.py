@@ -16,6 +16,7 @@ class PhieuChamSocBase(SchemaBase):
     thoi_gian: datetime | None = None
     theo_doi_dien_bien: str | None = None
     thuc_hien_y_lenh: str | None = None
+    ma_nguoi_dung: str | None = Field(default=None, max_length=20)
 
 
 class PhieuChamSocCreate(PhieuChamSocBase):
@@ -30,6 +31,7 @@ class PhieuChamSocUpdate(SchemaBase):
     thoi_gian: datetime | None = None
     theo_doi_dien_bien: str | None = None
     thuc_hien_y_lenh: str | None = None
+    ma_nguoi_dung: str | None = None
     chi_tiet: list[ChiTietPhieuChamSocItem] | None = None
 
 

@@ -17,3 +17,4 @@ class PhieuChamSoc(Base):
     thoi_gian: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     theo_doi_dien_bien: Mapped[str | None] = mapped_column(Text, nullable=True)
     thuc_hien_y_lenh: Mapped[str | None] = mapped_column(Text, nullable=True)
+    ma_nguoi_dung: Mapped[str | None] = mapped_column(String(20), nullable=True)

@@ -8,6 +8,8 @@ class CRUDPhieuChamSoc(CRUDBase):
     def create(self, db: Session, payload, nguoi_dung_id: str | None = None) -> PhieuChamSoc:
         values = self._payload_values(payload)
         row = self.model(**values)
+        if nguoi_dung_id:
+            row.ma_nguoi_dung = nguoi_dung_id
         db.add(row)
         db.flush()
 
@@ -47,6 +49,9 @@ class CRUDPhieuChamSoc(CRUDBase):
                     so_luong=item.so_luong if hasattr(item, "so_luong") else item.get("so_luong"),
                 )
                 db.add(ct)
+
+        if nguoi_dung_id:
+            row.ma_nguoi_dung = nguoi_dung_id
 
         self._validate_updated_row(db, row, type(payload))
         self._commit(db)

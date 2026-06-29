@@ -1,16 +1,12 @@
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { Fragment, memo, useCallback, useEffect, useMemo, useState } from "react";
 import {
-    Box,
     Button,
     Checkbox,
     Dialog,
     DialogActions,
     DialogContent,
     DialogTitle,
-    Table,
-    TableBody,
     TableCell,
-    TableHead,
     TableRow,
     TextField,
     Typography,
@@ -18,6 +14,7 @@ import {
 import { khamBenhService } from "@/services/khamBenhService.js";
 import SearchBar from "@/components/common/SearchBar.jsx";
 import useDebounce from "@/hooks/useDebounce.jsx";
+import DataTable from "@/components/common/DataTable.jsx";
 
 let cachedAllItems = null;
 
@@ -181,7 +178,8 @@ export default function KhoThuocDialog({ open, onClose, onConfirm, cachedItems }
 
         setError("");
         onConfirm(selectedItems);
-    }, [items, selected, quantities, onConfirm]);
+        onClose();
+    }, [items, selected, quantities, onConfirm, onClose]);
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -210,95 +208,46 @@ export default function KhoThuocDialog({ open, onClose, onConfirm, cachedItems }
                         Không tìm thấy thuốc.
                     </Typography>
                 ) : (
-                    <Box sx={{ mt: 2, maxHeight: 450, overflowY: "auto" }}>
+                    <DataTable
+                        columns={[
+                            { key: "checkbox", label: "", sx: { width: 40 } },
+                            { key: "ten_thuoc_vtyt", label: "Tên thuốc" },
+                            { key: "don_vi_tinh", label: "ĐVT", sx: { width: 70 } },
+                            { key: "so_luong", label: "Tồn kho", sx: { width: 70 } },
+                            { key: "sl_lay", label: "SL lấy", sx: { width: 110 } },
+                        ]}
+                        sx={{ mt: 2, maxHeight: 450, overflowY: "auto" }}
+                    >
                         {sortedGroups.map((group) => (
-                            <Box key={group} sx={{ mb: 2 }}>
-                                <Typography
-                                    variant="body2"
-                                    sx={{
-                                        mb: 0.5,
-                                        color: "primary.main",
-                                        fontWeight: 700,
-                                        textTransform: "uppercase",
-                                        fontSize: 12,
-                                        letterSpacing: 0.5,
-                                    }}
-                                >
-                                    {group}
-                                </Typography>
-                                <Table
-                                    size="small"
-                                    sx={{
-                                        border: "1px solid",
-                                        borderColor: "divider",
-                                    }}
-                                >
-                                    <TableHead>
-                                        <TableRow sx={{ bgcolor: "#F4F7F9" }}>
-                                            <TableCell
-                                                sx={{ width: 40, py: 0.5 }}
-                                            />
-                                            <TableCell
-                                                sx={{
-                                                    py: 0.5,
-                                                    fontWeight: 600,
-                                                }}
-                                            >
-                                                Tên thuốc
-                                            </TableCell>
-                                            <TableCell
-                                                sx={{
-                                                    width: 70,
-                                                    py: 0.5,
-                                                    fontWeight: 600,
-                                                }}
-                                            >
-                                                ĐVT
-                                            </TableCell>
-                                            <TableCell
-                                                sx={{
-                                                    width: 70,
-                                                    py: 0.5,
-                                                    fontWeight: 600,
-                                                }}
-                                            >
-                                                Tồn kho
-                                            </TableCell>
-                                            <TableCell
-                                                sx={{
-                                                    width: 110,
-                                                    py: 0.5,
-                                                    fontWeight: 600,
-                                                }}
-                                            >
-                                                SL lấy
-                                            </TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {grouped[group].map((item) => (
-                                            <GroupRow
-                                                key={item.ma_thuoc_vtyt}
-                                                item={item}
-                                                selected={selected.has(
-                                                    item.ma_thuoc_vtyt,
-                                                )}
-                                                quantity={
-                                                    quantities[
-                                                        item.ma_thuoc_vtyt
-                                                    ]
-                                                }
-                                                onToggle={handleToggle}
-                                                onQuantityChange={
-                                                    handleQuantityChange
-                                                }
-                                            />
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </Box>
+                            <Fragment key={group}>
+                                <TableRow>
+                                    <TableCell
+                                        colSpan={5}
+                                        sx={{
+                                            py: 0.5,
+                                            color: "primary.main",
+                                            fontWeight: 700,
+                                            textTransform: "uppercase",
+                                            fontSize: 12,
+                                            letterSpacing: 0.5,
+                                        }}
+                                    >
+                                        {group}
+                                    </TableCell>
+                                </TableRow>
+                                {grouped[group].map((item) => (
+                                    <GroupRow
+                                        key={item.ma_thuoc_vtyt}
+                                        item={item}
+                                        selected={selected.has(item.ma_thuoc_vtyt)}
+                                        quantity={quantities[item.ma_thuoc_vtyt]}
+                                        onToggle={handleToggle}
+                                        onQuantityChange={handleQuantityChange}
+                                    />
+                                ))}
+                            </Fragment>
                         ))}
-                    </Box>
+                    </DataTable>
                 )}
 
                 {error && (
