@@ -1,5 +1,6 @@
 import { useMemo } from "react";
-import { Box, Card, CardContent, Divider, Stack, Typography } from "@mui/material";
+import { Box, Button, Card, CardContent, Divider, Stack, Typography } from "@mui/material";
+import { Edit as EditIcon } from "@mui/icons-material";
 
 function InfoItem({ label, value }) {
     return (
@@ -14,7 +15,7 @@ function InfoItem({ label, value }) {
     );
 }
 
-export default function TongQuanTab({ benhAn }) {
+export default function TongQuanTab({ benhAn, onEdit }) {
     const nguoiLapBA =
         benhAn.ten_nguoi_lap_ba
             ? `${benhAn.ten_nguoi_lap_ba} (${benhAn.vai_tro_nguoi_lap_ba ?? "?"})`
@@ -57,7 +58,25 @@ export default function TongQuanTab({ benhAn }) {
             <Card variant="outlined" sx={{ borderRadius: 2 }}>
                 <CardContent>
                     <Stack spacing={1.5}>
-                        <InfoItem label="Người lập BA:" value={nguoiLapBA} />
+                        <Stack
+                            direction="row"
+                            sx={{ justifyContent: "space-between", alignItems: "flex-start" }}
+                        >
+                            <Box>
+                                <InfoItem label="Người lập BA:" value={nguoiLapBA} />
+                            </Box>
+                            {onEdit && (
+                                <Button
+                                    size="small"
+                                    variant="outlined"
+                                    startIcon={<EditIcon />}
+                                    onClick={onEdit}
+                                    sx={{ textTransform: "none", flexShrink: 0 }}
+                                >
+                                    Sửa bệnh án
+                                </Button>
+                            )}
+                        </Stack>
                         <InfoItem label="Đối tượng:" value={benhAn.nghe_nghiep} />
                         <InfoItem
                             label="Ngày nhập viện:"

@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { noiTruService } from "../services/noiTruService";
 
-export default function useLapBenhAnForm({ open, onSave: externalSave }) {
+export default function useLapBenhAnForm({ open, onSave: externalSave, benhAn }) {
     const [buongList, setBuongList] = useState([]);
     const [giuongList, setGiuongList] = useState([]);
     const [loadingBuong, setLoadingBuong] = useState(false);
@@ -17,21 +17,7 @@ export default function useLapBenhAnForm({ open, onSave: externalSave }) {
     const haTamTruongRef = useRef(null);
     const nhipTimRef = useRef(null);
     const lyDoRef = useRef(null);
-
-    const [chiTiet, setChiTiet] = useState({
-        benh_su: "",
-        tien_su_ban_than: "",
-        tien_su_gia_dinh: "",
-        tom_tat_benh_an: "",
-        chan_doan_chinh: "",
-        chan_doan_kem_theo: "",
-        chan_doan_phan_biet: "",
-    });
-
-    const handleChiTietChange = useCallback((e) => {
-        const { name, value } = e.target;
-        setChiTiet((prev) => ({ ...prev, [name]: value }));
-    }, []);
+    const chiTietRef = useRef(null);
 
     const refMap = {
         nhiet_do: nhietDoRef,
@@ -39,6 +25,41 @@ export default function useLapBenhAnForm({ open, onSave: externalSave }) {
         ha_tam_truong: haTamTruongRef,
         nhip_tim: nhipTimRef,
     };
+
+    const isEdit = !!benhAn;
+
+    const parsedChiTiet = useMemo(() => {
+        if (!benhAn?.chi_tiet_benh_an) return null;
+        try {
+            return JSON.parse(benhAn.chi_tiet_benh_an);
+        } catch {
+            return null;
+        }
+    }, [benhAn?.chi_tiet_benh_an]);
+
+    const defaultValues = useMemo(() => {
+        if (!isEdit || !parsedChiTiet) return {};
+        return {
+            nhiet_do: parsedChiTiet.nhiet_do || "",
+            ha_tam_thu: parsedChiTiet.ha_tam_thu || "",
+            ha_tam_truong: parsedChiTiet.ha_tam_truong || "",
+            nhip_tim: parsedChiTiet.nhip_tim || "",
+            ly_do_nhap_vien: benhAn.ly_do_nhap_vien || "",
+        };
+    }, [isEdit, parsedChiTiet, benhAn]);
+
+    const chiTietInitialValues = useMemo(() => {
+        if (!isEdit || !parsedChiTiet) return null;
+        return {
+            benh_su: parsedChiTiet.benh_su || "",
+            tien_su_ban_than: parsedChiTiet.tien_su_ban_than || "",
+            tien_su_gia_dinh: parsedChiTiet.tien_su_gia_dinh || "",
+            tom_tat_benh_an: parsedChiTiet.tom_tat_benh_an || "",
+            chan_doan_chinh: parsedChiTiet.chan_doan_chinh || "",
+            chan_doan_kem_theo: parsedChiTiet.chan_doan_kem_theo || "",
+            chan_doan_phan_biet: parsedChiTiet.chan_doan_phan_biet || "",
+        };
+    }, [isEdit, parsedChiTiet]);
 
     useEffect(() => {
         if (open) {
@@ -51,26 +72,29 @@ export default function useLapBenhAnForm({ open, onSave: externalSave }) {
 
     useEffect(() => {
         if (open) {
-            setMaBuong("");
-            setMaGiuong("");
-            setGiuongList([]);
-            setNgayNhapVien(new Date().toISOString());
-            setErrors({ ma_buong: "", ma_giuong: "" });
-            setChiTiet({
-                benh_su: "",
-                tien_su_ban_than: "",
-                tien_su_gia_dinh: "",
-                tom_tat_benh_an: "",
-                chan_doan_chinh: "",
-                chan_doan_kem_theo: "",
-                chan_doan_phan_biet: "",
-            });
-            [
-                nhietDoRef, haTamThuRef, haTamTruongRef, nhipTimRef,
-                lyDoRef,
-            ].forEach((ref) => {
-                if (ref.current) ref.current.value = "";
-            });
+            if (isEdit) {
+                setMaBuong(benhAn.ma_buong || "");
+                setMaGiuong(benhAn.ma_giuong || "");
+                setNgayNhapVien(benhAn.ngay_nhap_vien || new Date().toISOString());
+                setErrors({ ma_buong: "", ma_giuong: "" });
+                if (nhietDoRef.current) nhietDoRef.current.value = defaultValues.nhiet_do || "";
+                if (haTamThuRef.current) haTamThuRef.current.value = defaultValues.ha_tam_thu || "";
+                if (haTamTruongRef.current) haTamTruongRef.current.value = defaultValues.ha_tam_truong || "";
+                if (nhipTimRef.current) nhipTimRef.current.value = defaultValues.nhip_tim || "";
+                if (lyDoRef.current) lyDoRef.current.value = defaultValues.ly_do_nhap_vien || "";
+            } else {
+                setMaBuong("");
+                setMaGiuong("");
+                setGiuongList([]);
+                setNgayNhapVien(new Date().toISOString());
+                setErrors({ ma_buong: "", ma_giuong: "" });
+                [
+                    nhietDoRef, haTamThuRef, haTamTruongRef, nhipTimRef,
+                    lyDoRef,
+                ].forEach((ref) => {
+                    if (ref.current) ref.current.value = "";
+                });
+            }
         }
     }, [open]);
 
@@ -106,11 +130,11 @@ export default function useLapBenhAnForm({ open, onSave: externalSave }) {
                 ha_tam_thu: getVal(haTamThuRef),
                 ha_tam_truong: getVal(haTamTruongRef),
                 nhip_tim: getVal(nhipTimRef),
-                ...chiTiet,
+                ...(chiTietRef.current?.getValues() || {}),
             }),
             ly_do: getVal(lyDoRef),
         });
-    }, [maBuong, maGiuong, ngayNhapVien, chiTiet, externalSave]);
+    }, [maBuong, maGiuong, ngayNhapVien, externalSave]);
 
     const selectedBuong = buongList.find((b) => b.ma_buong === maBuong) || null;
     const selectedGiuong = giuongList.find((g) => g.ma_giuong === maGiuong) || null;
@@ -130,8 +154,10 @@ export default function useLapBenhAnForm({ open, onSave: externalSave }) {
         errors,
         refMap,
         lyDoRef,
-        chiTiet,
-        handleChiTietChange,
+        chiTietRef,
         handleSave,
+        defaultValues,
+        chiTietInitialValues,
+        isEdit,
     };
 }

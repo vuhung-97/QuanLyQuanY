@@ -13,40 +13,15 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
-import NormalToggleField from "@/components/common/NormalToggleField";
 import useLapBenhAnForm from "../../../hooks/useLapBenhAnForm";
 import PatientInfoCard from "./PatientInfoCard";
+import ChiTietBenhAnFields from "./ChiTietBenhAnFields";
 
 const VITAL_SIGNS = [
     { key: "nhiet_do", label: "Nhiệt độ (°C)" },
     { key: "ha_tam_thu", label: "HA tối đa" },
     { key: "ha_tam_truong", label: "HA tối thiểu" },
     { key: "nhip_tim", label: "Nhịp tim (lần/ph)" },
-];
-
-const CHI_TIET_FIELDS = [
-    { label: "Bệnh sử", name: "benh_su", minRows: 3 },
-    { label: "Tiền sử bản thân", name: "tien_su_ban_than", minRows: 3 },
-    { label: "Tiền sử gia đình", name: "tien_su_gia_dinh", minRows: 3 },
-    {
-        label: "Tóm tắt bệnh án",
-        name: "tom_tat_benh_an",
-        minRows: 3,
-        normalText: "Không có",
-    },
-    { label: "Chẩn đoán bệnh chính", name: "chan_doan_chinh", minRows: 2 },
-    {
-        label: "Chẩn đoán bệnh kèm theo",
-        name: "chan_doan_kem_theo",
-        minRows: 2,
-        normalText: "Không có",
-    },
-    {
-        label: "Chẩn đoán phân biệt",
-        name: "chan_doan_phan_biet",
-        minRows: 2,
-        normalText: "Không có",
-    },
 ];
 
 function SectionTitle({ children }) {
@@ -62,7 +37,7 @@ function SectionTitle({ children }) {
     );
 }
 
-export default function LapBenhAnForm({ open, exam, saving, onSave, onClose }) {
+export default function LapBenhAnForm({ open, exam, saving, onSave, onClose, benhAn }) {
     const {
         buongList,
         giuongList,
@@ -77,10 +52,14 @@ export default function LapBenhAnForm({ open, exam, saving, onSave, onClose }) {
         errors,
         refMap,
         lyDoRef,
-        chiTiet,
-        handleChiTietChange,
+        chiTietRef,
         handleSave,
-    } = useLapBenhAnForm({ open, onSave });
+        defaultValues,
+        chiTietInitialValues,
+        isEdit,
+    } = useLapBenhAnForm({ open, onSave, benhAn });
+
+    const infoSource = benhAn || exam;
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -88,14 +67,14 @@ export default function LapBenhAnForm({ open, exam, saving, onSave, onClose }) {
                 <Typography
                     sx={{ fontSize: 20, fontWeight: 700, textAlign: "center" }}
                 >
-                    Lập bệnh án nội trú
+                    {isEdit ? "Sửa bệnh án nội trú" : "Lập bệnh án nội trú"}
                 </Typography>
             </DialogTitle>
             <DialogContent dividers>
-                {exam && (
+                {infoSource && (
                     <Stack spacing={3}>
                         <PatientInfoCard
-                            exam={exam}
+                            exam={infoSource}
                             ngayNhapVien={ngayNhapVien}
                         />
 
@@ -113,7 +92,7 @@ export default function LapBenhAnForm({ open, exam, saving, onSave, onClose }) {
                                                 type="number"
                                                 fullWidth
                                                 size="medium"
-                                                defaultValue=""
+                                                defaultValue={isEdit ? (defaultValues[f.key] || "") : ""}
                                                 inputRef={refMap[f.key]}
                                                 slotProps={{
                                                     htmlInput: { min: 0 },
@@ -190,7 +169,7 @@ export default function LapBenhAnForm({ open, exam, saving, onSave, onClose }) {
                                     minRows={2}
                                     fullWidth
                                     size="medium"
-                                    defaultValue=""
+                                    defaultValue={isEdit ? (defaultValues.ly_do_nhap_vien || "") : ""}
                                     inputRef={lyDoRef}
                                 />
                             </CardContent>
@@ -199,21 +178,10 @@ export default function LapBenhAnForm({ open, exam, saving, onSave, onClose }) {
                         <Card variant="outlined" sx={{ borderRadius: 2 }}>
                             <CardContent>
                                 <SectionTitle>Chi tiết bệnh án</SectionTitle>
-                                <Stack spacing={2}>
-                                    {CHI_TIET_FIELDS.map((field) => (
-                                        <NormalToggleField
-                                            key={field.name}
-                                            label={field.label}
-                                            name={field.name}
-                                            value={chiTiet[field.name]}
-                                            onChange={handleChiTietChange}
-                                            normalText={field.normalText}
-                                            multiline
-                                            minRows={field.minRows}
-                                            size="medium"
-                                        />
-                                    ))}
-                                </Stack>
+                                <ChiTietBenhAnFields
+                                    ref={chiTietRef}
+                                    initialValues={chiTietInitialValues}
+                                />
                             </CardContent>
                         </Card>
                     </Stack>
@@ -229,7 +197,10 @@ export default function LapBenhAnForm({ open, exam, saving, onSave, onClose }) {
                     disabled={saving}
                     sx={{ textTransform: "none" }}
                 >
-                    {saving ? "Đang lưu..." : "Lập bệnh án"}
+                    {saving
+                        ? (isEdit ? "Đang cập nhật..." : "Đang lưu...")
+                        : (isEdit ? "Cập nhật" : "Lập bệnh án")
+                    }
                 </Button>
             </DialogActions>
         </Dialog>

@@ -112,8 +112,10 @@ FE/
     │   │   │       ├── DienBienTab.jsx
     │   │   │       └── ThuocTab.jsx
     │   │   ├── LapBenhAn/
+    │   │   │   ├── ChiTietBenhAnFields.jsx
     │   │   │   ├── LapBenhAnForm.jsx
     │   │   │   └── LapBenhAnList.jsx
+    │   │   │   ├── PatientInfoCard.jsx
     │   │   └── QuanLyPhongGiuong/
     │   │       ├── BuongDialog.jsx
     │   │       └── QuanLyPhongGiuong.jsx
@@ -145,6 +147,7 @@ FE/
     │   ├── useKhamSucKhoeData.jsx
     │   ├── useKhamSucKhoeForm.jsx
     │   ├── useKhamSucKhoeMain.jsx
+    │   ├── useLapBenhAnForm.jsx
     │   ├── useLapLichDialog.jsx
     │   ├── useLichKhamData.jsx
     │   ├── usePermissionDiff.js

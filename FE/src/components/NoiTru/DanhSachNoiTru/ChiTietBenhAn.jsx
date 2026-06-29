@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
     Box,
     Button,
@@ -18,6 +18,7 @@ import { noiTruService } from "@/services/noiTruService.js";
 import usePhieuChamSoc from "@/hooks/usePhieuChamSoc.jsx";
 import PhieuChamSocForm from "./PhieuChamSocForm.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
+import LapBenhAnForm from "@/components/NoiTru/LapBenhAn/LapBenhAnForm.jsx";
 import TongQuanTab from "./tabs/TongQuanTab.jsx";
 import DienBienTab from "./tabs/DienBienTab.jsx";
 import ThuocTab from "./tabs/ThuocTab.jsx";
@@ -62,6 +63,8 @@ export default function ChiTietBenhAn({ open, benhAnId, onClose }) {
     const [benhAn, setBenhAn] = useState(null);
     const [loading, setLoading] = useState(false);
     const [tabIndex, setTabIndex] = useState(0);
+    const [openEditForm, setOpenEditForm] = useState(false);
+    const [savingEdit, setSavingEdit] = useState(false);
 
     const {
         records,
@@ -101,6 +104,30 @@ export default function ChiTietBenhAn({ open, benhAnId, onClose }) {
         });
         return Object.values(map);
     }, [records]);
+
+    const handleOpenEdit = useCallback(() => {
+        setOpenEditForm(true);
+    }, []);
+
+    const handleCloseEdit = useCallback(() => {
+        setOpenEditForm(false);
+    }, []);
+
+    const handleSaveEdit = useCallback(async (data) => {
+        if (!benhAn?.ma_benh_an) return;
+        setSavingEdit(true);
+        try {
+            await noiTruService.updateBenhAn(benhAn.ma_benh_an, data);
+            const res = await noiTruService.getBenhAnChiTiet(benhAnId);
+            setBenhAn(res.data || res);
+            setOpenEditForm(false);
+            setSnackbar({ open: true, message: "Cập nhật bệnh án thành công", severity: "success" });
+        } catch {
+            setSnackbar({ open: true, message: "Cập nhật bệnh án thất bại", severity: "error" });
+        } finally {
+            setSavingEdit(false);
+        }
+    }, [benhAn, benhAnId]);
 
     const headerFields = [
         { label: "Mã BA", value: benhAn?.ma_benh_an },
@@ -189,7 +216,7 @@ export default function ChiTietBenhAn({ open, benhAnId, onClose }) {
                                 <Tab label="Thuốc" />
                             </Tabs>
 
-                            {tabIndex === 0 && <TongQuanTab benhAn={benhAn} />}
+                            {tabIndex === 0 && <TongQuanTab benhAn={benhAn} onEdit={handleOpenEdit} />}
                             {tabIndex === 1 && (
                                 <DienBienTab
                                     records={records}
@@ -216,6 +243,16 @@ export default function ChiTietBenhAn({ open, benhAnId, onClose }) {
                 defaultGiuong={benhAn?.ten_giuong}
                 defaultBuong={benhAn?.ten_buong}
             />
+
+            {benhAn && (
+                <LapBenhAnForm
+                    open={openEditForm}
+                    benhAn={benhAn}
+                    saving={savingEdit}
+                    onSave={handleSaveEdit}
+                    onClose={handleCloseEdit}
+                />
+            )}
 
             <FeedbackSnackbar
                 open={snackbar.open}
