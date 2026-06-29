@@ -64,24 +64,23 @@ def get_danh_sach_noi_tru(
     db: Session = Depends(get_db),
 ):
     base_query = (
-        db.query(BenhAn, QuanNhan.ho_ten, QuanNhan.cap_bac, QuanNhan.chuc_vu, QuanNhan.ngay_sinh, QuanNhan.ma_don_vi, DonVi.ten_don_vi)
+        db.query(BenhAn, QuanNhan.ho_ten, QuanNhan.cap_bac, QuanNhan.chuc_vu, QuanNhan.ngay_sinh, Buong.ten_buong)
         .join(QuanNhan, BenhAn.ma_quan_nhan == QuanNhan.ma_quan_nhan)
-        .join(DonVi, QuanNhan.ma_don_vi == DonVi.ma_don_vi, isouter=True)
-        .order_by(BenhAn.ma_benh_an.desc())
+        .join(Buong, BenhAn.ma_buong == Buong.ma_buong, isouter=True)
+        .order_by(Buong.ten_buong.asc().nullslast(), QuanNhan.ho_ten.asc(), BenhAn.ngay_nhap_vien.desc().nullslast())
     )
     if trang_thai:
         base_query = base_query.filter(BenhAn.trang_thai == trang_thai)
     total = base_query.count()
     records = base_query.offset(offset).limit(limit).all()
     result = []
-    for ba, ho_ten, cap_bac, chuc_vu, ngay_sinh, ma_don_vi, ten_don_vi in records:
+    for ba, ho_ten, cap_bac, chuc_vu, ngay_sinh, ten_buong in records:
         d = {c.key: getattr(ba, c.key) for c in inspect(BenhAn).columns}
         d["ho_ten"] = ho_ten
         d["cap_bac"] = cap_bac
         d["chuc_vu"] = chuc_vu
         d["ngay_sinh"] = str(ngay_sinh) if ngay_sinh else None
-        d["ma_don_vi"] = ma_don_vi
-        d["ten_don_vi"] = ten_don_vi
+        d["ten_buong"] = ten_buong
         result.append(d)
     return {"data": result, "total": total}
 

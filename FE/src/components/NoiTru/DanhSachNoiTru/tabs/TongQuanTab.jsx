@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Box, Card, CardContent, Stack } from "@mui/material";
+import { Box, Card, CardContent, Divider, Stack, Typography } from "@mui/material";
 
 function InfoItem({ label, value }) {
     return (
@@ -19,6 +19,29 @@ export default function TongQuanTab({ benhAn }) {
         benhAn.ten_nguoi_lap_ba
             ? `${benhAn.ten_nguoi_lap_ba} (${benhAn.vai_tro_nguoi_lap_ba ?? "?"})`
             : null;
+
+    const CHI_TIET_DISPLAY = [
+        { label: "Nhiệt độ", key: "nhiet_do" },
+        { label: "HA tối đa", key: "ha_tam_thu" },
+        { label: "HA tối thiểu", key: "ha_tam_truong" },
+        { label: "Nhịp tim", key: "nhip_tim" },
+        { label: "Bệnh sử", key: "benh_su" },
+        { label: "Tiền sử bản thân", key: "tien_su_ban_than" },
+        { label: "Tiền sử gia đình", key: "tien_su_gia_dinh" },
+        { label: "Tóm tắt bệnh án", key: "tom_tat_benh_an" },
+        { label: "Chẩn đoán chính", key: "chan_doan_chinh" },
+        { label: "Chẩn đoán kèm theo", key: "chan_doan_kem_theo" },
+        { label: "Chẩn đoán phân biệt", key: "chan_doan_phan_biet" },
+    ];
+
+    const chiTiet = useMemo(() => {
+        if (!benhAn.chi_tiet_benh_an) return null;
+        try {
+            return JSON.parse(benhAn.chi_tiet_benh_an);
+        } catch {
+            return null;
+        }
+    }, [benhAn.chi_tiet_benh_an]);
 
     const tongKet = useMemo(() => {
         if (!benhAn.tong_ket_benh_an) return null;
@@ -44,7 +67,16 @@ export default function TongQuanTab({ benhAn }) {
                         />
                         <InfoItem label="Lý do nhập viện:" value={benhAn.ly_do_nhap_vien} />
                         <InfoItem label="Chẩn đoán:" value={benhAn.chan_doan} />
-                        <InfoItem label="Chi tiết BA:" value={benhAn.chi_tiet_benh_an} />
+                        <Divider sx={{ my: 0.5 }} />
+                        <Typography variant="subtitle2" color="primary" sx={{ fontWeight: 600 }}>
+                            Chi tiết bệnh án
+                        </Typography>
+                        {chiTiet
+                            ? CHI_TIET_DISPLAY.map((field) => (
+                                  <InfoItem key={field.key} label={`${field.label}:`} value={chiTiet[field.key]} />
+                              ))
+                            : <InfoItem label="Chi tiết BA:" value={benhAn.chi_tiet_benh_an} />
+                        }
                         {tongKet ? (
                             <>
                                 <InfoItem label="Kết quả điều trị:" value={tongKet.ket_qua_dieu_tri} />

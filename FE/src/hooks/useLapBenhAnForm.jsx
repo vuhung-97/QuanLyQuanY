@@ -18,6 +18,21 @@ export default function useLapBenhAnForm({ open, onSave: externalSave }) {
     const nhipTimRef = useRef(null);
     const lyDoRef = useRef(null);
 
+    const [chiTiet, setChiTiet] = useState({
+        benh_su: "",
+        tien_su_ban_than: "",
+        tien_su_gia_dinh: "",
+        tom_tat_benh_an: "",
+        chan_doan_chinh: "",
+        chan_doan_kem_theo: "",
+        chan_doan_phan_biet: "",
+    });
+
+    const handleChiTietChange = useCallback((e) => {
+        const { name, value } = e.target;
+        setChiTiet((prev) => ({ ...prev, [name]: value }));
+    }, []);
+
     const refMap = {
         nhiet_do: nhietDoRef,
         ha_tam_thu: haTamThuRef,
@@ -41,7 +56,19 @@ export default function useLapBenhAnForm({ open, onSave: externalSave }) {
             setGiuongList([]);
             setNgayNhapVien(new Date().toISOString());
             setErrors({ ma_buong: "", ma_giuong: "" });
-            [nhietDoRef, haTamThuRef, haTamTruongRef, nhipTimRef, lyDoRef].forEach((ref) => {
+            setChiTiet({
+                benh_su: "",
+                tien_su_ban_than: "",
+                tien_su_gia_dinh: "",
+                tom_tat_benh_an: "",
+                chan_doan_chinh: "",
+                chan_doan_kem_theo: "",
+                chan_doan_phan_biet: "",
+            });
+            [
+                nhietDoRef, haTamThuRef, haTamTruongRef, nhipTimRef,
+                lyDoRef,
+            ].forEach((ref) => {
                 if (ref.current) ref.current.value = "";
             });
         }
@@ -58,6 +85,8 @@ export default function useLapBenhAnForm({ open, onSave: externalSave }) {
         }
     }, [maBuong]);
 
+    const getVal = (ref) => ref.current?.value || "";
+
     const handleSave = useCallback(() => {
         const newErrors = { ma_buong: "", ma_giuong: "" };
         if (!maBuong) newErrors.ma_buong = "Vui lòng chọn buồng";
@@ -69,17 +98,19 @@ export default function useLapBenhAnForm({ open, onSave: externalSave }) {
             ma_buong: maBuong,
             ma_giuong: maGiuong,
             ngay_nhap_vien: ngayNhapVien,
-            ly_do_nhap_vien: "",
+            ly_do_nhap_vien: getVal(lyDoRef),
             doi_tuong: "",
             quan_ly_nguoi_benh: "",
-            chi_tiet_benh_an: "",
-            nhiet_do: nhietDoRef.current?.value || "",
-            ha_tam_thu: haTamThuRef.current?.value || "",
-            ha_tam_truong: haTamTruongRef.current?.value || "",
-            nhip_tim: nhipTimRef.current?.value || "",
-            ly_do: lyDoRef.current?.value || "",
+            chi_tiet_benh_an: JSON.stringify({
+                nhiet_do: getVal(nhietDoRef),
+                ha_tam_thu: getVal(haTamThuRef),
+                ha_tam_truong: getVal(haTamTruongRef),
+                nhip_tim: getVal(nhipTimRef),
+                ...chiTiet,
+            }),
+            ly_do: getVal(lyDoRef),
         });
-    }, [maBuong, maGiuong, ngayNhapVien, externalSave]);
+    }, [maBuong, maGiuong, ngayNhapVien, chiTiet, externalSave]);
 
     const selectedBuong = buongList.find((b) => b.ma_buong === maBuong) || null;
     const selectedGiuong = giuongList.find((g) => g.ma_giuong === maGiuong) || null;
@@ -98,11 +129,9 @@ export default function useLapBenhAnForm({ open, onSave: externalSave }) {
         setMaGiuong,
         errors,
         refMap,
-        nhietDoRef,
-        haTamThuRef,
-        haTamTruongRef,
-        nhipTimRef,
         lyDoRef,
+        chiTiet,
+        handleChiTietChange,
         handleSave,
     };
 }

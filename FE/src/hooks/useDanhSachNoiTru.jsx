@@ -71,7 +71,7 @@ export default function useDanhSachNoiTru() {
             (e) =>
                 (e.ma_benh_an || "").toLowerCase().includes(q) ||
                 (e.ho_ten || "").toLowerCase().includes(q) ||
-                (e.ten_don_vi || "").toLowerCase().includes(q),
+                (e.ten_buong || "").toLowerCase().includes(q),
         );
     }, [examinations, debouncedSearchText]);
 

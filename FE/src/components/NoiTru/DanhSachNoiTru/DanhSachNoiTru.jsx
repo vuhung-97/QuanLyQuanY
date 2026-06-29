@@ -44,7 +44,7 @@ const columns = [
         sx: { color: "primary.main" },
     },
     { key: "ho_ten", label: "Họ tên QN" },
-    { key: "don_vi", label: "Đơn vị", render: (row) => row.ten_don_vi || "--" },
+    { key: "phong", label: "Phòng", render: (row) => row.ten_buong || "--" },
     {
         key: "ngay_nhap_vien",
         label: "Ngày nhập viện",
