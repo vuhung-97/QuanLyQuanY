@@ -9,7 +9,9 @@ from app.database.benh_nhan_ra_vao import BenhNhanRaVao
 from app.database.chi_tiet_phieu_cham_soc import ChiTietPhieuChamSoc
 from app.database.don_vi import DonVi
 from app.database.kham_benh import KhamBenh
+from app.database.nguoi_dung import NguoiDung
 from app.database.phieu_cham_soc import PhieuChamSoc
+from app.database.vai_tro import VaiTro
 from app.database.quan_nhan import QuanNhan
 from app.database.session import get_db
 from app.database.thuoc_vtyt import ThuocVtyt
@@ -38,6 +40,7 @@ router = create_crud_router(
 )
 def create_benh_an(data: dict, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
     ma_kham_benh = data.get("ma_kham_benh")
+    data["ma_nguoi_dung"] = current_user.id
     if ma_kham_benh:
         service = MedicalExaminationService(db)
         try:
@@ -121,6 +124,7 @@ def get_benh_an_chi_tiet(id: str, db: Session = Depends(get_db)):
             QuanNhan.chuc_vu,
             QuanNhan.so_dien_thoai,
             QuanNhan.so_the_bhyt,
+            QuanNhan.nghe_nghiep,
             DonVi.ten_don_vi,
             Buong.ten_buong,
             Giuong.ten_giuong,
@@ -134,16 +138,26 @@ def get_benh_an_chi_tiet(id: str, db: Session = Depends(get_db)):
     )
     if not result:
         raise HTTPException(status_code=404, detail="Không tìm thấy bệnh án.")
-    ba, ho_ten, cap_bac, chuc_vu, so_dien_thoai, so_the_bhyt, ten_don_vi, ten_buong, ten_giuong = result
+    ba, ho_ten, cap_bac, chuc_vu, so_dien_thoai, so_the_bhyt, nghe_nghiep, ten_don_vi, ten_buong, ten_giuong = result
     d = {c.key: getattr(ba, c.key) for c in inspect(BenhAn).columns}
     d["ho_ten"] = ho_ten
     d["cap_bac"] = cap_bac
     d["chuc_vu"] = chuc_vu
     d["so_dien_thoai"] = so_dien_thoai
     d["so_the_bhyt"] = so_the_bhyt
+    d["nghe_nghiep"] = nghe_nghiep
     d["ten_don_vi"] = ten_don_vi
     d["ten_buong"] = ten_buong
     d["ten_giuong"] = ten_giuong
+    if ba.ma_nguoi_dung:
+        nd = (
+            db.query(NguoiDung.ho_ten, VaiTro.ten_vai_tro)
+            .join(VaiTro, NguoiDung.id_vai_tro == VaiTro.id, isouter=True)
+            .filter(NguoiDung.id == ba.ma_nguoi_dung)
+            .first()
+        )
+        d["ten_nguoi_lap_ba"] = nd.ho_ten if nd else None
+        d["vai_tro_nguoi_lap_ba"] = nd.ten_vai_tro if nd else None
     return d
 
 
@@ -176,5 +190,13 @@ def get_phieu_cham_soc_by_benh_an(id: str, db: Session = Depends(get_db)):
             }
             for ct, ten, dvt in chi_tiet
         ]
+        nd = (
+            db.query(NguoiDung.ho_ten, VaiTro.ten_vai_tro)
+            .join(VaiTro, NguoiDung.id_vai_tro == VaiTro.id, isouter=True)
+            .filter(NguoiDung.id == pcs.ma_nguoi_dung)
+            .first()
+        )
+        d["ten_nguoi_thuc_hien"] = nd.ho_ten if nd else None
+        d["vai_tro_nguoi_thuc_hien"] = nd.ten_vai_tro if nd else None
         result.append(d)
     return {"data": result}

@@ -11,8 +11,9 @@ class BenhAnBase(SchemaBase):
     ma_kham_benh: str | None = Field(default=None, max_length=10)
     trang_thai: str | None = None
     ngay_nhap_vien: date | None = None
-    ngoai_kieu: str | None = Field(default=None, max_length=100)
     doi_tuong: str | None = Field(default=None, max_length=100)
+    ly_do_nhap_vien: str | None = Field(default=None, max_length=100)
+    ma_nguoi_dung: str | None = None
     quan_ly_nguoi_benh: str | None = None
     chan_doan: str | None = None
     tinh_trang_ra_vien: str | None = None
@@ -29,8 +30,9 @@ class BenhAnUpdate(SchemaBase):
     ma_kham_benh: str | None = None
     trang_thai: str | None = None
     ngay_nhap_vien: date | None = None
-    ngoai_kieu: str | None = None
     doi_tuong: str | None = None
+    ly_do_nhap_vien: str | None = None
+    ma_nguoi_dung: str | None = None
     quan_ly_nguoi_benh: str | None = None
     chan_doan: str | None = None
     tinh_trang_ra_vien: str | None = None
@@ -51,3 +53,6 @@ class BenhAnReadDetail(BenhAnRead):
     ten_don_vi: str | None = None
     ten_buong: str | None = None
     ten_giuong: str | None = None
+    nghe_nghiep: str | None = None
+    ten_nguoi_lap_ba: str | None = None
+    vai_tro_nguoi_lap_ba: str | None = None

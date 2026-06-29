@@ -134,8 +134,8 @@ export default function DanhSachNoiTru() {
         offset,
     } = useDanhSachNoiTru();
 
-    const statItems = useMemo(
-        () => [
+    const statItems = useMemo(() => {
+        const items = [
             {
                 label: "Chờ nhập viện",
                 value: stats.choNhapVien,
@@ -150,16 +150,18 @@ export default function DanhSachNoiTru() {
                 color: "#0B3B60",
                 bg: "#DBEAFE",
             },
-            {
+        ];
+        if (filterMode === "tat_ca") {
+            items.push({
                 label: "Đã ra viện",
                 value: stats.daRaVien,
                 icon: <CheckCircleIcon />,
                 color: "#10B981",
                 bg: "#D1FAE5",
-            },
-        ],
-        [stats],
-    );
+            });
+        }
+        return items;
+    }, [stats, filterMode]);
 
     return (
         <>

@@ -69,7 +69,7 @@ export default function useLapBenhAnForm({ open, onSave: externalSave }) {
             ma_buong: maBuong,
             ma_giuong: maGiuong,
             ngay_nhap_vien: ngayNhapVien,
-            ngoai_kieu: "",
+            ly_do_nhap_vien: "",
             doi_tuong: "",
             quan_ly_nguoi_benh: "",
             chi_tiet_benh_an: "",

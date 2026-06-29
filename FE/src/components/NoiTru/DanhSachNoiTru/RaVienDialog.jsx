@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
     Button,
     Dialog,
@@ -10,12 +10,14 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
+import NormalToggleField from "@/components/common/NormalToggleField";
 
-const TINH_TRANG_OPTIONS = [
+const KET_QUA_OPTIONS = [
     { value: "khỏi", label: "Khỏi" },
     { value: "đỡ", label: "Đỡ" },
-    { value: "giảm", label: "Giảm" },
+    { value: "không_thay_đổi", label: "Không thay đổi" },
     { value: "nặng_hơn", label: "Nặng hơn" },
+    { value: "tử_vong", label: "Tử vong" },
 ];
 
 export default function RaVienDialog({
@@ -26,22 +28,45 @@ export default function RaVienDialog({
     onClose,
 }) {
     const [formState, setFormState] = useState({
-        tinh_trang_ra_vien: "",
-        chi_tiet_benh_an: "",
-        tong_ket_benh_an: "",
+        ket_qua_dieu_tri: "",
+        chan_doan_ra_vien: "",
+        tinh_trang_nb: "",
+        huong_dieu_tri: "",
         ngay_ra: new Date().toISOString().slice(0, 10),
     });
 
-    const updateField = useCallback((name, value) => {
+    useEffect(() => {
+        if (open) {
+            setFormState({
+                ket_qua_dieu_tri: "",
+                chan_doan_ra_vien: "",
+                tinh_trang_nb: "",
+                huong_dieu_tri: "",
+                ngay_ra: new Date().toISOString().slice(0, 10),
+            });
+        }
+    }, [open]);
+
+    const updateField = useCallback((e) => {
+        const { name, value } = e.target;
         setFormState((prev) => ({ ...prev, [name]: value }));
     }, []);
 
     const handleConfirm = useCallback(() => {
-        onConfirm(formState);
+        const payload = {
+            tong_ket_benh_an: JSON.stringify({
+                ket_qua_dieu_tri: formState.ket_qua_dieu_tri,
+                chan_doan_ra_vien: formState.chan_doan_ra_vien,
+                tinh_trang_nb: formState.tinh_trang_nb,
+                huong_dieu_tri: formState.huong_dieu_tri,
+            }),
+            ngay_ra: formState.ngay_ra,
+        };
+        onConfirm(payload);
     }, [formState, onConfirm]);
 
     return (
-        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+        <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
             <DialogTitle>
                 <Typography
                     sx={{ fontSize: 20, fontWeight: 700, textAlign: "center" }}
@@ -53,18 +78,16 @@ export default function RaVienDialog({
                 <Grid container spacing={2}>
                     <Grid size={{ xs: 12 }}>
                         <TextField
-                            label="Tình trạng ra viện"
+                            label="Kết quả điều trị"
                             select
                             fullWidth
-                            value={formState.tinh_trang_ra_vien}
-                            onChange={(e) =>
-                                updateField(
-                                    "tinh_trang_ra_vien",
-                                    e.target.value,
-                                )
-                            }
+                            size="medium"
+                            value={formState.ket_qua_dieu_tri}
+                            onChange={updateField}
+                            name="ket_qua_dieu_tri"
+                            slotProps={{ input: { sx: { fontSize: "1rem" } } }}
                         >
-                            {TINH_TRANG_OPTIONS.map((opt) => (
+                            {KET_QUA_OPTIONS.map((opt) => (
                                 <MenuItem key={opt.value} value={opt.value}>
                                     {opt.label}
                                 </MenuItem>
@@ -72,27 +95,33 @@ export default function RaVienDialog({
                         </TextField>
                     </Grid>
                     <Grid size={{ xs: 12 }}>
-                        <TextField
-                            label="Chi tiết bệnh án"
+                        <NormalToggleField
+                            label="Chẩn đoán lúc ra viện"
+                            name="chan_doan_ra_vien"
+                            value={formState.chan_doan_ra_vien}
+                            onChange={updateField}
                             multiline
-                            minRows={3}
-                            fullWidth
-                            value={formState.chi_tiet_benh_an}
-                            onChange={(e) =>
-                                updateField("chi_tiet_benh_an", e.target.value)
-                            }
+                            minRows={4}
                         />
                     </Grid>
                     <Grid size={{ xs: 12 }}>
-                        <TextField
-                            label="Tổng kết"
+                        <NormalToggleField
+                            label="Tình trạng người bệnh khi ra viện"
+                            name="tinh_trang_nb"
+                            value={formState.tinh_trang_nb}
+                            onChange={updateField}
                             multiline
-                            minRows={3}
-                            fullWidth
-                            value={formState.tong_ket_benh_an}
-                            onChange={(e) =>
-                                updateField("tong_ket_benh_an", e.target.value)
-                            }
+                            minRows={4}
+                        />
+                    </Grid>
+                    <Grid size={{ xs: 12 }}>
+                        <NormalToggleField
+                            label="Hướng điều trị và các chế độ tiếp theo"
+                            name="huong_dieu_tri"
+                            value={formState.huong_dieu_tri}
+                            onChange={updateField}
+                            multiline
+                            minRows={4}
                         />
                     </Grid>
                     <Grid size={{ xs: 12 }}>
@@ -100,11 +129,14 @@ export default function RaVienDialog({
                             label="Ngày ra"
                             type="date"
                             fullWidth
+                            size="medium"
                             value={formState.ngay_ra}
-                            onChange={(e) =>
-                                updateField("ngay_ra", e.target.value)
-                            }
-                            slotProps={{ inputLabel: { shrink: true } }}
+                            onChange={updateField}
+                            name="ngay_ra"
+                            slotProps={{
+                                inputLabel: { shrink: true },
+                                input: { sx: { fontSize: "1rem" } },
+                            }}
                         />
                     </Grid>
                 </Grid>

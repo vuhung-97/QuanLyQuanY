@@ -116,13 +116,14 @@ class MedicalExaminationService:
             ma_kham_benh=kb_id,
             trang_thai="đang_điều_trị",
             ngay_nhap_vien=data.get("ngay_nhap_vien", datetime.now().date()),
-            ngoai_kieu=data.get("ngoai_kieu"),
             doi_tuong=data.get("doi_tuong"),
+            ly_do_nhap_vien=data.get("ly_do_nhap_vien"),
             quan_ly_nguoi_benh=data.get("quan_ly_nguoi_benh"),
             chan_doan=data.get("chan_doan", kb.chan_doan),
             chi_tiet_benh_an=data.get("chi_tiet_benh_an"),
             ma_buong=ma_buong,
             ma_giuong=ma_giuong,
+            ma_nguoi_dung=nguoi_dung_id,
         )
         self.db.add(ba)
         self.db.flush()
@@ -153,7 +154,6 @@ class MedicalExaminationService:
 
         old = {c.key: getattr(ba, c.key) for c in inspect(BenhAn).columns}
 
-        ba.tinh_trang_ra_vien = data.get("tinh_trang_ra_vien")
         ba.chi_tiet_benh_an = data.get("chi_tiet_benh_an", ba.chi_tiet_benh_an)
         ba.tong_ket_benh_an = data.get("tong_ket_benh_an")
         ba.trang_thai = "đã_ra_viện"
