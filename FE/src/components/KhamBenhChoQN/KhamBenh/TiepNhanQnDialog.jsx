@@ -119,9 +119,7 @@ export default function TiepNhanQnDialog({ open, onClose, onSelected }) {
     const filtered = useMemo(() => {
         let list = allSoldiers;
         if (selectedUnit) {
-            list = list.filter(
-                (qn) => qn.ma_don_vi === selectedUnit.ma_don_vi,
-            );
+            list = list.filter((qn) => qn.ma_don_vi === selectedUnit.ma_don_vi);
         }
         if (debouncedFilterText) {
             const q = debouncedFilterText.toLowerCase().trim();
@@ -168,9 +166,9 @@ export default function TiepNhanQnDialog({ open, onClose, onSelected }) {
         <Dialog
             open={open}
             onClose={onClose}
-            maxWidth="md"
+            maxWidth="sx"
             fullWidth
-            slotProps={{ paper: { sx: { height: "90vh" } } }}
+            slotProps={{ paper: { sx: { height: "90vh", width: "70%" } } }}
         >
             <DialogTitle sx={{ textAlign: "center" }}>
                 Danh sách quân nhân

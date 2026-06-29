@@ -26,6 +26,8 @@ export const khamBenhService = {
     completeExamination: (id, data) =>
         api.post(`/kham_benh/${id}/hoan-tat`, data),
 
+    getChuyenTuyenList: (params) => api.get("/kham_benh/chuyen-tuyen/danh-sach", { params }),
+
     getGiayGioiThieu: (params) => api.get("/giay_gioi_thieu", { params }),
     getGiayGioiThieuByKhamBenh: (maKhamBenh) =>
         api.get(`/giay_gioi_thieu/by-kham-benh/${maKhamBenh}`),

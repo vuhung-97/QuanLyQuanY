@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import { useMemo } from "react";
 import {
     Button,
@@ -13,6 +12,8 @@ import PaginationWidget from "@/components/common/PaginationWidget.jsx";
 import {
     MedicalServices as MedicalServicesIcon,
     Refresh as RefreshIcon,
+    Send as SendIcon,
+    CheckCircle as CheckCircleIcon,
 } from "@mui/icons-material";
 import useChuyenTuyen from "@/hooks/useChuyenTuyen.jsx";
 import ChuyenTuyenForm from "./ChuyenTuyenForm.jsx";
@@ -22,11 +23,17 @@ import SearchBar from "@/components/common/SearchBar.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 
 const STATUS_MAP = {
-    chuyển_tuyến: { label: "Chuyển tuyến", color: "error" },
+    đề_nghị_chuyển_tuyến: { label: "Đề nghị chuyển tuyến", color: "warning" },
+    đã_chuyển_tuyến: { label: "Đã chuyển tuyến", color: "info" },
+    đã_về: { label: "Đã về", color: "success" },
 };
 
 const columns = [
-    { key: "stt", label: "STT", render: (row, idx, extra) => (extra?.offset || 0) + idx + 1 },
+    {
+        key: "stt",
+        label: "STT",
+        render: (row, idx, extra) => (extra?.offset || 0) + idx + 1,
+    },
     {
         key: "ma_kham_benh",
         label: "Mã KB",
@@ -35,12 +42,14 @@ const columns = [
     { key: "ho_ten", label: "Họ tên QN" },
     { key: "don_vi", label: "Đơn vị", render: (row) => row.ten_don_vi || "--" },
     {
-        key: "trang_thai",
+        key: "chuyen_tuyen_status",
         label: "Trạng thái",
         render: (row) => (
             <Chip
-                label={STATUS_MAP[row.trang_thai]?.label || row.trang_thai}
-                color={STATUS_MAP[row.trang_thai]?.color || "default"}
+                label={
+                    STATUS_MAP[row.chuyen_tuyen_status]?.label || row.trang_thai
+                }
+                color={STATUS_MAP[row.chuyen_tuyen_status]?.color || "default"}
                 size="small"
                 sx={{ fontWeight: 600 }}
             />
@@ -79,8 +88,6 @@ export default function ChuyenTuyenList() {
     const {
         initialLoading,
         refreshing,
-        selectedDate,
-        setSelectedDate,
         searchText,
         setSearchText,
         filtered,
@@ -110,11 +117,25 @@ export default function ChuyenTuyenList() {
     const statItems = useMemo(
         () => [
             {
-                label: "Chuyển tuyến",
-                value: stats.tongSo,
-                icon: <MedicalServicesIcon />,
+                label: "Đề nghị chuyển tuyến",
+                value: stats.deNghi,
+                icon: <SendIcon />,
                 color: "#EF4444",
                 bg: "#FEE2E2",
+            },
+            {
+                label: "Đã chuyển tuyến",
+                value: stats.daChuyenTuyen,
+                icon: <MedicalServicesIcon />,
+                color: "#0B3B60",
+                bg: "#DBEAFE",
+            },
+            {
+                label: "Đã về",
+                value: stats.daVe,
+                icon: <CheckCircleIcon />,
+                color: "#10B981",
+                bg: "#D1FAE5",
             },
         ],
         [stats],
@@ -141,13 +162,15 @@ export default function ChuyenTuyenList() {
                             sx={{ alignItems: "center" }}
                         >
                             <Typography variant="h2">
-                                Danh sách quân nhân chuyển tuyến
+                                Danh sách quân nhân đề nghị chuyển tuyến
                             </Typography>
                             <FilterModeToggle
                                 filterMode={filterMode}
                                 onChange={handleFilterModeChange}
-                                selectedDate={selectedDate}
-                                onDateChange={setSelectedDate}
+                                selectedDate={null}
+                                onDateChange={() => {}}
+                                labelLeft="Tất cả"
+                                labelRight="Chuyển tuyến"
                             />
                         </Stack>
                         <Stack direction="row" spacing={1.5}>
@@ -173,9 +196,7 @@ export default function ChuyenTuyenList() {
                         emptyMessage={
                             filterMode === "tat_ca"
                                 ? "Không có quân nhân chuyển tuyến."
-                                : selectedDate.isSame(dayjs(), "day")
-                                    ? "Không có quân nhân chuyển tuyến."
-                                    : `Không có quân nhân chuyển tuyến ngày ${selectedDate.format("DD/MM/YYYY")}.`
+                                : "Không có quân nhân đề nghị chuyển tuyến."
                         }
                         rowExtra={{ onView: handleViewDetail, offset }}
                     />

@@ -42,6 +42,7 @@ export default function ChuyenTuyenForm({
 }) {
     const [tenBenhVien, setTenBenhVien] = useState("");
     const [yKienDeNghi, setYKienDeNghi] = useState("");
+    const [ngayDi, setNgayDi] = useState(null);
     const [thoiGianDen, setThoiGianDen] = useState(null);
     const [chanDoan, setChanDoan] = useState("");
     const [quyetDinhYSinh, setQuyetDinhYSinh] = useState("");
@@ -53,6 +54,7 @@ export default function ChuyenTuyenForm({
         if (!open) return;
         setTenBenhVien(giayGt?.ten_benh_vien || "");
         setYKienDeNghi(giayGt?.y_kien_de_nghi || "");
+        setNgayDi(diTuyen?.ngay_di ? dayjs(diTuyen.ngay_di) : null);
         setThoiGianDen(
             giayGt?.thoi_gian_den_benh_vien
                 ? dayjs(giayGt.thoi_gian_den_benh_vien)
@@ -76,6 +78,7 @@ export default function ChuyenTuyenForm({
             quyet_dinh_y_sinh: quyetDinhYSinh,
         };
         const diTuyenData = {};
+        if (ngayDi) diTuyenData.ngay_di = ngayDi.format("YYYY-MM-DD");
         if (ngayVe) diTuyenData.ngay_ve = ngayVe.format("YYYY-MM-DD");
         if (chanDoanLucVe) diTuyenData.chan_doan_luc_ve = chanDoanLucVe;
         if (ketQuaDieuTri) diTuyenData.ket_qua_huong_dieu_tri = ketQuaDieuTri;
@@ -270,6 +273,23 @@ export default function ChuyenTuyenForm({
                                         fullWidth
                                         size="small"
                                     />
+                                    <Stack
+                                        direction="row"
+                                        spacing={2}
+                                        sx={{ alignItems: "center" }}
+                                    >
+                                        <Typography
+                                            variant="body2"
+                                            sx={{ minWidth: 220 }}
+                                        >
+                                            Ngày đi:
+                                        </Typography>
+                                        <DatePicker
+                                            value={ngayDi}
+                                            onChange={setNgayDi}
+                                            size="small"
+                                        />
+                                    </Stack>
                                 </Stack>
                             </Box>
 

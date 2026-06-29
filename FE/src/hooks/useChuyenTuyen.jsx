@@ -1,26 +1,20 @@
-import dayjs from "dayjs";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import useDebounce from "./useDebounce.jsx";
-import useFilterModePagination from "./useFilterModePagination.jsx";
 import { khamBenhService } from "@/services/khamBenhService.js";
+
+const ROWS_PER_PAGE = 100;
 
 export default function useChuyenTuyen() {
     const [examinations, setExaminations] = useState([]);
     const [initialLoading, setInitialLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
-    const [selectedDate, setSelectedDate] = useState(dayjs());
     const [searchText, setSearchText] = useState("");
     const debouncedSearchText = useDebounce(searchText);
-    const {
-        filterMode,
-        handleFilterModeChange,
-        page,
-        setPage,
-        totalRecords,
-        setTotalRecords,
-        ROWS_PER_PAGE,
-        offset,
-    } = useFilterModePagination();
+
+    const [filterMode, setFilterMode] = useState("tat_ca");
+    const [page, setPage] = useState(1);
+    const [totalRecords, setTotalRecords] = useState(0);
+
     const [snackbar, setSnackbar] = useState({
         open: false,
         message: "",
@@ -37,45 +31,61 @@ export default function useChuyenTuyen() {
     const [openForm, setOpenForm] = useState(false);
     const [saving, setSaving] = useState(false);
 
+    const offset = useMemo(
+        () => (filterMode === "tat_ca" ? (page - 1) * ROWS_PER_PAGE : 0),
+        [filterMode, page],
+    );
+
+    const handleFilterModeChange = useCallback(() => {
+        setFilterMode(prev => prev === "tat_ca" ? "chuyen_tuyen" : "tat_ca");
+        setPage(1);
+    }, []);
+
     const loadData = useCallback(async () => {
         setRefreshing(true);
         try {
-            if (filterMode === "theo_ngay") {
-                const ngay = selectedDate.format("YYYY-MM-DD");
-                const res = await khamBenhService.getHomNay(ngay);
-                setExaminations(res.data || []);
-                setTotalRecords(0);
-            } else {
-                const res = await khamBenhService.getAll({ limit: ROWS_PER_PAGE, offset });
-                setExaminations(res.data.data || []);
-                setTotalRecords(res.data.total || 0);
-            }
+            const params = { limit: ROWS_PER_PAGE, offset };
+            const res = await khamBenhService.getChuyenTuyenList(params);
+            const data = res.data?.data || [];
+            setExaminations(data);
+            setTotalRecords(res.data?.total || 0);
         } catch (err) {
             setSnackbar({
                 open: true,
-                message:
-                    err.response?.data?.detail || "Lỗi tải danh sách.",
+                message: err.response?.data?.detail || "Lỗi tải danh sách.",
                 severity: "error",
             });
         } finally {
             setRefreshing(false);
             setInitialLoading(false);
         }
-    }, [filterMode, selectedDate, offset, ROWS_PER_PAGE]);
+    }, [offset]);
 
     useEffect(() => {
         loadData();
     }, [loadData]);
 
     const patients = useMemo(() => {
-        return examinations.filter(
-            (e) => e.trang_thai === "chuyển_tuyến",
-        );
-    }, [examinations]);
+        if (filterMode === "chuyen_tuyen") {
+            return examinations.filter(
+                (e) => e.chuyen_tuyen_status === "đề_nghị_chuyển_tuyến",
+            );
+        }
+        return examinations;
+    }, [examinations, filterMode]);
 
     const stats = useMemo(() => {
-        return { tongSo: patients.length };
-    }, [patients]);
+        const deNghi = examinations.filter(
+            (e) => e.chuyen_tuyen_status === "đề_nghị_chuyển_tuyến",
+        ).length;
+        const daChuyenTuyen = examinations.filter(
+            (e) => e.chuyen_tuyen_status === "đã_chuyển_tuyến",
+        ).length;
+        const daVe = examinations.filter(
+            (e) => e.chuyen_tuyen_status === "đã_về",
+        ).length;
+        return { tongSo: examinations.length, deNghi, daChuyenTuyen, daVe };
+    }, [examinations]);
 
     const filtered = useMemo(() => {
         if (!debouncedSearchText) return patients;
@@ -213,8 +223,6 @@ export default function useChuyenTuyen() {
     return {
         initialLoading,
         refreshing,
-        selectedDate,
-        setSelectedDate,
         searchText,
         setSearchText,
         filtered,

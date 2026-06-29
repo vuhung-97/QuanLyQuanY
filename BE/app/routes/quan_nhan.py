@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.crud.quan_nhan import quan_nhan_crud
 from app.database.benh_an import BenhAn
+from app.database.di_tuyen_sau_dieu_tri import DiTuyenSauDieuTri
 from app.database.don_thuoc import DonThuoc
 from app.database.don_vi import DonVi
 from app.database.giay_gioi_thieu import GiayGioiThieu
@@ -38,7 +39,25 @@ def get_quan_nhan_danh_sach(
     search: str | None = Query(default=None),
     ma_don_vi: str | None = Query(default=None),
 ):
-    query = db.query(QuanNhan)
+    hosp_exists = (
+        db.query(BenhAn)
+        .filter(
+            BenhAn.ma_quan_nhan == QuanNhan.ma_quan_nhan,
+            BenhAn.trang_thai == "đang_điều_trị",
+        )
+        .exists()
+    )
+
+    transfer_exists = (
+        db.query(DiTuyenSauDieuTri)
+        .filter(
+            DiTuyenSauDieuTri.ma_quan_nhan == QuanNhan.ma_quan_nhan,
+            DiTuyenSauDieuTri.ngay_ve.is_(None),
+        )
+        .exists()
+    )
+
+    query = db.query(QuanNhan).filter(~hosp_exists, ~transfer_exists)
     if search:
         q = f"%{search}%"
         query = query.filter(QuanNhan.ho_ten.ilike(q) | QuanNhan.ma_quan_nhan.ilike(q))

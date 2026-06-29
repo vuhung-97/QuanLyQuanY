@@ -8,8 +8,10 @@ from app.core.dependencies import get_current_user, require_permissions
 from app.crud.kham_benh import kham_benh_crud
 from app.database.benh_an import BenhAn
 from app.database.chi_tiet_don_thuoc import ChiTietDonThuoc
+from app.database.di_tuyen_sau_dieu_tri import DiTuyenSauDieuTri
 from app.database.don_thuoc import DonThuoc
 from app.database.don_vi import DonVi
+from app.database.giay_gioi_thieu import GiayGioiThieu
 from app.database.kham_benh import KhamBenh
 from app.database.quan_nhan import QuanNhan
 from app.database.session import get_db
@@ -209,5 +211,55 @@ def get_danh_sach_nhap_vien(
         d["so_the_bhyt"] = so_the_bhyt
         d["ma_don_vi"] = ma_don_vi
         d["ten_don_vi"] = ten_don_vi
+        result.append(d)
+    return {"data": result, "total": total}
+
+
+@router.get(
+    "/chuyen-tuyen/danh-sach",
+    dependencies=[Depends(require_permissions("kham_benh:read"))],
+)
+def get_danh_sach_chuyen_tuyen(
+    limit: int = Query(default=100, ge=1, le=500),
+    offset: int = Query(default=0, ge=0),
+    db: Session = Depends(get_db),
+):
+    base_query = (
+        db.query(
+            KhamBenh, QuanNhan.ho_ten, QuanNhan.cap_bac, QuanNhan.chuc_vu,
+            QuanNhan.ngay_sinh, QuanNhan.ma_don_vi, DonVi.ten_don_vi,
+            GiayGioiThieu.ten_benh_vien, GiayGioiThieu.y_kien_de_nghi,
+            DiTuyenSauDieuTri.ngay_ve,
+        )
+        .join(QuanNhan, KhamBenh.ma_quan_nhan == QuanNhan.ma_quan_nhan)
+        .join(DonVi, QuanNhan.ma_don_vi == DonVi.ma_don_vi, isouter=True)
+        .outerjoin(GiayGioiThieu, KhamBenh.ma_kham_benh == GiayGioiThieu.ma_kham_benh)
+        .outerjoin(DiTuyenSauDieuTri, GiayGioiThieu.ma_giay_gt == DiTuyenSauDieuTri.ma_giay_gt)
+        .filter(KhamBenh.trang_thai == "chuyển_tuyến")
+        .order_by(KhamBenh.ngay_kham.desc())
+    )
+    total = base_query.count()
+    records = base_query.offset(offset).limit(limit).all()
+    result = []
+    for (
+        kb, ho_ten, cap_bac, chuc_vu, ngay_sinh, ma_don_vi, ten_don_vi,
+        gt_ten_benh_vien, gt_y_kien_de_nghi, dt_ngay_ve,
+    ) in records:
+        d = {c.key: getattr(kb, c.key) for c in inspect(KhamBenh).columns}
+        d["ho_ten"] = ho_ten
+        d["cap_bac"] = cap_bac
+        d["chuc_vu"] = chuc_vu
+        d["ngay_sinh"] = str(ngay_sinh) if ngay_sinh else None
+        d["ma_don_vi"] = ma_don_vi
+        d["ten_don_vi"] = ten_don_vi
+        d["trang_thai"] = d["trang_thai"] or "chờ"
+
+        if not gt_ten_benh_vien:
+            d["chuyen_tuyen_status"] = "đề_nghị_chuyển_tuyến"
+        elif not dt_ngay_ve:
+            d["chuyen_tuyen_status"] = "đã_chuyển_tuyến"
+        else:
+            d["chuyen_tuyen_status"] = "đã_về"
+
         result.append(d)
     return {"data": result, "total": total}
