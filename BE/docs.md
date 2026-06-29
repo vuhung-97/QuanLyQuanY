@@ -201,13 +201,19 @@ Composite key dùng dấu phẩy: `{id1},{id2}`.
 | -------------------- | ----------- | -------- | --- |
 | `ma_benh_an`         | string (PK) | ✅       | 10  |
 | `ma_quan_nhan`       | string      | ❌       | 10  |
-| `ngoai_kieu`         | string      | ❌       | 100 |
+| `ma_buong`           | string      | ❌       | 10  |
+| `ma_giuong`          | string      | ❌       | 10  |
+| `ma_kham_benh`       | string      | ❌       | 10  |
+| `trang_thai`         | string      | ❌       | 20  |
+| `ngay_nhap_vien`     | date        | ❌       |     |
 | `doi_tuong`          | string      | ❌       | 100 |
+| `ly_do_nhap_vien`    | string      | ❌       | 100 |
 | `quan_ly_nguoi_benh` | string      | ❌       |     |
 | `chan_doan`          | string      | ❌       |     |
 | `tinh_trang_ra_vien` | string      | ❌       |     |
 | `chi_tiet_benh_an`   | string      | ❌       |     |
 | `tong_ket_benh_an`   | string      | ❌       |     |
+| `ma_nguoi_dung`      | string      | ❌       | 20  |
 
 ### DonThuoc (`/don_thuoc`)
 
@@ -341,6 +347,7 @@ Composite key dùng dấu phẩy: `{id1},{id2}`.
 | `thoi_gian`          | datetime    | ❌       |     |
 | `theo_doi_dien_bien` | string      | ❌       |     |
 | `thuc_hien_y_lenh`   | string      | ❌       |     |
+| `ma_nguoi_dung`      | string      | ❌       | 20  |
 
 ### ChiTietPhieuChamSoc (`/chi_tiet_phieu_cham_soc`)
 
