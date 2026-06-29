@@ -38,6 +38,7 @@ export default function PhieuChamSocList({ records, onEdit }) {
                         <TableCell sx={{ width: 40 }}>STT</TableCell>
                         <TableCell sx={{ width: 140 }}>Ngày</TableCell>
                         <TableCell sx={{ width: 80 }}>Giường</TableCell>
+                        <TableCell sx={{ width: 80 }}>Phòng</TableCell>
                         <TableCell>Diễn biến</TableCell>
                         <TableCell>Y lệnh</TableCell>
                         <TableCell sx={{ width: 120 }}>Thuốc</TableCell>
@@ -54,6 +55,7 @@ export default function PhieuChamSocList({ records, onEdit }) {
                                     : "--"}
                             </TableCell>
                             <TableCell>{pcs.so_giuong || "--"}</TableCell>
+                            <TableCell>{pcs.buong || "--"}</TableCell>
                             <TableCell sx={{ maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis" }}>
                                 {pcs.theo_doi_dien_bien || "--"}
                             </TableCell>

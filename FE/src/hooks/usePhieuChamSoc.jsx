@@ -48,7 +48,7 @@ export default function usePhieuChamSoc(maBenhAn) {
             }
             setOpenForm(false);
             setEditingRecord(null);
-            loadData();
+            await loadData();
         } catch (err) {
             setSnackbar({
                 open: true,

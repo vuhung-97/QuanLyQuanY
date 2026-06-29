@@ -14,7 +14,7 @@ import {
 import { Delete as DeleteIcon, Add as AddIcon } from "@mui/icons-material";
 import ThemThuocDialog from "./ThemThuocDialog.jsx";
 
-export default function PhieuChamSocForm({ open, initialData, onSave, onClose }) {
+export default function PhieuChamSocForm({ open, initialData, onSave, onClose, defaultGiuong = "", defaultBuong = "" }) {
     const [formState, setFormState] = useState({
         thoi_gian: new Date().toISOString().slice(0, 16),
         so_giuong: "",
@@ -41,14 +41,14 @@ export default function PhieuChamSocForm({ open, initialData, onSave, onClose })
         } else {
             setFormState({
                 thoi_gian: new Date().toISOString().slice(0, 16),
-                so_giuong: "",
-                buong: "",
+                so_giuong: defaultGiuong || "",
+                buong: defaultBuong || "",
                 theo_doi_dien_bien: "",
                 thuc_hien_y_lenh: "",
             });
             setThuocItems([]);
         }
-    }, [open, initialData]);
+    }, [open, initialData, defaultGiuong, defaultBuong]);
 
     const updateField = useCallback((name, value) => {
         setFormState((prev) => ({ ...prev, [name]: value }));
@@ -160,9 +160,18 @@ export default function PhieuChamSocForm({ open, initialData, onSave, onClose })
                                             <Typography variant="body2" sx={{ flex: 1 }}>
                                                 {idx + 1}. {item.ten_thuoc_vtyt || item.ma_thuoc_vtyt}
                                             </Typography>
-                                            <Typography variant="body2" color="text.secondary">
-                                                SL: {item.so_luong}
-                                            </Typography>
+                                            <TextField
+                                                type="number"
+                                                size="small"
+                                                value={item.so_luong}
+                                                onChange={(e) => {
+                                                    const newItems = [...thuocItems];
+                                                    newItems[idx] = { ...newItems[idx], so_luong: Math.max(1, parseInt(e.target.value) || 1) };
+                                                    setThuocItems(newItems);
+                                                }}
+                                                slotProps={{ htmlInput: { min: 1, style: { width: 60 } } }}
+                                                sx={{ "& .MuiInputBase-root": { fontSize: "0.8125rem" } }}
+                                            />
                                             <Typography variant="body2" color="text.secondary">
                                                 ({item.don_vi_tinh || "?"})
                                             </Typography>

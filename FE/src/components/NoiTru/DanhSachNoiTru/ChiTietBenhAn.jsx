@@ -387,6 +387,8 @@ export default function ChiTietBenhAn({ open, benhAnId, onClose }) {
                 initialData={editingRecord}
                 onSave={handleSave}
                 onClose={handleCloseForm}
+                defaultGiuong={benhAn?.ten_giuong}
+                defaultBuong={benhAn?.ten_buong}
             />
 
             <FeedbackSnackbar

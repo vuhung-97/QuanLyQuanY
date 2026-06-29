@@ -30,6 +30,7 @@ class PhieuChamSocUpdate(SchemaBase):
     thoi_gian: datetime | None = None
     theo_doi_dien_bien: str | None = None
     thuc_hien_y_lenh: str | None = None
+    chi_tiet: list[ChiTietPhieuChamSocItem] | None = None
 
 
 class PhieuChamSocRead(PhieuChamSocBase):

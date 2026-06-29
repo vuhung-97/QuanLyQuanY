@@ -50,9 +50,10 @@ export default function ThemThuocDialog({ open, onClose, onConfirm }) {
             ma_thuoc_vtyt: selected.ma_thuoc_vtyt,
             ten_thuoc_vtyt: selected.ten_thuoc_vtyt,
             don_vi_tinh: selected.don_vi_tinh,
+            so_luong: soLuong,
         });
         onClose();
-    }, [selected, onConfirm, onClose]);
+    }, [selected, soLuong, onConfirm, onClose]);
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
