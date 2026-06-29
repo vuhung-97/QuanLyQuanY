@@ -12,7 +12,7 @@ import {
     Typography,
 } from "@mui/material";
 import { Delete as DeleteIcon, Add as AddIcon } from "@mui/icons-material";
-import ThemThuocDialog from "./ThemThuocDialog.jsx";
+import KhoThuocDialog from "@/components/KhamBenhChoQN/KhamBenh/KhoThuocDialog.jsx";
 
 export default function PhieuChamSocForm({ open, initialData, onSave, onClose, defaultGiuong = "", defaultBuong = "" }) {
     const [formState, setFormState] = useState({
@@ -54,8 +54,8 @@ export default function PhieuChamSocForm({ open, initialData, onSave, onClose, d
         setFormState((prev) => ({ ...prev, [name]: value }));
     }, []);
 
-    const handleThemThuocConfirm = useCallback((item) => {
-        setThuocItems((prev) => [...prev, item]);
+    const handleThemThuocConfirm = useCallback((items) => {
+        setThuocItems((prev) => [...prev, ...items]);
     }, []);
 
     const handleXoaThuoc = useCallback((index) => {
@@ -197,7 +197,7 @@ export default function PhieuChamSocForm({ open, initialData, onSave, onClose, d
                 </DialogActions>
             </Dialog>
 
-            <ThemThuocDialog
+            <KhoThuocDialog
                 open={openThemThuoc}
                 onClose={() => setOpenThemThuoc(false)}
                 onConfirm={handleThemThuocConfirm}
