@@ -30,6 +30,7 @@ FE/
     │   │   ├── DonThuoc.jsx
     │   │   ├── FeedbackSnackbar.jsx
     │   │   ├── FilterModeToggle.jsx
+    │   │   ├── NormalToggleField.jsx
     │   │   ├── PaginationWidget.jsx
     │   │   ├── PlaceHolderPage.jsx
     │   │   ├── ProtectedRoute.jsx
@@ -106,7 +107,10 @@ FE/
     │   │   │   ├── PhieuChamSocForm.jsx
     │   │   │   ├── PhieuChamSocList.jsx
     │   │   │   ├── RaVienDialog.jsx
-    │   │   │   └── ThemThuocDialog.jsx
+    │   │   │   └── tabs/
+    │   │   │       ├── TongQuanTab.jsx
+    │   │   │       ├── DienBienTab.jsx
+    │   │   │       └── ThuocTab.jsx
     │   │   ├── LapBenhAn/
     │   │   │   ├── LapBenhAnForm.jsx
     │   │   │   └── LapBenhAnList.jsx
@@ -135,6 +139,7 @@ FE/
     │   ├── useDanhSachNoiTru.jsx
     │   ├── useDebounce.jsx
     │   ├── useLapBenhAn.jsx
+    │   ├── useLapBenhAnForm.jsx
     │   ├── useFilterModePagination.jsx
     │   ├── useKhamBenhForm.jsx
     │   ├── useKhamSucKhoeData.jsx
@@ -143,6 +148,7 @@ FE/
     │   ├── useLapLichDialog.jsx
     │   ├── useLichKhamData.jsx
     │   ├── usePermissionDiff.js
+    │   ├── usePhieuChamSoc.jsx
     │   ├── useQuanLyPhongGiuong.jsx
     │   └── useTongQuanTab.jsx
     │
