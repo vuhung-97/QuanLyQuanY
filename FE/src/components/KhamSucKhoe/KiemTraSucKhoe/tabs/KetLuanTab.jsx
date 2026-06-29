@@ -17,27 +17,8 @@ import {
     Typography,
 } from "@mui/material";
 import NormalToggleField from "@/components/common/NormalToggleField";
-
-function SectionTitle({ children }) {
-    return (
-        <Typography
-            variant="subtitle1"
-            fontWeight="bold"
-            color="primary"
-            sx={{ mb: 2 }}
-        >
-            {children}
-        </Typography>
-    );
-}
-
-const PHAN_LOAI_SUC_KHOE = [
-    { value: "Loại 1", label: "Loại 1 (Rất khỏe)" },
-    { value: "Loại 2", label: "Loại 2 (Khỏe)" },
-    { value: "Loại 3", label: "Loại 3 (Trung bình)" },
-    { value: "Loại 4", label: "Loại 4 (Yếu)" },
-    { value: "Loại 5", label: "Loại 5 (Rất yếu)" },
-];
+import SectionTitle from "@/components/KhamSucKhoe/common/SectionTitle.jsx";
+import { PHAN_LOAI_SUC_KHOE } from "@/constants/khamSucKhoeConstants.js";
 
 const KetLuanTab = memo(
     forwardRef(function KetLuanTab(

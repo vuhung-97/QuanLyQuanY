@@ -6,13 +6,15 @@ import {
     DEFAULT_XN,
     DEFAULT_CDHA,
     DEFAULT_KL,
+    ALL_TABS,
+} from "@/constants/khamSucKhoeConstants.js";
+import {
     parseTienSu,
     parseLamSang,
     parseXetNghiem,
     parseChanDoanHinhAnh,
     parseKetLuan,
-    ALL_TABS,
-} from "@/components/KhamSucKhoe/KiemTraSucKhoe/KhamSucKhoeFormUtils.js";
+} from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
 
 function getDirty(current, initial) {
     const dirty = {};

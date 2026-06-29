@@ -16,6 +16,7 @@ import {
 import useLapBenhAnForm from "../../../hooks/useLapBenhAnForm";
 import PatientInfoCard from "./PatientInfoCard";
 import ChiTietBenhAnFields from "./ChiTietBenhAnFields";
+import SectionTitle from "@/components/NoiTru/common/SectionTitle.jsx";
 
 const VITAL_SIGNS = [
     { key: "nhiet_do", label: "Nhiệt độ (°C)" },
@@ -23,19 +24,6 @@ const VITAL_SIGNS = [
     { key: "ha_tam_truong", label: "HA tối thiểu" },
     { key: "nhip_tim", label: "Nhịp tim (lần/ph)" },
 ];
-
-function SectionTitle({ children }) {
-    return (
-        <Typography
-            variant="subtitle1"
-            fontWeight="bold"
-            color="primary"
-            sx={{ mb: 2 }}
-        >
-            {children}
-        </Typography>
-    );
-}
 
 export default function LapBenhAnForm({ open, exam, saving, onSave, onClose, benhAn }) {
     const {

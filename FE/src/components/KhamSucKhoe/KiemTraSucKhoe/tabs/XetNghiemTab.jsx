@@ -16,19 +16,7 @@ import {
     Typography,
 } from "@mui/material";
 import { fieldRanges, isOutOfRange } from "./fieldRanges";
-
-function SectionTitle({ children }) {
-    return (
-        <Typography
-            variant="subtitle1"
-            fontWeight="bold"
-            color="primary"
-            sx={{ mb: 2 }}
-        >
-            {children}
-        </Typography>
-    );
-}
+import SectionTitle from "@/components/KhamSucKhoe/common/SectionTitle.jsx";
 
 const xetNghiemMauFields = [
     { name: "hong_cau", label: "Hồng cầu", unit: "T/L" },

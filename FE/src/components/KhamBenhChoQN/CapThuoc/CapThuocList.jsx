@@ -21,11 +21,8 @@ import DataTable from "@/components/common/DataTable.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import SearchBar from "@/components/common/SearchBar.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
-
-const STATUS_MAP = {
-    chờ_nhận_thuốc: { label: "Chờ cấp thuốc", color: "warning" },
-    đã_nhận_thuốc: { label: "Đã nhận thuốc", color: "success" },
-};
+import { STATUS_MAP } from "@/constants/khamBenhConstants.js";
+import { formatDate } from "@/utils/date.js";
 
 const columns = [
     { key: "stt", label: "STT", render: (row, idx, extra) => (extra?.offset || 0) + idx + 1 },
@@ -51,14 +48,7 @@ const columns = [
     {
         key: "ngay_kham",
         label: "Ngày khám",
-        render: (row) =>
-            row.ngay_kham
-                ? new Date(row.ngay_kham).toLocaleDateString("vi-VN", {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                  })
-                : "--",
+        render: (row) => formatDate(row.ngay_kham) || "--",
     },
     {
         key: "thao_tac",

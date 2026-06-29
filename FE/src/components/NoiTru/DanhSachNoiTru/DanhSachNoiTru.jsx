@@ -26,11 +26,8 @@ import SearchBar from "@/components/common/SearchBar.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import ChiTietBenhAn from "./ChiTietBenhAn.jsx";
 import RaVienDialog from "./RaVienDialog.jsx";
-
-const STATUS_MAP = {
-    đang_điều_trị: { label: "Đang điều trị", color: "info" },
-    đã_ra_viện: { label: "Đã ra viện", color: "success" },
-};
+import { BENH_AN_STATUS_MAP } from "@/constants/noiTruConstants.js";
+import { formatDate } from "@/utils/date.js";
 
 const columns = [
     {
@@ -48,10 +45,7 @@ const columns = [
     {
         key: "ngay_nhap_vien",
         label: "Ngày nhập viện",
-        render: (row) =>
-            row.ngay_nhap_vien
-                ? new Date(row.ngay_nhap_vien).toLocaleDateString("vi-VN")
-                : "--",
+        render: (row) => formatDate(row.ngay_nhap_vien),
     },
     {
         key: "chan_doan",
@@ -68,8 +62,8 @@ const columns = [
         label: "Trạng thái",
         render: (row) => (
             <Chip
-                label={STATUS_MAP[row.trang_thai]?.label || row.trang_thai}
-                color={STATUS_MAP[row.trang_thai]?.color || "default"}
+                label={BENH_AN_STATUS_MAP[row.trang_thai]?.label || row.trang_thai}
+                color={BENH_AN_STATUS_MAP[row.trang_thai]?.color || "default"}
                 size="small"
                 sx={{ fontWeight: 600 }}
             />

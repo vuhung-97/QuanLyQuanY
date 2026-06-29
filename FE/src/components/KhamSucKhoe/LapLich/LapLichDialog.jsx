@@ -17,14 +17,7 @@ import {
 import useLapLichDialog from "@/hooks/useLapLichDialog";
 import DataTable from "@/components/common/DataTable.jsx";
 import ChonNgayGio from "./ChonNgayGio.jsx";
-
-const ROLE_LABELS = {
-    tong_quan: "Tổng quan",
-    lam_sang: "Lâm sàng",
-    xet_nghiem: "Xét nghiệm",
-    chan_doan_hinh_anh: "Chẩn đoán hình ảnh",
-    ket_luan: "Kết luận",
-};
+import { ROLE_LABELS, roleOrder } from "@/constants/khamSucKhoeConstants.js";
 
 function DiaDiemCell({ maDonVi, value, onChange }) {
     const [local, setLocal] = useState(value || "");
@@ -42,8 +35,6 @@ function DiaDiemCell({ maDonVi, value, onChange }) {
         />
     );
 }
-
-const roleOrder = { ROLE_ADMIN: 0, ROLE_CNQY: 1, ROLE_BACSI: 2, ROLE_YSI: 3 };
 
 export default function LapLichDialog({
     open,

@@ -15,26 +15,8 @@ import {
 import { Visibility as VisibilityIcon } from "@mui/icons-material";
 import SearchBar from "@/components/common/SearchBar.jsx";
 import DataTable from "@/components/common/DataTable.jsx";
-
-const TRANG_THAI_LABEL = {
-    chua_kham: "Chưa khám",
-    dang_kham: "Đang khám",
-    da_kham: "Đã khám",
-};
-
-function getStatus(phieu) {
-    if (!phieu) return "Chưa khám";
-    return TRANG_THAI_LABEL[phieu.trang_thai] || "Chưa khám";
-}
-
-const STATUS_CHIP = {
-    "Chưa khám": {
-        bgcolor: "rgba(100, 116, 139, 0.12)",
-        color: "text.secondary",
-    },
-    "Đang khám": { bgcolor: "rgba(245, 158, 11, 0.14)", color: "warning.main" },
-    "Đã khám": { bgcolor: "rgba(16, 185, 129, 0.12)", color: "success.main" },
-};
+import { STATUS_CHIP } from "@/constants/khamSucKhoeConstants.js";
+import { getStatus } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
 
 const columns = [
     { key: "stt", label: "STT" },

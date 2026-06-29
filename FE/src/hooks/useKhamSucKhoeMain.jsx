@@ -8,11 +8,9 @@ import {
 import useDebounce from "@/hooks/useDebounce.jsx";
 import useKhamSucKhoeData from "@/hooks/useKhamSucKhoeData";
 import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
-import {
-    filterSoldiers,
-    filterTabs,
-} from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
-import { ALL_TABS, ROLE_TAB_ACCESS } from "@/components/KhamSucKhoe/KiemTraSucKhoe/KhamSucKhoeFormUtils.js";
+import { filterSoldiers } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
+import { filterTabs } from "@/constants/khamSucKhoeConstants.js";
+import { ALL_TABS, ROLE_TAB_ACCESS } from "@/constants/khamSucKhoeConstants.js";
 import { buildXlsContent, buildXlsContentChuaLayMau, saveWorkbook } from "@/utils/xlsExport";
 
 export default function useKhamSucKhoeMain() {

@@ -11,12 +11,10 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
-import { khamBenhService } from "@/services/khamBenhService.js";
 import SearchBar from "@/components/common/SearchBar.jsx";
 import useDebounce from "@/hooks/useDebounce.jsx";
 import DataTable from "@/components/common/DataTable.jsx";
-
-let cachedAllItems = null;
+import useThuocList from "@/hooks/useThuocList.jsx";
 
 const GroupRow = memo(function GroupRow({
     item,
@@ -65,6 +63,7 @@ export default function KhoThuocDialog({ open, onClose, onConfirm, cachedItems }
     const [quantities, setQuantities] = useState({});
     const [error, setError] = useState("");
     const debouncedSearchText = useDebounce(searchText, 300);
+    const { fetchAll } = useThuocList();
 
     useEffect(() => {
         if (!open) return;
@@ -78,21 +77,12 @@ export default function KhoThuocDialog({ open, onClose, onConfirm, cachedItems }
             return;
         }
 
-        if (cachedAllItems) {
-            setItems(cachedAllItems);
-            return;
-        }
-
         setLoading(true);
-        khamBenhService
-            .listThuoc({ limit: 500, sort_by: "phan_loai" })
-            .then((res) => {
-                cachedAllItems = res.data || [];
-                setItems(cachedAllItems);
-            })
+        fetchAll()
+            .then((all) => setItems(all))
             .catch(() => setItems([]))
             .finally(() => setLoading(false));
-    }, [open, cachedItems]);
+    }, [open, cachedItems, fetchAll]);
 
     const displayItems = useMemo(() => {
         if (!debouncedSearchText) return items;

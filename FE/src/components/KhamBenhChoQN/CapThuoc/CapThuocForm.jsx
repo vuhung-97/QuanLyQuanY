@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import {
     Box,
     Button,
@@ -10,24 +9,9 @@ import {
     Typography,
 } from "@mui/material";
 import DonThuocTable from "@/components/common/DonThuoc.jsx";
-
-const THOI_DIEM_LABEL = {
-    sau_an: "Sau ăn",
-    truoc_an: "Trước ăn",
-    truoc_khi_ngu: "Trước khi ngủ",
-    sau_khi_thuc_day: "Sau khi thức dậy",
-    khong: "Không",
-};
-
-const CACH_DUNG_LABEL = {
-    uong: "Uống",
-    boi: "Bôi",
-    tiem: "Tiêm",
-    xong: "Xông",
-    ngam: "Ngậm",
-    nhot: "Nhỏ mắt",
-    khac: "Khác",
-};
+import { STATUS_MAP } from "@/constants/khamBenhConstants.js";
+import { parseDonThuocToRows } from "@/utils/khamBenhUtils.js";
+import { formatDate } from "@/utils/date.js";
 
 export default function CapThuocForm({
     open,
@@ -38,30 +22,7 @@ export default function CapThuocForm({
     onDispense,
     dispensing,
 }) {
-    const prescriptionRows = useMemo(() => {
-        if (!examDetail?.don_thuoc) return [];
-        const rows = [];
-        for (const dt of examDetail.don_thuoc) {
-            for (const ct of dt.chi_tiet_don_thuoc || []) {
-                const hdt = ct.huong_dieu_tri || "";
-                const parts = hdt.split(" | ");
-                const lieu = parts[0] || "";
-                const thoiDiem = parts[1] || "";
-                const cachDung = parts[2] || "";
-                const ghiChu = parts.slice(3).join(" | ");
-                rows.push({
-                    ten_thuoc: ct.ten_thuoc_vtyt || ct.ma_thuoc_vtyt,
-                    so_luong: ct.so_luong,
-                    don_vi_tinh: ct.don_vi_tinh || "",
-                    lieu,
-                    thoi_diem: thoiDiem,
-                    cach_dung: cachDung,
-                    ghi_chu: ghiChu,
-                });
-            }
-        }
-        return rows;
-    }, [examDetail]);
+    const prescriptionRows = parseDonThuocToRows(examDetail);
 
     const isDaNhanThuoc = selectedExam?.trang_thai === "đã_nhận_thuốc";
 
@@ -142,11 +103,7 @@ export default function CapThuocForm({
                                 </Typography>
                                 <Typography variant="body1">
                                     <strong>Ngày khám:</strong>{" "}
-                                    {selectedExam.ngay_kham
-                                        ? new Date(
-                                              selectedExam.ngay_kham,
-                                          ).toLocaleDateString("vi-VN")
-                                        : "--"}
+                                    {formatDate(selectedExam.ngay_kham) || "--"}
                                 </Typography>
                             </Stack>
                         </Box>

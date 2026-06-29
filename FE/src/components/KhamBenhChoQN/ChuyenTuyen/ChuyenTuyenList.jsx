@@ -21,12 +21,8 @@ import DataTable from "@/components/common/DataTable.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import SearchBar from "@/components/common/SearchBar.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
-
-const STATUS_MAP = {
-    đề_nghị_chuyển_tuyến: { label: "Đề nghị chuyển tuyến", color: "warning" },
-    đã_chuyển_tuyến: { label: "Đã chuyển tuyến", color: "info" },
-    đã_về: { label: "Đã về", color: "success" },
-};
+import { CHUYEN_TUYEN_STATUS_MAP } from "@/constants/khamBenhConstants.js";
+import { formatDate } from "@/utils/date.js";
 
 const columns = [
     {
@@ -47,9 +43,9 @@ const columns = [
         render: (row) => (
             <Chip
                 label={
-                    STATUS_MAP[row.chuyen_tuyen_status]?.label || row.trang_thai
+                    CHUYEN_TUYEN_STATUS_MAP[row.chuyen_tuyen_status]?.label || row.trang_thai
                 }
-                color={STATUS_MAP[row.chuyen_tuyen_status]?.color || "default"}
+                color={CHUYEN_TUYEN_STATUS_MAP[row.chuyen_tuyen_status]?.color || "default"}
                 size="small"
                 sx={{ fontWeight: 600 }}
             />
@@ -58,14 +54,7 @@ const columns = [
     {
         key: "ngay_kham",
         label: "Ngày khám",
-        render: (row) =>
-            row.ngay_kham
-                ? new Date(row.ngay_kham).toLocaleDateString("vi-VN", {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                  })
-                : "--",
+        render: (row) => formatDate(row.ngay_kham),
     },
     {
         key: "thao_tac",

@@ -25,18 +25,9 @@ import PaginationWidget from "@/components/common/PaginationWidget.jsx";
 import SearchBar from "@/components/common/SearchBar.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import KhamBenhForm from "./KhamBenhForm.jsx";
-
 import TiepNhanQnDialog from "./TiepNhanQnDialog.jsx";
-
-const STATUS_MAP = {
-    chờ: { label: "Chờ khám", color: "default" },
-    đang_khám: { label: "Đang khám", color: "info" },
-    chờ_nhận_thuốc: { label: "Chờ nhận thuốc", color: "warning" },
-    đã_nhận_thuốc: { label: "Đã nhận thuốc", color: "success" },
-    đã_khám: { label: "Đã xong", color: "success" },
-    chuyển_tuyến: { label: "Chuyển tuyến", color: "error" },
-    nhập_viện: { label: "Nhập viện", color: "secondary" },
-};
+import { STATUS_MAP } from "@/constants/khamBenhConstants.js";
+import { formatDateTime } from "@/utils/date.js";
 
 const columns = [
     {
@@ -66,26 +57,11 @@ const columns = [
     {
         key: "ngay_kham",
         label: "Ngày khám",
-        render: (row) =>
-            row.ngay_kham ? (
-                <Stack>
-                    <Typography variant="body2" sx={{ lineHeight: 1.3 }}>
-                        {new Date(row.ngay_kham).toLocaleDateString("vi-VN")}
-                    </Typography>
-                    <Typography
-                        variant="caption"
-                        color="text.secondary"
-                        sx={{ lineHeight: 1.3 }}
-                    >
-                        {new Date(row.ngay_kham).toLocaleTimeString("vi-VN", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                        })}
-                    </Typography>
-                </Stack>
-            ) : (
-                "--"
-            ),
+        render: (row) => row.ngay_kham ? (
+            <Typography variant="body2" sx={{ lineHeight: 1.3 }}>
+                {formatDateTime(row.ngay_kham)}
+            </Typography>
+        ) : "--",
     },
     {
         key: "thao_tac",

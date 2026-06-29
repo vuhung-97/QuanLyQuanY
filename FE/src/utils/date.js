@@ -3,6 +3,11 @@ export function formatDate(value) {
     return new Intl.DateTimeFormat("vi-VN").format(new Date(value));
 }
 
+export function tinhTuoi(ngaySinh) {
+    if (!ngaySinh) return "--";
+    return new Date().getFullYear() - new Date(ngaySinh).getFullYear();
+}
+
 export function formatDateTime(value) {
     if (!value) return "--";
     return new Intl.DateTimeFormat("vi-VN", {

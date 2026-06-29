@@ -20,7 +20,8 @@ import {
     KeyboardArrowUp as ArrowUpIcon,
 } from "@mui/icons-material";
 import DataTable from "@/components/common/DataTable.jsx";
-import { findNearestDetail, formatDateTime } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
+import { findNearestDetail } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
+import { formatDateTime } from "@/utils/date.js";
 
 const columns = [
     { key: "expand", label: "", sx: { width: 40 } },

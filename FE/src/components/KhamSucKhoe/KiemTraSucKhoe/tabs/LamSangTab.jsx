@@ -17,6 +17,8 @@ import {
     Typography,
 } from "@mui/material";
 import NormalToggleField from "@/components/common/NormalToggleField";
+import SectionTitle from "@/components/KhamSucKhoe/common/SectionTitle.jsx";
+import { PHAN_LOAI_OPTIONS } from "@/constants/khamSucKhoeConstants.js";
 
 const specialities = [
     { id: "tim_mach", label: "Tim mạch" },
@@ -39,21 +41,6 @@ const specialities = [
     { id: "tai_mui_hong", label: "Tai mũi họng" },
     { id: "rang_ham_mat", label: "Răng hàm mặt" },
 ];
-
-const PHAN_LOAI_OPTIONS = ["Loại 1", "Loại 2", "Loại 3", "Loại 4", "Loại 5"];
-
-function SectionTitle({ children }) {
-    return (
-        <Typography
-            variant="subtitle1"
-            fontWeight="bold"
-            color="primary"
-            sx={{ mb: 2 }}
-        >
-            {children}
-        </Typography>
-    );
-}
 
 const ChuyenKhoaRow = memo(
     ({ sp, noteValue, loaiValue, onChange, readOnly }) => {

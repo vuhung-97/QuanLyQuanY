@@ -20,6 +20,8 @@ import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import NormalToggleField from "@/components/common/NormalToggleField";
 import { fieldRanges, isOutOfRange } from "./fieldRanges";
 import useTongQuanTab from "@/hooks/useTongQuanTab";
+import SectionTitle from "@/components/KhamSucKhoe/common/SectionTitle.jsx";
+import { PHAN_LOAI_OPTIONS } from "@/constants/khamSucKhoeConstants.js";
 
 const TIEN_SU_FIELDS = [
     {
@@ -78,21 +80,6 @@ const MAT_CO_KINH_FIELDS = [
     { name: "mat_co_kinh_trai", label: "Thị lực có kính (Trái)" },
     { name: "mat_co_kinh_phai", label: "Thị lực có kính (Phải)" },
 ];
-
-const PHAN_LOAI_OPTIONS = ["Loại 1", "Loại 2", "Loại 3", "Loại 4", "Loại 5"];
-
-function SectionTitle({ children }) {
-    return (
-        <Typography
-            variant="subtitle1"
-            fontWeight="bold"
-            color="primary"
-            sx={{ mb: 2 }}
-        >
-            {children}
-        </Typography>
-    );
-}
 
 const getBmiStatus = (bmiStr) => {
     if (!bmiStr) return { text: "Chưa tính", color: "default" };

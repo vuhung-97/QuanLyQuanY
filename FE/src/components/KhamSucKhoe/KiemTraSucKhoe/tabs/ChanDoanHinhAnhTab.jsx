@@ -7,19 +7,7 @@ import {
 } from "react";
 import { Card, CardContent, Grid, Typography } from "@mui/material";
 import NormalToggleField from "@/components/common/NormalToggleField";
-
-function SectionTitle({ children }) {
-    return (
-        <Typography
-            variant="subtitle1"
-            fontWeight="bold"
-            color="primary"
-            sx={{ mb: 2 }}
-        >
-            {children}
-        </Typography>
-    );
-}
+import SectionTitle from "@/components/KhamSucKhoe/common/SectionTitle.jsx";
 
 const cdhaFields = [
     { name: "dien_tim", label: "Điện tim (ECG)" },

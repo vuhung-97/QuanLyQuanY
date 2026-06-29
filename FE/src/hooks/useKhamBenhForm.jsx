@@ -1,47 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { khamBenhService } from "@/services/khamBenhService.js";
-
-const THOI_DIEM_LABEL_TO_VALUE = {
-    "Uống sau ăn": "sau_an",
-    "Uống trước ăn": "truoc_an",
-    "Trước khi ngủ": "truoc_khi_ngu",
-    "Sau khi thức dậy": "sau_khi_thuc_day",
-    Không: "khong",
-};
-
-const CACH_DUNG_LABEL_TO_VALUE = {
-    Uống: "uong",
-    Bôi: "boi",
-    Tiêm: "tiem",
-    Xông: "xong",
-    Ngậm: "ngam",
-    "Nhỏ mắt": "nhot",
-    Khác: "khac",
-};
-
-function parseHuongDieuTri(str) {
-    if (!str)
-        return {
-            sang: 0,
-            trua: 0,
-            toi: 0,
-            thoi_diem_dung: "sau_an",
-            cach_su_dung: "uong",
-            ghi_chu: "",
-        };
-    const parts = str.split(" | ");
-    const lieu = parts[0] || "";
-    const thoiDiemLabel = parts[1] || "";
-    const cachDungLabel = parts[2] || "";
-    const ghi_chu = parts.slice(3).join(" | ") || "";
-    const lieuParts = lieu.split(" - ");
-    const sang = parseInt(lieuParts[0]?.replace("Sáng: ", "")) || 0;
-    const trua = parseInt(lieuParts[1]?.replace("Trưa: ", "")) || 0;
-    const toi = parseInt(lieuParts[2]?.replace("Tối: ", "")) || 0;
-    const thoi_diem_dung = THOI_DIEM_LABEL_TO_VALUE[thoiDiemLabel] || "sau_an";
-    const cach_su_dung = CACH_DUNG_LABEL_TO_VALUE[cachDungLabel] || "uong";
-    return { sang, trua, toi, thoi_diem_dung, cach_su_dung, ghi_chu };
-}
+import { parseHuongDieuTri } from "@/utils/khamBenhUtils.js";
 
 export default function useKhamBenhForm({
     open,

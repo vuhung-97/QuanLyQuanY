@@ -22,7 +22,7 @@ import {
     ALL_TABS,
     cardStyle,
     ROLE_TAB_ACCESS,
-} from "./KhamSucKhoeFormUtils.js";
+} from "@/constants/khamSucKhoeConstants.js";
 import TongQuanTab from "./tabs/TongQuanTab";
 import LamSangTab from "./tabs/LamSangTab";
 import XetNghiemTab from "./tabs/XetNghiemTab";

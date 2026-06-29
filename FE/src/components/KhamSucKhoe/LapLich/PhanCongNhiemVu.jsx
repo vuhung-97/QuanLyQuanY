@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import {
     Box,
     Card,
@@ -9,8 +8,8 @@ import {
     Typography,
 } from "@mui/material";
 import { Assignment as AssignmentIcon } from "@mui/icons-material";
-import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
 import DataTable from "@/components/common/DataTable.jsx";
+import usePhanCongNhiemVu from "@/hooks/usePhanCongNhiemVu.jsx";
 
 const columns = [
     { key: "ten_nguoi_dung", label: "Họ và tên" },
@@ -18,34 +17,7 @@ const columns = [
 ];
 
 export default function PhanCongNhiemVu({ latestScheduleId }) {
-    const [assignments, setAssignments] = useState([]);
-    const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        if (!latestScheduleId) {
-            setAssignments([]);
-            return;
-        }
-        let ignore = false;
-        async function load() {
-            setLoading(true);
-            try {
-                const res =
-                    await khamSucKhoeService.getAssignments(latestScheduleId);
-                if (!ignore) {
-                    setAssignments(Array.isArray(res.data) ? res.data : []);
-                }
-            } catch {
-                if (!ignore) setAssignments([]);
-            } finally {
-                if (!ignore) setLoading(false);
-            }
-        }
-        load();
-        return () => {
-            ignore = true;
-        };
-    }, [latestScheduleId]);
+    const { assignments, loading } = usePhanCongNhiemVu(latestScheduleId);
 
     return (
         <Card sx={{ borderRadius: 3 }}>

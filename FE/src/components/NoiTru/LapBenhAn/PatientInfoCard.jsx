@@ -1,5 +1,6 @@
 import { memo } from "react";
 import { Box, Card, CardContent, Stack, Typography } from "@mui/material";
+import { formatDate, formatDateTime } from "@/utils/date.js";
 
 function InfoRow({ label, value }) {
     return (
@@ -25,14 +26,7 @@ const PatientInfoCard = memo(function PatientInfoCard({ exam, ngayNhapVien }) {
                             label="Họ tên:"
                             value={`${exam.ho_ten || ""} - ${exam.ma_quan_nhan || ""}`}
                         />
-                        <InfoRow
-                            label="Ngày sinh:"
-                            value={
-                                exam.ngay_sinh
-                                    ? new Date(exam.ngay_sinh).toLocaleDateString("vi-VN")
-                                    : "--"
-                            }
-                        />
+                        <InfoRow label="Ngày sinh:" value={formatDate(exam.ngay_sinh)} />
                     </Stack>
                     <Stack
                         direction="row"
@@ -91,16 +85,7 @@ const PatientInfoCard = memo(function PatientInfoCard({ exam, ngayNhapVien }) {
                             label="Đơn vị:"
                             value={exam.ten_don_vi || "--"}
                         />                        
-                        <InfoRow
-                            label="Ngày nhập viện:"
-                            value={
-                                ngayNhapVien
-                                    ? new Date(ngayNhapVien).toLocaleDateString("vi-VN") +
-                                      " " +
-                                      new Date(ngayNhapVien).toLocaleTimeString("vi-VN")
-                                    : "--"
-                            }
-                        />
+                        <InfoRow label="Ngày nhập viện:" value={formatDateTime(ngayNhapVien)} />
                     </Stack>
                     <Stack
                         direction="row"

@@ -24,53 +24,13 @@ import {
     Delete as DeleteIcon,
     MedicalServices as MedicalServicesIcon,
 } from "@mui/icons-material";
-import { khamBenhService } from "@/services/khamBenhService.js";
 import KhoThuocDialog from "./KhoThuocDialog.jsx";
-
-function genKey() {
-    return Math.random().toString(36).slice(2, 11);
-}
-
-let cachedAllItems = null;
-
-async function fetchAllThuoc() {
-    if (cachedAllItems) return cachedAllItems;
-    const LIMIT = 500;
-    let offset = 0;
-    let all = [];
-    while (true) {
-        const res = await khamBenhService.listThuoc({
-            limit: LIMIT,
-            offset,
-            sort_by: "phan_loai",
-        });
-        const items = res.data || [];
-        if (items.length === 0) break;
-        all = all.concat(items);
-        if (items.length < LIMIT) break;
-        offset += LIMIT;
-    }
-    cachedAllItems = all;
-    return all;
-}
-
-const THOI_DIEM_OPTIONS = [
-    { value: "sau_an", label: "Sau ăn" },
-    { value: "truoc_an", label: "Trước ăn" },
-    { value: "truoc_khi_ngu", label: "Trước khi ngủ" },
-    { value: "sau_khi_thuc_day", label: "Sau khi thức dậy" },
-    { value: "khong", label: "Không" },
-];
-
-const CACH_SU_DUNG_OPTIONS = [
-    { value: "uong", label: "Uống" },
-    { value: "boi", label: "Bôi" },
-    { value: "tiem", label: "Tiêm" },
-    { value: "xong", label: "Xông" },
-    { value: "ngam", label: "Ngậm" },
-    { value: "nhot", label: "Nhỏ mắt" },
-    { value: "khac", label: "Khác" },
-];
+import {
+    THOI_DIEM_OPTIONS,
+    CACH_SU_DUNG_OPTIONS,
+} from "@/constants/khamBenhConstants.js";
+import { genKey, buildHuongDieuTri } from "@/utils/khamBenhUtils.js";
+import useThuocList from "@/hooks/useThuocList.jsx";
 
 const PrescriptionRow = memo(
     forwardRef(function PrescriptionRow({ initialData, onRemove }, ref) {
@@ -325,22 +285,12 @@ const PrescriptionRow = memo(
     }),
 );
 
-function buildHuongDieuTri(item) {
-    const lieu = `Sáng: ${item.sang} - Trưa: ${item.trua} - Tối: ${item.toi}`;
-    const td = THOI_DIEM_OPTIONS.find((o) => o.value === item.thoi_diem_dung);
-    const cd = CACH_SU_DUNG_OPTIONS.find((o) => o.value === item.cach_su_dung);
-    const cachDung = cd?.label || "Uống";
-    const thoiDiem = td?.label || "Sau ăn";
-    let result = `${lieu} | ${thoiDiem} | ${cachDung}`;
-    if (item.ghi_chu) result += ` | ${item.ghi_chu}`;
-    return result;
-}
-
 export default function DonThuocForm({ open, onClose, onSave, initialItems }) {
     const [rows, setRows] = useState([]);
     const rowRefs = useRef(new Map());
     const [openKhoThuoc, setOpenKhoThuoc] = useState(false);
     const [saveError, setSaveError] = useState("");
+    const { fetchAll, getCache } = useThuocList();
 
     const handleKhoThuocConfirm = useCallback((items) => {
         setRows((prev) => {
@@ -370,11 +320,11 @@ export default function DonThuocForm({ open, onClose, onSave, initialItems }) {
         let cancelled = false;
 
         (async () => {
-            await fetchAllThuoc();
+            const allItems = await fetchAll();
             if (cancelled) return;
 
             const stockByMa = {};
-            cachedAllItems.forEach(
+            allItems.forEach(
                 (item) => (stockByMa[item.ma_thuoc_vtyt] = item.so_luong),
             );
 
@@ -396,7 +346,7 @@ export default function DonThuocForm({ open, onClose, onSave, initialItems }) {
         return () => {
             cancelled = true;
         };
-    }, [open, initialItems]);
+    }, [open, initialItems, fetchAll]);
 
     const handleRemove = useCallback((key) => {
         setRows((prev) => prev.filter((r) => r.key !== key));
@@ -497,7 +447,7 @@ export default function DonThuocForm({ open, onClose, onSave, initialItems }) {
                 open={openKhoThuoc}
                 onClose={() => setOpenKhoThuoc(false)}
                 onConfirm={handleKhoThuocConfirm}
-                cachedItems={cachedAllItems}
+                cachedItems={getCache()}
             />
         </Dialog>
     );

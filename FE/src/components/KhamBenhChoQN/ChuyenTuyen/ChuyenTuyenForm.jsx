@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
     Box,
     Button,
@@ -19,6 +19,8 @@ import {
 import DatePicker from "@/components/common/DatePicker.jsx";
 import DonThuocTable from "@/components/common/DonThuoc.jsx";
 import ChuyenTuyenPrint from "./ChuyenTuyenPrint.jsx";
+import { parseDonThuocToRows } from "@/utils/khamBenhUtils.js";
+import { formatDate, tinhTuoi } from "@/utils/date.js";
 
 const sectionSx = { mb: 1, fontWeight: 700, color: "text.primary" };
 function SectionHeading({ children }) {
@@ -89,30 +91,7 @@ export default function ChuyenTuyenForm({
         window.print();
     };
 
-    const prescriptionRows = useMemo(() => {
-        if (!examDetail?.don_thuoc) return [];
-        const rows = [];
-        for (const dt of examDetail.don_thuoc) {
-            for (const ct of dt.chi_tiet_don_thuoc || []) {
-                const hdt = ct.huong_dieu_tri || "";
-                const parts = hdt.split(" | ");
-                const lieu = parts[0] || "";
-                const thoiDiem = parts[1] || "";
-                const cachDung = parts[2] || "";
-                const ghiChu = parts.slice(3).join(" | ");
-                rows.push({
-                    ten_thuoc: ct.ten_thuoc_vtyt || ct.ma_thuoc_vtyt,
-                    so_luong: ct.so_luong,
-                    don_vi_tinh: ct.don_vi_tinh || "",
-                    lieu,
-                    thoi_diem: thoiDiem,
-                    cach_dung: cachDung,
-                    ghi_chu: ghiChu,
-                });
-            }
-        }
-        return rows;
-    }, [examDetail]);
+    const prescriptionRows = parseDonThuocToRows(examDetail);
 
     return (
         <Dialog
@@ -179,12 +158,7 @@ export default function ChuyenTuyenForm({
                                     </Typography>
                                     <Typography variant="body1">
                                         <strong>Tuổi:</strong>{" "}
-                                        {selectedExam.ngay_sinh
-                                            ? new Date().getFullYear() -
-                                              new Date(
-                                                  selectedExam.ngay_sinh,
-                                              ).getFullYear()
-                                            : "--"}
+                                        {tinhTuoi(selectedExam.ngay_sinh)}
                                     </Typography>
                                     <Typography variant="body1">
                                         <strong>Cấp bậc:</strong>{" "}
@@ -204,11 +178,7 @@ export default function ChuyenTuyenForm({
                                     </Typography>
                                     <Typography variant="body1">
                                         <strong>Ngày khám:</strong>{" "}
-                                        {selectedExam.ngay_kham
-                                            ? new Date(
-                                                  selectedExam.ngay_kham,
-                                              ).toLocaleDateString("vi-VN")
-                                            : "--"}
+                                        {formatDate(selectedExam.ngay_kham)}
                                     </Typography>
                                 </Stack>
                             </Box>

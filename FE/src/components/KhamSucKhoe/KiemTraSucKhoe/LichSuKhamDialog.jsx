@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import {
     Chip,
     Dialog,
@@ -9,23 +8,11 @@ import {
     ListItemText,
     Typography,
 } from "@mui/material";
-import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
 import { getPhanLoai } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
+import useLichSuKham from "@/hooks/useLichSuKham.jsx";
 
 export default function LichSuKhamDialog({ open, onClose, quanNhan, onViewPhieu }) {
-    const [phieuList, setPhieuList] = useState([]);
-    const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        if (!open || !quanNhan) return;
-        setLoading(true);
-        khamSucKhoeService.getPhieuByMaQuanNhan(quanNhan.ma_quan_nhan)
-            .then((res) =>
-                setPhieuList(Array.isArray(res.data) ? res.data : []),
-            )
-            .catch(() => setPhieuList([]))
-            .finally(() => setLoading(false));
-    }, [open, quanNhan]);
+    const { phieuList, loading } = useLichSuKham(open, quanNhan);
 
     return (
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">

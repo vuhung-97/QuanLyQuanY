@@ -22,42 +22,9 @@ import LapBenhAnForm from "@/components/NoiTru/LapBenhAn/LapBenhAnForm.jsx";
 import TongQuanTab from "./tabs/TongQuanTab.jsx";
 import DienBienTab from "./tabs/DienBienTab.jsx";
 import ThuocTab from "./tabs/ThuocTab.jsx";
-
-function InfoItem({ label, value }) {
-    return (
-        <Box>
-            <Box
-                variant="caption"
-                sx={{ fontSize: 12, color: "text.secondary" }}
-            >
-                {label}
-            </Box>
-            <Box variant="body1" sx={{ fontWeight: 500 }}>
-                {value ?? "--"}
-            </Box>
-        </Box>
-    );
-}
-
-function TinhTrangChip({ trangThai }) {
-    const color = trangThai === "đang_điều_trị" ? "info" : "success";
-    return (
-        <Box
-            sx={{
-                display: "inline-block",
-                px: 1.5,
-                py: 0.5,
-                borderRadius: 1,
-                bgcolor: color === "info" ? "#DBEAFE" : "#D1FAE5",
-                color: color === "info" ? "#0B3B60" : "#065F46",
-                fontWeight: 600,
-                fontSize: "0.8125rem",
-            }}
-        >
-            {trangThai === "đang_điều_trị" ? "Đang điều trị" : "Đã ra viện"}
-        </Box>
-    );
-}
+import InfoItem from "@/components/NoiTru/common/InfoItem.jsx";
+import TinhTrangChip from "@/components/NoiTru/common/TinhTrangChip.jsx";
+import { formatDate } from "@/utils/date.js";
 
 export default function ChiTietBenhAn({ open, benhAnId, onClose }) {
     const [benhAn, setBenhAn] = useState(null);
@@ -132,12 +99,7 @@ export default function ChiTietBenhAn({ open, benhAnId, onClose }) {
     const headerFields = [
         { label: "Mã BA", value: benhAn?.ma_benh_an },
         { label: "Mã QN", value: benhAn?.ma_quan_nhan },
-        {
-            label: "Ngày nhập viện",
-            value: benhAn?.ngay_nhap_vien
-                ? new Date(benhAn.ngay_nhap_vien).toLocaleDateString("vi-VN")
-                : "--",
-        },
+        { label: "Ngày nhập viện", value: formatDate(benhAn?.ngay_nhap_vien) },
         {
             label: "Trạng thái",
             value: benhAn && <TinhTrangChip trangThai={benhAn.trang_thai} />,

@@ -1,3 +1,33 @@
+export const fallbackSchedules = [
+    {
+        ma_lich_kham: "LK2026001",
+        thoi_gian_bat_dau: "2026-06-10",
+        thoi_gian_ket_thuc: "2026-06-18",
+    },
+    {
+        ma_lich_kham: "LK2026002",
+        thoi_gian_bat_dau: "2026-07-02",
+        thoi_gian_ket_thuc: "2026-07-08",
+    },
+    {
+        ma_lich_kham: "LK2026003",
+        thoi_gian_bat_dau: "2026-05-12",
+        thoi_gian_ket_thuc: "2026-05-20",
+    },
+];
+
+export const filterTabs = ["Tất cả", "Chưa khám", "Đang khám", "Đã khám"];
+
+export const ROLE_LABELS = {
+    tong_quan: "Tổng quan",
+    lam_sang: "Lâm sàng",
+    xet_nghiem: "Xét nghiệm",
+    chan_doan_hinh_anh: "Chẩn đoán hình ảnh",
+    ket_luan: "Kết luận",
+};
+
+export const roleOrder = { ROLE_ADMIN: 0, ROLE_CNQY: 1, ROLE_BACSI: 2, ROLE_YSI: 3 };
+
 export const DEFAULT_TS = {
     ban_than: "",
     di_ung: "",
@@ -84,32 +114,7 @@ export const cardStyle = {
     bgcolor: "background.paper",
 };
 
-function parseWithDefault(str, defaultObj, fallbackKey) {
-    if (!str) return { ...defaultObj };
-    try {
-        const parsed = JSON.parse(str);
-        if (parsed && typeof parsed === "object") {
-            const mapped = { ...defaultObj, ...parsed };
-            Object.keys(defaultObj)
-                .filter((k) => k.endsWith("_loai"))
-                .forEach((k) => {
-                    if (!mapped[k]) mapped[k] = "Loại 1";
-                });
-            return mapped;
-        }
-    } catch {}
-    return { ...defaultObj, [fallbackKey]: str };
-}
-
-export const parseTienSu = (str) =>
-    parseWithDefault(str, DEFAULT_TS, "ban_than");
-export const parseLamSang = (str) => parseWithDefault(str, DEFAULT_LS, "khac");
-export const parseXetNghiem = (str) =>
-    parseWithDefault(str, DEFAULT_XN, "nuoc_tieu_te_bao");
-export const parseChanDoanHinhAnh = (str) =>
-    parseWithDefault(str, DEFAULT_CDHA, "khac");
-export const parseKetLuan = (str) =>
-    parseWithDefault(str, DEFAULT_KL, "benh_tat_theo_doi");
+export const ALL_TABS = [0, 1, 2, 3, 4];
 
 export const ROLE_TAB_ACCESS = {
     tong_quan: { edit: [0], view: [0] },
@@ -119,4 +124,27 @@ export const ROLE_TAB_ACCESS = {
     ket_luan: { edit: [4], view: [0, 1, 2, 3, 4] },
 };
 
-export const ALL_TABS = [0, 1, 2, 3, 4];
+export const PHAN_LOAI_OPTIONS = ["Loại 1", "Loại 2", "Loại 3", "Loại 4", "Loại 5"];
+
+export const PHAN_LOAI_SUC_KHOE = [
+    { value: "Loại 1", label: "Loại 1 (Rất khỏe)" },
+    { value: "Loại 2", label: "Loại 2 (Khỏe)" },
+    { value: "Loại 3", label: "Loại 3 (Trung bình)" },
+    { value: "Loại 4", label: "Loại 4 (Yếu)" },
+    { value: "Loại 5", label: "Loại 5 (Rất yếu)" },
+];
+
+export const TRANG_THAI_LABEL = {
+    chua_kham: "Chưa khám",
+    dang_kham: "Đang khám",
+    da_kham: "Đã khám",
+};
+
+export const STATUS_CHIP = {
+    "Chưa khám": {
+        bgcolor: "rgba(100, 116, 139, 0.12)",
+        color: "text.secondary",
+    },
+    "Đang khám": { bgcolor: "rgba(245, 158, 11, 0.14)", color: "warning.main" },
+    "Đã khám": { bgcolor: "rgba(16, 185, 129, 0.12)", color: "success.main" },
+};

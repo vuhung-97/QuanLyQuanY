@@ -8,6 +8,7 @@ import DataTable from "@/components/common/DataTable.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import SearchBar from "@/components/common/SearchBar.jsx";
 import LapBenhAnForm from "./LapBenhAnForm.jsx";
+import { formatDate } from "@/utils/date.js";
 
 const columns = [
     {
@@ -31,10 +32,7 @@ const columns = [
     {
         key: "ngay_kham",
         label: "Ngày chỉ định",
-        render: (row) =>
-            row.ngay_kham
-                ? new Date(row.ngay_kham).toLocaleDateString("vi-VN")
-                : "--",
+        render: (row) => formatDate(row.ngay_kham),
     },
     {
         key: "thao_tac",

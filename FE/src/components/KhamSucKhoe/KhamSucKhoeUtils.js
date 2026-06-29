@@ -1,21 +1,3 @@
-export const fallbackSchedules = [
-    {
-        ma_lich_kham: "LK2026001",
-        thoi_gian_bat_dau: "2026-06-10",
-        thoi_gian_ket_thuc: "2026-06-18",
-    },
-    {
-        ma_lich_kham: "LK2026002",
-        thoi_gian_bat_dau: "2026-07-02",
-        thoi_gian_ket_thuc: "2026-07-08",
-    },
-    {
-        ma_lich_kham: "LK2026003",
-        thoi_gian_bat_dau: "2026-05-12",
-        thoi_gian_ket_thuc: "2026-05-20",
-    },
-];
-
 export function getScheduleStatus(row) {
     const now = new Date();
     const start = row.thoi_gian_bat_dau
@@ -29,8 +11,6 @@ export function getScheduleStatus(row) {
     return "Đang thực hiện";
 }
 
-export { formatDate, formatDateTime } from "@/utils/date.js";
-
 export function statusColor(status) {
     if (status === "Đã kết thúc")
         return { bgcolor: "rgba(16, 185, 129, 0.12)", color: "success.main" };
@@ -38,8 +18,6 @@ export function statusColor(status) {
         return { bgcolor: "rgba(0, 180, 216, 0.12)", color: "secondary.main" };
     return { bgcolor: "rgba(245, 158, 11, 0.14)", color: "warning.main" };
 }
-
-export const filterTabs = ["Tất cả", "Chưa khám", "Đang khám", "Đã khám"];
 
 export function getPhanLoai(phieu) {
     if (!phieu?.ket_luan) return "";
@@ -66,6 +44,43 @@ export function findNearestDetail(details) {
     }
     return nearest;
 }
+
+import {
+    DEFAULT_TS, DEFAULT_LS, DEFAULT_XN, DEFAULT_CDHA, DEFAULT_KL,
+    TRANG_THAI_LABEL,
+} from "@/constants/khamSucKhoeConstants.js";
+
+export function getStatus(phieu) {
+    if (!phieu) return "Chưa khám";
+    return TRANG_THAI_LABEL[phieu.trang_thai] || "Chưa khám";
+}
+
+function parseWithDefault(str, defaultObj, fallbackKey) {
+    if (!str) return { ...defaultObj };
+    try {
+        const parsed = JSON.parse(str);
+        if (parsed && typeof parsed === "object") {
+            const mapped = { ...defaultObj, ...parsed };
+            Object.keys(defaultObj)
+                .filter((k) => k.endsWith("_loai"))
+                .forEach((k) => {
+                    if (!mapped[k]) mapped[k] = "Loại 1";
+                });
+            return mapped;
+        }
+    } catch {}
+    return { ...defaultObj, [fallbackKey]: str };
+}
+
+export const parseTienSu = (str) =>
+    parseWithDefault(str, DEFAULT_TS, "ban_than");
+export const parseLamSang = (str) => parseWithDefault(str, DEFAULT_LS, "khac");
+export const parseXetNghiem = (str) =>
+    parseWithDefault(str, DEFAULT_XN, "nuoc_tieu_te_bao");
+export const parseChanDoanHinhAnh = (str) =>
+    parseWithDefault(str, DEFAULT_CDHA, "khac");
+export const parseKetLuan = (str) =>
+    parseWithDefault(str, DEFAULT_KL, "benh_tat_theo_doi");
 
 export function filterSoldiers(soldiers, phieuMap, filterTab, searchText) {
     return soldiers.filter((qn) => {

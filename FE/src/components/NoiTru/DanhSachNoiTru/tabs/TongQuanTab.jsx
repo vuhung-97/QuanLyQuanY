@@ -1,19 +1,8 @@
 import { useMemo } from "react";
 import { Box, Button, Card, CardContent, Divider, Stack, Typography } from "@mui/material";
 import { Edit as EditIcon } from "@mui/icons-material";
-
-function InfoItem({ label, value }) {
-    return (
-        <Box>
-            <Box variant="caption" sx={{ fontSize: 12, color: "text.secondary" }}>
-                {label}
-            </Box>
-            <Box variant="body1" sx={{ fontWeight: 500 }}>
-                {value || "--"}
-            </Box>
-        </Box>
-    );
-}
+import InfoItem from "@/components/NoiTru/common/InfoItem.jsx";
+import { formatDate } from "@/utils/date.js";
 
 export default function TongQuanTab({ benhAn, onEdit }) {
     const nguoiLapBA =
@@ -78,12 +67,7 @@ export default function TongQuanTab({ benhAn, onEdit }) {
                             )}
                         </Stack>
                         <InfoItem label="Đối tượng:" value={benhAn.nghe_nghiep} />
-                        <InfoItem
-                            label="Ngày nhập viện:"
-                            value={benhAn.ngay_nhap_vien
-                                ? new Date(benhAn.ngay_nhap_vien).toLocaleDateString("vi-VN")
-                                : "--"}
-                        />
+                        <InfoItem label="Ngày nhập viện:" value={formatDate(benhAn.ngay_nhap_vien)} />
                         <InfoItem label="Lý do nhập viện:" value={benhAn.ly_do_nhap_vien} />
                         <InfoItem label="Chẩn đoán:" value={benhAn.chan_doan} />
                         <Divider sx={{ my: 0.5 }} />

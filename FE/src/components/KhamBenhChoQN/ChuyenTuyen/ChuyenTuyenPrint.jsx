@@ -1,4 +1,5 @@
 import { Box, Stack, Typography } from "@mui/material";
+import { tinhTuoi } from "@/utils/date.js";
 
 function FieldRow({ label, value }) {
     return (
@@ -113,16 +114,7 @@ export default function ChuyenTuyenPrint({
                 <FieldRow label="Họ và tên" value={selectedExam?.ho_ten} />
                 <FieldRow
                     label="Tuổi"
-                    value={
-                        selectedExam?.ngay_sinh
-                            ? String(
-                                  new Date().getFullYear() -
-                                      new Date(
-                                          selectedExam.ngay_sinh,
-                                      ).getFullYear(),
-                              )
-                            : undefined
-                    }
+                value={tinhTuoi(selectedExam?.ngay_sinh)}
                 />
                 <FieldRow label="Cấp bậc" value={selectedExam?.cap_bac} />
                 <FieldRow label="Chức vụ" value={selectedExam?.chuc_vu} />

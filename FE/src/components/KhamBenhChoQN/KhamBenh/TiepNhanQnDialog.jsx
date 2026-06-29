@@ -11,9 +11,8 @@ import {
 import useDebounce from "@/hooks/useDebounce.jsx";
 import { khamBenhService } from "@/services/khamBenhService.js";
 import DataTable from "@/components/common/DataTable.jsx";
-
-const ROWS_PER_PAGE = 50;
-const BATCH = 500;
+import { ROWS_PER_PAGE, BATCH } from "@/constants/khamBenhConstants.js";
+import { formatDate } from "@/utils/date.js";
 
 const qnColumns = [
     { key: "stt", label: "STT", sx: { width: 60 } },
@@ -30,10 +29,6 @@ const qnColumns = [
     { key: "ngay_nhap_ngu", label: "Nhập ngũ" },
     { key: "so_the_bhyt", label: "Mã thẻ BHYT" },
 ];
-
-function fmtDate(d) {
-    return d ? new Date(d).toLocaleDateString("vi-VN") : "--";
-}
 
 export default function TiepNhanQnDialog({ open, onClose, onSelected }) {
     const [allSoldiers, setAllSoldiers] = useState([]);
@@ -142,9 +137,9 @@ export default function TiepNhanQnDialog({ open, onClose, onSelected }) {
         return pageData.map((qn, idx) => ({
             ...qn,
             stt: page * ROWS_PER_PAGE + idx + 1,
-            ngay_sinh: fmtDate(qn.ngay_sinh),
+            ngay_sinh: formatDate(qn.ngay_sinh),
             don_vi: getTenDonVi(qn.ma_don_vi),
-            ngay_nhap_ngu: fmtDate(qn.ngay_nhap_ngu),
+            ngay_nhap_ngu: formatDate(qn.ngay_nhap_ngu),
         }));
     }, [filtered, page, getTenDonVi]);
 

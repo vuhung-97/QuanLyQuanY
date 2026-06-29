@@ -20,6 +20,7 @@ import DonThuocForm from "./DonThuocForm.jsx";
 import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
 import DonThuocTable from "@/components/common/DonThuoc.jsx";
 import symptoms from "@/data/trieu_chung.json";
+import { formatDate } from "@/utils/date.js";
 
 function InfoRow({ label, value }) {
     return (
@@ -39,9 +40,7 @@ function InfoRow({ label, value }) {
 }
 
 const PatientInfoCard = memo(function PatientInfoCard({ qn, exam }) {
-    const examDate = exam?.ngay_kham
-        ? new Date(exam.ngay_kham).toLocaleDateString("vi-VN")
-        : "--";
+    const examDate = formatDate(exam?.ngay_kham);
 
     return (
         <Card variant="outlined" sx={{ borderRadius: 2, bgcolor: "#F8FAFC" }}>
