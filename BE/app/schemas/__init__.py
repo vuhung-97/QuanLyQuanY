@@ -1,5 +1,4 @@
 from app.schemas.benh_an import BenhAnBase, BenhAnCreate, BenhAnUpdate, BenhAnRead
-from app.schemas.benh_nhan_ra_vao import BenhNhanRaVaoBase, BenhNhanRaVaoCreate, BenhNhanRaVaoUpdate, BenhNhanRaVaoRead
 from app.schemas.chi_tiet_don_thuoc import ChiTietDonThuocBase, ChiTietDonThuocCreate, ChiTietDonThuocUpdate, ChiTietDonThuocRead
 from app.schemas.chi_tiet_du_tru import ChiTietDuTruBase, ChiTietDuTruCreate, ChiTietDuTruUpdate, ChiTietDuTruRead
 from app.schemas.chi_tiet_phieu_cham_soc import ChiTietPhieuChamSocBase, ChiTietPhieuChamSocCreate, ChiTietPhieuChamSocUpdate, ChiTietPhieuChamSocRead
@@ -31,11 +30,6 @@ __all__ = [
     "BenhAnCreate", 
     "BenhAnUpdate", 
     "BenhAnRead",
-
-    "BenhNhanRaVaoBase", 
-    "BenhNhanRaVaoCreate", 
-    "BenhNhanRaVaoUpdate", 
-    "BenhNhanRaVaoRead",
 
     "ChiTietDonThuocBase", 
     "ChiTietDonThuocCreate", 

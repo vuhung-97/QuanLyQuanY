@@ -32,6 +32,7 @@ export default function ChiTietBenhAn({ open, benhAnId, onClose }) {
     const [tabIndex, setTabIndex] = useState(0);
     const [openEditForm, setOpenEditForm] = useState(false);
     const [savingEdit, setSavingEdit] = useState(false);
+    const readOnly = benhAn?.trang_thai === "đã_ra_viện";
 
     const {
         records,
@@ -182,6 +183,7 @@ export default function ChiTietBenhAn({ open, benhAnId, onClose }) {
                             {tabIndex === 1 && (
                                 <DienBienTab
                                     records={records}
+                                    readOnly={readOnly}
                                     onAddNew={() => handleOpenForm(null)}
                                     onEdit={handleOpenForm}
                                 />
@@ -204,6 +206,7 @@ export default function ChiTietBenhAn({ open, benhAnId, onClose }) {
                 onClose={handleCloseForm}
                 defaultGiuong={benhAn?.ten_giuong}
                 defaultBuong={benhAn?.ten_buong}
+                readOnly={readOnly}
             />
 
             {benhAn && (

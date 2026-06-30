@@ -166,7 +166,11 @@ const PrescriptionRow = memo(
                     </Box>
                     <TextField
                         size="small"
-                        label={soLuongMax !== Infinity ? `SL (tồn: ${soLuongMax})` : "Số lượng"}
+                        label={
+                            soLuongMax !== Infinity
+                                ? `SL (tồn: ${soLuongMax})`
+                                : "Số lượng"
+                        }
                         type="number"
                         value={soLuong}
                         onChange={(e) =>
@@ -236,7 +240,8 @@ const PrescriptionRow = memo(
                 </Stack>
                 {soLuong > 0 && sang + trua + toi > soLuong && (
                     <Typography color="error" variant="caption">
-                        Tổng liều ({sang + trua + toi}) vượt quá số lượng thuốc ({soLuong})
+                        Tổng liều ({sang + trua + toi}) vượt quá số lượng thuốc
+                        ({soLuong})
                     </Typography>
                 )}
                 <Stack

@@ -1,11 +1,10 @@
 from fastapi import Depends, HTTPException, Query
-from sqlalchemy import inspect
+from sqlalchemy import extract, inspect
 from sqlalchemy.orm import Session
 
 from app.core.dependencies import get_current_user, require_permissions
 from app.crud.benh_an import benh_an_crud
 from app.database.benh_an import BenhAn
-from app.database.benh_nhan_ra_vao import BenhNhanRaVao
 from app.database.chi_tiet_phieu_cham_soc import ChiTietPhieuChamSoc
 from app.database.don_vi import DonVi
 from app.database.kham_benh import KhamBenh
@@ -61,26 +60,34 @@ def get_danh_sach_noi_tru(
     limit: int = Query(default=100, ge=1, le=500),
     offset: int = Query(default=0, ge=0),
     trang_thai: str | None = Query(default=None),
+    nam: int | None = Query(default=None),
+    thang: int | None = Query(default=None, ge=1, le=12),
     db: Session = Depends(get_db),
 ):
     base_query = (
-        db.query(BenhAn, QuanNhan.ho_ten, QuanNhan.cap_bac, QuanNhan.chuc_vu, QuanNhan.ngay_sinh, Buong.ten_buong)
+        db.query(BenhAn, QuanNhan.ho_ten, QuanNhan.cap_bac, QuanNhan.chuc_vu, QuanNhan.ngay_sinh, Buong.ten_buong, Giuong.ten_giuong)
         .join(QuanNhan, BenhAn.ma_quan_nhan == QuanNhan.ma_quan_nhan)
         .join(Buong, BenhAn.ma_buong == Buong.ma_buong, isouter=True)
+        .join(Giuong, BenhAn.ma_giuong == Giuong.ma_giuong, isouter=True)
         .order_by(Buong.ten_buong.asc().nullslast(), QuanNhan.ho_ten.asc(), BenhAn.ngay_nhap_vien.desc().nullslast())
     )
     if trang_thai:
         base_query = base_query.filter(BenhAn.trang_thai == trang_thai)
+    if nam:
+        base_query = base_query.filter(extract('year', BenhAn.ngay_nhap_vien) == nam)
+    if thang:
+        base_query = base_query.filter(extract('month', BenhAn.ngay_nhap_vien) == thang)
     total = base_query.count()
     records = base_query.offset(offset).limit(limit).all()
     result = []
-    for ba, ho_ten, cap_bac, chuc_vu, ngay_sinh, ten_buong in records:
+    for ba, ho_ten, cap_bac, chuc_vu, ngay_sinh, ten_buong, ten_giuong in records:
         d = {c.key: getattr(ba, c.key) for c in inspect(BenhAn).columns}
         d["ho_ten"] = ho_ten
         d["cap_bac"] = cap_bac
         d["chuc_vu"] = chuc_vu
         d["ngay_sinh"] = str(ngay_sinh) if ngay_sinh else None
         d["ten_buong"] = ten_buong
+        d["ten_giuong"] = ten_giuong
         result.append(d)
     return {"data": result, "total": total}
 

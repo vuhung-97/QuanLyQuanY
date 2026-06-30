@@ -1,6 +1,5 @@
 from app.routes.benh_an import router as benh_an_router
 from app.routes.buong import router as buong_router
-from app.routes.benh_nhan_ra_vao import router as benh_nhan_ra_vao_router
 from app.routes.chi_tiet_don_thuoc import router as chi_tiet_don_thuoc_router
 from app.routes.chi_tiet_du_tru import router as chi_tiet_du_tru_router
 from app.routes.chi_tiet_phieu_cham_soc import router as chi_tiet_phieu_cham_soc_router
@@ -36,7 +35,6 @@ from app.routes.thong_ke import router as thong_ke_router
 RESOURCE_ROUTERS = [
     benh_an_router,
     buong_router,
-    benh_nhan_ra_vao_router,
     chi_tiet_don_thuoc_router,
     chi_tiet_du_tru_router,
     chi_tiet_phieu_cham_soc_router,

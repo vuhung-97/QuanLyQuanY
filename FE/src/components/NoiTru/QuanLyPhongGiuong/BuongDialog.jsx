@@ -29,7 +29,9 @@ export default function BuongDialog({
 }) {
     return (
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-            <DialogTitle>
+            <DialogTitle
+                sx={{ fontSize: 20, fontWeight: 700, textAlign: "center" }}
+            >
                 {edit ? `Sửa buồng: ${edit.ten_buong}` : "Thêm buồng mới"}
             </DialogTitle>
             <DialogContent>
@@ -38,7 +40,12 @@ export default function BuongDialog({
                         label="Tên buồng"
                         fullWidth
                         value={buongForm.ten_buong}
-                        onChange={(e) => setBuongForm((f) => ({ ...f, ten_buong: e.target.value }))}
+                        onChange={(e) =>
+                            setBuongForm((f) => ({
+                                ...f,
+                                ten_buong: e.target.value,
+                            }))
+                        }
                         error={!!buongFormErrors.ten_buong}
                         helperText={buongFormErrors.ten_buong}
                     />
@@ -47,14 +54,21 @@ export default function BuongDialog({
                         type="number"
                         fullWidth
                         value={buongForm.so_giuong_toi_da}
-                        onChange={(e) => setBuongForm((f) => ({ ...f, so_giuong_toi_da: Number(e.target.value) }))}
+                        onChange={(e) =>
+                            setBuongForm((f) => ({
+                                ...f,
+                                so_giuong_toi_da: Number(e.target.value),
+                            }))
+                        }
                         slotProps={{ htmlInput: { min: 1 } }}
                     />
 
                     {edit && (
                         <>
                             <Divider />
-                            <Typography variant="h3">Danh sách giường</Typography>
+                            <Typography variant="h3">
+                                Danh sách giường
+                            </Typography>
 
                             {editBuongGiuongList.map((g) => (
                                 <Stack
@@ -63,41 +77,63 @@ export default function BuongDialog({
                                     spacing={1}
                                     sx={{ alignItems: "center", py: 0.5 }}
                                 >
-                                    <Typography sx={{ flex: 1 }}>{g.ten_giuong}</Typography>
+                                    <Typography sx={{ flex: 1 }}>
+                                        {g.ten_giuong}
+                                    </Typography>
                                     <Chip
                                         label={g.trang_thai}
                                         size="small"
-                                        color={g.trang_thai === "có người" ? "info" : "default"}
+                                        color={
+                                            g.trang_thai === "có người"
+                                                ? "info"
+                                                : "default"
+                                        }
                                         sx={{ fontWeight: 600 }}
                                     />
                                     <IconButton
                                         size="small"
                                         color="error"
-                                        onClick={() => onDeleteGiuong(g.ma_giuong)}
+                                        onClick={() =>
+                                            onDeleteGiuong(g.ma_giuong)
+                                        }
                                     >
                                         <DeleteIcon fontSize="small" />
                                     </IconButton>
                                 </Stack>
                             ))}
 
-                            <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                                Số giường: {editBuongGiuongList.length} / {buongForm.so_giuong_toi_da}
+                            <Typography
+                                variant="body2"
+                                sx={{ color: "text.secondary" }}
+                            >
+                                Số giường: {editBuongGiuongList.length} /{" "}
+                                {buongForm.so_giuong_toi_da}
                             </Typography>
 
-                            {editBuongGiuongList.length < buongForm.so_giuong_toi_da ? (
-                                <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+                            {editBuongGiuongList.length <
+                            buongForm.so_giuong_toi_da ? (
+                                <Stack
+                                    direction="row"
+                                    spacing={1}
+                                    sx={{ alignItems: "center" }}
+                                >
                                     <TextField
                                         size="small"
                                         label="Tên giường mới"
                                         value={tenGiuongMoi}
-                                        onChange={(e) => setTenGiuongMoi(e.target.value)}
+                                        onChange={(e) =>
+                                            setTenGiuongMoi(e.target.value)
+                                        }
                                         sx={{ flex: 1 }}
                                     />
                                     <Button
                                         variant="contained"
                                         disabled={!tenGiuongMoi.trim()}
                                         onClick={() => {
-                                            onAddGiuong(edit.ma_buong, tenGiuongMoi.trim());
+                                            onAddGiuong(
+                                                edit.ma_buong,
+                                                tenGiuongMoi.trim(),
+                                            );
                                             setTenGiuongMoi("");
                                         }}
                                         sx={{ textTransform: "none" }}
@@ -106,8 +142,12 @@ export default function BuongDialog({
                                     </Button>
                                 </Stack>
                             ) : (
-                                <Typography variant="body2" sx={{ color: "error.main" }}>
-                                    Đã đạt tối đa {buongForm.so_giuong_toi_da} giường.
+                                <Typography
+                                    variant="body2"
+                                    sx={{ color: "error.main" }}
+                                >
+                                    Đã đạt tối đa {buongForm.so_giuong_toi_da}{" "}
+                                    giường.
                                 </Typography>
                             )}
                         </>
@@ -115,7 +155,9 @@ export default function BuongDialog({
                 </Stack>
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose} sx={{ textTransform: "none" }}>Hủy</Button>
+                <Button onClick={onClose} sx={{ textTransform: "none" }}>
+                    Hủy
+                </Button>
                 <Button
                     variant="contained"
                     onClick={onSave}

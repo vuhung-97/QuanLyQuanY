@@ -1,6 +1,5 @@
 from app.database.benh_an import BenhAn
 from app.database.buong import Buong
-from app.database.benh_nhan_ra_vao import BenhNhanRaVao
 from app.database.chi_tiet_don_thuoc import ChiTietDonThuoc
 from app.database.chi_tiet_du_tru import ChiTietDuTru
 from app.database.chi_tiet_phieu_cham_soc import ChiTietPhieuChamSoc
@@ -34,7 +33,6 @@ from app.database.vai_tro_quyen import VaiTroQuyen
 MODEL_REGISTRY = {
     "benh_an": BenhAn,
     "buong": Buong,
-    "benh_nhan_ra_vao": BenhNhanRaVao,
     "chi_tiet_don_thuoc": ChiTietDonThuoc,
     "chi_tiet_du_tru": ChiTietDuTru,
     "chi_tiet_phieu_cham_soc": ChiTietPhieuChamSoc,
@@ -69,7 +67,6 @@ MODEL_REGISTRY = {
 __all__ = [
     "BenhAn",
     "Buong",
-    "BenhNhanRaVao",
     "ChiTietDonThuoc",
     "ChiTietDuTru",
     "ChiTietPhieuChamSoc",

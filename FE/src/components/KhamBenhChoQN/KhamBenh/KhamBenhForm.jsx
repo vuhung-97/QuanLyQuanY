@@ -61,6 +61,10 @@ const PatientInfoCard = memo(function PatientInfoCard({ qn, exam }) {
                     <InfoRow label="Cấp bậc:" value={qn?.cap_bac || "--"} />
                     <InfoRow label="Chức vụ:" value={qn?.chuc_vu || "--"} />
                     <InfoRow label="Ngày khám:" value={examDate} />
+                    <InfoRow
+                        label="Bác sĩ khám:"
+                        value={exam?.ten_nguoi_kham ? `${exam.ten_nguoi_kham} (${exam.vai_tro_nguoi_kham || "?"})` : "--"}
+                    />
                 </Stack>
             </CardContent>
         </Card>
@@ -331,20 +335,20 @@ export default function KhamBenhForm({
                 slotProps={{ paper: { sx: { height: "80vh" } } }}
             >
                 <DialogTitle>
-                    <Stack
-                        direction="row"
+                    <Typography
                         sx={{
-                            justifyContent: "space-between",
-                            alignItems: "center",
+                            fontSize: 22,
+                            fontWeight: 600,
+                            textAlign: "center",
                         }}
                     >
-                        <Typography variant="h2">Khám bệnh</Typography>
-                        {loading && (
-                            <Typography variant="body2" color="text.secondary">
-                                Đang tải...
-                            </Typography>
-                        )}
-                    </Stack>
+                        Khám bệnh
+                    </Typography>
+                    {loading && (
+                        <Typography variant="body2" color="text.secondary">
+                            Đang tải...
+                        </Typography>
+                    )}
                 </DialogTitle>
                 <DialogContent dividers>
                     {!exam ? (
@@ -376,7 +380,11 @@ export default function KhamBenhForm({
                                 />
                             </Grid>
 
-                            <DonThuocTable rows={prescriptionItems} heading="Đơn thuốc đã kê" hideWhenEmpty />
+                            <DonThuocTable
+                                rows={prescriptionItems}
+                                heading="Đơn thuốc đã kê"
+                                hideWhenEmpty
+                            />
                         </Stack>
                     )}
                 </DialogContent>

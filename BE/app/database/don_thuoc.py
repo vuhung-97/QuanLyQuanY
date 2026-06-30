@@ -11,3 +11,4 @@ class DonThuoc(Base):
     ma_don_thuoc: Mapped[str] = mapped_column(String(10), primary_key=True, default=lambda: generate_id(10))
     ma_quan_nhan: Mapped[str | None] = mapped_column(String(10), ForeignKey("quan_nhan.ma_quan_nhan", ondelete="CASCADE"), nullable=True)
     ma_kham_benh: Mapped[str | None] = mapped_column(String(10), ForeignKey("kham_benh.ma_kham_benh", ondelete="CASCADE"), nullable=True)
+    id_nguoi_dung: Mapped[str | None] = mapped_column(String(20), nullable=True)

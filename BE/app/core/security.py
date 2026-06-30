@@ -13,7 +13,6 @@ class Action:
 
 RESOURCES = [
     "benh_an", 
-    "benh_nhan_ra_vao", 
     "chi_tiet_don_thuoc", 
     "chi_tiet_du_tru",
     "chi_tiet_phieu_cham_soc", 
@@ -41,6 +40,8 @@ RESOURCES = [
     "nhat_ky_backup",
     "vai_tro_tam_thoi",
     "phan_cong_nhiem_vu",
+    "buong",
+    "giuong",
 ]
 
 def get_all_permissions():

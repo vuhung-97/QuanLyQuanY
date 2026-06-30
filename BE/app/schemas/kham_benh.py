@@ -35,3 +35,6 @@ class KhamBenhRead(KhamBenhBase):
     ngay_sinh: str | None = None
     ma_don_vi: str | None = None
     ten_don_vi: str | None = None
+    id_nguoi_dung: str | None = None
+    ten_nguoi_kham: str | None = None
+    vai_tro_nguoi_kham: str | None = None

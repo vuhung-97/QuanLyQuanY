@@ -18,3 +18,6 @@ class DonThuocUpdate(SchemaBase):
 
 class DonThuocRead(DonThuocBase):
     ma_don_thuoc: str = Field(max_length=10)
+    id_nguoi_dung: str | None = None
+    ten_nguoi_cap_thuoc: str | None = None
+    vai_tro_nguoi_cap_thuoc: str | None = None

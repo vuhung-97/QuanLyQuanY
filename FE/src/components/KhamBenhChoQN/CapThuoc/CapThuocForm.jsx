@@ -149,6 +149,28 @@ export default function CapThuocForm({
                             heading="Đơn thuốc"
                             emptyMessage="Không có thuốc trong đơn."
                         />
+
+                        {isDaNhanThuoc &&
+                            examDetail?.don_thuoc?.[0]?.ten_nguoi_cap_thuoc && (
+                                <Box>
+                                    <Typography
+                                        variant="h3"
+                                        sx={{
+                                            mb: 0.5,
+                                            fontWeight: 700,
+                                            color: "text.primary",
+                                        }}
+                                    >
+                                        Người cấp thuốc
+                                    </Typography>
+                                    <Typography variant="body1">
+                                        {examDetail.don_thuoc[0].ten_nguoi_cap_thuoc} (
+                                        {examDetail.don_thuoc[0].vai_tro_nguoi_cap_thuoc ||
+                                            "?"}
+                                        )
+                                    </Typography>
+                                </Box>
+                            )}
                     </Stack>
                 )}
             </DialogContent>

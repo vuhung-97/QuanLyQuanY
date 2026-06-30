@@ -59,8 +59,8 @@ export default function RaVienDialog({
                 chan_doan_ra_vien: formState.chan_doan_ra_vien,
                 tinh_trang_nb: formState.tinh_trang_nb,
                 huong_dieu_tri: formState.huong_dieu_tri,
+                ngay_ra: formState.ngay_ra,
             }),
-            ngay_ra: formState.ngay_ra,
         };
         onConfirm(payload);
     }, [formState, onConfirm]);
@@ -121,6 +121,7 @@ export default function RaVienDialog({
                             value={formState.huong_dieu_tri}
                             onChange={updateField}
                             multiline
+                            normalText="Không có"
                             minRows={4}
                         />
                     </Grid>

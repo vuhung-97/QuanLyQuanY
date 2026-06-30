@@ -13,7 +13,9 @@ from app.database.don_thuoc import DonThuoc
 from app.database.don_vi import DonVi
 from app.database.giay_gioi_thieu import GiayGioiThieu
 from app.database.kham_benh import KhamBenh
+from app.database.nguoi_dung import NguoiDung
 from app.database.quan_nhan import QuanNhan
+from app.database.vai_tro import VaiTro
 from app.database.session import get_db
 from app.database.thuoc_vtyt import ThuocVtyt
 from app.routes.base import create_crud_router
@@ -115,6 +117,16 @@ def get_kham_benh_detail(id: str, db: Session = Depends(get_db)):
 
     result = {c.key: getattr(kb, c.key) for c in inspect(KhamBenh).columns}
 
+    if kb.id_nguoi_dung:
+        nd = db.query(NguoiDung.ho_ten, VaiTro.ten_vai_tro) \
+            .join(VaiTro, NguoiDung.id_vai_tro == VaiTro.id, isouter=True) \
+            .filter(NguoiDung.id == kb.id_nguoi_dung).first()
+        result["ten_nguoi_kham"] = nd.ho_ten if nd else None
+        result["vai_tro_nguoi_kham"] = nd.ten_vai_tro if nd else None
+    else:
+        result["ten_nguoi_kham"] = None
+        result["vai_tro_nguoi_kham"] = None
+
     prescriptions = []
     for dt in don_thuoc_list:
         chi_tiet = (
@@ -132,8 +144,16 @@ def get_kham_benh_detail(id: str, db: Session = Depends(get_db)):
                 "so_luong": ctdt.so_luong,
                 "huong_dieu_tri": ctdt.huong_dieu_tri,
             })
+        nd_dt = None
+        if dt.id_nguoi_dung:
+            nd_dt = db.query(NguoiDung.ho_ten, VaiTro.ten_vai_tro) \
+                .join(VaiTro, NguoiDung.id_vai_tro == VaiTro.id, isouter=True) \
+                .filter(NguoiDung.id == dt.id_nguoi_dung).first()
         prescriptions.append({
             "ma_don_thuoc": dt.ma_don_thuoc,
+            "id_nguoi_dung": dt.id_nguoi_dung,
+            "ten_nguoi_cap_thuoc": nd_dt.ho_ten if nd_dt else None,
+            "vai_tro_nguoi_cap_thuoc": nd_dt.ten_vai_tro if nd_dt else None,
             "chi_tiet_don_thuoc": items,
         })
 
@@ -146,9 +166,9 @@ def get_kham_benh_detail(id: str, db: Session = Depends(get_db)):
     dependencies=[Depends(require_permissions("kham_benh:update"))],
     response_model=KhamBenhRead,
 )
-def nhan_thuoc(id: str, db: Session = Depends(get_db)):
+def nhan_thuoc(id: str, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
     service = MedicalExaminationService(db)
-    return service.receive_medicine(id)
+    return service.receive_medicine(id, nguoi_dung_id=current_user.id)
 
 
 @router.post(

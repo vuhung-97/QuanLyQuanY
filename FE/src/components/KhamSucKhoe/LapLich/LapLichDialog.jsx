@@ -197,7 +197,9 @@ export default function LapLichDialog({
             sx={{ width: "70vw", height: "90vh", m: "auto" }}
         >
             <Box component="form" onSubmit={handleSubmit}>
-                <DialogTitle variant="h5" sx={{ textAlign: "center" }}>
+                <DialogTitle
+                    sx={{ fontSize: 20, fontWeight: 700, textAlign: "center" }}
+                >
                     {isEdit
                         ? "Sửa lịch khám sức khỏe định kỳ"
                         : "Tạo lịch khám sức khỏe định kỳ"}

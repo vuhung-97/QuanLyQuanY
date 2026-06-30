@@ -76,6 +76,8 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
     def create(self, db: Session, payload: CreateSchemaType, nguoi_dung_id: str | None = None) -> ModelType:
         row = self.model(**self._payload_values(payload))
+        if nguoi_dung_id and hasattr(self.model, "id_nguoi_dung"):
+            row.id_nguoi_dung = nguoi_dung_id
         db.add(row)
         self._commit(db)
         db.refresh(row)

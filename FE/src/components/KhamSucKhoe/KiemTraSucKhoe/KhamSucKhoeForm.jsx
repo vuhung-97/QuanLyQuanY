@@ -34,21 +34,19 @@ function FormHeader({ quanNhan }) {
         <DialogTitle
             component="div"
             sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
                 borderBottom: "1px solid",
                 borderColor: "divider",
                 bgcolor: "background.paper",
+                textAlign: "center",
             }}
         >
             <Typography
                 fontWeight="bold"
                 color="primary"
                 sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1,
+                    fontSize: 20,
+                    fontWeight: 700,
+                    textAlign: "center",
                 }}
             >
                 Phiếu khám sức khỏe định kỳ

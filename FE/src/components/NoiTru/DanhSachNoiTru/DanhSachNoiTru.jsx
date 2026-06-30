@@ -5,6 +5,10 @@ import {
     Card,
     CardContent,
     Chip,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
     Stack,
     Typography,
 } from "@mui/material";
@@ -41,7 +45,11 @@ const columns = [
         sx: { color: "primary.main" },
     },
     { key: "ho_ten", label: "Họ tên QN" },
-    { key: "phong", label: "Phòng", render: (row) => row.ten_buong || "--" },
+    {
+        key: "phong",
+        label: "Phòng/Giường",
+        render: (row) => `${row.ten_buong || "--"} / ${row.ten_giuong || "--"}`,
+    },
     {
         key: "ngay_nhap_vien",
         label: "Ngày nhập viện",
@@ -52,7 +60,14 @@ const columns = [
         label: "Chẩn đoán",
         sx: { maxWidth: { xs: 120, md: 250 } },
         render: (row) => (
-            <Box sx={{ maxHeight: 100, overflow: "auto", whiteSpace: "normal", wordBreak: "break-word" }}>
+            <Box
+                sx={{
+                    maxHeight: 100,
+                    overflow: "auto",
+                    whiteSpace: "normal",
+                    wordBreak: "break-word",
+                }}
+            >
                 {row.chan_doan || "--"}
             </Box>
         ),
@@ -62,7 +77,9 @@ const columns = [
         label: "Trạng thái",
         render: (row) => (
             <Chip
-                label={BENH_AN_STATUS_MAP[row.trang_thai]?.label || row.trang_thai}
+                label={
+                    BENH_AN_STATUS_MAP[row.trang_thai]?.label || row.trang_thai
+                }
                 color={BENH_AN_STATUS_MAP[row.trang_thai]?.color || "default"}
                 size="small"
                 sx={{ fontWeight: 600 }}
@@ -121,6 +138,10 @@ export default function DanhSachNoiTru() {
         loadData,
         filterMode,
         handleFilterModeChange,
+        filterNam,
+        handleFilterNamChange,
+        filterThang,
+        handleFilterThangChange,
         page,
         setPage,
         totalRecords,
@@ -157,6 +178,19 @@ export default function DanhSachNoiTru() {
         return items;
     }, [stats, filterMode]);
 
+    const NAM_OPTIONS = useMemo(() => {
+        const currentYear = new Date().getFullYear();
+        const years = [];
+        for (let y = currentYear; y >= 2025; y--) {
+            years.push(y);
+        }
+        return years;
+    }, []);
+
+    const THANG_OPTIONS = useMemo(() => {
+        return Array.from({ length: 12 }, (_, i) => i + 1);
+    }, []);
+
     return (
         <>
             <StatCardGrid items={statItems} loading={initialLoading} />
@@ -185,6 +219,46 @@ export default function DanhSachNoiTru() {
                                 labelLeft="Tất cả"
                                 labelRight="Đang điều trị"
                             />
+                            <FormControl size="small" sx={{ minWidth: 100 }}>
+                                <InputLabel id="nam-label">Năm</InputLabel>
+                                <Select
+                                    labelId="nam-label"
+                                    value={filterNam ?? ""}
+                                    label="Năm"
+                                    onChange={(e) =>
+                                        handleFilterNamChange(
+                                            e.target.value || null,
+                                        )
+                                    }
+                                >
+                                    <MenuItem value="">Tất cả</MenuItem>
+                                    {NAM_OPTIONS.map((y) => (
+                                        <MenuItem key={y} value={y}>
+                                            {y}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                            <FormControl size="small" sx={{ minWidth: 120 }}>
+                                <InputLabel id="thang-label">Tháng</InputLabel>
+                                <Select
+                                    labelId="thang-label"
+                                    value={filterThang ?? ""}
+                                    label="Tháng"
+                                    onChange={(e) =>
+                                        handleFilterThangChange(
+                                            e.target.value || null,
+                                        )
+                                    }
+                                >
+                                    <MenuItem value="">Tất cả</MenuItem>
+                                    {THANG_OPTIONS.map((m) => (
+                                        <MenuItem key={m} value={m}>
+                                            Tháng {m}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
                         </Stack>
                         <Button
                             variant="outlined"

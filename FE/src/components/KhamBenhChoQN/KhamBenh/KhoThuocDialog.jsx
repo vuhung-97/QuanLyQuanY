@@ -1,4 +1,11 @@
-import { Fragment, memo, useCallback, useEffect, useMemo, useState } from "react";
+import {
+    Fragment,
+    memo,
+    useCallback,
+    useEffect,
+    useMemo,
+    useState,
+} from "react";
 import {
     Button,
     Checkbox,
@@ -43,7 +50,11 @@ const GroupRow = memo(function GroupRow({
                     type="number"
                     value={selected ? (quantity ?? "") : ""}
                     onChange={(e) =>
-                        onQuantityChange(item.ma_thuoc_vtyt, e.target.value, item.so_luong)
+                        onQuantityChange(
+                            item.ma_thuoc_vtyt,
+                            e.target.value,
+                            item.so_luong,
+                        )
                     }
                     disabled={!selected}
                     slotProps={{ htmlInput: { min: 1, max: item.so_luong } }}
@@ -55,7 +66,12 @@ const GroupRow = memo(function GroupRow({
     );
 });
 
-export default function KhoThuocDialog({ open, onClose, onConfirm, cachedItems }) {
+export default function KhoThuocDialog({
+    open,
+    onClose,
+    onConfirm,
+    cachedItems,
+}) {
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(false);
     const [searchText, setSearchText] = useState("");
@@ -126,7 +142,10 @@ export default function KhoThuocDialog({ open, onClose, onConfirm, cachedItems }
     }, []);
 
     const handleQuantityChange = useCallback((ma, raw, stock) => {
-        const val = raw === "" ? "" : Math.min(stock, Math.max(1, parseInt(raw, 10) || 1));
+        const val =
+            raw === ""
+                ? ""
+                : Math.min(stock, Math.max(1, parseInt(raw, 10) || 1));
         setQuantities((prev) => ({ ...prev, [ma]: val }));
     }, []);
 
@@ -173,7 +192,9 @@ export default function KhoThuocDialog({ open, onClose, onConfirm, cachedItems }
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-            <DialogTitle sx={{ fontSize: 22, fontWeight: 600 }}>
+            <DialogTitle
+                sx={{ fontSize: 22, fontWeight: 600, textAlign: "center" }}
+            >
                 Kho thuốc
             </DialogTitle>
             <DialogContent sx={{ height: 500, overflow: "hidden" }}>
@@ -202,9 +223,21 @@ export default function KhoThuocDialog({ open, onClose, onConfirm, cachedItems }
                         columns={[
                             { key: "checkbox", label: "", sx: { width: 40 } },
                             { key: "ten_thuoc_vtyt", label: "Tên thuốc" },
-                            { key: "don_vi_tinh", label: "ĐVT", sx: { width: 70 } },
-                            { key: "so_luong", label: "Tồn kho", sx: { width: 70 } },
-                            { key: "sl_lay", label: "SL lấy", sx: { width: 110 } },
+                            {
+                                key: "don_vi_tinh",
+                                label: "ĐVT",
+                                sx: { width: 70 },
+                            },
+                            {
+                                key: "so_luong",
+                                label: "Tồn kho",
+                                sx: { width: 70 },
+                            },
+                            {
+                                key: "sl_lay",
+                                label: "SL lấy",
+                                sx: { width: 110 },
+                            },
                         ]}
                         sx={{ mt: 2, maxHeight: 450, overflowY: "auto" }}
                     >
@@ -229,8 +262,12 @@ export default function KhoThuocDialog({ open, onClose, onConfirm, cachedItems }
                                     <GroupRow
                                         key={item.ma_thuoc_vtyt}
                                         item={item}
-                                        selected={selected.has(item.ma_thuoc_vtyt)}
-                                        quantity={quantities[item.ma_thuoc_vtyt]}
+                                        selected={selected.has(
+                                            item.ma_thuoc_vtyt,
+                                        )}
+                                        quantity={
+                                            quantities[item.ma_thuoc_vtyt]
+                                        }
                                         onToggle={handleToggle}
                                         onQuantityChange={handleQuantityChange}
                                     />

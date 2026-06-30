@@ -4,7 +4,6 @@ from sqlalchemy import inspect
 from sqlalchemy.orm import Session
 
 from app.database.benh_an import BenhAn
-from app.database.benh_nhan_ra_vao import BenhNhanRaVao
 from app.database.chi_tiet_don_thuoc import ChiTietDonThuoc
 from app.database.di_tuyen_sau_dieu_tri import DiTuyenSauDieuTri
 from app.database.don_thuoc import DonThuoc
@@ -132,13 +131,6 @@ class MedicalExaminationService:
             giuong.trang_thai = "có người"
             self.db.flush()
 
-        bnrv = BenhNhanRaVao(
-            ma_benh_an=ba.ma_benh_an,
-            ma_kham_benh=kb_id,
-            ly_do=data.get("ly_do"),
-            ngay_vao=datetime.now().date(),
-        )
-        self.db.add(bnrv)
         self.db.commit()
         self.db.refresh(ba)
 
@@ -162,12 +154,6 @@ class MedicalExaminationService:
             giuong = self.db.query(Giuong).filter(Giuong.ma_giuong == ba.ma_giuong).first()
             if giuong:
                 giuong.trang_thai = "trống"
-
-        bnrv = self.db.query(BenhNhanRaVao).filter(
-            BenhNhanRaVao.ma_benh_an == ba_id
-        ).first()
-        if bnrv:
-            bnrv.ngay_ra = data.get("ngay_ra", datetime.now().date())
 
         self.db.commit()
         self.db.refresh(ba)
@@ -219,11 +205,15 @@ class MedicalExaminationService:
         self.db.refresh(dtsdt)
         return {"kham_benh": kb, "giay_gioi_thieu": ggt, "di_tuyen_sau_dieu_tri": dtsdt}
 
-    def receive_medicine(self, kb_id: str) -> KhamBenh:
+    def receive_medicine(self, kb_id: str, nguoi_dung_id: str | None = None) -> KhamBenh:
         kb = self.db.query(KhamBenh).filter(KhamBenh.ma_kham_benh == kb_id).first()
         if not kb:
             raise ValueError(f"KhamBenh {kb_id} not found")
         kb.trang_thai = "đã_nhận_thuốc"
+        if nguoi_dung_id:
+            dt = self.db.query(DonThuoc).filter(DonThuoc.ma_kham_benh == kb_id).first()
+            if dt:
+                dt.id_nguoi_dung = nguoi_dung_id
         self.db.commit()
         self.db.refresh(kb)
         return kb

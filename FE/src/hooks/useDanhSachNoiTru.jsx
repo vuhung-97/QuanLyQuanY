@@ -11,6 +11,9 @@ export default function useDanhSachNoiTru() {
     const [searchText, setSearchText] = useState("");
     const debouncedSearchText = useDebounce(searchText);
     const [filterMode, setFilterMode] = useState("dang_dieu_tri");
+    const currentYear = new Date().getFullYear();
+    const [filterNam, setFilterNam] = useState(null);
+    const [filterThang, setFilterThang] = useState(null);
     const [page, setPage] = useState(1);
     const [totalRecords, setTotalRecords] = useState(0);
 
@@ -30,6 +33,16 @@ export default function useDanhSachNoiTru() {
         setPage(1);
     }, []);
 
+    const handleFilterNamChange = useCallback((value) => {
+        setFilterNam(value || null);
+        setPage(1);
+    }, []);
+
+    const handleFilterThangChange = useCallback((value) => {
+        setFilterThang(value || null);
+        setPage(1);
+    }, []);
+
     const loadData = useCallback(async () => {
         setRefreshing(true);
         try {
@@ -37,6 +50,8 @@ export default function useDanhSachNoiTru() {
             const [resNoiTru, resChoNhapVien] = await Promise.all([
                 noiTruService.getDanhSachNoiTru({
                     trang_thai, limit: ROWS_PER_PAGE, offset,
+                    nam: filterNam || undefined,
+                    thang: filterThang || undefined,
                 }),
                 noiTruService.getDanhSachNhapVien({ limit: 1, offset: 0 }),
             ]);
@@ -53,7 +68,7 @@ export default function useDanhSachNoiTru() {
             setRefreshing(false);
             setInitialLoading(false);
         }
-    }, [filterMode, offset]);
+    }, [filterMode, offset, filterNam, filterThang]);
 
     useEffect(() => { loadData(); }, [loadData]);
 
@@ -128,6 +143,12 @@ export default function useDanhSachNoiTru() {
         loadData,
         filterMode,
         handleFilterModeChange,
+        filterNam,
+        setFilterNam,
+        handleFilterNamChange,
+        filterThang,
+        setFilterThang,
+        handleFilterThangChange,
         page,
         setPage,
         totalRecords,
