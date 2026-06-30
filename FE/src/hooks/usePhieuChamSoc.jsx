@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { noiTruService } from "@/services/noiTruService.js";
+import { updateThuocCacheItem } from "./useThuocList.jsx";
 
 export default function usePhieuChamSoc(maBenhAn) {
     const [records, setRecords] = useState([]);
@@ -41,9 +42,27 @@ export default function usePhieuChamSoc(maBenhAn) {
         try {
             if (editingRecord) {
                 await noiTruService.updatePhieuChamSoc(editingRecord.ma_phieu_cs, data);
+                const oldItems = editingRecord.chi_tiet || [];
+                const newItems = data.chi_tiet || [];
+                const oldMap = {};
+                oldItems.forEach((ct) => {
+                    oldMap[ct.ma_thuoc_vtyt] = (oldMap[ct.ma_thuoc_vtyt] || 0) + ct.so_luong;
+                });
+                const newMap = {};
+                newItems.forEach((ct) => {
+                    newMap[ct.ma_thuoc_vtyt] = (newMap[ct.ma_thuoc_vtyt] || 0) + ct.so_luong;
+                });
+                const allKeys = new Set([...Object.keys(oldMap), ...Object.keys(newMap)]);
+                allKeys.forEach((key) => {
+                    const delta = (oldMap[key] || 0) - (newMap[key] || 0);
+                    if (delta !== 0) updateThuocCacheItem(key, delta);
+                });
                 setSnackbar({ open: true, message: "Đã cập nhật phiếu chăm sóc.", severity: "success" });
             } else {
                 await noiTruService.createPhieuChamSoc({ ...data, ma_benh_an: maBenhAn });
+                (data.chi_tiet || []).forEach((ct) => {
+                    updateThuocCacheItem(ct.ma_thuoc_vtyt, -ct.so_luong);
+                });
                 setSnackbar({ open: true, message: "Đã thêm phiếu chăm sóc.", severity: "success" });
             }
             setOpenForm(false);

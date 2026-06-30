@@ -23,8 +23,6 @@ from app.routes.phieu_xuat_kho import router as phieu_xuat_kho_router
 from app.routes.vai_tro_tam_thoi import router as vai_tro_tam_thoi_router
 from app.routes.quan_nhan import router as quan_nhan_router
 from app.routes.quyen import router as quyen_router
-from app.routes.ra_benh_xa import router as ra_benh_xa_router
-from app.routes.so_nhap_xuat import router as so_nhap_xuat_router
 from app.routes.system import router as system_router
 from app.routes.thuoc_vtyt import router as thuoc_vtyt_router
 from app.routes.vai_tro import router as vai_tro_router
@@ -53,8 +51,6 @@ RESOURCE_ROUTERS = [
     phieu_xuat_kho_router,
     vai_tro_tam_thoi_router,
     quan_nhan_router,
-    ra_benh_xa_router,
-    so_nhap_xuat_router,
     thuoc_vtyt_router,
     quyen_router,
     vai_tro_router,

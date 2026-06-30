@@ -301,6 +301,7 @@ export default function DanhSachNoiTru() {
                 open={openChiTiet}
                 benhAnId={selectedBenhAnId}
                 onClose={handleCloseChiTiet}
+                onSaved={loadData}
             />
 
             <RaVienDialog

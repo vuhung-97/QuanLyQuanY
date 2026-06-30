@@ -26,7 +26,7 @@ import InfoItem from "@/components/NoiTru/common/InfoItem.jsx";
 import TinhTrangChip from "@/components/NoiTru/common/TinhTrangChip.jsx";
 import { formatDate } from "@/utils/date.js";
 
-export default function ChiTietBenhAn({ open, benhAnId, onClose }) {
+export default function ChiTietBenhAn({ open, benhAnId, onClose, onSaved }) {
     const [benhAn, setBenhAn] = useState(null);
     const [loading, setLoading] = useState(false);
     const [tabIndex, setTabIndex] = useState(0);
@@ -90,12 +90,13 @@ export default function ChiTietBenhAn({ open, benhAnId, onClose }) {
             setBenhAn(res.data || res);
             setOpenEditForm(false);
             setSnackbar({ open: true, message: "Cập nhật bệnh án thành công", severity: "success" });
+            onSaved?.();
         } catch {
             setSnackbar({ open: true, message: "Cập nhật bệnh án thất bại", severity: "error" });
         } finally {
             setSavingEdit(false);
         }
-    }, [benhAn, benhAnId]);
+    }, [benhAn, benhAnId, onSaved]);
 
     const headerFields = [
         { label: "Mã BA", value: benhAn?.ma_benh_an },

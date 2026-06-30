@@ -114,7 +114,7 @@ const PrescriptionRow = memo(
                             size="small"
                             label="Tên thuốc"
                             value={tenThuoc}
-                            InputProps={{ readOnly: true }}
+                            slotProps={{ readOnly: true }}
                             fullWidth
                         />
                     </Box>

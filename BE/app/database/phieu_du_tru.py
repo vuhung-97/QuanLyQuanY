@@ -1,6 +1,6 @@
 from datetime import date
 
-from sqlalchemy import Date, String, Text, func
+from sqlalchemy import Date, ForeignKey, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database.base import Base
@@ -13,3 +13,6 @@ class PhieuDuTru(Base):
     ma_phieu_du_tru: Mapped[str] = mapped_column(String(10), primary_key=True, default=lambda: generate_id(10))
     ngay_lap_phieu: Mapped[date | None] = mapped_column(Date, server_default=func.current_date(), nullable=True)
     ghi_chu: Mapped[str | None] = mapped_column(Text, nullable=True)
+    trang_thai: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    ma_don_vi: Mapped[str | None] = mapped_column(String(10), ForeignKey("don_vi.ma_don_vi", ondelete="SET NULL"), nullable=True)
+    nguoi_lap: Mapped[str | None] = mapped_column(String(10), nullable=True)

@@ -3,7 +3,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import useDebounce from "./useDebounce.jsx";
 import useFilterModePagination from "./useFilterModePagination.jsx";
 import { khamBenhService } from "@/services/khamBenhService.js";
-import { clearThuocCache } from "./useThuocList.jsx";
 
 export default function useCapThuoc() {
     const [examinations, setExaminations] = useState([]);
@@ -111,7 +110,6 @@ export default function useCapThuoc() {
         setDispensing(true);
         try {
             await khamBenhService.receiveMedicine(selectedExam.ma_kham_benh);
-            clearThuocCache();
             setSnackbar({
                 open: true,
                 message: `Đã cấp thuốc cho ${selectedExam.ho_ten} thành công.`,

@@ -98,7 +98,8 @@ export default function useDanhSachNoiTru() {
     const handleCloseChiTiet = useCallback(() => {
         setOpenChiTiet(false);
         setSelectedBenhAnId(null);
-    }, []);
+        loadData();
+    }, [loadData]);
 
     const handleRaVienClick = useCallback((id) => {
         setConfirmRaVien({ open: true, benhAnId: id });

@@ -1,4 +1,7 @@
-from sqlalchemy import Integer, String, Text
+from datetime import date
+from decimal import Decimal
+
+from sqlalchemy import Date, Integer, Numeric, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database.base import Base
@@ -17,3 +20,7 @@ class ThuocVtyt(Base):
     cap_chat_luong: Mapped[str | None] = mapped_column(String(100), nullable=True)
     phan_loai: Mapped[str | None] = mapped_column(String(100), nullable=True)
     mo_ta: Mapped[str | None] = mapped_column(Text, nullable=True)
+    han_su_dung: Mapped[date | None] = mapped_column(Date, nullable=True)
+    don_gia: Mapped[Decimal | None] = mapped_column(Numeric(15, 2), nullable=True)
+    nha_san_xuat: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    hoat_chat: Mapped[str | None] = mapped_column(String(255), nullable=True)

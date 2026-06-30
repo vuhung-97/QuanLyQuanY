@@ -52,6 +52,29 @@ class MedicalExaminationService:
         self.db.refresh(kb)
         return kb
 
+    def _decrement_stock(self, items: list[dict]) -> None:
+        for item in items:
+            thuoc = self.db.query(ThuocVtyt).filter(
+                ThuocVtyt.ma_thuoc_vtyt == item["ma_thuoc_vtyt"]
+            ).first()
+            if not thuoc:
+                raise ValueError(f"Thuốc {item['ma_thuoc_vtyt']} không tồn tại")
+            so_luong = item.get("so_luong", 1)
+            if (thuoc.so_luong or 0) < so_luong:
+                raise ValueError(
+                    f"Thuốc '{thuoc.ten_thuoc_vtyt}' không đủ số lượng: "
+                    f"còn {thuoc.so_luong or 0}, cần {so_luong}"
+                )
+            thuoc.so_luong = (thuoc.so_luong or 0) - so_luong
+
+    def _restore_stock(self, items: list) -> None:
+        for ct in items:
+            thuoc = self.db.query(ThuocVtyt).filter(
+                ThuocVtyt.ma_thuoc_vtyt == ct.ma_thuoc_vtyt
+            ).first()
+            if thuoc:
+                thuoc.so_luong = (thuoc.so_luong or 0) + ct.so_luong
+
     def complete_examination(self, kb_id: str, data: dict) -> KhamBenh:
         kb = self.db.query(KhamBenh).filter(KhamBenh.ma_kham_benh == kb_id).first()
         if not kb:
@@ -68,12 +91,17 @@ class MedicalExaminationService:
         if prescription_items:
             old_dts = self.db.query(DonThuoc).filter(DonThuoc.ma_kham_benh == kb_id).all()
             for old_dt in old_dts:
+                old_chi_tiet = self.db.query(ChiTietDonThuoc).filter(
+                    ChiTietDonThuoc.ma_don_thuoc == old_dt.ma_don_thuoc
+                ).all()
+                self._restore_stock(old_chi_tiet)
                 self.db.query(ChiTietDonThuoc).filter(
                     ChiTietDonThuoc.ma_don_thuoc == old_dt.ma_don_thuoc
                 ).delete()
                 self.db.delete(old_dt)
             self.db.flush()
 
+            self._decrement_stock(prescription_items)
             dt = DonThuoc(
                 ma_quan_nhan=kb.ma_quan_nhan,
                 ma_kham_benh=kb_id,
@@ -215,20 +243,6 @@ class MedicalExaminationService:
             dt = self.db.query(DonThuoc).filter(DonThuoc.ma_kham_benh == kb_id).first()
             if dt:
                 dt.id_nguoi_dung = nguoi_dung_id
-                chi_tiet_list = self.db.query(ChiTietDonThuoc).filter(
-                    ChiTietDonThuoc.ma_don_thuoc == dt.ma_don_thuoc
-                ).all()
-                for ct in chi_tiet_list:
-                    thuoc = self.db.query(ThuocVtyt).filter(
-                        ThuocVtyt.ma_thuoc_vtyt == ct.ma_thuoc_vtyt
-                    ).first()
-                    if thuoc:
-                        if thuoc.so_luong < ct.so_luong:
-                            raise ValueError(
-                                f"Thuốc '{thuoc.ten_thuoc_vtyt}' (mã: {thuoc.ma_thuoc_vtyt}) "
-                                f"không đủ số lượng: còn {thuoc.so_luong}, cần {ct.so_luong}"
-                            )
-                        thuoc.so_luong -= ct.so_luong
         self.db.commit()
         self.db.refresh(kb)
         return kb

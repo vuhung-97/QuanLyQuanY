@@ -2,12 +2,18 @@ import { useCallback, useRef } from "react";
 import { khamBenhService } from "@/services/khamBenhService.js";
 
 let sharedCache = null;
+let lastFetchTime = 0;
+const CACHE_TTL_MS = 5 * 60 * 1000;
 
 export default function useThuocList() {
     const cacheRef = useRef(sharedCache);
+    const fetchTimeRef = useRef(lastFetchTime);
 
-    const fetchAll = useCallback(async () => {
-        if (cacheRef.current) return cacheRef.current;
+    const fetchAll = useCallback(async ({ force } = {}) => {
+        const now = Date.now();
+        if (!force && cacheRef.current && (now - fetchTimeRef.current) < CACHE_TTL_MS) {
+            return cacheRef.current;
+        }
         const LIMIT = 500;
         let offset = 0;
         let all = [];
@@ -24,9 +30,13 @@ export default function useThuocList() {
             offset += LIMIT;
         }
         sharedCache = all;
+        lastFetchTime = Date.now();
         cacheRef.current = all;
+        fetchTimeRef.current = lastFetchTime;
         return all;
     }, []);
+
+    const refreshAll = useCallback(() => fetchAll({ force: true }), [fetchAll]);
 
     const searchThuoc = useCallback(async (keyword) => {
         const res = await khamBenhService.searchThuoc(keyword);
@@ -35,9 +45,20 @@ export default function useThuocList() {
 
     const getCache = useCallback(() => cacheRef.current || [], []);
 
-    return { fetchAll, searchThuoc, getCache };
+    return { fetchAll, refreshAll, searchThuoc, getCache, clearThuocCache };
 }
 
 export function clearThuocCache() {
     sharedCache = null;
+    lastFetchTime = 0;
+}
+
+export function updateThuocCacheItem(maThuocVtyt, delta) {
+    if (!sharedCache) return;
+    for (const item of sharedCache) {
+        if (item.ma_thuoc_vtyt === maThuocVtyt) {
+            item.so_luong = (item.so_luong || 0) + delta;
+            break;
+        }
+    }
 }

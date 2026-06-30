@@ -1,3 +1,6 @@
+from datetime import date
+from decimal import Decimal
+
 from app.schemas.base import SchemaBase
 from pydantic import Field
 
@@ -11,6 +14,10 @@ class ThuocVtytBase(SchemaBase):
     cap_chat_luong: str | None = Field(default=None, max_length=100)
     phan_loai: str | None = Field(default=None, max_length=100)
     mo_ta: str | None = Field(default=None)
+    han_su_dung: date | None = None
+    don_gia: Decimal | None = Field(default=None, ge=0)
+    nha_san_xuat: str | None = Field(default=None, max_length=255)
+    hoat_chat: str | None = Field(default=None, max_length=255)
 
 class ThuocVtytCreate(ThuocVtytBase):
     ma_thuoc_vtyt: str | None = None
@@ -24,6 +31,10 @@ class ThuocVtytUpdate(SchemaBase):
     cap_chat_luong: str | None = Field(default=None, max_length=100)
     phan_loai: str | None = Field(default=None, max_length=100)
     mo_ta: str | None = Field(default=None)
+    han_su_dung: date | None = None
+    don_gia: Decimal | None = Field(default=None, ge=0)
+    nha_san_xuat: str | None = Field(default=None, max_length=255)
+    hoat_chat: str | None = Field(default=None, max_length=255)
 
 
 class ThuocVtytRead(ThuocVtytBase):

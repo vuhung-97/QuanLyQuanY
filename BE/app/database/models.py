@@ -3,6 +3,7 @@ from app.database.buong import Buong
 from app.database.chi_tiet_don_thuoc import ChiTietDonThuoc
 from app.database.chi_tiet_du_tru import ChiTietDuTru
 from app.database.chi_tiet_phieu_cham_soc import ChiTietPhieuChamSoc
+from app.database.chi_tiet_phieu_nhap_kho import ChiTietPhieuNhapKho
 from app.database.chi_tiet_xuat_kho import ChiTietXuatKho
 from app.database.di_tuyen_sau_dieu_tri import DiTuyenSauDieuTri
 from app.database.don_thuoc import DonThuoc
@@ -20,12 +21,11 @@ from app.database.phieu_cham_soc import PhieuChamSoc
 from app.database.phieu_du_tru import PhieuDuTru
 from app.database.phan_cong_nhiem_vu import PhanCongNhiemVu
 from app.database.phieu_kham_suc_khoe import PhieuKhamSucKhoe
+from app.database.phieu_nhap_kho import PhieuNhapKho
 from app.database.phieu_xuat_kho import PhieuXuatKho
 from app.database.vai_tro_tam_thoi import VaiTroTamThoi
 from app.database.quyen import Quyen
 from app.database.quan_nhan import QuanNhan
-from app.database.ra_benh_xa import RaBenhXa
-from app.database.so_nhap_xuat import SoNhapXuat
 from app.database.thuoc_vtyt import ThuocVtyt
 from app.database.vai_tro import VaiTro
 from app.database.vai_tro_quyen import VaiTroQuyen
@@ -36,6 +36,7 @@ MODEL_REGISTRY = {
     "chi_tiet_don_thuoc": ChiTietDonThuoc,
     "chi_tiet_du_tru": ChiTietDuTru,
     "chi_tiet_phieu_cham_soc": ChiTietPhieuChamSoc,
+    "chi_tiet_phieu_nhap_kho": ChiTietPhieuNhapKho,
     "chi_tiet_xuat_kho": ChiTietXuatKho,
     "di_tuyen_sau_dieu_tri": DiTuyenSauDieuTri,
     "don_thuoc": DonThuoc,
@@ -53,12 +54,11 @@ MODEL_REGISTRY = {
     "phieu_du_tru": PhieuDuTru,
     "phan_cong_nhiem_vu": PhanCongNhiemVu,
     "phieu_kham_suc_khoe": PhieuKhamSucKhoe,
+    "phieu_nhap_kho": PhieuNhapKho,
     "phieu_xuat_kho": PhieuXuatKho,
     "vai_tro_tam_thoi": VaiTroTamThoi,
     "quyen": Quyen,
     "quan_nhan": QuanNhan,
-    "ra_benh_xa": RaBenhXa,
-    "so_nhap_xuat": SoNhapXuat,
     "thuoc_vtyt": ThuocVtyt,
     "vai_tro": VaiTro,
     "vai_tro_quyen": VaiTroQuyen,
@@ -70,6 +70,7 @@ __all__ = [
     "ChiTietDonThuoc",
     "ChiTietDuTru",
     "ChiTietPhieuChamSoc",
+    "ChiTietPhieuNhapKho",
     "ChiTietXuatKho",
     "DiTuyenSauDieuTri",
     "DonThuoc",
@@ -88,12 +89,11 @@ __all__ = [
     "PhieuDuTru",
     "PhanCongNhiemVu",
     "PhieuKhamSucKhoe",
+    "PhieuNhapKho",
     "PhieuXuatKho",
     "VaiTroTamThoi",
     "Quyen",
     "QuanNhan",
-    "RaBenhXa",
-    "SoNhapXuat",
     "ThuocVtyt",
     "VaiTro",
     "VaiTroQuyen",
