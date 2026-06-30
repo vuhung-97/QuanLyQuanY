@@ -11,6 +11,7 @@ from app.database.giay_gioi_thieu import GiayGioiThieu
 from app.database.giuong import Giuong
 from app.database.kham_benh import KhamBenh
 from app.database.nhat_ky_thao_tac import NhatKyThaoTac
+from app.database.thuoc_vtyt import ThuocVtyt
 
 
 class MedicalExaminationService:
@@ -214,6 +215,20 @@ class MedicalExaminationService:
             dt = self.db.query(DonThuoc).filter(DonThuoc.ma_kham_benh == kb_id).first()
             if dt:
                 dt.id_nguoi_dung = nguoi_dung_id
+                chi_tiet_list = self.db.query(ChiTietDonThuoc).filter(
+                    ChiTietDonThuoc.ma_don_thuoc == dt.ma_don_thuoc
+                ).all()
+                for ct in chi_tiet_list:
+                    thuoc = self.db.query(ThuocVtyt).filter(
+                        ThuocVtyt.ma_thuoc_vtyt == ct.ma_thuoc_vtyt
+                    ).first()
+                    if thuoc:
+                        if thuoc.so_luong < ct.so_luong:
+                            raise ValueError(
+                                f"Thuốc '{thuoc.ten_thuoc_vtyt}' (mã: {thuoc.ma_thuoc_vtyt}) "
+                                f"không đủ số lượng: còn {thuoc.so_luong}, cần {ct.so_luong}"
+                            )
+                        thuoc.so_luong -= ct.so_luong
         self.db.commit()
         self.db.refresh(kb)
         return kb

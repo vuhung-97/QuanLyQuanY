@@ -55,20 +55,6 @@ const PrescriptionRow = memo(
             initialData?.cach_su_dung ?? "uong",
         );
         const [ghiChu, setGhiChu] = useState(initialData?.ghi_chu ?? "");
-        const [inputValue, setInputValue] = useState(
-            initialData?.ten_thuoc_vtyt ?? "",
-        );
-        const [options, setOptions] = useState(
-            initialData?.ma_thuoc_vtyt && initialData?.ten_thuoc_vtyt
-                ? [
-                      {
-                          ma_thuoc_vtyt: initialData.ma_thuoc_vtyt,
-                          ten_thuoc_vtyt: initialData.ten_thuoc_vtyt,
-                          don_vi_tinh: initialData.don_vi_tinh,
-                      },
-                  ]
-                : [],
-        );
 
         useImperativeHandle(
             ref,
@@ -108,22 +94,6 @@ const PrescriptionRow = memo(
             ],
         );
 
-        useEffect(() => {
-            if (inputValue.length < 1) {
-                setOptions([]);
-                return;
-            }
-            const timer = setTimeout(async () => {
-                try {
-                    const res = await khamBenhService.searchThuoc(inputValue);
-                    setOptions(res.data || []);
-                } catch {
-                    setOptions([]);
-                }
-            }, 300);
-            return () => clearTimeout(timer);
-        }, [inputValue]);
-
         return (
             <Stack
                 spacing={1.5}
@@ -140,28 +110,12 @@ const PrescriptionRow = memo(
                     sx={{ alignItems: "center" }}
                 >
                     <Box sx={{ flex: 2, minWidth: 0 }}>
-                        <Autocomplete
+                        <TextField
                             size="small"
-                            options={options}
-                            inputValue={inputValue}
-                            onInputChange={(_, v) => setInputValue(v)}
-                            getOptionLabel={(o) => o.ten_thuoc_vtyt || ""}
-                            isOptionEqualToValue={(o, v) =>
-                                o.ma_thuoc_vtyt === v.ma_thuoc_vtyt
-                            }
-                            value={
-                                options.find(
-                                    (o) => o.ma_thuoc_vtyt === maThuoc,
-                                ) || null
-                            }
-                            onChange={(_, newVal) => {
-                                setMaThuoc(newVal?.ma_thuoc_vtyt || "");
-                                setTenThuoc(newVal?.ten_thuoc_vtyt || "");
-                                setDonViTinh(newVal?.don_vi_tinh || "");
-                            }}
-                            renderInput={(params) => (
-                                <TextField {...params} label="Tên thuốc" />
-                            )}
+                            label="Tên thuốc"
+                            value={tenThuoc}
+                            InputProps={{ readOnly: true }}
+                            fullWidth
                         />
                     </Box>
                     <TextField

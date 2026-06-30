@@ -168,7 +168,10 @@ def get_kham_benh_detail(id: str, db: Session = Depends(get_db)):
 )
 def nhan_thuoc(id: str, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
     service = MedicalExaminationService(db)
-    return service.receive_medicine(id, nguoi_dung_id=current_user.id)
+    try:
+        return service.receive_medicine(id, nguoi_dung_id=current_user.id)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.post(
