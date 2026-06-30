@@ -28,6 +28,7 @@ export const noiTruService = {
         }),
 
     getBuong: (params) => api.get("/buong", { params }),
+    getBuongCoGiuongTrong: () => api.get("/buong/list/co-giuong-trong"),
     getGiuongTrong: (maBuong) => api.get("/giuong/trong", { params: { ma_buong: maBuong } }),
 
     createBuong: (data) => api.post("/buong", data),

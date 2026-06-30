@@ -14,10 +14,10 @@ from app.database.vai_tro import VaiTro
 from app.database.quan_nhan import QuanNhan
 from app.database.session import get_db
 from app.database.thuoc_vtyt import ThuocVtyt
-from app.routes.base import create_crud_router
+from app.routes.base import _run_crud, create_crud_router
 from app.database.buong import Buong
 from app.database.giuong import Giuong
-from app.schemas.benh_an import BenhAnCreate, BenhAnReadDetail
+from app.schemas.benh_an import BenhAnCreate, BenhAnReadDetail, BenhAnUpdate
 from app.services.medical_examination import MedicalExaminationService
 
 
@@ -29,6 +29,7 @@ router = create_crud_router(
     update_permission="benh_an:update",
     delete_permission="benh_an:delete",
     enable_create=False,
+    enable_update=False,
 )
 
 
@@ -50,6 +51,34 @@ def create_benh_an(data: dict, db: Session = Depends(get_db), current_user = Dep
     payload = BenhAnCreate(**data)
     ba = benh_an_crud.create(db, payload, nguoi_dung_id=current_user.id)
     return {c.key: getattr(ba, c.key) for c in inspect(BenhAn).columns}
+
+
+@router.patch(
+    "/{item_id}",
+    dependencies=[Depends(require_permissions("benh_an:update"))],
+)
+def update_benh_an(
+    item_id: str,
+    payload: BenhAnUpdate,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    ba = benh_an_crud.get(db, item_id)
+    old_buong = ba.ma_buong
+    old_giuong = ba.ma_giuong
+
+    result = _run_crud(lambda: benh_an_crud.update(db, item_id, payload, nguoi_dung_id=current_user.id))
+
+    new_buong = payload.ma_buong
+    new_giuong = payload.ma_giuong
+
+    if new_buong and new_giuong and (new_buong != old_buong or new_giuong != old_giuong):
+        if old_giuong:
+            db.query(Giuong).filter(Giuong.ma_giuong == old_giuong).update({"trang_thai": "trống"})
+        db.query(Giuong).filter(Giuong.ma_giuong == new_giuong).update({"trang_thai": "có người"})
+        db.commit()
+
+    return {c.key: getattr(result, c.key) for c in inspect(BenhAn).columns}
 
 
 @router.get(

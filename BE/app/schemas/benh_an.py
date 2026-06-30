@@ -27,6 +27,8 @@ class BenhAnCreate(BenhAnBase):
 
 class BenhAnUpdate(SchemaBase):
     ma_quan_nhan: str | None = None
+    ma_buong: str | None = None
+    ma_giuong: str | None = None
     ma_kham_benh: str | None = None
     trang_thai: str | None = None
     ngay_nhap_vien: date | None = None

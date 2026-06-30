@@ -64,11 +64,14 @@ export default function useLapBenhAnForm({ open, onSave: externalSave, benhAn })
     useEffect(() => {
         if (open) {
             setLoadingBuong(true);
-            noiTruService.getBuong({ limit: 100 })
+            const fetch = isEdit
+                ? noiTruService.getBuong({ limit: 100 })
+                : noiTruService.getBuongCoGiuongTrong();
+            fetch
                 .then((res) => setBuongList(Array.isArray(res.data) ? res.data : res.data?.data || []))
                 .finally(() => setLoadingBuong(false));
         }
-    }, [open]);
+    }, [open, isEdit]);
 
     useEffect(() => {
         if (open) {
@@ -102,12 +105,31 @@ export default function useLapBenhAnForm({ open, onSave: externalSave, benhAn })
         if (maBuong) {
             setLoadingGiuong(true);
             noiTruService.getGiuongTrong(maBuong)
-                .then((res) => setGiuongList(res.data?.data || []))
+                .then((res) => {
+                    let list = res.data?.data || [];
+                    if (isEdit && benhAn?.ma_giuong) {
+                        const exists = list.some(
+                            (g) => g.ma_giuong === benhAn.ma_giuong,
+                        );
+                        if (!exists) {
+                            list = [
+                                ...list,
+                                {
+                                    ma_giuong: benhAn.ma_giuong,
+                                    ten_giuong: benhAn.ten_giuong,
+                                    ma_buong: benhAn.ma_buong,
+                                    trang_thai: "có người",
+                                },
+                            ];
+                        }
+                    }
+                    setGiuongList(list);
+                })
                 .finally(() => setLoadingGiuong(false));
         } else {
             setGiuongList([]);
         }
-    }, [maBuong]);
+    }, [maBuong, isEdit, benhAn?.ma_giuong, benhAn?.ten_giuong, benhAn?.ma_buong]);
 
     const getVal = (ref) => ref.current?.value || "";
 
@@ -118,10 +140,9 @@ export default function useLapBenhAnForm({ open, onSave: externalSave, benhAn })
         setErrors(newErrors);
         if (newErrors.ma_buong || newErrors.ma_giuong) return;
 
-        externalSave({
+        const payload = {
             ma_buong: maBuong,
             ma_giuong: maGiuong,
-            ngay_nhap_vien: ngayNhapVien,
             ly_do_nhap_vien: getVal(lyDoRef),
             doi_tuong: "",
             quan_ly_nguoi_benh: "",
@@ -133,8 +154,12 @@ export default function useLapBenhAnForm({ open, onSave: externalSave, benhAn })
                 ...(chiTietRef.current?.getValues() || {}),
             }),
             ly_do: getVal(lyDoRef),
-        });
-    }, [maBuong, maGiuong, ngayNhapVien, externalSave]);
+        };
+        if (!isEdit) {
+            payload.ngay_nhap_vien = ngayNhapVien;
+        }
+        externalSave(payload);
+    }, [maBuong, maGiuong, ngayNhapVien, isEdit, externalSave]);
 
     const selectedBuong = buongList.find((b) => b.ma_buong === maBuong) || null;
     const selectedGiuong = giuongList.find((g) => g.ma_giuong === maGiuong) || null;

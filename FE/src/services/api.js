@@ -1,4 +1,5 @@
 import axios from "axios";
+import { STORAGE_KEYS } from "@/components/layout/common/constants";
 
 export function decodeJWT(token) {
     try {
@@ -11,9 +12,9 @@ export function decodeJWT(token) {
 }
 
 export function clearAuth() {
-    localStorage.removeItem("datamed_access_token");
-    localStorage.removeItem("datamed_token_exp");
-    localStorage.removeItem("datamed_user_role");
+    localStorage.removeItem(STORAGE_KEYS.token);
+    localStorage.removeItem(STORAGE_KEYS.tokenExp);
+    localStorage.removeItem(STORAGE_KEYS.userRole);
 }
 
 const api = axios.create({
@@ -22,7 +23,7 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-    const token = localStorage.getItem("datamed_access_token");
+    const token = localStorage.getItem(STORAGE_KEYS.token);
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
