@@ -263,7 +263,7 @@ export default function RolePermissionPage() {
 
     return (
         <Stack spacing={3}>
-            <AdminPageHeader
+            {/* <AdminPageHeader
                 title="Vai trò & phân quyền"
                 description="Quản lý vai trò, quyền truy cập và gán quyền nghiệp vụ cho tài khoản."
                 action={
@@ -276,7 +276,7 @@ export default function RolePermissionPage() {
                         Thêm vai trò
                     </Button>
                 }
-            />
+            /> */}
 
             <Grid container spacing={2.5}>
                 <Grid size={{ xs: 12, md: 4 }}>
