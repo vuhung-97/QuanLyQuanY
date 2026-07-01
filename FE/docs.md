@@ -27,6 +27,7 @@ FE/
     │   │   ├── ConfirmDialog.jsx
     │   │   ├── DataTable.jsx
     │   │   ├── DatePicker.jsx
+    │   │   ├── DialogTitleWrapper.jsx
     │   │   ├── DonThuoc.jsx
     │   │   ├── FeedbackSnackbar.jsx
     │   │   ├── FilterModeToggle.jsx

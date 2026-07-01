@@ -4,10 +4,10 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
-    DialogTitle,
     Stack,
     Typography,
 } from "@mui/material";
+import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
 import DonThuocTable from "@/components/common/DonThuoc.jsx";
 import { STATUS_MAP } from "@/constants/khamBenhConstants.js";
 import { parseDonThuocToRows } from "@/utils/khamBenhUtils.js";
@@ -40,19 +40,11 @@ export default function CapThuocForm({
                 paper: { sx: { "@media print": { boxShadow: "none" } } },
             }}
         >
-            <DialogTitle
-                sx={{ pb: 0, mb: 2, "@media print": { display: "none" } }}
+            <DialogTitleWrapper
+                sx={{ "@media print": { display: "none" } }}
             >
-                <Typography
-                    sx={{
-                        fontSize: 20,
-                        fontWeight: 600,
-                        textAlign: "center",
-                    }}
-                >
-                    {isDaNhanThuoc ? "Đơn thuốc đã cấp" : "Cấp thuốc"}
-                </Typography>
-            </DialogTitle>
+                {isDaNhanThuoc ? "Đơn thuốc đã cấp" : "Cấp thuốc"}
+            </DialogTitleWrapper>
 
             <DialogContent dividers sx={{ pt: 0 }}>
                 {loading ? (

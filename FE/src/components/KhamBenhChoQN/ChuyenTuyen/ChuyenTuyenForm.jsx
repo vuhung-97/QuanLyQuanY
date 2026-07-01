@@ -6,7 +6,6 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
-    DialogTitle,
     Stack,
     Table,
     TableBody,
@@ -16,6 +15,7 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
+import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
 import DatePicker from "@/components/common/DatePicker.jsx";
 import DonThuocTable from "@/components/common/DonThuoc.jsx";
 import ChuyenTuyenPrint from "./ChuyenTuyenPrint.jsx";
@@ -112,17 +112,9 @@ export default function ChuyenTuyenForm({
             }}
         >
             <Box sx={{ "@media print": { display: "none" } }}>
-                <DialogTitle sx={{ pb: 0, mb: 2 }}>
-                    <Typography
-                        sx={{
-                            fontSize: 20,
-                            fontWeight: 600,
-                            textAlign: "center",
-                        }}
-                    >
-                        Thông tin chuyển tuyến
-                    </Typography>
-                </DialogTitle>
+                <DialogTitleWrapper>
+                    Thông tin chuyển tuyến
+                </DialogTitleWrapper>
             </Box>
 
             <DialogContent dividers sx={{ pt: 0 }}>

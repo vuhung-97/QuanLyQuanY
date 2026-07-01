@@ -7,12 +7,12 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
-    DialogTitle,
     Grid,
     Stack,
     TextField,
     Typography,
 } from "@mui/material";
+import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
 import useLapBenhAnForm from "../../../hooks/useLapBenhAnForm";
 import PatientInfoCard from "./PatientInfoCard";
 import ChiTietBenhAnFields from "./ChiTietBenhAnFields";
@@ -58,13 +58,9 @@ export default function LapBenhAnForm({
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-            <DialogTitle>
-                <Typography
-                    sx={{ fontSize: 20, fontWeight: 600, textAlign: "center" }}
-                >
-                    {isEdit ? "Sửa bệnh án nội trú" : "Lập bệnh án nội trú"}
-                </Typography>
-            </DialogTitle>
+            <DialogTitleWrapper>
+                {isEdit ? "Sửa bệnh án nội trú" : "Lập bệnh án nội trú"}
+            </DialogTitleWrapper>
             <DialogContent dividers>
                 {infoSource && (
                     <Stack spacing={3}>

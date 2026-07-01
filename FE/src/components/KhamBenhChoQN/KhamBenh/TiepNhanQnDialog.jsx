@@ -3,11 +3,11 @@ import {
     Autocomplete,
     Dialog,
     DialogContent,
-    DialogTitle,
     Stack,
     TablePagination,
     TextField,
 } from "@mui/material";
+import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
 import useDebounce from "@/hooks/useDebounce.jsx";
 import { khamBenhService } from "@/services/khamBenhService.js";
 import DataTable from "@/components/common/DataTable.jsx";
@@ -165,11 +165,9 @@ export default function TiepNhanQnDialog({ open, onClose, onSelected }) {
             fullWidth
             slotProps={{ paper: { sx: { height: "90vh", width: "70%" } } }}
         >
-            <DialogTitle
-                sx={{ textAlign: "center", fontSize: 20, fontWeight: 600 }}
-            >
+            <DialogTitleWrapper wrap={false}>
                 Danh sách quân nhân
-            </DialogTitle>
+            </DialogTitleWrapper>
             <DialogContent dividers>
                 <Stack direction="row" spacing={2} sx={{ mt: 1, mb: 2 }}>
                     <Autocomplete

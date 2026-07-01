@@ -5,7 +5,6 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
-    DialogTitle,
     FormControl,
     MenuItem,
     Select,
@@ -14,6 +13,7 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
+import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
 import useLapLichDialog from "@/hooks/useLapLichDialog";
 import DataTable from "@/components/common/DataTable.jsx";
 import ChonNgayGio from "./ChonNgayGio.jsx";
@@ -197,13 +197,11 @@ export default function LapLichDialog({
             sx={{ width: "70vw", height: "90vh", m: "auto" }}
         >
             <Box component="form" onSubmit={handleSubmit}>
-                <DialogTitle
-                    sx={{ fontSize: 20, fontWeight: 600, textAlign: "center" }}
-                >
+                <DialogTitleWrapper wrap={false}>
                     {isEdit
                         ? "Sửa lịch khám sức khỏe định kỳ"
                         : "Tạo lịch khám sức khỏe định kỳ"}
-                </DialogTitle>
+                </DialogTitleWrapper>
                 <DialogContent dividers sx={{ overflow: "auto" }}>
                     {error && (
                         <Typography

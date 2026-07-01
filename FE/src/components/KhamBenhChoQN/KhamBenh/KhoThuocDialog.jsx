@@ -12,12 +12,12 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
-    DialogTitle,
     TableCell,
     TableRow,
     TextField,
     Typography,
 } from "@mui/material";
+import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
 import SearchBar from "@/components/common/SearchBar.jsx";
 import useDebounce from "@/hooks/useDebounce.jsx";
 import DataTable from "@/components/common/DataTable.jsx";
@@ -198,11 +198,9 @@ export default function KhoThuocDialog({
             fullWidth
             height="90vh"
         >
-            <DialogTitle
-                sx={{ fontSize: 20, fontWeight: 600, textAlign: "center" }}
-            >
+            <DialogTitleWrapper wrap={false}>
                 Kho thuốc
-            </DialogTitle>
+            </DialogTitleWrapper>
             <DialogContent dividers sx={{ overflow: "hidden", pb: 0 }}>
                 <SearchBar
                     value={searchText}

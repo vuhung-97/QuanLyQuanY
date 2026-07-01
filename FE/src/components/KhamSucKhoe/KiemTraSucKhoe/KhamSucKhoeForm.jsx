@@ -4,7 +4,6 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
-    DialogTitle,
     Grid,
     Tab,
     Tabs,
@@ -27,29 +26,14 @@ import TongQuanTab from "./tabs/TongQuanTab";
 import LamSangTab from "./tabs/LamSangTab";
 import XetNghiemTab from "./tabs/XetNghiemTab";
 import ChanDoanHinhAnhTab from "./tabs/ChanDoanHinhAnhTab";
+import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
 import KetLuanTab from "./tabs/KetLuanTab";
 
 function FormHeader({ quanNhan }) {
     return (
-        <DialogTitle
-            component="div"
-            sx={{
-                bgcolor: "background.paper",
-                textAlign: "center",
-            }}
-        >
-            <Typography
-                fontWeight="bold"
-                color="primary"
-                sx={{
-                    fontSize: 20,
-                    fontWeight: 600,
-                    textAlign: "center",
-                }}
-            >
-                Phiếu khám sức khỏe định kỳ
-            </Typography>
-        </DialogTitle>
+        <DialogTitleWrapper>
+            Phiếu khám sức khỏe định kỳ
+        </DialogTitleWrapper>
     );
 }
 
@@ -238,7 +222,7 @@ export default function KhamSucKhoeForm({
             slotProps={{
                 paper: {
                     sx: {
-                        bgcolor: (theme) => theme.palette.background.default,
+                        bgcolor: (theme) => theme.palette.background.paper,
                     },
                 },
             }}

@@ -14,7 +14,6 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
-    DialogTitle,
     IconButton,
     Stack,
     TextField,
@@ -24,6 +23,7 @@ import {
     Delete as DeleteIcon,
     MedicalServices as MedicalServicesIcon,
 } from "@mui/icons-material";
+import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
 import KhoThuocDialog from "./KhoThuocDialog.jsx";
 import {
     THOI_DIEM_OPTIONS,
@@ -340,13 +340,12 @@ export default function DonThuocForm({ open, onClose, onSave, initialItems }) {
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-            <DialogTitle
+            <DialogTitleWrapper
+                wrap={false}
                 sx={{
                     display: "flex",
                     textAlign: "center",
                     justifyContent: "space-between",
-                    fontSize: 20,
-                    fontWeight: 600,
                 }}
             >
                 Kê đơn thuốc
@@ -358,7 +357,7 @@ export default function DonThuocForm({ open, onClose, onSave, initialItems }) {
                 >
                     Kho thuốc
                 </Button>
-            </DialogTitle>
+            </DialogTitleWrapper>
             <DialogContent dividers>
                 <Stack spacing={2} sx={{ pt: 1 }}>
                     {rows.map(({ key, initial }) => (

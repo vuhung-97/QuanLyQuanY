@@ -2,12 +2,12 @@ import {
     Chip,
     Dialog,
     DialogContent,
-    DialogTitle,
     List,
     ListItemButton,
     ListItemText,
     Typography,
 } from "@mui/material";
+import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
 import { getPhanLoai } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
 import useLichSuKham from "@/hooks/useLichSuKham.jsx";
 
@@ -21,13 +21,10 @@ export default function LichSuKhamDialog({
 
     return (
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-            <DialogTitle
-                component="div"
-                sx={{ fontSize: 20, fontWeight: 600, textAlign: "center" }}
-            >
+            <DialogTitleWrapper wrap={false}>
                 Lịch sử khám sức khỏe — {quanNhan?.ho_ten} (
                 {quanNhan?.ma_quan_nhan})
-            </DialogTitle>
+            </DialogTitleWrapper>
             <DialogContent dividers>
                 {loading && (
                     <Typography

@@ -4,13 +4,13 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
-    DialogTitle,
     Grid,
     IconButton,
     Stack,
     TextField,
     Typography,
 } from "@mui/material";
+import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
 import { Delete as DeleteIcon, Add as AddIcon } from "@mui/icons-material";
 import KhoThuocDialog from "@/components/KhamBenhChoQN/KhamBenh/KhoThuocDialog.jsx";
 
@@ -81,16 +81,19 @@ export default function PhieuChamSocForm({
     return (
         <>
             <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-                <DialogTitle
-                    sx={{ fontSize: 20, fontWeight: 700, textAlign: "center" }}
-                >
+                <DialogTitleWrapper wrap={false}>
                     {initialData ? "Sửa phiếu chăm sóc" : "Thêm phiếu chăm sóc"}
-                </DialogTitle>
+                </DialogTitleWrapper>
                 <DialogContent dividers>
                     <Stack spacing={3}>
                         {readOnly && (
-                            <Typography variant="body2" color="warning.main" sx={{ fontWeight: 600 }}>
-                                Bệnh án đã xuất viện, không thể thay đổi phiếu chăm sóc.
+                            <Typography
+                                variant="body2"
+                                color="warning.main"
+                                sx={{ fontWeight: 600 }}
+                            >
+                                Bệnh án đã xuất viện, không thể thay đổi phiếu
+                                chăm sóc.
                             </Typography>
                         )}
                         <Grid container spacing={2}>

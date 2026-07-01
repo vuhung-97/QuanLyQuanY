@@ -8,7 +8,6 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
-    DialogTitle,
     Grid,
     Stack,
     TextField,
@@ -18,6 +17,7 @@ import useKhamBenhForm from "@/hooks/useKhamBenhForm.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import DonThuocForm from "./DonThuocForm.jsx";
 import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
+import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
 import DonThuocTable from "@/components/common/DonThuoc.jsx";
 import symptoms from "@/data/trieu_chung.json";
 import { formatDate } from "@/utils/date.js";
@@ -338,22 +338,14 @@ export default function KhamBenhForm({
                 fullWidth
                 slotProps={{ paper: { sx: { height: "80vh" } } }}
             >
-                <DialogTitle>
-                    <Typography
-                        sx={{
-                            fontSize: 20,
-                            fontWeight: 600,
-                            textAlign: "center",
-                        }}
-                    >
-                        Khám bệnh
-                    </Typography>
+                <DialogTitleWrapper wrap={false}>
+                    Khám bệnh
                     {loading && (
                         <Typography variant="body2" color="text.secondary">
                             Đang tải...
                         </Typography>
                     )}
-                </DialogTitle>
+                </DialogTitleWrapper>
                 <DialogContent dividers>
                     {!exam ? (
                         <Typography

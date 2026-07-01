@@ -7,13 +7,13 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
-    DialogTitle,
     Grid,
     Stack,
     Tab,
     Tabs,
     Typography,
 } from "@mui/material";
+import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
 import { noiTruService } from "@/services/noiTruService.js";
 import usePhieuChamSoc from "@/hooks/usePhieuChamSoc.jsx";
 import PhieuChamSocForm from "./PhieuChamSocForm.jsx";
@@ -136,17 +136,9 @@ export default function ChiTietBenhAn({ open, benhAnId, onClose, onSaved }) {
                 fullWidth
                 sx={{ "& .MuiDialog-paper": { height: "90vh" } }}
             >
-                <DialogTitle>
-                    <Typography
-                        sx={{
-                            fontSize: 20,
-                            fontWeight: 600,
-                            textAlign: "center",
-                        }}
-                    >
-                        Chi tiết bệnh án
-                    </Typography>
-                </DialogTitle>
+                <DialogTitleWrapper>
+                    Chi tiết bệnh án
+                </DialogTitleWrapper>
                 <DialogContent dividers>
                     {loading ? (
                         <Typography

@@ -4,12 +4,12 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
-    DialogTitle,
     Grid,
     MenuItem,
     TextField,
     Typography,
 } from "@mui/material";
+import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
 import NormalToggleField from "@/components/common/NormalToggleField";
 
 const KET_QUA_OPTIONS = [
@@ -67,13 +67,9 @@ export default function RaVienDialog({
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-            <DialogTitle>
-                <Typography
-                    sx={{ fontSize: 20, fontWeight: 700, textAlign: "center" }}
-                >
-                    Ra viện cho: {benhAn?.ho_ten || benhAn?.ma_benh_an || ""}
-                </Typography>
-            </DialogTitle>
+            <DialogTitleWrapper>
+                Ra viện cho: {benhAn?.ho_ten || benhAn?.ma_benh_an || ""}
+            </DialogTitleWrapper>
             <DialogContent dividers>
                 <Grid container spacing={2}>
                     <Grid size={{ xs: 12 }}>

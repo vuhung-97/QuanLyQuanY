@@ -4,13 +4,13 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
-    DialogTitle,
     Divider,
     IconButton,
     Stack,
     TextField,
     Typography,
 } from "@mui/material";
+import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
 import { Delete as DeleteIcon } from "@mui/icons-material";
 
 export default function BuongDialog({
@@ -29,11 +29,9 @@ export default function BuongDialog({
 }) {
     return (
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-            <DialogTitle
-                sx={{ fontSize: 20, fontWeight: 600, textAlign: "center" }}
-            >
+            <DialogTitleWrapper wrap={false}>
                 {edit ? `Sửa phòng: ${edit.ten_buong}` : "Thêm phòng mới"}
-            </DialogTitle>
+            </DialogTitleWrapper>
             <DialogContent dividers>
                 <Stack spacing={2} sx={{ mt: 1 }}>
                     <TextField
@@ -154,7 +152,7 @@ export default function BuongDialog({
                     )}
                 </Stack>
             </DialogContent>
-            <DialogActions>
+            <DialogActions sx={{ p: 2 }}>
                 <Button onClick={onClose} sx={{ textTransform: "none" }}>
                     Hủy
                 </Button>
