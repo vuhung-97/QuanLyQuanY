@@ -165,10 +165,12 @@ export default function TiepNhanQnDialog({ open, onClose, onSelected }) {
             fullWidth
             slotProps={{ paper: { sx: { height: "90vh", width: "70%" } } }}
         >
-            <DialogTitle sx={{ textAlign: "center" }}>
+            <DialogTitle
+                sx={{ textAlign: "center", fontSize: 20, fontWeight: 600 }}
+            >
                 Danh sách quân nhân
             </DialogTitle>
-            <DialogContent>
+            <DialogContent dividers>
                 <Stack direction="row" spacing={2} sx={{ mt: 1, mb: 2 }}>
                     <Autocomplete
                         options={donViList}

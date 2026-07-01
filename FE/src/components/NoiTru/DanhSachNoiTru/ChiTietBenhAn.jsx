@@ -81,22 +81,33 @@ export default function ChiTietBenhAn({ open, benhAnId, onClose, onSaved }) {
         setOpenEditForm(false);
     }, []);
 
-    const handleSaveEdit = useCallback(async (data) => {
-        if (!benhAn?.ma_benh_an) return;
-        setSavingEdit(true);
-        try {
-            await noiTruService.updateBenhAn(benhAn.ma_benh_an, data);
-            const res = await noiTruService.getBenhAnChiTiet(benhAnId);
-            setBenhAn(res.data || res);
-            setOpenEditForm(false);
-            setSnackbar({ open: true, message: "Cập nhật bệnh án thành công", severity: "success" });
-            onSaved?.();
-        } catch {
-            setSnackbar({ open: true, message: "Cập nhật bệnh án thất bại", severity: "error" });
-        } finally {
-            setSavingEdit(false);
-        }
-    }, [benhAn, benhAnId, onSaved]);
+    const handleSaveEdit = useCallback(
+        async (data) => {
+            if (!benhAn?.ma_benh_an) return;
+            setSavingEdit(true);
+            try {
+                await noiTruService.updateBenhAn(benhAn.ma_benh_an, data);
+                const res = await noiTruService.getBenhAnChiTiet(benhAnId);
+                setBenhAn(res.data || res);
+                setOpenEditForm(false);
+                setSnackbar({
+                    open: true,
+                    message: "Cập nhật bệnh án thành công",
+                    severity: "success",
+                });
+                onSaved?.();
+            } catch {
+                setSnackbar({
+                    open: true,
+                    message: "Cập nhật bệnh án thất bại",
+                    severity: "error",
+                });
+            } finally {
+                setSavingEdit(false);
+            }
+        },
+        [benhAn, benhAnId, onSaved],
+    );
 
     const headerFields = [
         { label: "Mã BA", value: benhAn?.ma_benh_an },
@@ -180,7 +191,12 @@ export default function ChiTietBenhAn({ open, benhAnId, onClose, onSaved }) {
                                 <Tab label="Thuốc" />
                             </Tabs>
 
-                            {tabIndex === 0 && <TongQuanTab benhAn={benhAn} onEdit={handleOpenEdit} />}
+                            {tabIndex === 0 && (
+                                <TongQuanTab
+                                    benhAn={benhAn}
+                                    onEdit={handleOpenEdit}
+                                />
+                            )}
                             {tabIndex === 1 && (
                                 <DienBienTab
                                     records={records}
@@ -189,7 +205,9 @@ export default function ChiTietBenhAn({ open, benhAnId, onClose, onSaved }) {
                                     onEdit={handleOpenForm}
                                 />
                             )}
-                            {tabIndex === 2 && <ThuocTab aggregatedThuoc={aggregatedThuoc} />}
+                            {tabIndex === 2 && (
+                                <ThuocTab aggregatedThuoc={aggregatedThuoc} />
+                            )}
                         </Stack>
                     )}
                 </DialogContent>

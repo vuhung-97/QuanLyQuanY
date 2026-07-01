@@ -112,10 +112,10 @@ export default function ChuyenTuyenForm({
             }}
         >
             <Box sx={{ "@media print": { display: "none" } }}>
-                <DialogTitle sx={{ pb: 0 }}>
+                <DialogTitle sx={{ pb: 0, mb: 2 }}>
                     <Typography
                         sx={{
-                            fontSize: 22,
+                            fontSize: 20,
                             fontWeight: 600,
                             textAlign: "center",
                         }}
@@ -125,7 +125,7 @@ export default function ChuyenTuyenForm({
                 </DialogTitle>
             </Box>
 
-            <DialogContent sx={{ pt: 0 }}>
+            <DialogContent dividers sx={{ pt: 0 }}>
                 {loading ? (
                     <Typography
                         color="text.secondary"

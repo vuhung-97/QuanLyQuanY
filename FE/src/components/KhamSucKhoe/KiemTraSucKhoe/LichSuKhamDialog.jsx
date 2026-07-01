@@ -11,7 +11,12 @@ import {
 import { getPhanLoai } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
 import useLichSuKham from "@/hooks/useLichSuKham.jsx";
 
-export default function LichSuKhamDialog({ open, onClose, quanNhan, onViewPhieu }) {
+export default function LichSuKhamDialog({
+    open,
+    onClose,
+    quanNhan,
+    onViewPhieu,
+}) {
     const { phieuList, loading } = useLichSuKham(open, quanNhan);
 
     return (
@@ -23,7 +28,7 @@ export default function LichSuKhamDialog({ open, onClose, quanNhan, onViewPhieu 
                 Lịch sử khám sức khỏe — {quanNhan?.ho_ten} (
                 {quanNhan?.ma_quan_nhan})
             </DialogTitle>
-            <DialogContent>
+            <DialogContent dividers>
                 {loading && (
                     <Typography
                         color="text.secondary"
@@ -42,9 +47,12 @@ export default function LichSuKhamDialog({ open, onClose, quanNhan, onViewPhieu 
                 )}
                 <List disablePadding>
                     {phieuList.map((phieu) => {
-                        const tt = phieu?.trang_thai === "da_kham" ? "Đã khám"
-                            : phieu?.trang_thai === "dang_kham" ? "Đang khám"
-                            : "Chưa khám";
+                        const tt =
+                            phieu?.trang_thai === "da_kham"
+                                ? "Đã khám"
+                                : phieu?.trang_thai === "dang_kham"
+                                  ? "Đang khám"
+                                  : "Chưa khám";
                         const pl = getPhanLoai(phieu);
                         return (
                             <ListItemButton

@@ -40,21 +40,19 @@ export default function CapThuocForm({
                 paper: { sx: { "@media print": { boxShadow: "none" } } },
             }}
         >
-            <Box sx={{ "@media print": { display: "none" } }}>
-                <DialogTitle sx={{ pb: 0 }}>
-                    <Typography
-                        sx={{
-                            fontSize: 22,
-                            fontWeight: 600,
-                            textAlign: "center",
-                        }}
-                    >
-                        {isDaNhanThuoc ? "Đơn thuốc đã cấp" : "Cấp thuốc"}
-                    </Typography>
-                </DialogTitle>
-            </Box>
+            <DialogTitle sx={{ pb: 0, mb: 2 }}>
+                <Typography
+                    sx={{
+                        fontSize: 20,
+                        fontWeight: 600,
+                        textAlign: "center",
+                    }}
+                >
+                    {isDaNhanThuoc ? "Đơn thuốc đã cấp" : "Cấp thuốc"}
+                </Typography>
+            </DialogTitle>
 
-            <DialogContent sx={{ pt: 0 }}>
+            <DialogContent dividers sx={{ pt: 0 }}>
                 {loading ? (
                     <Typography
                         color="text.secondary"
@@ -71,6 +69,54 @@ export default function CapThuocForm({
                     </Typography>
                 ) : (
                     <Stack spacing={2.5} sx={{ py: 1 }}>
+                        {/* === THÊM: Print header === */}
+                        <Box
+                            sx={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "flex-start",
+                                "@media print": {
+                                    "& > *": { fontSize: "14pt" },
+                                },
+                            }}
+                        >
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: 0.5,
+                                    alignItems: "center",
+                                }}
+                            >
+                                <Typography
+                                    sx={{
+                                        textTransform: "uppercase",
+                                    }}
+                                >
+                                    LỮ ĐOÀN 170
+                                </Typography>
+                                <Typography
+                                    sx={{
+                                        textTransform: "uppercase",
+                                        fontWeight: 700,
+                                    }}
+                                >
+                                    PHÒNG HC-KT
+                                </Typography>
+                            </Box>
+                        </Box>
+                        <Typography
+                            sx={{
+                                textAlign: "center",
+                                textTransform: "uppercase",
+                                fontSize: "16pt !important",
+                                fontWeight: 700,
+                                mb: 1.5,
+                            }}
+                        >
+                            ĐƠN THUỐC
+                        </Typography>
+                        <Box sx={{ height: 14 }} />
                         <Box
                             sx={{
                                 "@media print": {
@@ -152,23 +198,42 @@ export default function CapThuocForm({
 
                         {isDaNhanThuoc &&
                             examDetail?.don_thuoc?.[0]?.ten_nguoi_cap_thuoc && (
-                                <Box>
-                                    <Typography
-                                        variant="h3"
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignItems: "flex-end",
+                                    }}
+                                >
+                                    <Box
                                         sx={{
-                                            mb: 0.5,
-                                            fontWeight: 700,
-                                            color: "text.primary",
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            gap: 0.5,
+                                            alignItems: "center",
                                         }}
                                     >
-                                        Người cấp thuốc
-                                    </Typography>
-                                    <Typography variant="body1">
-                                        {examDetail.don_thuoc[0].ten_nguoi_cap_thuoc} (
-                                        {examDetail.don_thuoc[0].vai_tro_nguoi_cap_thuoc ||
-                                            "?"}
-                                        )
-                                    </Typography>
+                                        <Typography
+                                            variant="h3"
+                                            sx={{
+                                                mb: 0.5,
+                                                fontWeight: 700,
+                                                color: "text.primary",
+                                            }}
+                                        >
+                                            Người cấp thuốc
+                                        </Typography>
+                                        <Typography variant="body1">
+                                            {
+                                                examDetail.don_thuoc[0]
+                                                    .ten_nguoi_cap_thuoc
+                                            }{" "}
+                                            (
+                                            {examDetail.don_thuoc[0]
+                                                .vai_tro_nguoi_cap_thuoc || "?"}
+                                            )
+                                        </Typography>
+                                    </Box>
                                 </Box>
                             )}
                     </Stack>

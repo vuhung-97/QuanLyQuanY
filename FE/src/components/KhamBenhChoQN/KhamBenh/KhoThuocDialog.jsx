@@ -193,11 +193,11 @@ export default function KhoThuocDialog({
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
             <DialogTitle
-                sx={{ fontSize: 22, fontWeight: 600, textAlign: "center" }}
+                sx={{ fontSize: 20, fontWeight: 600, textAlign: "center" }}
             >
                 Kho thuốc
             </DialogTitle>
-            <DialogContent sx={{ height: 500, overflow: "hidden" }}>
+            <DialogContent dividers sx={{ height: 500, overflow: "hidden" }}>
                 <SearchBar
                     value={searchText}
                     onChange={(e) => setSearchText(e.target.value)}

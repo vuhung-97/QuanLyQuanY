@@ -204,7 +204,7 @@ export default function LapLichDialog({
                         ? "Sửa lịch khám sức khỏe định kỳ"
                         : "Tạo lịch khám sức khỏe định kỳ"}
                 </DialogTitle>
-                <DialogContent sx={{ overflow: "auto" }}>
+                <DialogContent dividers sx={{ overflow: "auto" }}>
                     {error && (
                         <Typography
                             color="error"

@@ -32,12 +32,12 @@ export default function BuongDialog({
             <DialogTitle
                 sx={{ fontSize: 20, fontWeight: 700, textAlign: "center" }}
             >
-                {edit ? `Sửa buồng: ${edit.ten_buong}` : "Thêm buồng mới"}
+                {edit ? `Sửa phòng: ${edit.ten_buong}` : "Thêm phòng mới"}
             </DialogTitle>
             <DialogContent>
                 <Stack spacing={2} sx={{ mt: 1 }}>
                     <TextField
-                        label="Tên buồng"
+                        label="Tên phòng"
                         fullWidth
                         value={buongForm.ten_buong}
                         onChange={(e) =>

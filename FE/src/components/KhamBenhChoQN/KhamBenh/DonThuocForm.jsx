@@ -345,7 +345,7 @@ export default function DonThuocForm({ open, onClose, onSave, initialItems }) {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
-                    fontSize: 22,
+                    fontSize: 20,
                     fontWeight: 600,
                 }}
             >
@@ -359,7 +359,7 @@ export default function DonThuocForm({ open, onClose, onSave, initialItems }) {
                     Kho thuốc
                 </Button>
             </DialogTitle>
-            <DialogContent>
+            <DialogContent dividers>
                 <Stack spacing={2} sx={{ pt: 1 }}>
                     {rows.map(({ key, initial }) => (
                         <PrescriptionRow

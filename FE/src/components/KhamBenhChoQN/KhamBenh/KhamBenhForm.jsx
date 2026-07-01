@@ -63,7 +63,11 @@ const PatientInfoCard = memo(function PatientInfoCard({ qn, exam }) {
                     <InfoRow label="Ngày khám:" value={examDate} />
                     <InfoRow
                         label="Bác sĩ khám:"
-                        value={exam?.ten_nguoi_kham ? `${exam.ten_nguoi_kham} (${exam.vai_tro_nguoi_kham || "?"})` : "--"}
+                        value={
+                            exam?.ten_nguoi_kham
+                                ? `${exam.ten_nguoi_kham} (${exam.vai_tro_nguoi_kham || "?"})`
+                                : "--"
+                        }
                     />
                 </Stack>
             </CardContent>
@@ -337,7 +341,7 @@ export default function KhamBenhForm({
                 <DialogTitle>
                     <Typography
                         sx={{
-                            fontSize: 22,
+                            fontSize: 20,
                             fontWeight: 600,
                             textAlign: "center",
                         }}

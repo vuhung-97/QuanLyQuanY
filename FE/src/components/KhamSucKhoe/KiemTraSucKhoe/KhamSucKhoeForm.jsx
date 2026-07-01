@@ -248,7 +248,7 @@ export default function KhamSucKhoeForm({
             <Box component="form" onSubmit={handleSubmit}>
                 <FormHeader quanNhan={quanNhan} />
 
-                <DialogContent sx={{ mt: 2, px: 3 }}>
+                <DialogContent dividers sx={{ mt: 2, px: 3 }}>
                     {error && (
                         <Typography
                             color="error"
