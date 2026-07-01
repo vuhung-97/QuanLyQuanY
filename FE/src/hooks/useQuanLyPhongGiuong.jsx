@@ -12,7 +12,7 @@ export default function useQuanLyPhongGiuong() {
         severity: "success",
     });
 
-    const [buongDialog, setBuongDialog] = useState({ open: false, edit: null });
+    const [editBuong, setEditBuong] = useState(null);
     const [buongForm, setBuongForm] = useState({ ten_buong: "", so_giuong_toi_da: 4 });
     const [buongFormErrors, setBuongFormErrors] = useState({});
     const [tenGiuongMoi, setTenGiuongMoi] = useState("");
@@ -37,7 +37,6 @@ export default function useQuanLyPhongGiuong() {
             const giuongRes = await noiTruService.getGiuongQuanLy({ limit: 500 });
             setGiuongList(giuongRes.data?.data || []);
         } catch {
-            // không block nếu lỗi giường
         } finally {
             setLoading(false);
         }
@@ -48,26 +47,36 @@ export default function useQuanLyPhongGiuong() {
     }, [loadData]);
 
     useEffect(() => {
-        if (buongDialog.open) {
+        if (editBuong) {
             setBuongForm({
-                ten_buong: buongDialog.edit?.ten_buong || "",
-                so_giuong_toi_da: buongDialog.edit?.so_giuong_toi_da ?? 4,
+                ten_buong: editBuong.ten_buong || "",
+                so_giuong_toi_da: editBuong.so_giuong_toi_da ?? 4,
             });
             setBuongFormErrors({});
             setTenGiuongMoi("");
         }
-    }, [buongDialog.open, buongDialog.edit]);
+    }, [editBuong]);
 
-    const handleOpenAddBuong = useCallback(
-        () => setBuongDialog({ open: true, edit: null }),
-        [],
-    );
+    const handleOpenAddBuong = useCallback(async () => {
+        try {
+            await noiTruService.createBuong({ ten_buong: "NoName", so_giuong_toi_da: 4 });
+            setSnackbar({ open: true, message: "Đã tạo phòng mới.", severity: "success" });
+            loadData();
+        } catch (err) {
+            setSnackbar({
+                open: true,
+                message: err.response?.data?.detail || "Lỗi tạo phòng.",
+                severity: "error",
+            });
+        }
+    }, [loadData]);
+
     const handleOpenEditBuong = useCallback(
-        (buong) => setBuongDialog({ open: true, edit: buong }),
+        (buong) => setEditBuong(buong),
         [],
     );
     const handleCloseBuongDialog = useCallback(
-        () => setBuongDialog({ open: false, edit: null }),
+        () => setEditBuong(null),
         [],
     );
 
@@ -80,16 +89,11 @@ export default function useQuanLyPhongGiuong() {
 
     const handleSaveBuong = useCallback(
         async () => {
-            if (!validateBuongForm()) return;
+            if (!validateBuongForm() || !editBuong) return;
             try {
-                if (buongDialog.edit) {
-                    await noiTruService.updateBuong(buongDialog.edit.ma_buong, buongForm);
-                    setSnackbar({ open: true, message: "Đã cập nhật buồng.", severity: "success" });
-                } else {
-                    await noiTruService.createBuong(buongForm);
-                    setSnackbar({ open: true, message: "Đã thêm buồng mới.", severity: "success" });
-                }
-                setBuongDialog({ open: false, edit: null });
+                await noiTruService.updateBuong(editBuong.ma_buong, buongForm);
+                setSnackbar({ open: true, message: "Đã cập nhật buồng.", severity: "success" });
+                setEditBuong(null);
                 loadData();
             } catch (err) {
                 setSnackbar({
@@ -99,7 +103,7 @@ export default function useQuanLyPhongGiuong() {
                 });
             }
         },
-        [buongForm, buongDialog.edit, loadData, validateBuongForm],
+        [buongForm, editBuong, loadData, validateBuongForm],
     );
 
     const handleDeleteClick = useCallback(
@@ -195,8 +199,8 @@ export default function useQuanLyPhongGiuong() {
     );
 
     const editBuongGiuongList = useMemo(
-        () => giuongList.filter((g) => g.ma_buong === buongDialog.edit?.ma_buong),
-        [giuongList, buongDialog.edit],
+        () => giuongList.filter((g) => g.ma_buong === editBuong?.ma_buong),
+        [giuongList, editBuong],
     );
 
     const handleAddGiuongInRoom = useCallback(
@@ -234,7 +238,7 @@ export default function useQuanLyPhongGiuong() {
         setFilterBuong,
         snackbar,
         setSnackbar,
-        buongDialog,
+        editBuong,
         buongForm,
         setBuongForm,
         buongFormErrors,

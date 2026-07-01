@@ -133,7 +133,7 @@ export default function QuanLyPhongGiuong() {
         setFilterBuong,
         snackbar,
         setSnackbar,
-        buongDialog,
+        editBuong,
         buongForm,
         setBuongForm,
         buongFormErrors,
@@ -261,8 +261,7 @@ export default function QuanLyPhongGiuong() {
             </Card>
 
             <BuongDialog
-                open={buongDialog.open}
-                edit={buongDialog.edit}
+                buong={editBuong}
                 onClose={handleCloseBuongDialog}
                 buongForm={buongForm}
                 setBuongForm={setBuongForm}
