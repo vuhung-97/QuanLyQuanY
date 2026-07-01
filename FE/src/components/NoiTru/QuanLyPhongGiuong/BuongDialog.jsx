@@ -30,11 +30,11 @@ export default function BuongDialog({
     return (
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
             <DialogTitle
-                sx={{ fontSize: 20, fontWeight: 700, textAlign: "center" }}
+                sx={{ fontSize: 20, fontWeight: 600, textAlign: "center" }}
             >
                 {edit ? `Sửa phòng: ${edit.ten_buong}` : "Thêm phòng mới"}
             </DialogTitle>
-            <DialogContent>
+            <DialogContent dividers>
                 <Stack spacing={2} sx={{ mt: 1 }}>
                     <TextField
                         label="Tên phòng"

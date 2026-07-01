@@ -21,8 +21,8 @@ export default function DonThuocTable({
         <Box>
             {heading && (
                 <Typography
-                    variant="h3"
-                    sx={{ mb: 1, fontWeight: 700, color: "text.primary" }}
+                    variant="h4"
+                    sx={{ mb: 1, fontWeight: 600, color: "text.primary" }}
                 >
                     {heading}
                 </Typography>
@@ -51,7 +51,9 @@ export default function DonThuocTable({
                             <TableRow key={i}>
                                 <TableCell>{i + 1}</TableCell>
                                 <TableCell sx={{ fontWeight: 600 }}>
-                                    {row.ten_thuoc || row.ten_thuoc_vtyt || "--"}
+                                    {row.ten_thuoc ||
+                                        row.ten_thuoc_vtyt ||
+                                        "--"}
                                 </TableCell>
                                 <TableCell>{row.so_luong}</TableCell>
                                 <TableCell>{row.don_vi_tinh}</TableCell>
@@ -59,7 +61,8 @@ export default function DonThuocTable({
                                     <Stack spacing={0.5}>
                                         {row.lieu && (
                                             <Typography variant="body2">
-                                                <strong>Liều:</strong> {row.lieu}
+                                                <strong>Liều:</strong>{" "}
+                                                {row.lieu}
                                             </Typography>
                                         )}
                                         <Typography variant="body2">
@@ -71,7 +74,8 @@ export default function DonThuocTable({
                                         </Typography>
                                         {row.ghi_chu && (
                                             <Typography variant="body2">
-                                                <strong>Ghi chú:</strong> {row.ghi_chu}
+                                                <strong>Ghi chú:</strong>{" "}
+                                                {row.ghi_chu}
                                             </Typography>
                                         )}
                                     </Stack>

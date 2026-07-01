@@ -191,13 +191,19 @@ export default function KhoThuocDialog({
     }, [items, selected, quantities, onConfirm, onClose]);
 
     return (
-        <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+        <Dialog
+            open={open}
+            onClose={onClose}
+            maxWidth="md"
+            fullWidth
+            height="90vh"
+        >
             <DialogTitle
                 sx={{ fontSize: 20, fontWeight: 600, textAlign: "center" }}
             >
                 Kho thuốc
             </DialogTitle>
-            <DialogContent dividers sx={{ height: 500, overflow: "hidden" }}>
+            <DialogContent dividers sx={{ overflow: "hidden", pb: 0 }}>
                 <SearchBar
                     value={searchText}
                     onChange={(e) => setSearchText(e.target.value)}
@@ -207,14 +213,14 @@ export default function KhoThuocDialog({
                 {loading ? (
                     <Typography
                         color="text.secondary"
-                        sx={{ py: 4, textAlign: "center" }}
+                        sx={{ py: 2, textAlign: "center" }}
                     >
                         Đang tải...
                     </Typography>
                 ) : displayItems.length === 0 ? (
                     <Typography
                         color="text.secondary"
-                        sx={{ py: 4, textAlign: "center" }}
+                        sx={{ py: 2, textAlign: "center" }}
                     >
                         Không tìm thấy thuốc.
                     </Typography>
@@ -239,7 +245,7 @@ export default function KhoThuocDialog({
                                 sx: { width: 110 },
                             },
                         ]}
-                        sx={{ mt: 2, maxHeight: 450, overflowY: "auto" }}
+                        sx={{ mt: 1, maxHeight: 500, overflowY: "auto" }}
                     >
                         {sortedGroups.map((group) => (
                             <Fragment key={group}>

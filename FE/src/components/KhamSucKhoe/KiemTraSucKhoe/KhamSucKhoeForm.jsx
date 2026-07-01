@@ -34,8 +34,6 @@ function FormHeader({ quanNhan }) {
         <DialogTitle
             component="div"
             sx={{
-                borderBottom: "1px solid",
-                borderColor: "divider",
                 bgcolor: "background.paper",
                 textAlign: "center",
             }}
@@ -45,7 +43,7 @@ function FormHeader({ quanNhan }) {
                 color="primary"
                 sx={{
                     fontSize: 20,
-                    fontWeight: 700,
+                    fontWeight: 600,
                     textAlign: "center",
                 }}
             >
@@ -164,6 +162,7 @@ function FormTabBar({ activeTab, onTabChange, allowedTabs }) {
                         icon={t.icon}
                         iconPosition="start"
                         label={t.label}
+                        variant="h4"
                     />
                 ))}
             </Tabs>
@@ -248,7 +247,7 @@ export default function KhamSucKhoeForm({
             <Box component="form" onSubmit={handleSubmit}>
                 <FormHeader quanNhan={quanNhan} />
 
-                <DialogContent dividers sx={{ mt: 2, px: 3 }}>
+                <DialogContent dividers sx={{ px: 3 }}>
                     {error && (
                         <Typography
                             color="error"

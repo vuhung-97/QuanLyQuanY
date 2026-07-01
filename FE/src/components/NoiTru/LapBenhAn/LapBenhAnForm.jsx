@@ -25,7 +25,14 @@ const VITAL_SIGNS = [
     { key: "nhip_tim", label: "Nhịp tim (lần/ph)" },
 ];
 
-export default function LapBenhAnForm({ open, exam, saving, onSave, onClose, benhAn }) {
+export default function LapBenhAnForm({
+    open,
+    exam,
+    saving,
+    onSave,
+    onClose,
+    benhAn,
+}) {
     const {
         buongList,
         giuongList,
@@ -53,7 +60,7 @@ export default function LapBenhAnForm({ open, exam, saving, onSave, onClose, ben
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
             <DialogTitle>
                 <Typography
-                    sx={{ fontSize: 20, fontWeight: 700, textAlign: "center" }}
+                    sx={{ fontSize: 20, fontWeight: 600, textAlign: "center" }}
                 >
                     {isEdit ? "Sửa bệnh án nội trú" : "Lập bệnh án nội trú"}
                 </Typography>
@@ -80,7 +87,13 @@ export default function LapBenhAnForm({ open, exam, saving, onSave, onClose, ben
                                                 type="number"
                                                 fullWidth
                                                 size="medium"
-                                                defaultValue={isEdit ? (defaultValues[f.key] || "") : ""}
+                                                defaultValue={
+                                                    isEdit
+                                                        ? defaultValues[
+                                                              f.key
+                                                          ] || ""
+                                                        : ""
+                                                }
                                                 inputRef={refMap[f.key]}
                                                 slotProps={{
                                                     htmlInput: { min: 0 },
@@ -157,7 +170,12 @@ export default function LapBenhAnForm({ open, exam, saving, onSave, onClose, ben
                                     minRows={2}
                                     fullWidth
                                     size="medium"
-                                    defaultValue={isEdit ? (defaultValues.ly_do_nhap_vien || "") : ""}
+                                    defaultValue={
+                                        isEdit
+                                            ? defaultValues.ly_do_nhap_vien ||
+                                              ""
+                                            : ""
+                                    }
                                     inputRef={lyDoRef}
                                 />
                             </CardContent>
@@ -186,9 +204,12 @@ export default function LapBenhAnForm({ open, exam, saving, onSave, onClose, ben
                     sx={{ textTransform: "none" }}
                 >
                     {saving
-                        ? (isEdit ? "Đang cập nhật..." : "Đang lưu...")
-                        : (isEdit ? "Cập nhật" : "Lập bệnh án")
-                    }
+                        ? isEdit
+                            ? "Đang cập nhật..."
+                            : "Đang lưu..."
+                        : isEdit
+                          ? "Cập nhật"
+                          : "Lập bệnh án"}
                 </Button>
             </DialogActions>
         </Dialog>

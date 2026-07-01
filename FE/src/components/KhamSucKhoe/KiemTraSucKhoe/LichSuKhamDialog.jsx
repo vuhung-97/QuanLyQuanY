@@ -23,7 +23,7 @@ export default function LichSuKhamDialog({
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
             <DialogTitle
                 component="div"
-                sx={{ fontWeight: "bold", color: "primary.main" }}
+                sx={{ fontSize: 20, fontWeight: 600, textAlign: "center" }}
             >
                 Lịch sử khám sức khỏe — {quanNhan?.ho_ten} (
                 {quanNhan?.ma_quan_nhan})

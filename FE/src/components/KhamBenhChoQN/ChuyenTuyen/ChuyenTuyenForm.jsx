@@ -22,10 +22,10 @@ import ChuyenTuyenPrint from "./ChuyenTuyenPrint.jsx";
 import { parseDonThuocToRows } from "@/utils/khamBenhUtils.js";
 import { formatDate, tinhTuoi } from "@/utils/date.js";
 
-const sectionSx = { mb: 1, fontWeight: 700, color: "text.primary" };
+const sectionSx = { mb: 1, fontWeight: 600, color: "text.primary" };
 function SectionHeading({ children }) {
     return (
-        <Typography variant="h3" sx={sectionSx}>
+        <Typography variant="h4" sx={sectionSx}>
             {children}
         </Typography>
     );
@@ -144,7 +144,7 @@ export default function ChuyenTuyenForm({
                     <>
                         <Stack
                             spacing={2.5}
-                            sx={{ "@media print": { display: "none" } }}
+                            sx={{ "@media print": { display: "none" }, mt: 1 }}
                         >
                             {/* ===== A. PATIENT INFO ===== */}
                             <Box>
@@ -153,31 +153,31 @@ export default function ChuyenTuyenForm({
                                 </SectionHeading>
                                 <Stack spacing={0.5}>
                                     <Typography variant="body1">
-                                        <strong>Họ và tên:</strong>{" "}
+                                        <strong>- Họ và tên:</strong>{" "}
                                         {selectedExam.ho_ten || "--"}
                                     </Typography>
                                     <Typography variant="body1">
-                                        <strong>Tuổi:</strong>{" "}
+                                        <strong>- Tuổi:</strong>{" "}
                                         {tinhTuoi(selectedExam.ngay_sinh)}
                                     </Typography>
                                     <Typography variant="body1">
-                                        <strong>Cấp bậc:</strong>{" "}
+                                        <strong>- Cấp bậc:</strong>{" "}
                                         {selectedExam.cap_bac || "--"}
                                     </Typography>
                                     <Typography variant="body1">
-                                        <strong>Chức vụ:</strong>{" "}
+                                        <strong>- Chức vụ:</strong>{" "}
                                         {selectedExam.chuc_vu || "--"}
                                     </Typography>
                                     <Typography variant="body1">
-                                        <strong>Đơn vị:</strong>{" "}
+                                        <strong>- Đơn vị:</strong>{" "}
                                         {selectedExam.ten_don_vi || "--"}
                                     </Typography>
                                     <Typography variant="body1">
-                                        <strong>Mã KB:</strong>{" "}
+                                        <strong>- Mã KB:</strong>{" "}
                                         {selectedExam.ma_kham_benh || "--"}
                                     </Typography>
                                     <Typography variant="body1">
-                                        <strong>Ngày khám:</strong>{" "}
+                                        <strong>- Ngày khám:</strong>{" "}
                                         {formatDate(selectedExam.ngay_kham)}
                                     </Typography>
                                 </Stack>

@@ -140,7 +140,7 @@ export default function ChiTietBenhAn({ open, benhAnId, onClose, onSaved }) {
                     <Typography
                         sx={{
                             fontSize: 20,
-                            fontWeight: 700,
+                            fontWeight: 600,
                             textAlign: "center",
                         }}
                     >

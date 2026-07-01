@@ -343,7 +343,7 @@ export default function DonThuocForm({ open, onClose, onSave, initialItems }) {
             <DialogTitle
                 sx={{
                     display: "flex",
-                    alignItems: "center",
+                    textAlign: "center",
                     justifyContent: "space-between",
                     fontSize: 20,
                     fontWeight: 600,

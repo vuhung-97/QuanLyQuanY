@@ -40,7 +40,9 @@ export default function CapThuocForm({
                 paper: { sx: { "@media print": { boxShadow: "none" } } },
             }}
         >
-            <DialogTitle sx={{ pb: 0, mb: 2 }}>
+            <DialogTitle
+                sx={{ pb: 0, mb: 2, "@media print": { display: "none" } }}
+            >
                 <Typography
                     sx={{
                         fontSize: 20,
@@ -72,11 +74,13 @@ export default function CapThuocForm({
                         {/* === THÊM: Print header === */}
                         <Box
                             sx={{
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "flex-start",
+                                display: "none",
                                 "@media print": {
                                     "& > *": { fontSize: "14pt" },
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    alignItems: "center",
+                                    mb: 2,
                                 },
                             }}
                         >
@@ -98,7 +102,7 @@ export default function CapThuocForm({
                                 <Typography
                                     sx={{
                                         textTransform: "uppercase",
-                                        fontWeight: 700,
+                                        fontWeight: 600,
                                     }}
                                 >
                                     PHÒNG HC-KT
@@ -107,11 +111,15 @@ export default function CapThuocForm({
                         </Box>
                         <Typography
                             sx={{
-                                textAlign: "center",
-                                textTransform: "uppercase",
-                                fontSize: "16pt !important",
-                                fontWeight: 700,
-                                mb: 1.5,
+                                display: "none",
+                                "@media print": {
+                                    display: "block",
+                                    textAlign: "center",
+                                    textTransform: "uppercase",
+                                    fontSize: "16pt !important",
+                                    fontWeight: 600,
+                                    mb: 1.5,
+                                },
                             }}
                         >
                             ĐƠN THUỐC
@@ -125,10 +133,10 @@ export default function CapThuocForm({
                             }}
                         >
                             <Typography
-                                variant="h3"
+                                variant="h4"
                                 sx={{
                                     mb: 1.5,
-                                    fontWeight: 700,
+                                    fontWeight: 600,
                                     color: "text.primary",
                                 }}
                             >
@@ -136,19 +144,19 @@ export default function CapThuocForm({
                             </Typography>
                             <Stack spacing={0.5}>
                                 <Typography variant="body1">
-                                    <strong>Họ tên:</strong>{" "}
+                                    <strong>- Họ tên:</strong>{" "}
                                     {selectedExam.ho_ten || "--"}
                                 </Typography>
                                 <Typography variant="body1">
-                                    <strong>Đơn vị:</strong>{" "}
+                                    <strong>- Đơn vị:</strong>{" "}
                                     {selectedExam.ten_don_vi || "--"}
                                 </Typography>
                                 <Typography variant="body1">
-                                    <strong>Mã KB:</strong>{" "}
+                                    <strong>- Mã KB:</strong>{" "}
                                     {selectedExam.ma_kham_benh || "--"}
                                 </Typography>
                                 <Typography variant="body1">
-                                    <strong>Ngày khám:</strong>{" "}
+                                    <strong>- Ngày khám:</strong>{" "}
                                     {formatDate(selectedExam.ngay_kham) || "--"}
                                 </Typography>
                             </Stack>
@@ -157,10 +165,10 @@ export default function CapThuocForm({
                         {examDetail?.chan_doan && (
                             <Box>
                                 <Typography
-                                    variant="h3"
+                                    variant="h4"
                                     sx={{
                                         mb: 0.5,
-                                        fontWeight: 700,
+                                        fontWeight: 600,
                                         color: "text.primary",
                                     }}
                                 >
@@ -175,10 +183,10 @@ export default function CapThuocForm({
                         {examDetail?.phuong_phap_dieu_tri && (
                             <Box>
                                 <Typography
-                                    variant="h3"
+                                    variant="h4"
                                     sx={{
                                         mb: 0.5,
-                                        fontWeight: 700,
+                                        fontWeight: 600,
                                         color: "text.primary",
                                     }}
                                 >
@@ -214,10 +222,10 @@ export default function CapThuocForm({
                                         }}
                                     >
                                         <Typography
-                                            variant="h3"
+                                            variant="h4"
                                             sx={{
                                                 mb: 0.5,
-                                                fontWeight: 700,
+                                                fontWeight: 600,
                                                 color: "text.primary",
                                             }}
                                         >
