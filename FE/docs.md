@@ -19,11 +19,16 @@ FE/
     │   ├── KhamBenhChoQN/      # Khám bệnh cho QN (KhamBenhPage.jsx, CapThuocPage.jsx, ChuyenTuyenPage.jsx)
     │   ├── KhamSucKhoe/        # Khám định kỳ (LapLichPage.jsx, KhamSucKhoePage.jsx)
     │   ├── NoiTru/             # Nội trú (DanhSachNoiTruPage.jsx, LapBenhAnPage.jsx, QuanLyPhongGiuongPage.jsx)
+    │   ├── KhoDuoc/            # Quản lý Kho dược (Dự trù, Nhập, Xuất)
+    │   │   ├── DuTruPage.jsx       # Trang Dự trù
+    │   │   ├── NhapKhoPage.jsx     # Trang Nhập kho
+    │   │   └── XuatKhoPage.jsx     # Trang Xuất kho
     │   └── Admin/              # Admin (UserManagement, RolePermission, AuditLog)
     │
     ├── components/         # UI building blocks
     │   ├── common/         #   Dùng chung toàn app
     │   │   ├── AdminRoute.jsx
+    │   │   ├── ChonQuanNhanDialog.jsx
     │   │   ├── ConfirmDialog.jsx
     │   │   ├── DataTable.jsx
     │   │   ├── DatePicker.jsx
@@ -120,6 +125,18 @@ FE/
     │   │   └── QuanLyPhongGiuong/
     │   │       ├── BuongDialog.jsx
     │   │       └── QuanLyPhongGiuong.jsx
+    │   ├── KhoDuoc/          # Components cho Kho dược
+    │   │   ├── DuTru/
+    │   │   │   ├── DuTruList.jsx         # Danh sách + actions phiếu dự trù
+    │   │   │   └── PhieuDuTruDialog.jsx  # Dialog tạo phiếu dự trù
+    │   │   ├── NhapKho/
+    │   │   │   ├── NhapKhoList.jsx       # Danh sách phiếu đã duyệt chờ nhập
+    │   │   │   └── NhapKhoDialog.jsx     # Dialog xác nhận nhập kho
+    │   │   ├── XuatKho/
+    │   │   │   ├── XuatKhoList.jsx       # Danh sách phiếu xuất + lọc + actions
+    │   │   │   ├── PhieuXuatDialog.jsx   # Dialog tạo phiếu xuất
+    │   │   │   └── XuatKhoDialog.jsx     # Dialog xác nhận xuất kho
+    │   │   └── ThuocSearchSelect.jsx     # Autocomplete tìm kiếm thuốc
     │   └── admin/           # Components cho module Admin
     │       ├── AdminPageHeader.jsx
     │       ├── TableCard.jsx
@@ -160,6 +177,7 @@ FE/
     │   ├── adminService.js
     │   ├── api.js
     │   ├── khamBenhService.js
+    │   ├── khoDuocService.js
     │   ├── noiTruService.js
     │   └── khamSucKhoeService.js
     │

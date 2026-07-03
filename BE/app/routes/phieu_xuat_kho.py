@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from app.core.dependencies import get_current_user, require_permissions
@@ -7,7 +7,8 @@ from app.crud.phieu_xuat_kho import phieu_xuat_kho_crud
 from app.database.nguoi_dung import NguoiDung
 from app.database.phieu_xuat_kho import PhieuXuatKho
 from app.database.session import get_db
-from app.routes.base import create_crud_router
+from app.routes.base import _run_crud, create_crud_router
+from app.schemas.phieu_xuat_kho import PhieuXuatKhoRead
 from app.services.inventory_service import InventoryService
 
 
@@ -18,7 +19,49 @@ router = create_crud_router(
     create_permission="phieu_xuat_kho:create",
     update_permission="phieu_xuat_kho:update",
     delete_permission="phieu_xuat_kho:delete",
+    enable_read=False,
 )
+
+
+@router.get(
+    "/danh-sach",
+    dependencies=[Depends(require_permissions("phieu_xuat_kho:read"))],
+)
+def get_danh_sach_phieu_xuat(
+    db: Session = Depends(get_db),
+    limit: int = Query(default=20, ge=1, le=500),
+    offset: int = Query(default=0, ge=0),
+    trang_thai: str | None = Query(default=None),
+):
+    query = db.query(PhieuXuatKho)
+    if trang_thai:
+        query = query.filter(PhieuXuatKho.trang_thai == trang_thai)
+    total = query.count()
+    rows = (
+        query.order_by(PhieuXuatKho.ngay_thang_nam.desc().nullslast())
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
+
+    user_ids = {r.nguoi_xuat for r in rows if r.nguoi_xuat} | {
+        r.nguoi_duyet for r in rows if r.nguoi_duyet
+    }
+    users = {}
+    if user_ids:
+        for u in db.query(NguoiDung).filter(NguoiDung.id.in_(user_ids)).all():
+            users[u.id] = u.ho_ten
+
+    result = []
+    for r in rows:
+        d = {
+            c.name: getattr(r, c.name) for c in PhieuXuatKho.__table__.columns
+        }
+        d["nguoi_xuat_ho_ten"] = users.get(r.nguoi_xuat, r.nguoi_xuat or "")
+        d["nguoi_duyet_ho_ten"] = users.get(r.nguoi_duyet, r.nguoi_duyet or "")
+        result.append(d)
+
+    return {"data": result, "total": total}
 
 
 @router.post(
@@ -87,3 +130,15 @@ def xuat_kho(
     db.commit()
     db.refresh(phieu)
     return phieu
+
+
+@router.get(
+    "/{item_id}",
+    dependencies=[Depends(require_permissions("phieu_xuat_kho:read"))],
+)
+def get_phieu_xuat(item_id: str, db: Session = Depends(get_db)):
+    phieu = _run_crud(lambda: phieu_xuat_kho_crud.get(db, item_id))
+    d = {c.name: getattr(phieu, c.name) for c in PhieuXuatKho.__table__.columns}
+    user = db.get(NguoiDung, phieu.nguoi_xuat) if phieu.nguoi_xuat else None
+    d["nguoi_xuat_ho_ten"] = user.ho_ten if user else (phieu.nguoi_xuat or "")
+    return d

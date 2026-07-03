@@ -16,7 +16,9 @@ export default function DatePicker({ value, onChange, size = "large" }) {
                     textField: {
                         size: "small",
                         sx: {
-                            "& fieldset": { border: isSmall ? undefined : "none" },
+                            "& fieldset": {
+                                border: isSmall ? undefined : "none",
+                            },
                             width: isSmall ? 160 : 200,
                         },
                         slotProps: {
@@ -25,7 +27,9 @@ export default function DatePicker({ value, onChange, size = "large" }) {
                                     px: isSmall ? 1 : 0,
                                     fontSize: isSmall ? 14 : 22,
                                     fontWeight: isSmall ? 400 : 600,
-                                    color: isSmall ? "text.primary" : "primary.dark",
+                                    color: isSmall
+                                        ? "text.primary"
+                                        : "primary.dark",
                                 },
                             },
                         },
@@ -33,7 +37,9 @@ export default function DatePicker({ value, onChange, size = "large" }) {
                     openPickerButton: {
                         sx: {
                             m: 0,
-                            "& .MuiSvgIcon-root": { fontSize: isSmall ? 20 : 32 },
+                            "& .MuiSvgIcon-root": {
+                                fontSize: isSmall ? 20 : 32,
+                            },
                         },
                     },
                 }}

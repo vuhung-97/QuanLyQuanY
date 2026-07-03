@@ -14,6 +14,9 @@ import CapThuocPage from "./pages/KhamBenhChoQN/CapThuocPage.jsx";
 import ChuyenTuyenPage from "./pages/KhamBenhChoQN/ChuyenTuyenPage.jsx";
 import PlaceHolderPage from "./components/common/PlaceHolderPage.jsx";
 import DanhSachNoiTruPage from "./pages/NoiTru/DanhSachNoiTruPage.jsx";
+import DuTruPage from "./pages/KhoDuoc/DuTruPage.jsx";
+import NhapKhoPage from "./pages/KhoDuoc/NhapKhoPage.jsx";
+import XuatKhoPage from "./pages/KhoDuoc/XuatKhoPage.jsx";
 import LapBenhAnPage from "./pages/NoiTru/LapBenhAnPage.jsx";
 import QuanLyPhongGiuongPage from "./pages/NoiTru/QuanLyPhongGiuongPage.jsx";
 import UserManagementPage from "./pages/Admin/UserManagementPage.jsx";
@@ -90,24 +93,15 @@ export default function App() {
                             path="kham-benh/Chuyen-tuyen"
                             element={<ChuyenTuyenPage />}
                         />
-                        <Route
-                            path="kho-duoc"
-                            element={<Navigate to="/kho-duoc/du-tru" replace />}
-                        />
-                        <Route
-                            path="kho-duoc/du-tru"
-                            element={
-                                <PlaceHolderPage title="Dự trù" />
-                            }
-                        />
-                        <Route
-                            path="kho-duoc/nhap"
-                            element={<PlaceHolderPage title="Nhập kho dược" />}
-                        />
-                        <Route
-                            path="kho-duoc/xuat"
-                            element={<PlaceHolderPage title="Xuất kho dược" />}
-                        />
+                        <Route path="kho-duoc">
+                            <Route
+                                index
+                                element={<Navigate to="du-tru" replace />}
+                            />
+                            <Route path="du-tru" element={<DuTruPage />} />
+                            <Route path="nhap" element={<NhapKhoPage />} />
+                            <Route path="xuat" element={<XuatKhoPage />} />
+                        </Route>
                         <Route
                             path="bao-cao"
                             element={<PlaceHolderPage title="Báo cáo" />}

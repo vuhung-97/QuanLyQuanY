@@ -12,10 +12,12 @@ class PhieuXuatKho(Base):
 
     ma_phieu_xuat: Mapped[str] = mapped_column(String(10), primary_key=True, default=lambda: generate_id(10))
     ma_don_vi_nhan: Mapped[str | None] = mapped_column(String(10), ForeignKey("don_vi.ma_don_vi", ondelete="SET NULL"), nullable=True)
+    ma_quan_nhan_nhan: Mapped[str | None] = mapped_column(String(10), ForeignKey("quan_nhan.ma_quan_nhan", ondelete="SET NULL"), nullable=True)
     ngay_thang_nam: Mapped[datetime | None] = mapped_column(DateTime, server_default=func.current_timestamp(), nullable=True)
     ho_ten_nguoi_nhan: Mapped[str | None] = mapped_column(String(255), nullable=True)
     ly_do_xuat: Mapped[str | None] = mapped_column(Text, nullable=True)
     ghi_chu: Mapped[str | None] = mapped_column(Text, nullable=True)
     trang_thai: Mapped[str | None] = mapped_column(String(50), nullable=True)
-    nguoi_xuat: Mapped[str | None] = mapped_column(String(10), nullable=True)
-    nguoi_duyet: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    nguoi_xuat: Mapped[str | None] = mapped_column(String(50), nullable=True)
+
+    nguoi_duyet: Mapped[str | None] = mapped_column(String(50), nullable=True)

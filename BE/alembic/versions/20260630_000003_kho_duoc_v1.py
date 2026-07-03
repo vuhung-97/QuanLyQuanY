@@ -53,8 +53,8 @@ def upgrade() -> None:
 
     # 5. ALTER phieu_xuat_kho — add 3 columns
     op.add_column("phieu_xuat_kho", sa.Column("trang_thai", sa.String(50), nullable=True))
-    op.add_column("phieu_xuat_kho", sa.Column("nguoi_xuat", sa.String(10), nullable=True))
-    op.add_column("phieu_xuat_kho", sa.Column("nguoi_duyet", sa.String(10), nullable=True))
+    op.add_column("phieu_xuat_kho", sa.Column("nguoi_xuat", sa.String(50), nullable=True))
+    op.add_column("phieu_xuat_kho", sa.Column("nguoi_duyet", sa.String(50), nullable=True))
 
     # 6. Copy data from so_nhap_xuat -> phieu_nhap_kho (group by nothing, create one receipt)
     conn = op.get_bind()
