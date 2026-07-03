@@ -1,50 +1,33 @@
-import { Box, Stack, Typography } from "@mui/material";
 import { tinhTuoi } from "@/utils/date.js";
+import PrintOverlay from "@/components/common/print/PrintOverlay.jsx";
+import PrintHeaderDonVi from "@/components/common/print/PrintHeaderDonVi.jsx";
+import PrintSignature from "@/components/common/print/PrintSignature.jsx";
 
-function FieldRow({ label, value }) {
-    return (
-        <Box
-            spacing={2}
-            sx={{
-                display: "flex",
-                flexDirection: "row",
-                width: "90%",
-                mb: 1.5,
-            }}
-        >
-            <Typography sx={{ whiteSpace: "nowrap", fontSize: 18 }}>
-                <strong>{label}:</strong>&nbsp;
-            </Typography>
-            <Typography sx={{ flex: 1, fontSize: 18 }}>
-                {value || " "}
-            </Typography>
-        </Box>
-    );
-}
+const dottedStyle = {
+    borderBottom: "1px dotted #000",
+    display: "inline-block",
+};
 
-function FieldBlock({ label, value }) {
+function DottedField({ label, value, numrows = 2 }) {
     return (
-        <Box
-            spacing={2}
-            sx={{
-                mb: 1.5,
-                width: "90%",
-                display: "flex",
-                flexDirection: "row",
-            }}
-        >
-            <Typography sx={{ fontSize: 18, mb: 3 }}>
-                <strong>{label}: </strong>&nbsp;
-            </Typography>
-            <Typography
-                sx={{
-                    flex: 1,
-                    fontSize: 18,
-                }}
-            >
-                {value || " "}
-            </Typography>
-        </Box>
+        <div style={{ marginBottom: "12pt" }}>
+            <div style={{ display: "flex", gap: "3pt" }}>
+                <strong>{label}:</strong> 
+                <span style={{ flex: 1, borderBottom: "1px dotted #000" }}>
+                    {value || ""} 
+                </span>
+            </div>
+            {Array.from({ length: numrows }).map((_, i) => (
+                <div
+                    key={i}
+                    style={{
+                        borderBottom: "1px dotted #000",
+                        height: "1.5em",
+                        margin: "6pt 0",
+                    }}
+                ></div>
+            ))}
+        </div>
     );
 }
 
@@ -53,188 +36,101 @@ export default function ChuyenTuyenPrint({
     examDetail,
     tenBenhVien,
     yKienDeNghi,
+    paperSize = "A5",
 }) {
     return (
-        <Box
-            className="print-layout"
-            sx={{
-                display: "none",
-                "@media print": { display: "block" },
-            }}
-        >
+        <PrintOverlay className="chuyen-tuyen-print" paperSize={paperSize}>
             {/* ----- PAGE 1 ----- */}
-            <Box
-                sx={{
-                    px: 3,
-                    py: 2,
-                    height: "100vh",
+            <div
+                style={{
                     display: "flex",
-                    flexDirection: "column",
+                    flexDirection: "row",
+                    justifyContent: "space-around",
+                    alignItems: "flex-start",
                 }}
             >
-                <Box
-                    sx={{
-                        display: "flex",
-                        justifyContent: "flex-start",
-                    }}
-                >
-                    <Box
-                        sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
+                <PrintHeaderDonVi
+                    title="QUÂN ĐỘI NHÂN DÂN VIỆT NAM"
+                    childTitle="ĐƠN VỊ LỮ ĐOÀN 170"
+                />
+                <div style={{ textAlign: "center", paddingTop: "24pt" }}>
+                    <p
+                        style={{
+                            fontSize: "18pt",
+                            fontWeight: "bold",
+                            textAlign: "center",
+                            textTransform: "uppercase",
                         }}
                     >
-                        <Typography sx={{ fontSize: 18 }}>
-                            VÙNG I HẢI QUÂN
-                        </Typography>
-                        <Typography sx={{ fontSize: 18, fontWeight: 700 }}>
-                            LỮ ĐOÀN 170
-                        </Typography>
-                    </Box>
-                </Box>
-                <Typography
-                    sx={{
-                        fontSize: 24,
-                        fontWeight: 700,
-                        textAlign: "center",
-                        textTransform: "uppercase",
-                        mb: 2,
-                    }}
-                >
-                    GIẤY GIỚI THIỆU
-                </Typography>
-
-                <Typography sx={{ fontSize: 18, mb: 2, textAlign: "center" }}>
-                    Kính gửi:{" "}
-                    {tenBenhVien ||
-                        ".................................................."}
-                </Typography>
-
-                <FieldRow label="Họ và tên" value={selectedExam?.ho_ten} />
-                <FieldRow
-                    label="Tuổi"
-                value={tinhTuoi(selectedExam?.ngay_sinh)}
-                />
-                <FieldRow label="Cấp bậc" value={selectedExam?.cap_bac} />
-                <FieldRow label="Chức vụ" value={selectedExam?.chuc_vu} />
-                <FieldRow label="Đơn vị" value={selectedExam?.ten_don_vi} />
-
-                <FieldBlock
-                    label="Triệu chứng"
-                    value={examDetail?.trieu_chung}
-                />
-                <FieldBlock label="Chẩn đoán" value={examDetail?.chan_doan} />
-
-                <FieldBlock label="Ý kiến đề nghị" value={yKienDeNghi} />
-
-                <Box
-                    sx={{
-                        mt: "50px",
-                        display: "flex",
-                        justifyContent: "flex-end",
-                    }}
-                >
-                    <Box
-                        sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                        }}
-                    >
-                        <Typography sx={{ fontSize: 18 }}>
-                            <strong>Bác sĩ</strong>
-                        </Typography>
-                        <Typography sx={{ fontSize: 18 }}>
-                            (ký, ghi rõ họ tên)
-                        </Typography>
-                    </Box>
-                </Box>
-            </Box>
+                        GIẤY GIỚI THIỆU
+                    </p>
+                    <p>Đi khám bệnh, đi bệnh viện</p>
+                </div>
+            </div>
+            <p style={{ textAlign: "center" }}>
+                <strong>Kính gửi:</strong>{" "}
+                {tenBenhVien ||
+                    ".................................................."}
+            </p>
+            <div style={{ display: "flex", gap: "8pt" }}>
+                <p style={{ width: "60%" }}>
+                    <strong>Họ và tên:</strong> {selectedExam?.ho_ten || "—"}
+                </p>
+                <p>
+                    <strong>Tuổi:</strong>{" "}
+                    {tinhTuoi(selectedExam?.ngay_sinh) || "—"}
+                </p>
+            </div>
+            <div style={{ display: "flex", gap: "8pt" }}>
+                <p style={{ width: "60%" }}>
+                    <strong>Cấp bậc:</strong> {selectedExam?.cap_bac || "—"}
+                </p>
+                <p>
+                    <strong>Chức vụ:</strong> {selectedExam?.chuc_vu || "—"}
+                </p>
+            </div>
+            <p>
+                <strong>Đơn vị:</strong> {selectedExam?.ten_don_vi || "—"}
+            </p>
+            <DottedField label="Triệu chứng" value={examDetail?.trieu_chung} />
+            <DottedField label="Chẩn đoán" value={examDetail?.chan_doan} />
+            <DottedField label="Ý kiến đề nghị" value={yKienDeNghi} />
+            <PrintSignature
+                justify="flex-end"
+                items={[
+                    {
+                        label: "Chủ nhiệm quân y",
+                        subLabel: "(ký, ghi rõ họ tên)",
+                    },
+                ]}
+                date
+            />
 
             {/* ----- PAGE 2 ----- */}
-            <Box
-                sx={{
-                    px: 3,
-                    py: 2,
-                    pt: 4,
-                    height: "100vh",
+            <div
+                style={{
+                    pageBreakBefore: "always",
                     display: "flex",
                     flexDirection: "column",
+                    margin: "2cm 0",
                 }}
             >
-                <Stack spacing={3}>
-                    <Box sx={{ display: "flex", flexDirection: "row" }}>
-                        <Typography sx={{ mb: 0.5, fontSize: 18 }}>
-                            <strong>Thời gian đến bệnh xá:</strong>
-                        </Typography>
-                        <Typography
-                            sx={{
-                                fontSize: 18,
-                                borderBottom: "1px dotted #000",
-                                width: "70%",
-                            }}
-                        >
-                            {" "}
-                        </Typography>
-                    </Box>
-                    <Box sx={{ display: "flex", flexDirection: "row" }}>
-                        <Typography sx={{ mb: 0.5, fontSize: 18 }}>
-                            <strong>Chẩn đoán:</strong>
-                        </Typography>
-                        <Typography
-                            sx={{
-                                fontSize: 18,
-                                borderBottom: "1px dotted #000",
-                                width: "85%",
-                            }}
-                        >
-                            {" "}
-                        </Typography>
-                    </Box>
-                    <Box sx={{ display: "flex", flexDirection: "column" }}>
-                        <Typography sx={{ mb: 0.5, fontSize: 18 }}>
-                            <strong>Quyết định của y sinh:</strong>
-                        </Typography>
-                        {Array.from({ length: 10 }).map((_, i) => (
-                            <Typography
-                                key={i}
-                                sx={{
-                                    fontSize: 18,
-                                    borderBottom: "1px dotted #000",
-                                    width: "100%",
-                                    my: 3,
-                                }}
-                            >
-                                {" "}
-                            </Typography>
-                        ))}
-                    </Box>
-                </Stack>
+                <DottedField label="Thời gian đến bệnh xá" numrows={1} />
 
-                <Box
-                    sx={{
-                        mt: "50px",
-                        display: "flex",
-                        justifyContent: "flex-end",
-                    }}
-                >
-                    <Box
-                        sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                        }}
-                    >
-                        <Typography sx={{ fontSize: 18 }}>
-                            <strong>Y sinh</strong>
-                        </Typography>
-                        <Typography sx={{ fontSize: 18 }}>
-                            (ký, ghi rõ họ tên)
-                        </Typography>
-                    </Box>
-                </Box>
-            </Box>
-        </Box>
+                <DottedField label="Chẩn đoán" numrows={3} />
+                <DottedField label="Quyết định của y sinh" numrows={7} />
+
+                <PrintSignature
+                    justify="flex-end"
+                    items={[
+                        {
+                            label: "Y sinh",
+                            subLabel: "(ký, ghi rõ họ tên)",
+                        },
+                    ]}
+                    date
+                />
+            </div>
+        </PrintOverlay>
     );
 }

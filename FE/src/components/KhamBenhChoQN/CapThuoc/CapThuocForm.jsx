@@ -9,9 +9,9 @@ import {
 } from "@mui/material";
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
 import DonThuocTable from "@/components/common/DonThuoc.jsx";
-import { STATUS_MAP } from "@/constants/khamBenhConstants.js";
 import { parseDonThuocToRows } from "@/utils/khamBenhUtils.js";
 import { formatDate } from "@/utils/date.js";
+import DonThuocPrint from "./DonThuocPrint.jsx";
 
 export default function CapThuocForm({
     open,
@@ -36,9 +36,6 @@ export default function CapThuocForm({
             onClose={onClose}
             maxWidth="md"
             fullWidth
-            slotProps={{
-                paper: { sx: { "@media print": { boxShadow: "none" } } },
-            }}
         >
             <DialogTitleWrapper
                 sx={{ "@media print": { display: "none" } }}
@@ -46,7 +43,28 @@ export default function CapThuocForm({
                 {isDaNhanThuoc ? "Đơn thuốc đã cấp" : "Cấp thuốc"}
             </DialogTitleWrapper>
 
-            <DialogContent dividers sx={{ pt: 0 }}>
+            <DialogContent
+                dividers
+                sx={{
+                    pt: 0,
+                    "@media print": { border: "none !important" },
+                }}>
+                {selectedExam && (
+                    <DonThuocPrint
+                        data={{
+                            hoTenQN: selectedExam.ho_ten,
+                            capBac: selectedExam.cap_bac,
+                            chucVu: selectedExam.chuc_vu,
+                            tenDonVi: selectedExam.ten_don_vi,
+                            maKB: selectedExam.ma_kham_benh,
+                            ngayKham: selectedExam.ngay_kham,
+                            chanDoan: examDetail?.chan_doan,
+                            phuongPhapDieuTri: examDetail?.phuong_phap_dieu_tri,
+                            prescriptionRows,
+                            nguoiCapThuoc: examDetail?.don_thuoc?.[0]?.ten_nguoi_cap_thuoc,
+                        }}
+                    />
+                )}
                 {loading ? (
                     <Typography
                         color="text.secondary"
@@ -62,97 +80,35 @@ export default function CapThuocForm({
                         Không tìm thấy thông tin.
                     </Typography>
                 ) : (
-                    <Stack spacing={2.5} sx={{ py: 1 }}>
-                        {/* === THÊM: Print header === */}
-                        <Box
-                            sx={{
-                                display: "none",
-                                "@media print": {
-                                    "& > *": { fontSize: "14pt" },
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    alignItems: "center",
-                                    mb: 2,
-                                },
-                            }}
-                        >
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    gap: 0.5,
-                                    alignItems: "center",
-                                }}
-                            >
-                                <Typography
-                                    sx={{
-                                        textTransform: "uppercase",
-                                    }}
-                                >
-                                    LỮ ĐOÀN 170
-                                </Typography>
-                                <Typography
-                                    sx={{
-                                        textTransform: "uppercase",
-                                        fontWeight: 600,
-                                    }}
-                                >
-                                    PHÒNG HC-KT
-                                </Typography>
-                            </Box>
-                        </Box>
+                    <Stack spacing={2.5} sx={{ "@media print": { display: "none" }, py: 1 }}>
                         <Typography
+                            variant="h4"
                             sx={{
-                                display: "none",
-                                "@media print": {
-                                    display: "block",
-                                    textAlign: "center",
-                                    textTransform: "uppercase",
-                                    fontSize: "16pt !important",
-                                    fontWeight: 600,
-                                    mb: 1.5,
-                                },
+                                mb: 1.5,
+                                fontWeight: 600,
+                                color: "text.primary",
                             }}
                         >
-                            ĐƠN THUỐC
+                            Thông tin quân nhân
                         </Typography>
-                        <Box sx={{ height: 14 }} />
-                        <Box
-                            sx={{
-                                "@media print": {
-                                    "& > *": { fontSize: "14pt !important" },
-                                },
-                            }}
-                        >
-                            <Typography
-                                variant="h4"
-                                sx={{
-                                    mb: 1.5,
-                                    fontWeight: 600,
-                                    color: "text.primary",
-                                }}
-                            >
-                                Thông tin quân nhân
+                        <Stack spacing={0.5}>
+                            <Typography variant="body1">
+                                <strong>- Họ tên:</strong>{" "}
+                                {selectedExam.ho_ten || "--"}
                             </Typography>
-                            <Stack spacing={0.5}>
-                                <Typography variant="body1">
-                                    <strong>- Họ tên:</strong>{" "}
-                                    {selectedExam.ho_ten || "--"}
-                                </Typography>
-                                <Typography variant="body1">
-                                    <strong>- Đơn vị:</strong>{" "}
-                                    {selectedExam.ten_don_vi || "--"}
-                                </Typography>
-                                <Typography variant="body1">
-                                    <strong>- Mã KB:</strong>{" "}
-                                    {selectedExam.ma_kham_benh || "--"}
-                                </Typography>
-                                <Typography variant="body1">
-                                    <strong>- Ngày khám:</strong>{" "}
-                                    {formatDate(selectedExam.ngay_kham) || "--"}
-                                </Typography>
-                            </Stack>
-                        </Box>
+                            <Typography variant="body1">
+                                <strong>- Đơn vị:</strong>{" "}
+                                {selectedExam.ten_don_vi || "--"}
+                            </Typography>
+                            <Typography variant="body1">
+                                <strong>- Mã KB:</strong>{" "}
+                                {selectedExam.ma_kham_benh || "--"}
+                            </Typography>
+                            <Typography variant="body1">
+                                <strong>- Ngày khám:</strong>{" "}
+                                {formatDate(selectedExam.ngay_kham) || "--"}
+                            </Typography>
+                        </Stack>
 
                         {examDetail?.chan_doan && (
                             <Box>

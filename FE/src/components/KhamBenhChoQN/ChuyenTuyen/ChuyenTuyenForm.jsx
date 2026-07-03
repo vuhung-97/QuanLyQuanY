@@ -99,25 +99,19 @@ export default function ChuyenTuyenForm({
             onClose={onClose}
             maxWidth="md"
             fullWidth
-            slotProps={{
-                paper: {
-                    sx: {
-                        "@media print": {
-                            boxShadow: "none",
-                            width: "100%",
-                            maxWidth: "100%",
-                        },
-                    },
-                },
-            }}
         >
-            <Box sx={{ "@media print": { display: "none" } }}>
-                <DialogTitleWrapper>
-                    Thông tin chuyển tuyến
-                </DialogTitleWrapper>
-            </Box>
+            <DialogTitleWrapper
+                sx={{ "@media print": { display: "none" } }}
+            >
+                Thông tin chuyển tuyến
+            </DialogTitleWrapper>
 
-            <DialogContent dividers sx={{ pt: 0 }}>
+            <DialogContent
+                dividers
+                sx={{
+                    pt: 0,
+                    "@media print": { border: "none !important" },
+                }}>
                 {loading ? (
                     <Typography
                         color="text.secondary"
