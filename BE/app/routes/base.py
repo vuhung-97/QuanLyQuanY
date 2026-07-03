@@ -72,6 +72,7 @@ def create_crud_router(
     enable_create: bool = True,
     enable_update: bool = True,
     enable_delete: bool = True,
+    enable_read: bool = True,
 ) -> APIRouter:
     create_schema = create_schema or _resolve_schema(resource, "Create")
     update_schema = update_schema or _resolve_schema(resource, "Update")
@@ -94,9 +95,10 @@ def create_crud_router(
     ) -> list[Any]:
         return _run_crud(lambda: crud.get_multi(db, limit=limit, offset=offset, sort_by=sort_by, sort_desc=sort_desc))
 
-    @router.get("/{item_id}", dependencies=read_deps, response_model=read_schema)
-    def get_item(item_id: str, db: Session = Depends(get_db)) -> Any:
-        return _run_crud(lambda: crud.get(db, item_id))
+    if enable_read:
+        @router.get("/{item_id}", dependencies=read_deps, response_model=read_schema)
+        def get_item(item_id: str, db: Session = Depends(get_db)) -> Any:
+            return _run_crud(lambda: crud.get(db, item_id))
 
     if enable_create:
         @router.post("", dependencies=create_deps, status_code=status.HTTP_201_CREATED, response_model=read_schema)

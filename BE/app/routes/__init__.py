@@ -3,6 +3,7 @@ from app.routes.buong import router as buong_router
 from app.routes.chi_tiet_don_thuoc import router as chi_tiet_don_thuoc_router
 from app.routes.chi_tiet_du_tru import router as chi_tiet_du_tru_router
 from app.routes.chi_tiet_phieu_cham_soc import router as chi_tiet_phieu_cham_soc_router
+from app.routes.chi_tiet_phieu_nhap_kho import router as chi_tiet_phieu_nhap_kho_router
 from app.routes.chi_tiet_xuat_kho import router as chi_tiet_xuat_kho_router
 from app.routes.di_tuyen_sau_dieu_tri import router as di_tuyen_sau_dieu_tri_router
 from app.routes.don_thuoc import router as don_thuoc_router
@@ -17,6 +18,7 @@ from app.routes.nhat_ky_dang_nhap import router as nhat_ky_dang_nhap_router
 from app.routes.nhat_ky_thao_tac import router as nhat_ky_thao_tac_router
 from app.routes.phieu_cham_soc import router as phieu_cham_soc_router
 from app.routes.phieu_du_tru import router as phieu_du_tru_router
+from app.routes.phieu_nhap_kho import router as phieu_nhap_kho_router
 from app.routes.phan_cong_nhiem_vu import router as phan_cong_nhiem_vu_router
 from app.routes.phieu_kham_suc_khoe import router as phieu_kham_suc_khoe_router
 from app.routes.phieu_xuat_kho import router as phieu_xuat_kho_router
@@ -36,6 +38,7 @@ RESOURCE_ROUTERS = [
     chi_tiet_don_thuoc_router,
     chi_tiet_du_tru_router,
     chi_tiet_phieu_cham_soc_router,
+    chi_tiet_phieu_nhap_kho_router,
     chi_tiet_xuat_kho_router,
     di_tuyen_sau_dieu_tri_router,
     don_thuoc_router,
@@ -46,6 +49,7 @@ RESOURCE_ROUTERS = [
     lich_kham_sk_nam_router,
     phieu_cham_soc_router,
     phieu_du_tru_router,
+    phieu_nhap_kho_router,
     phan_cong_nhiem_vu_router,
     phieu_kham_suc_khoe_router,
     phieu_xuat_kho_router,
