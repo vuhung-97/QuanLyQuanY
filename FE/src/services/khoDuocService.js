@@ -25,7 +25,7 @@ export const khoDuocService = {
     deletePhieuDuTru: (id) => api.delete(`/phieu_du_tru/${id}`),
     duyetPhieuDuTru: (id) => api.post(`/phieu_du_tru/${id}/duyet`),
     tuChoiPhieuDuTru: (id) => api.post(`/phieu_du_tru/${id}/tu-choi`),
-    nhapKhoTuPhieuDuTru: (id) => api.post(`/phieu_du_tru/${id}/nhap-kho`),
+    nhapKhoTuPhieuDuTru: (id, data) => api.post(`/phieu_du_tru/${id}/nhap-kho`, data),
 
     listChiTietDuTru: (params) => api.get("/chi_tiet_du_tru", { params }),
     getChiTietByPhieuDuTru: (maPhieu) => api.get(`/chi_tiet_du_tru/by-phieu/${maPhieu}`),
@@ -38,6 +38,8 @@ export const khoDuocService = {
     createPhieuNhapKho: (data) => api.post("/phieu_nhap_kho", data),
     updatePhieuNhapKho: (id, data) => api.patch(`/phieu_nhap_kho/${id}`, data),
     deletePhieuNhapKho: (id) => api.delete(`/phieu_nhap_kho/${id}`),
+    getPhieuNhapByPhieuDuTru: (maPhieuDuTru) =>
+        api.get(`/phieu_nhap_kho/by-phieu-du-tru/${maPhieuDuTru}`),
 
     listChiTietPhieuNhap: (params) =>
         api.get("/chi_tiet_phieu_nhap_kho", { params }),

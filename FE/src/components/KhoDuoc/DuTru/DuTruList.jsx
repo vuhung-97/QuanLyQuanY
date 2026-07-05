@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import {
     Button,
     Card,
@@ -29,6 +30,7 @@ import { decodeJWT } from "@/services/api.js";
 const ROWS_PER_PAGE = 20;
 
 export default function DuTruList() {
+    const navigate = useNavigate();
     const {
         rows,
         total,
@@ -131,7 +133,9 @@ export default function DuTruList() {
 
                         {row.trang_thai === "da_duyet" && (
                             <Button size="small" variant="contained"
-                                onClick={() => openConfirm(row.ma_phieu_du_tru, "nhap_kho")}>
+                                onClick={() => navigate("/kho-duoc/nhap", {
+                                    state: { openNhapKhoPhieuId: row.ma_phieu_du_tru },
+                                })}>
                                 Nhập kho
                             </Button>
                         )}

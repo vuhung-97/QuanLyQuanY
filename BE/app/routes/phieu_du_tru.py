@@ -11,6 +11,7 @@ from app.database.chi_tiet_du_tru import ChiTietDuTru
 from app.database.chi_tiet_phieu_nhap_kho import ChiTietPhieuNhapKho
 from app.database.session import get_db
 from app.routes.base import _run_crud, create_crud_router
+from app.schemas.phieu_nhap_kho import NhapKhoRequest
 from app.services.inventory_service import InventoryService
 
 
@@ -121,6 +122,7 @@ def tu_choi_phieu_du_tru(
 )
 def nhap_kho_tu_phieu_du_tru(
     item_id: str,
+    body: NhapKhoRequest | None = None,
     db: Session = Depends(get_db),
     current_user: NguoiDung = Depends(get_current_user),
 ):
@@ -130,27 +132,36 @@ def nhap_kho_tu_phieu_du_tru(
     if phieu.trang_thai != "da_duyet":
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Chỉ duyệt được phiếu đã duyệt, hiện tại: {phieu.trang_thai}")
 
-    chi_tiets = db.query(ChiTietDuTru).filter(
-        ChiTietDuTru.ma_phieu_du_tru == item_id
-    ).all()
-
-    if not chi_tiets:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Phiếu dự trù không có chi tiết thuốc")
-
     phieu_nhap = PhieuNhapKho(
         ma_phieu_du_tru=item_id,
         nguoi_nhap=current_user.id if hasattr(current_user, "id") else None,
     )
+    if body and body.ngay_nhap:
+        phieu_nhap.ngay_nhap = body.ngay_nhap
     db.add(phieu_nhap)
     db.flush()
 
-    for ct in chi_tiets:
-        ct_nhap = ChiTietPhieuNhapKho(
-            ma_phieu_nhap=phieu_nhap.ma_phieu_nhap,
-            ma_thuoc_vtyt=ct.ma_thuoc_vtyt,
-            so_luong=ct.so_luong,
-        )
-        db.add(ct_nhap)
+    if body and body.items:
+        for item in body.items:
+            ct_nhap = ChiTietPhieuNhapKho(
+                ma_phieu_nhap=phieu_nhap.ma_phieu_nhap,
+                ma_thuoc_vtyt=item.ma_thuoc_vtyt,
+                so_luong=item.so_luong,
+            )
+            db.add(ct_nhap)
+    else:
+        chi_tiets = db.query(ChiTietDuTru).filter(
+            ChiTietDuTru.ma_phieu_du_tru == item_id
+        ).all()
+        if not chi_tiets:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Phiếu dự trù không có chi tiết thuốc")
+        for ct in chi_tiets:
+            ct_nhap = ChiTietPhieuNhapKho(
+                ma_phieu_nhap=phieu_nhap.ma_phieu_nhap,
+                ma_thuoc_vtyt=ct.ma_thuoc_vtyt,
+                so_luong=ct.so_luong,
+            )
+            db.add(ct_nhap)
 
     try:
         InventoryService.import_stock(db, phieu_nhap.ma_phieu_nhap)

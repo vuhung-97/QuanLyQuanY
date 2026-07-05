@@ -24,3 +24,13 @@ class PhieuNhapKhoUpdate(SchemaBase):
 
 class PhieuNhapKhoRead(PhieuNhapKhoBase):
     ma_phieu_nhap: str = Field(max_length=10)
+
+
+class NhapKhoItem(SchemaBase):
+    ma_thuoc_vtyt: str = Field(max_length=10)
+    so_luong: int
+
+
+class NhapKhoRequest(SchemaBase):
+    items: list[NhapKhoItem]
+    ngay_nhap: date | None = None

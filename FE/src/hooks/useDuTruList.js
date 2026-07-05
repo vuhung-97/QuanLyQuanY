@@ -20,7 +20,6 @@ const ROWS_PER_PAGE = 20;
 
 const ACTION_LABEL = {
     duyet: "Duyệt",
-    nhap_kho: "Nhập kho",
     xoa: "Xoá",
 };
 
@@ -62,7 +61,6 @@ export default function useDuTruList() {
         try {
             if (action === "duyet") await khoDuocService.duyetPhieuDuTru(id);
             else if (action === "tu_choi") await khoDuocService.tuChoiPhieuDuTru(id);
-            else if (action === "nhap_kho") await khoDuocService.nhapKhoTuPhieuDuTru(id);
             else if (action === "xoa") await khoDuocService.deletePhieuDuTru(id);
             setSnackbar({
                 open: true,

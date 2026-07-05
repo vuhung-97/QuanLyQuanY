@@ -15,6 +15,7 @@ export default function usePhieuDuTru({ open, phieuId = null, mode = "create", o
     const [loadingData, setLoadingData] = useState(false);
     const [ngayLap, setNgayLap] = useState(dayjs());
     const [creatorName, setCreatorName] = useState("");
+    const [trangThai, setTrangThai] = useState("");
 
     const isView = mode === "view";
 
@@ -32,6 +33,7 @@ export default function usePhieuDuTru({ open, phieuId = null, mode = "create", o
             setSavedPhieu(null);
             setNgayLap(dayjs());
             setCreatorName("");
+            setTrangThai("");
             return;
         }
 
@@ -61,6 +63,7 @@ export default function usePhieuDuTru({ open, phieuId = null, mode = "create", o
 
                 setNgayLap(p.ngay_lap_phieu ? dayjs(p.ngay_lap_phieu) : dayjs());
                 setCreatorName(p.nguoi_lap_ho_ten || p.nguoi_lap || "");
+                setTrangThai(p.trang_thai || "");
 
                 if (isView) {
                     setSavedPhieu({
@@ -119,7 +122,7 @@ export default function usePhieuDuTru({ open, phieuId = null, mode = "create", o
                 await khoDuocService.updatePhieuDuTru(phieuId, {
                     ghi_chu: ghiChu || null,
                     nguoi_lap: nguoiLap,
-                    ngay_lap_phieu: ngayLap.toISOString(),
+                    ngay_lap_phieu: ngayLap.format("YYYY-MM-DD"),
                 });
 
                 const existing = await khoDuocService.getChiTietByPhieuDuTru(phieuId);
@@ -160,7 +163,7 @@ export default function usePhieuDuTru({ open, phieuId = null, mode = "create", o
                 ghi_chu: ghiChu || null,
                 trang_thai: "chua_duyet",
                 nguoi_lap: nguoiLap,
-                ngay_lap_phieu: ngayLap.toISOString(),
+                ngay_lap_phieu: ngayLap.format("YYYY-MM-DD"),
             });
             const maPhieu = phieuRes.data.ma_phieu_du_tru;
 
@@ -218,6 +221,7 @@ export default function usePhieuDuTru({ open, phieuId = null, mode = "create", o
         ngayLap,
         setNgayLap,
         creatorName,
+        trangThai,
         setOpenKhoThuoc,
         addItem,
         removeItem,

@@ -10,10 +10,7 @@ import {
     TableRow,
     Typography,
 } from "@mui/material";
-import {
-    Add as AddIcon,
-    Delete as DeleteIcon,
-} from "@mui/icons-material";
+import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
 
 export default function ChiTietXuatTable({ items, isView, onAdd, onRemove }) {
     return (
@@ -44,9 +41,18 @@ export default function ChiTietXuatTable({ items, isView, onAdd, onRemove }) {
                     <Table size="small" sx={{ minWidth: 400 }}>
                         <TableHead>
                             <TableRow>
-                                <TableCell sx={{ fontWeight: 600 }}>Tên thuốc</TableCell>
-                                <TableCell sx={{ fontWeight: 600 }}>ĐVT</TableCell>
-                                <TableCell sx={{ fontWeight: 600 }} align="right">Số lượng</TableCell>
+                                <TableCell sx={{ fontWeight: 600 }}>
+                                    Tên thuốc
+                                </TableCell>
+                                <TableCell sx={{ fontWeight: 600 }}>
+                                    ĐVT
+                                </TableCell>
+                                <TableCell
+                                    sx={{ fontWeight: 600 }}
+                                    align="right"
+                                >
+                                    Số lượng
+                                </TableCell>
                                 <TableCell sx={{ width: 50 }} />
                             </TableRow>
                         </TableHead>
@@ -54,14 +60,20 @@ export default function ChiTietXuatTable({ items, isView, onAdd, onRemove }) {
                             {items.map((item) => (
                                 <TableRow key={item.ma_thuoc_vtyt}>
                                     <TableCell>{item.ten_thuoc_vtyt}</TableCell>
-                                    <TableCell>{item.don_vi_tinh || "—"}</TableCell>
-                                    <TableCell align="right">{item.so_luong}</TableCell>
+                                    <TableCell>
+                                        {item.don_vi_tinh || "—"}
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        {item.so_luong}
+                                    </TableCell>
                                     <TableCell>
                                         {!isView && (
                                             <IconButton
                                                 size="small"
                                                 color="error"
-                                                onClick={() => onRemove(item.ma_thuoc_vtyt)}
+                                                onClick={() =>
+                                                    onRemove(item.ma_thuoc_vtyt)
+                                                }
                                             >
                                                 <DeleteIcon fontSize="small" />
                                             </IconButton>
@@ -75,7 +87,11 @@ export default function ChiTietXuatTable({ items, isView, onAdd, onRemove }) {
             )}
 
             {items.length === 0 && (
-                <Typography variant="body2" color="text.secondary" sx={{ textAlign: "center", py: 1 }}>
+                <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ textAlign: "center", py: 1 }}
+                >
                     Chưa có thuốc nào.
                 </Typography>
             )}

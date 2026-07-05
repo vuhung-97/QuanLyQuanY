@@ -3,13 +3,9 @@ import PrintOverlay from "@/components/common/print/PrintOverlay.jsx";
 import PrintHeaderDonVi from "@/components/common/print/PrintHeaderDonVi.jsx";
 import PrintSignature from "@/components/common/print/PrintSignature.jsx";
 
-export default function PhieuDuTruPrint({ data }) {
+export default function NhapKhoPrint({ data }) {
     return (
-        <PrintOverlay
-            className="phieu-du-tru-print"
-            paperSize="A4"
-            fontSize="20pt"
-        >
+        <PrintOverlay className="nhap-kho-print" paperSize="A4" fontSize="20pt">
             <PrintHeaderDonVi />
 
             <div style={{ margin: "12pt 0", textAlign: "center" }}>
@@ -21,22 +17,23 @@ export default function PhieuDuTruPrint({ data }) {
                         margin: 0,
                     }}
                 >
-                    PHIẾU DỰ TRÙ
+                    PHIẾU NHẬP KHO
                 </p>
                 <p style={{ margin: 0 }}>
-                    <strong>Mã:</strong> {data.maPhieu}
+                    <strong>Mã phiếu nhập:</strong> {data.maPhieuNhap}
                 </p>
                 <p style={{ margin: 0 }}>
-                    <strong>Ngày lập: </strong>
-                    {dayjs(data.ngayLap).format("DD/MM/YYYY")}
+                    <strong>Mã phiếu dự trù:</strong> {data.maPhieuDuTru}
+                </p>
+                <p style={{ margin: 0 }}>
+                    <strong>Ngày nhập: </strong>
+                    {dayjs(data.ngayNhap).format("DD/MM/YYYY")}
                 </p>
             </div>
 
-            {data.ghiChu && (
-                <p>
-                    <strong>Ghi chú:</strong> {data.ghiChu}
-                </p>
-            )}
+            <p>
+                <strong>Người nhập:</strong> {data.nguoiNhap || "—"}
+            </p>
 
             <p>
                 <strong>Danh sách thuốc / VTYT</strong>
@@ -54,11 +51,11 @@ export default function PhieuDuTruPrint({ data }) {
                     {data.items.map((item, idx) => (
                         <tr key={idx}>
                             <td style={{ textAlign: "center" }}>{idx + 1}</td>
-                            <td>{item.tenThuoc}</td>
+                            <td>{item.ten_thuoc_vtyt}</td>
                             <td style={{ textAlign: "center" }}>
-                                {item.donViTinh || "—"}
+                                {item.don_vi_tinh || "—"}
                             </td>
-                            <td className="so-luong">{item.soLuong}</td>
+                            <td className="so-luong">{item.so_luong}</td>
                         </tr>
                     ))}
                 </tbody>
@@ -66,7 +63,7 @@ export default function PhieuDuTruPrint({ data }) {
 
             <PrintSignature
                 justify="space-between"
-                items={[{ label: "NGƯỜI LẬP" }, { label: "CHỦ NHIỆM QUÂN Y" }]}
+                items={[{ label: "NGƯỜI NHẬP" }, { label: "CHỦ NHIỆM QUÂN Y" }]}
                 style={{ padding: "0 20px" }}
             />
         </PrintOverlay>

@@ -15,7 +15,7 @@ export default function PhieuXuatPrint({ data, paperSize = "A4" }) {
             <div style={{ margin: "12pt 0", textAlign: "center" }}>
                 <p
                     style={{
-                        fontSize: "24pt",
+                        fontSize: "22pt",
                         textTransform: "uppercase",
                         fontWeight: "bold",
                         m: 0,
