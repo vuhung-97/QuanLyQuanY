@@ -203,7 +203,7 @@ export default function XuatKhoList() {
             <Card sx={{ borderRadius: 3 }}>
                 <CardContent>
                     <Stack spacing={2.5}>
-                        <Stack direction="row" justifyContent="space-between" alignItems="center" flexWrap="wrap" spacing={2}>
+                        <Stack direction="row" spacing={2} sx={{ justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
                             <TextField
                                 select
                                 size="small"

@@ -1,111 +1,73 @@
-import { useCallback, useEffect, useState } from "react";
+import { useMemo } from "react";
 import {
-    Box,
     Button,
     Card,
     CardContent,
     Chip,
+    IconButton,
     MenuItem,
     Stack,
     TextField,
-    Typography,
+    Tooltip,
 } from "@mui/material";
-import { Add as AddIcon } from "@mui/icons-material";
+import {
+    Add as AddIcon,
+    CheckCircle as CheckCircleIcon,
+    Delete as DeleteIcon,
+    Edit as EditIcon,
+    Visibility as VisibilityIcon,
+} from "@mui/icons-material";
+import dayjs from "dayjs";
 import DataTable from "@/components/common/DataTable.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import PaginationWidget from "@/components/common/PaginationWidget.jsx";
-import { khoDuocService } from "@/services/khoDuocService.js";
 import PhieuDuTruDialog from "./PhieuDuTruDialog.jsx";
 import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
-
-const TRANG_THAI_OPTIONS = [
-    { value: "", label: "Tất cả" },
-    { value: "chua_duyet", label: "Chưa duyệt" },
-    { value: "da_duyet", label: "Đã duyệt" },
-    { value: "tu_choi", label: "Từ chối" },
-    { value: "da_nhap", label: "Đã nhập kho" },
-];
-
-const STATUS_CHIP = {
-    chua_duyet: { label: "Chưa duyệt", color: "warning" },
-    da_duyet: { label: "Đã duyệt", color: "success" },
-    tu_choi: { label: "Từ chối", color: "error" },
-    da_nhap: { label: "Đã nhập kho", color: "info" },
-};
+import useDuTruList, { STATUS_CHIP, TRANG_THAI_OPTIONS } from "@/hooks/useDuTruList.js";
+import { decodeJWT } from "@/services/api.js";
 
 const ROWS_PER_PAGE = 20;
 
 export default function DuTruList() {
-    const [rows, setRows] = useState([]);
-    const [total, setTotal] = useState(0);
-    const [page, setPage] = useState(1);
-    const [loading, setLoading] = useState(false);
-    const [trangThai, setTrangThai] = useState("");
-    const [openDialog, setOpenDialog] = useState(false);
-    const [confirm, setConfirm] = useState({ open: false, action: null, id: null });
-    const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "info" });
+    const {
+        rows,
+        total,
+        page,
+        loading,
+        trangThai,
+        openPhieu,
+        confirm,
+        snackbar,
+        setPage,
+        setTrangThai,
+        setOpenPhieu,
+        setSnackbar,
+        setConfirm,
+        fetchData,
+        handleAction,
+        openConfirm,
+        ACTION_LABEL,
+    } = useDuTruList();
 
-    const fetchData = useCallback(async () => {
-        setLoading(true);
-        try {
-            const params = { limit: ROWS_PER_PAGE, offset: (page - 1) * ROWS_PER_PAGE };
-            if (trangThai) params.trang_thai = trangThai;
-            const res = await khoDuocService.listPhieuDuTru(params);
-            const data = res.data || [];
-            const allData = Array.isArray(data) ? data : data.items || data.data || [];
-            const totalCount = data.total ?? allData.length;
-            setRows(allData);
-            setTotal(totalCount);
-        } catch {
-            setRows([]);
-            setTotal(0);
-        } finally {
-            setLoading(false);
-        }
-    }, [page, trangThai]);
+    const currentUser = useMemo(() => {
+        const token = localStorage.getItem("datamed_access_token");
+        return token ? decodeJWT(token) : null;
+    }, []);
 
-    useEffect(() => {
-        fetchData();
-    }, [fetchData]);
-
-    const handleAction = async (id, action) => {
-        setConfirm({ open: false, action: null, id: null });
-        try {
-            let res;
-            const labelMap = { duyet: "Duyệt", tu_choi: "Từ chối", nhap_kho: "Nhập kho", xoa: "Xoá" };
-            if (action === "duyet") res = await khoDuocService.duyetPhieuDuTru(id);
-            else if (action === "tu_choi") res = await khoDuocService.tuChoiPhieuDuTru(id);
-            else if (action === "nhap_kho") res = await khoDuocService.nhapKhoTuPhieuDuTru(id);
-            else if (action === "xoa") res = await khoDuocService.deletePhieuDuTru(id);
-            setSnackbar({
-                open: true,
-                message: `${labelMap[action] || "Thao tác"} thành công.`,
-                severity: "success",
-            });
-            fetchData();
-        } catch (err) {
-            setSnackbar({
-                open: true,
-                message: err.response?.data?.detail || "Thao tác thất bại.",
-                severity: "error",
-            });
-        }
-    };
-
-    const openConfirm = (id, action) =>
-        setConfirm({ open: true, action, id });
-
-    const confirmLabel = {
-        duyet: "Duyệt",
-        tu_choi: "Từ chối",
-        nhap_kho: "Nhập kho",
-        xoa: "Xoá",
-    };
+    const role = currentUser?.role;
+    const isCNQYorAdmin = role === "ROLE_ADMIN" || role === "ROLE_CNQY";
 
     const columns = [
         { key: "ma_phieu_du_tru", label: "Mã phiếu" },
-        { key: "ngay_lap_phieu", label: "Ngày lập" },
-        { key: "ma_don_vi", label: "Đơn vị" },
+        {
+            key: "ngay_lap_phieu",
+            label: "Ngày lập",
+            render: (row) =>
+                row.ngay_lap_phieu
+                    ? dayjs(row.ngay_lap_phieu).format("DD/MM/YYYY")
+                    : "—",
+        },
+        { key: "nguoi_lap_ho_ten", label: "Người lập" },
         {
             key: "trang_thai",
             label: "Trạng thái",
@@ -114,38 +76,68 @@ export default function DuTruList() {
                 return <Chip label={chip.label} color={chip.color} size="small" />;
             },
         },
-        { key: "nguoi_lap", label: "Người lập" },
         {
             key: "actions",
             label: "Thao tác",
-            render: (row) => (
-                <Stack direction="row" spacing={1}>
-                    {row.trang_thai === "chua_duyet" && (
-                        <>
-                            <Button size="small" variant="contained" color="success"
-                                onClick={() => openConfirm(row.ma_phieu_du_tru, "duyet")}>
-                                Duyệt
+            render: (row) => {
+                const isCreator = row.nguoi_lap === currentUser?.id;
+
+                return (
+                    <Stack direction="row" spacing={0.5}>
+                        {(row.trang_thai === "da_duyet" || row.trang_thai === "da_nhap" || (!isCreator && !isCNQYorAdmin)) && (
+                            <Tooltip title="Xem">
+                                <IconButton size="small" color="primary"
+                                    onClick={() => setOpenPhieu({ open: true, id: row.ma_phieu_du_tru, mode: "view" })}>
+                                    <VisibilityIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                        )}
+
+                        {row.trang_thai === "chua_duyet" && isCNQYorAdmin && (
+                            <Tooltip title="Duyệt">
+                                <IconButton size="small" color="success"
+                                    onClick={() => openConfirm(row.ma_phieu_du_tru, "duyet")}>
+                                    <CheckCircleIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                        )}
+
+                        {row.trang_thai === "chua_duyet" && (isCreator || isCNQYorAdmin) && (
+                            <Tooltip title="Sửa">
+                                <IconButton size="small" color="primary"
+                                    onClick={() => setOpenPhieu({ open: true, id: row.ma_phieu_du_tru, mode: "edit" })}>
+                                    <EditIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                        )}
+
+                        {row.trang_thai === "tu_choi" && isCreator && (
+                            <Tooltip title="Sửa">
+                                <IconButton size="small" color="primary"
+                                    onClick={() => setOpenPhieu({ open: true, id: row.ma_phieu_du_tru, mode: "edit" })}>
+                                    <EditIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                        )}
+
+                        {["chua_duyet", "tu_choi"].includes(row.trang_thai) && (isCreator || isCNQYorAdmin) && (
+                            <Tooltip title="Xoá">
+                                <IconButton size="small" color="error"
+                                    onClick={() => openConfirm(row.ma_phieu_du_tru, "xoa")}>
+                                    <DeleteIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                        )}
+
+                        {row.trang_thai === "da_duyet" && (
+                            <Button size="small" variant="contained"
+                                onClick={() => openConfirm(row.ma_phieu_du_tru, "nhap_kho")}>
+                                Nhập kho
                             </Button>
-                            <Button size="small" variant="outlined" color="error"
-                                onClick={() => openConfirm(row.ma_phieu_du_tru, "tu_choi")}>
-                                Từ chối
-                            </Button>
-                        </>
-                    )}
-                    {row.trang_thai === "da_duyet" && (
-                        <Button size="small" variant="contained"
-                            onClick={() => openConfirm(row.ma_phieu_du_tru, "nhap_kho")}>
-                            Nhập kho
-                        </Button>
-                    )}
-                    {["chua_duyet", "tu_choi"].includes(row.trang_thai) && (
-                        <Button size="small" variant="outlined" color="error"
-                            onClick={() => openConfirm(row.ma_phieu_du_tru, "xoa")}>
-                            Xoá
-                        </Button>
-                    )}
-                </Stack>
-            ),
+                        )}
+                    </Stack>
+                );
+            },
         },
     ];
 
@@ -168,7 +160,8 @@ export default function DuTruList() {
                                 ))}
                             </TextField>
 
-                            <Button variant="contained" startIcon={<AddIcon />} onClick={() => setOpenDialog(true)}>
+                            <Button variant="contained" startIcon={<AddIcon />}
+                                onClick={() => setOpenPhieu({ open: true, id: null, mode: "create" })}>
                                 Tạo phiếu dự trù
                             </Button>
                         </Stack>
@@ -189,17 +182,19 @@ export default function DuTruList() {
             </Card>
 
             <PhieuDuTruDialog
-                open={openDialog}
-                onClose={() => setOpenDialog(false)}
+                open={openPhieu.open}
+                phieuId={openPhieu.id}
+                mode={openPhieu.mode}
+                onClose={() => setOpenPhieu({ open: false, id: null, mode: "create" })}
                 onSaved={() => { fetchData(); }}
             />
 
             <ConfirmDialog
                 open={confirm.open}
                 title="Xác nhận"
-                message={`Bạn có chắc muốn ${confirmLabel[confirm.action]?.toLowerCase() || "thực hiện thao tác"} phiếu dự trù này?`}
-                confirmLabel={confirmLabel[confirm.action] || "Xác nhận"}
-                confirmColor={confirm.action === "xoa" || confirm.action === "tu_choi" ? "error" : "primary"}
+                message={`Bạn có chắc muốn ${ACTION_LABEL[confirm.action]?.toLowerCase() || "thực hiện thao tác"} phiếu dự trù này?`}
+                confirmLabel={ACTION_LABEL[confirm.action] || "Xác nhận"}
+                confirmColor={confirm.action === "xoa" ? "error" : "primary"}
                 onConfirm={() => handleAction(confirm.id, confirm.action)}
                 onClose={() => setConfirm({ open: false, action: null, id: null })}
             />
