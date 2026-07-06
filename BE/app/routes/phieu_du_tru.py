@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
@@ -16,18 +16,10 @@ from app.schemas.phieu_nhap_kho import NhapKhoRequest
 from app.services.inventory_service import InventoryService
 
 
-router = create_crud_router(
-    resource="phieu_du_tru",
-    crud=phieu_du_tru_crud,
-    read_permission="phieu_du_tru:read",
-    create_permission="phieu_du_tru:create",
-    update_permission="phieu_du_tru:update",
-    delete_permission="phieu_du_tru:delete",
-    enable_read=False,
-)
+pre_router = APIRouter()
 
 
-@router.get(
+@pre_router.get(
     "/danh-sach",
     dependencies=[Depends(require_permissions("phieu_du_tru:read"))],
 )
@@ -68,7 +60,7 @@ def get_danh_sach_phieu_du_tru(
     return {"data": result, "total": total}
 
 
-@router.get(
+@pre_router.get(
     "/{item_id}",
     dependencies=[Depends(require_permissions("phieu_du_tru:read"))],
 )
@@ -80,7 +72,7 @@ def get_phieu_du_tru(item_id: str, db: Session = Depends(get_db)):
     return d
 
 
-@router.post(
+@pre_router.post(
     "/{item_id}/duyet",
     dependencies=[Depends(require_permissions("phieu_du_tru:update"))],
 )
@@ -100,7 +92,7 @@ def duyet_phieu_du_tru(
     return phieu
 
 
-@router.post(
+@pre_router.post(
     "/{item_id}/tu-choi",
     dependencies=[Depends(require_permissions("phieu_du_tru:update"))],
 )
@@ -120,7 +112,7 @@ def tu_choi_phieu_du_tru(
     return phieu
 
 
-@router.post(
+@pre_router.post(
     "/{item_id}/nhap-kho",
     dependencies=[Depends(require_permissions("phieu_du_tru:update"))],
 )
@@ -174,3 +166,15 @@ def nhap_kho_tu_phieu_du_tru(
 
     db.refresh(phieu)
     return {"phieu_nhap": phieu_nhap, "message": "Nhập kho thành công"}
+
+
+router = create_crud_router(
+    resource="phieu_du_tru",
+    crud=phieu_du_tru_crud,
+    pre_router=pre_router,
+    read_permission="phieu_du_tru:read",
+    create_permission="phieu_du_tru:create",
+    update_permission="phieu_du_tru:update",
+    delete_permission="phieu_du_tru:delete",
+    enable_read=False,
+)

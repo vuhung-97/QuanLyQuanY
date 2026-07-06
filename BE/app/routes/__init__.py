@@ -2,6 +2,7 @@ from app.routes.benh_an import router as benh_an_router
 from app.routes.buong import router as buong_router
 from app.routes.chi_tiet_don_thuoc import router as chi_tiet_don_thuoc_router
 from app.routes.chi_tiet_du_tru import router as chi_tiet_du_tru_router
+from app.routes.chi_tiet_lich_kham_sk_nam import router as chi_tiet_lich_kham_sk_nam_router
 from app.routes.chi_tiet_phieu_cham_soc import router as chi_tiet_phieu_cham_soc_router
 from app.routes.chi_tiet_phieu_nhap_kho import router as chi_tiet_phieu_nhap_kho_router
 from app.routes.chi_tiet_xuat_kho import router as chi_tiet_xuat_kho_router
@@ -40,6 +41,7 @@ RESOURCE_ROUTERS = [
     chi_tiet_phieu_cham_soc_router,
     chi_tiet_phieu_nhap_kho_router,
     chi_tiet_xuat_kho_router,
+    chi_tiet_lich_kham_sk_nam_router,
     di_tuyen_sau_dieu_tri_router,
     don_thuoc_router,
     don_vi_router,

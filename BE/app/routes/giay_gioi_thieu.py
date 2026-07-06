@@ -1,4 +1,4 @@
-from fastapi import Depends
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.core.dependencies import require_permissions
@@ -9,18 +9,11 @@ from app.routes.base import create_crud_router
 from app.schemas.giay_gioi_thieu import GiayGioiThieuRead
 
 
-router = create_crud_router(
-    resource="giay_gioi_thieu",
-    crud=giay_gioi_thieu_crud,
-    read_permission="giay_gioi_thieu:read",
-    create_permission="giay_gioi_thieu:create",
-    update_permission="giay_gioi_thieu:update",
-    delete_permission="giay_gioi_thieu:delete",
-)
+pre_router = APIRouter()
 
 
-@router.get(
-    "/by-kham-benh/{ma_kham_benh}",
+@pre_router.get(
+    "/kham-benh/{ma_kham_benh}",
     dependencies=[Depends(require_permissions("giay_gioi_thieu:read"))],
     response_model=list[GiayGioiThieuRead],
 )
@@ -30,3 +23,14 @@ def get_ggt_by_kham_benh(ma_kham_benh: str, db: Session = Depends(get_db)):
         .filter(GiayGioiThieu.ma_kham_benh == ma_kham_benh)
         .all()
     )
+
+
+router = create_crud_router(
+    resource="giay_gioi_thieu",
+    crud=giay_gioi_thieu_crud,
+    pre_router=pre_router,
+    read_permission="giay_gioi_thieu:read",
+    create_permission="giay_gioi_thieu:create",
+    update_permission="giay_gioi_thieu:update",
+    delete_permission="giay_gioi_thieu:delete",
+)

@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import extract, inspect
 from sqlalchemy.orm import Session
 
@@ -21,19 +21,10 @@ from app.schemas.benh_an import BenhAnCreate, BenhAnReadDetail, BenhAnUpdate
 from app.services.medical_examination import MedicalExaminationService
 
 
-router = create_crud_router(
-    resource="benh_an",
-    crud=benh_an_crud,
-    read_permission="benh_an:read",
-    create_permission="benh_an:create",
-    update_permission="benh_an:update",
-    delete_permission="benh_an:delete",
-    enable_create=False,
-    enable_update=False,
-)
+pre_router = APIRouter()
 
 
-@router.post(
+@pre_router.post(
     "",
     dependencies=[Depends(require_permissions("benh_an:create"))],
     status_code=201,
@@ -53,7 +44,7 @@ def create_benh_an(data: dict, db: Session = Depends(get_db), current_user = Dep
     return {c.key: getattr(ba, c.key) for c in inspect(BenhAn).columns}
 
 
-@router.patch(
+@pre_router.patch(
     "/{item_id}",
     dependencies=[Depends(require_permissions("benh_an:update"))],
 )
@@ -81,8 +72,8 @@ def update_benh_an(
     return {c.key: getattr(result, c.key) for c in inspect(BenhAn).columns}
 
 
-@router.get(
-    "/noi-tru/danh-sach",
+@pre_router.get(
+    "/noi-tru",
     dependencies=[Depends(require_permissions("benh_an:read"))],
 )
 def get_danh_sach_noi_tru(
@@ -121,8 +112,8 @@ def get_danh_sach_noi_tru(
     return {"data": result, "total": total}
 
 
-@router.get(
-    "/by-kham-benh/{ma_kham_benh}",
+@pre_router.get(
+    "/kham-benh/{ma_kham_benh}",
     dependencies=[Depends(require_permissions("benh_an:read"))],
 )
 def get_benh_an_by_kham_benh(ma_kham_benh: str, db: Session = Depends(get_db)):
@@ -132,7 +123,7 @@ def get_benh_an_by_kham_benh(ma_kham_benh: str, db: Session = Depends(get_db)):
     return {c.key: getattr(ba, c.key) for c in inspect(BenhAn).columns}
 
 
-@router.post(
+@pre_router.post(
     "/{id}/ra-vien",
     dependencies=[Depends(require_permissions("benh_an:update"))],
 )
@@ -145,7 +136,7 @@ def ra_vien(id: str, data: dict, db: Session = Depends(get_db), current_user = D
     return {c.key: getattr(ba, c.key) for c in inspect(BenhAn).columns}
 
 
-@router.get(
+@pre_router.get(
     "/{id}/chi-tiet",
     dependencies=[Depends(require_permissions("benh_an:read"))],
     response_model=BenhAnReadDetail,
@@ -196,7 +187,7 @@ def get_benh_an_chi_tiet(id: str, db: Session = Depends(get_db)):
     return d
 
 
-@router.get(
+@pre_router.get(
     "/{id}/phieu-cham-soc",
     dependencies=[Depends(require_permissions("benh_an:read"))],
 )
@@ -235,3 +226,16 @@ def get_phieu_cham_soc_by_benh_an(id: str, db: Session = Depends(get_db)):
         d["vai_tro_nguoi_thuc_hien"] = nd.ten_vai_tro if nd else None
         result.append(d)
     return {"data": result}
+
+
+router = create_crud_router(
+    resource="benh_an",
+    crud=benh_an_crud,
+    pre_router=pre_router,
+    read_permission="benh_an:read",
+    create_permission="benh_an:create",
+    update_permission="benh_an:update",
+    delete_permission="benh_an:delete",
+    enable_create=False,
+    enable_update=False,
+)

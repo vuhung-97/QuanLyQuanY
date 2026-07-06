@@ -83,7 +83,7 @@ export default function PhieuXuatForm({
                             Chọn quân nhân
                         </Button>
                     ) : (
-                        <Stack direction="row" alignItems="center" spacing={1}>
+<Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                             <PersonIcon fontSize="small" />
                             <Typography variant="body2">
                                 {hoTenNguoiNhan} ({maQuanNhanNhan})
@@ -98,7 +98,7 @@ export default function PhieuXuatForm({
                     <Typography variant="caption" color="text.secondary">
                         Người tạo
                     </Typography>
-                    <Stack direction="row" alignItems="center" spacing={1}>
+                    <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                         <PersonIcon fontSize="small" />
                         <Typography variant="body2">
                             {isView

@@ -175,12 +175,12 @@ export default function NhapKhoDialog({ open, onClose, phieuId, mode = "create",
                         </Typography>
                     ) : (
                         <Stack spacing={2} sx={{ pt: 1 }}>
-                            <Stack direction="row" spacing={4} flexWrap="wrap" alignItems="center">
+                            <Stack direction="row" spacing={4} sx={{ flexWrap: "wrap", alignItems: "center" }}>
                                 <Stack spacing={0.5}>
                                     <Typography variant="caption" color="text.secondary">
                                         Người nhập
                                     </Typography>
-                                    <Stack direction="row" alignItems="center" spacing={1}>
+                                    <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                                         <PersonIcon fontSize="small" />
                                         <Typography variant="body2">
                                             {isView

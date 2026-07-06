@@ -21,15 +21,15 @@ export const khamSucKhoeService = {
         api.get(`/lich_kham_sk_nam/${scheduleId}/chi-tiet`),
 
     getSoldiersBySchedule: (scheduleId) =>
-        api.get(`/quan_nhan/by-lich-kham/${scheduleId}`),
+        api.get(`/quan_nhan/lich-kham/${scheduleId}`),
 
     getPhieuBySchedule: (scheduleId) =>
-        api.get(`/phieu_kham_suc_khoe/by-lich-kham/${scheduleId}`),
+        api.get(`/phieu_kham_suc_khoe/lich-kham/${scheduleId}`),
 
     taoMaLayMau: (data) => api.post("/phieu_kham_suc_khoe/tao-ma-lay-mau", data),
 
     getPhieuByMaQuanNhan: (maQuanNhan) =>
-        api.get(`/phieu_kham_suc_khoe/by-ma-quan-nhan/${maQuanNhan}`),
+        api.get(`/phieu_kham_suc_khoe/quan-nhan/${maQuanNhan}`),
 
     createPhieu: (data) => api.post("/phieu_kham_suc_khoe", data),
 

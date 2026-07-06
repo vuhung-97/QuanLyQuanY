@@ -2,15 +2,15 @@ import api from "./api.js";
 
 export const noiTruService = {
     getDanhSachNoiTru: (params) =>
-        api.get("/benh_an/noi-tru/danh-sach", { params }),
+        api.get("/benh_an/noi-tru", { params }),
 
     getDanhSachNhapVien: (params) =>
-        api.get("/kham_benh/nhap-vien/danh-sach", { params }),
+        api.get("/kham_benh/nhap-vien", { params }),
 
     getBenhAn: (id) => api.get(`/benh_an/${id}`),
     getBenhAnChiTiet: (id) => api.get(`/benh_an/${id}/chi-tiet`),
     getBenhAnByKhamBenh: (maKhamBenh) =>
-        api.get(`/benh_an/by-kham-benh/${maKhamBenh}`),
+        api.get(`/benh_an/kham-benh/${maKhamBenh}`),
     createBenhAn: (data) => api.post("/benh_an", data),
     updateBenhAn: (id, data) => api.patch(`/benh_an/${id}`, data),
 

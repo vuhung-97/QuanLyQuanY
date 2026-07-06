@@ -63,7 +63,7 @@ export default function PhieuDuTruDialog({ open, onClose, onSaved, phieuId = nul
                         <Typography variant="caption" color="text.secondary">
                             Người lập
                         </Typography>
-                        <Stack direction="row" alignItems="center" spacing={1}>
+                        <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                             <PersonIcon fontSize="small" />
                             <Typography variant="body2">
                                 {isView

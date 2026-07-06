@@ -1,4 +1,4 @@
-from fastapi import Depends, Query
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
@@ -18,18 +18,11 @@ from app.schemas.quan_nhan import QuanNhanRead
 from app.core.dependencies import require_permissions
 
 
-router = create_crud_router(
-    resource="quan_nhan",
-    crud=quan_nhan_crud,
-    read_permission="quan_nhan:read",
-    create_permission="quan_nhan:create",
-    update_permission="quan_nhan:update",
-    delete_permission="quan_nhan:delete",
-)
+pre_router = APIRouter()
 
 
-@router.get(
-    "/danh-sach/list",
+@pre_router.get(
+    "/list",
     dependencies=[Depends(require_permissions("quan_nhan:read"))],
 )
 def get_quan_nhan_danh_sach(
@@ -73,8 +66,8 @@ def get_quan_nhan_danh_sach(
     return {"data": rows, "total": total}
 
 
-@router.get(
-    "/by-don-vi/{ma_don_vi}",
+@pre_router.get(
+    "/don-vi/{ma_don_vi}",
     dependencies=[Depends(require_permissions("quan_nhan:read"))],
     response_model=list[QuanNhanRead],
 )
@@ -98,8 +91,8 @@ def get_quan_nhan_by_don_vi(
     return db.query(QuanNhan).filter(QuanNhan.ma_don_vi.in_(unit_codes)).all()
 
 
-@router.get(
-    "/by-lich-kham/{ma_lich_kham}",
+@pre_router.get(
+    "/lich-kham/{ma_lich_kham}",
     dependencies=[Depends(require_permissions("quan_nhan:read"))],
     response_model=list[QuanNhanRead],
 )
@@ -139,7 +132,7 @@ def get_quan_nhan_by_lich_kham(
     )
 
 
-@router.get(
+@pre_router.get(
     "/{ma_quan_nhan}/lich-su-kham",
     dependencies=[Depends(require_permissions("quan_nhan:read"))],
     response_model=LichSuKhamRead,
@@ -160,3 +153,14 @@ def get_lich_su_kham(ma_quan_nhan: str, db: Session = Depends(get_db)):
         .filter(GiayGioiThieu.ma_quan_nhan == ma_quan_nhan)
         .all(),
     )
+
+
+router = create_crud_router(
+    resource="quan_nhan",
+    crud=quan_nhan_crud,
+    pre_router=pre_router,
+    read_permission="quan_nhan:read",
+    create_permission="quan_nhan:create",
+    update_permission="quan_nhan:update",
+    delete_permission="quan_nhan:delete",
+)

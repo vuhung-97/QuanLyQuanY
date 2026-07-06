@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
@@ -13,18 +13,10 @@ from app.schemas.phieu_xuat_kho import PhieuXuatKhoRead
 from app.services.inventory_service import InventoryService
 
 
-router = create_crud_router(
-    resource="phieu_xuat_kho",
-    crud=phieu_xuat_kho_crud,
-    read_permission="phieu_xuat_kho:read",
-    create_permission="phieu_xuat_kho:create",
-    update_permission="phieu_xuat_kho:update",
-    delete_permission="phieu_xuat_kho:delete",
-    enable_read=False,
-)
+pre_router = APIRouter()
 
 
-@router.get(
+@pre_router.get(
     "/danh-sach",
     dependencies=[Depends(require_permissions("phieu_xuat_kho:read"))],
 )
@@ -68,7 +60,7 @@ def get_danh_sach_phieu_xuat(
     return {"data": result, "total": total}
 
 
-@router.post(
+@pre_router.post(
     "/{item_id}/duyet",
     dependencies=[Depends(require_permissions("phieu_xuat_kho:update"))],
 )
@@ -89,7 +81,7 @@ def duyet_phieu_xuat(
     return phieu
 
 
-@router.post(
+@pre_router.post(
     "/{item_id}/tu-choi",
     dependencies=[Depends(require_permissions("phieu_xuat_kho:update"))],
 )
@@ -109,7 +101,7 @@ def tu_choi_phieu_xuat(
     return phieu
 
 
-@router.post(
+@pre_router.post(
     "/{item_id}/xuat-kho",
     dependencies=[Depends(require_permissions("phieu_xuat_kho:update"))],
 )
@@ -136,7 +128,7 @@ def xuat_kho(
     return phieu
 
 
-@router.get(
+@pre_router.get(
     "/{item_id}",
     dependencies=[Depends(require_permissions("phieu_xuat_kho:read"))],
 )
@@ -146,3 +138,15 @@ def get_phieu_xuat(item_id: str, db: Session = Depends(get_db)):
     user = db.get(NguoiDung, phieu.nguoi_xuat) if phieu.nguoi_xuat else None
     d["nguoi_xuat_ho_ten"] = user.ho_ten if user else (phieu.nguoi_xuat or "")
     return d
+
+
+router = create_crud_router(
+    resource="phieu_xuat_kho",
+    crud=phieu_xuat_kho_crud,
+    pre_router=pre_router,
+    read_permission="phieu_xuat_kho:read",
+    create_permission="phieu_xuat_kho:create",
+    update_permission="phieu_xuat_kho:update",
+    delete_permission="phieu_xuat_kho:delete",
+    enable_read=False,
+)

@@ -62,6 +62,7 @@ def create_crud_router(
     *,
     resource: str,
     crud: CRUDBase[Any, Any, Any],
+    pre_router: APIRouter | None = None,
     create_schema: type[BaseModel] | None = None,
     update_schema: type[BaseModel] | None = None,
     read_schema: type[BaseModel] | None = None,
@@ -84,6 +85,12 @@ def create_crud_router(
     create_deps = [Depends(require_permissions(create_permission))] if create_permission else None
     update_deps = [Depends(require_permissions(update_permission))] if update_permission else None
     delete_deps = [Depends(require_permissions(delete_permission))] if delete_permission else None
+
+    if pre_router:
+        for r in reversed(pre_router.routes):
+            if hasattr(r, "path"):
+                r.path = f"/{resource}{r.path}"
+            router.routes.insert(0, r)
 
     @router.get("", dependencies=read_deps, response_model=list[read_schema])
     def list_items(

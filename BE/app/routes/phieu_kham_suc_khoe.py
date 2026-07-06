@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import Field
 from sqlalchemy import func, Integer, cast
 from sqlalchemy.orm import Session
@@ -18,17 +18,10 @@ class TaoMaLayMauRequest(SchemaBase):
     nam: int | None = None
 
 
-router = create_crud_router(
-    resource="phieu_kham_suc_khoe",
-    crud=phieu_kham_suc_khoe_crud,
-    read_permission="phieu_kham_suc_khoe:read",
-    create_permission="phieu_kham_suc_khoe:create",
-    update_permission="phieu_kham_suc_khoe:update",
-    delete_permission="phieu_kham_suc_khoe:delete",
-)
+pre_router = APIRouter()
 
 
-@router.post(
+@pre_router.post(
     "/tao-ma-lay-mau",
     dependencies=[Depends(require_permissions("phieu_kham_suc_khoe:create"))],
     status_code=status.HTTP_201_CREATED,
@@ -72,8 +65,8 @@ def tao_ma_lay_mau(payload: TaoMaLayMauRequest, db: Session = Depends(get_db)):
     return phieu
 
 
-@router.get(
-    "/by-ma-quan-nhan/{ma_quan_nhan}",
+@pre_router.get(
+    "/quan-nhan/{ma_quan_nhan}",
     dependencies=[Depends(require_permissions("phieu_kham_suc_khoe:read"))],
     response_model=list[PhieuKhamSucKhoeRead],
 )
@@ -87,8 +80,8 @@ def get_phieu_history(ma_quan_nhan: str, db: Session = Depends(get_db)):
     )
 
 
-@router.get(
-    "/by-lich-kham/{ma_lich_kham}",
+@pre_router.get(
+    "/lich-kham/{ma_lich_kham}",
     dependencies=[Depends(require_permissions("phieu_kham_suc_khoe:read"))],
     response_model=list[PhieuKhamSucKhoeRead],
 )
@@ -98,3 +91,14 @@ def get_phieu_by_lich_kham(ma_lich_kham: str, db: Session = Depends(get_db)):
         .filter(PhieuKhamSucKhoe.ma_lich_kham == ma_lich_kham)
         .all()
     )
+
+
+router = create_crud_router(
+    resource="phieu_kham_suc_khoe",
+    crud=phieu_kham_suc_khoe_crud,
+    pre_router=pre_router,
+    read_permission="phieu_kham_suc_khoe:read",
+    create_permission="phieu_kham_suc_khoe:create",
+    update_permission="phieu_kham_suc_khoe:update",
+    delete_permission="phieu_kham_suc_khoe:delete",
+)

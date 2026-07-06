@@ -1,6 +1,6 @@
 from datetime import date, timedelta
 
-from fastapi import Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
@@ -14,18 +14,10 @@ from app.schemas.thuoc_vtyt import ThuocVtytRead
 from app.services.inventory_service import InventoryService
 
 
-router = create_crud_router(
-    resource="thuoc_vtyt",
-    crud=thuoc_vtyt_crud,
-    read_permission="thuoc_vtyt:read",
-    create_permission="thuoc_vtyt:create",
-    update_permission="thuoc_vtyt:update",
-    delete_permission="thuoc_vtyt:delete",
-    enable_read=False,
-)
+pre_router = APIRouter()
 
 
-@router.get(
+@pre_router.get(
     "/search/value",
     dependencies=[Depends(require_permissions("thuoc_vtyt:read"))],
     response_model=list[ThuocVtytRead],
@@ -44,7 +36,7 @@ def search_thuoc(search: str, limit: int = 20, db: Session = Depends(get_db)):
     )
 
 
-@router.get(
+@pre_router.get(
     "/ton-kho",
     dependencies=[Depends(require_permissions("thuoc_vtyt:read"))],
     response_model=list[ThuocVtytRead],
@@ -64,7 +56,7 @@ def get_ton_kho(
     return query.order_by(ThuocVtyt.ten_thuoc_vtyt).all()
 
 
-@router.get(
+@pre_router.get(
     "/sap-het-han",
     dependencies=[Depends(require_permissions("thuoc_vtyt:read"))],
     response_model=list[ThuocVtytRead],
@@ -76,7 +68,7 @@ def get_thuoc_sap_het_han(
     return InventoryService.check_expiry(db, days)
 
 
-@router.patch(
+@pre_router.patch(
     "/{item_id}/dieu-chinh-ton",
     dependencies=[Depends(require_permissions("thuoc_vtyt:update"))],
     response_model=ThuocVtytRead,
@@ -92,10 +84,22 @@ def dieu_chinh_ton(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
-@router.get(
+@pre_router.get(
     "/{item_id}",
     dependencies=[Depends(require_permissions("thuoc_vtyt:read"))],
     response_model=ThuocVtytRead,
 )
 def get_thuoc(item_id: str, db: Session = Depends(get_db)):
     return _run_crud(lambda: thuoc_vtyt_crud.get(db, item_id))
+
+
+router = create_crud_router(
+    resource="thuoc_vtyt",
+    crud=thuoc_vtyt_crud,
+    pre_router=pre_router,
+    read_permission="thuoc_vtyt:read",
+    create_permission="thuoc_vtyt:create",
+    update_permission="thuoc_vtyt:update",
+    delete_permission="thuoc_vtyt:delete",
+    enable_read=False,
+)

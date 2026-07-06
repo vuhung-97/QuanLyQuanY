@@ -17,9 +17,8 @@ export default function ChiTietXuatTable({ items, isView, onAdd, onRemove }) {
         <>
             <Stack
                 direction="row"
-                justifyContent="space-between"
-                alignItems="center"
                 spacing={2}
+                sx={{ justifyContent: "space-between", alignItems: "center" }}
             >
                 <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
                     Danh sách thuốc / VTYT

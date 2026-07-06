@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from fastapi import Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import inspect
 from sqlalchemy.orm import Session
 
@@ -23,18 +23,11 @@ from app.schemas.kham_benh import KhamBenhRead
 from app.services.medical_examination import MedicalExaminationService
 
 
-router = create_crud_router(
-    resource="kham_benh",
-    crud=kham_benh_crud,
-    read_permission="kham_benh:read",
-    create_permission="kham_benh:create",
-    update_permission="kham_benh:update",
-    delete_permission="kham_benh:delete",
-)
+pre_router = APIRouter()
 
 
-@router.get(
-    "/all/danh-sach",
+@pre_router.get(
+    "/danh-sach",
     dependencies=[Depends(require_permissions("kham_benh:read"))],
 )
 def get_kham_benh_all(
@@ -64,8 +57,8 @@ def get_kham_benh_all(
     return {"data": result, "total": total}
 
 
-@router.get(
-    "/hom-nay/danh-sach",
+@pre_router.get(
+    "/hom-nay",
     dependencies=[Depends(require_permissions("kham_benh:read"))],
     response_model=list[KhamBenhRead],
 )
@@ -100,7 +93,7 @@ def get_kham_benh_hom_nay(
     return result
 
 
-@router.get(
+@pre_router.get(
     "/{id}/detail",
     dependencies=[Depends(require_permissions("kham_benh:read"))],
 )
@@ -161,7 +154,7 @@ def get_kham_benh_detail(id: str, db: Session = Depends(get_db)):
     return result
 
 
-@router.post(
+@pre_router.post(
     "/{id}/nhan-thuoc",
     dependencies=[Depends(require_permissions("kham_benh:update"))],
     response_model=KhamBenhRead,
@@ -174,7 +167,7 @@ def nhan_thuoc(id: str, db: Session = Depends(get_db), current_user = Depends(ge
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.post(
+@pre_router.post(
     "/{id}/chuyen-tuyen",
     dependencies=[Depends(require_permissions("kham_benh:update"))],
 )
@@ -183,7 +176,7 @@ def chuyen_tuyen(id: str, data: dict, db: Session = Depends(get_db)):
     return service.refer_patient(id, data)
 
 
-@router.post(
+@pre_router.post(
     "/{id}/nhap-vien",
     dependencies=[Depends(require_permissions("kham_benh:update"))],
 )
@@ -192,7 +185,7 @@ def nhap_vien(id: str, db: Session = Depends(get_db), current_user = Depends(get
     return service.admit_patient(id, nguoi_dung_id=current_user.id)
 
 
-@router.post(
+@pre_router.post(
     "/{id}/hoan-tat",
     dependencies=[Depends(require_permissions("kham_benh:update"))],
     response_model=KhamBenhRead,
@@ -202,8 +195,8 @@ def hoan_tat_kham(id: str, data: dict, db: Session = Depends(get_db)):
     return service.complete_examination(id, data)
 
 
-@router.get(
-    "/nhap-vien/danh-sach",
+@pre_router.get(
+    "/nhap-vien",
     dependencies=[Depends(require_permissions("kham_benh:read"))],
 )
 def get_danh_sach_nhap_vien(
@@ -238,8 +231,8 @@ def get_danh_sach_nhap_vien(
     return {"data": result, "total": total}
 
 
-@router.get(
-    "/chuyen-tuyen/danh-sach",
+@pre_router.get(
+    "/chuyen-tuyen",
     dependencies=[Depends(require_permissions("kham_benh:read"))],
 )
 def get_danh_sach_chuyen_tuyen(
@@ -286,3 +279,14 @@ def get_danh_sach_chuyen_tuyen(
 
         result.append(d)
     return {"data": result, "total": total}
+
+
+router = create_crud_router(
+    resource="kham_benh",
+    crud=kham_benh_crud,
+    pre_router=pre_router,
+    read_permission="kham_benh:read",
+    create_permission="kham_benh:create",
+    update_permission="kham_benh:update",
+    delete_permission="kham_benh:delete",
+)
