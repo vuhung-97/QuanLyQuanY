@@ -1,4 +1,5 @@
 from fastapi import Depends, HTTPException, Query, status
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.core.dependencies import get_current_user, require_permissions
@@ -35,10 +36,13 @@ def get_danh_sach_phieu_du_tru(
     limit: int = Query(default=20, ge=1, le=500),
     offset: int = Query(default=0, ge=0),
     trang_thai: str | None = Query(default=None),
+    nam: int | None = Query(default=None),
 ):
     query = db.query(PhieuDuTru)
     if trang_thai:
         query = query.filter(PhieuDuTru.trang_thai == trang_thai)
+    if nam:
+        query = query.filter(func.extract("year", PhieuDuTru.ngay_lap_phieu) == nam)
     total = query.count()
     rows = (
         query.order_by(PhieuDuTru.ngay_lap_phieu.desc().nullslast())

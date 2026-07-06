@@ -4,12 +4,14 @@ import {
     Card,
     CardContent,
     Chip,
+    FormControl,
     IconButton,
+    InputLabel,
     MenuItem,
+    Select,
     Stack,
     TextField,
     Tooltip,
-    Typography,
 } from "@mui/material";
 import {
     Add as AddIcon,
@@ -17,14 +19,19 @@ import {
     CheckCircle as CheckCircleIcon,
     Delete as DeleteIcon,
     Edit as EditIcon,
+    HourglassEmpty as HourglassEmptyIcon,
+    Inventory as InventoryIcon,
+    ReceiptLong as ReceiptLongIcon,
     Visibility as VisibilityIcon,
 } from "@mui/icons-material";
 import dayjs from "dayjs";
 import DataTable from "@/components/common/DataTable.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import PaginationWidget from "@/components/common/PaginationWidget.jsx";
+import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import { khoDuocService } from "@/services/khoDuocService.js";
 import { decodeJWT } from "@/services/api.js";
+import { getNamOptions } from "@/utils/yearOptions.js";
 import PhieuXuatDialog from "./PhieuXuatDialog.jsx";
 import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
 
@@ -44,6 +51,14 @@ const STATUS_CHIP = {
 };
 
 const ROWS_PER_PAGE = 20;
+const NAM_OPTIONS = getNamOptions();
+const EMPTY_STATS = {
+    tong: 0,
+    cho_duyet: 0,
+    da_duyet: 0,
+    tu_choi: 0,
+    da_xuat: 0,
+};
 
 export default function XuatKhoList() {
     const [rows, setRows] = useState([]);
@@ -51,9 +66,24 @@ export default function XuatKhoList() {
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const [trangThai, setTrangThai] = useState("");
-    const [confirm, setConfirm] = useState({ open: false, action: null, id: null });
-    const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "info" });
-    const [openPhieu, setOpenPhieu] = useState({ open: false, id: null, mode: "create" });
+    const [nam, setNam] = useState(null);
+    const [stats, setStats] = useState(EMPTY_STATS);
+    const [statsLoading, setStatsLoading] = useState(false);
+    const [confirm, setConfirm] = useState({
+        open: false,
+        action: null,
+        id: null,
+    });
+    const [snackbar, setSnackbar] = useState({
+        open: false,
+        message: "",
+        severity: "info",
+    });
+    const [openPhieu, setOpenPhieu] = useState({
+        open: false,
+        id: null,
+        mode: "create",
+    });
 
     const currentUser = useMemo(() => {
         const token = localStorage.getItem("datamed_access_token");
@@ -63,8 +93,12 @@ export default function XuatKhoList() {
     const fetchData = useCallback(async () => {
         setLoading(true);
         try {
-            const params = { limit: ROWS_PER_PAGE, offset: (page - 1) * ROWS_PER_PAGE };
+            const params = {
+                limit: ROWS_PER_PAGE,
+                offset: (page - 1) * ROWS_PER_PAGE,
+            };
             if (trangThai) params.trang_thai = trangThai;
+            if (nam) params.nam = nam;
             const res = await khoDuocService.getDanhSachPhieuXuat(params);
             const body = res.data || {};
             const allData = body.data || [];
@@ -77,25 +111,46 @@ export default function XuatKhoList() {
         } finally {
             setLoading(false);
         }
-    }, [page, trangThai]);
+    }, [page, trangThai, nam]);
+
+    const fetchStats = useCallback(async () => {
+        setStatsLoading(true);
+        try {
+            const params = {};
+            if (nam) params.nam = nam;
+            const res = await khoDuocService.getThongKePhieuXuat(params);
+            setStats(res.data || EMPTY_STATS);
+        } catch {
+            setStats(EMPTY_STATS);
+        } finally {
+            setStatsLoading(false);
+        }
+    }, [nam]);
 
     useEffect(() => {
         fetchData();
     }, [fetchData]);
+
+    useEffect(() => {
+        fetchStats();
+    }, [fetchStats]);
 
     const handleAction = async (id, action) => {
         setConfirm({ open: false, action: null, id: null });
         try {
             const labelMap = { duyet: "Duyệt", tu_choi: "Từ chối", xoa: "Xoá" };
             if (action === "duyet") await khoDuocService.duyetPhieuXuat(id);
-            else if (action === "tu_choi") await khoDuocService.tuChoiPhieuXuat(id);
-            else if (action === "xoa") await khoDuocService.deletePhieuXuatKho(id);
+            else if (action === "tu_choi")
+                await khoDuocService.tuChoiPhieuXuat(id);
+            else if (action === "xoa")
+                await khoDuocService.deletePhieuXuatKho(id);
             setSnackbar({
                 open: true,
                 message: `${labelMap[action] || "Thao tác"} thành công.`,
                 severity: "success",
             });
             fetchData();
+            fetchStats();
         } catch (err) {
             setSnackbar({
                 open: true,
@@ -107,6 +162,40 @@ export default function XuatKhoList() {
 
     const role = currentUser?.role;
     const isCNQYorAdmin = role === "ROLE_ADMIN" || role === "ROLE_CNQY";
+
+    const statItems = useMemo(
+        () => [
+            {
+                label: "Chờ duyệt",
+                value: stats.cho_duyet,
+                icon: <HourglassEmptyIcon />,
+                color: "#F59E0B",
+                bg: "#FEF3C7",
+            },
+            {
+                label: "Đã duyệt",
+                value: stats.da_duyet,
+                icon: <CheckCircleIcon />,
+                color: "#10B981",
+                bg: "#D1FAE5",
+            },
+            {
+                label: "Đã xuất",
+                value: stats.da_xuat,
+                icon: <InventoryIcon />,
+                color: "#00B4D8",
+                bg: "#E0F7FA",
+            },
+            {
+                label: "Từ chối",
+                value: stats.tu_choi,
+                icon: <CancelIcon />,
+                color: "#EF4444",
+                bg: "#FEE2E2",
+            },
+        ],
+        [stats],
+    );
 
     const columns = [
         { key: "ma_phieu_xuat", label: "Mã phiếu" },
@@ -124,8 +213,13 @@ export default function XuatKhoList() {
             key: "trang_thai",
             label: "Trạng thái",
             render: (row) => {
-                const chip = STATUS_CHIP[row.trang_thai] || { label: row.trang_thai, color: "default" };
-                return <Chip label={chip.label} color={chip.color} size="small" />;
+                const chip = STATUS_CHIP[row.trang_thai] || {
+                    label: row.trang_thai,
+                    color: "default",
+                };
+                return (
+                    <Chip label={chip.label} color={chip.color} size="small" />
+                );
             },
         },
         {
@@ -136,10 +230,21 @@ export default function XuatKhoList() {
 
                 return (
                     <Stack direction="row" spacing={0.5}>
-                        {(row.trang_thai === "da_duyet" || row.trang_thai === "da_xuat" || (!isCreator && !isCNQYorAdmin)) && (
+                        {(row.trang_thai === "da_duyet" ||
+                            row.trang_thai === "da_xuat" ||
+                            (!isCreator && !isCNQYorAdmin)) && (
                             <Tooltip title="Xem">
-                                <IconButton size="small" color="primary"
-                                    onClick={() => setOpenPhieu({ open: true, id: row.ma_phieu_xuat, mode: "view" })}>
+                                <IconButton
+                                    size="small"
+                                    color="primary"
+                                    onClick={() =>
+                                        setOpenPhieu({
+                                            open: true,
+                                            id: row.ma_phieu_xuat,
+                                            mode: "view",
+                                        })
+                                    }
+                                >
                                     <VisibilityIcon fontSize="small" />
                                 </IconButton>
                             </Tooltip>
@@ -148,48 +253,93 @@ export default function XuatKhoList() {
                         {row.trang_thai === "cho_duyet" && isCNQYorAdmin && (
                             <>
                                 <Tooltip title="Duyệt">
-                                    <IconButton size="small" color="success"
-                                        onClick={() => setConfirm({ open: true, action: "duyet", id: row.ma_phieu_xuat })}>
+                                    <IconButton
+                                        size="small"
+                                        color="success"
+                                        onClick={() =>
+                                            setConfirm({
+                                                open: true,
+                                                action: "duyet",
+                                                id: row.ma_phieu_xuat,
+                                            })
+                                        }
+                                    >
                                         <CheckCircleIcon fontSize="small" />
                                     </IconButton>
                                 </Tooltip>
                                 <Tooltip title="Từ chối">
-                                    <IconButton size="small" color="error"
-                                        onClick={() => setConfirm({ open: true, action: "tu_choi", id: row.ma_phieu_xuat })}>
+                                    <IconButton
+                                        size="small"
+                                        color="error"
+                                        onClick={() =>
+                                            setConfirm({
+                                                open: true,
+                                                action: "tu_choi",
+                                                id: row.ma_phieu_xuat,
+                                            })
+                                        }
+                                    >
                                         <CancelIcon fontSize="small" />
                                     </IconButton>
                                 </Tooltip>
                             </>
                         )}
 
-                        {row.trang_thai === "cho_duyet" && (isCreator || isCNQYorAdmin) && (
-                            <Tooltip title="Sửa">
-                                <IconButton size="small" color="primary"
-                                    onClick={() => setOpenPhieu({ open: true, id: row.ma_phieu_xuat, mode: "edit" })}>
-                                    <EditIcon fontSize="small" />
-                                </IconButton>
-                            </Tooltip>
-                        )}
+                        {row.trang_thai === "cho_duyet" &&
+                            (isCreator || isCNQYorAdmin) && (
+                                <Tooltip title="Sửa">
+                                    <IconButton
+                                        size="small"
+                                        color="primary"
+                                        onClick={() =>
+                                            setOpenPhieu({
+                                                open: true,
+                                                id: row.ma_phieu_xuat,
+                                                mode: "edit",
+                                            })
+                                        }
+                                    >
+                                        <EditIcon fontSize="small" />
+                                    </IconButton>
+                                </Tooltip>
+                            )}
 
                         {row.trang_thai === "tu_choi" && isCreator && (
                             <Tooltip title="Sửa">
-                                <IconButton size="small" color="primary"
-                                    onClick={() => setOpenPhieu({ open: true, id: row.ma_phieu_xuat, mode: "edit" })}>
+                                <IconButton
+                                    size="small"
+                                    color="primary"
+                                    onClick={() =>
+                                        setOpenPhieu({
+                                            open: true,
+                                            id: row.ma_phieu_xuat,
+                                            mode: "edit",
+                                        })
+                                    }
+                                >
                                     <EditIcon fontSize="small" />
                                 </IconButton>
                             </Tooltip>
                         )}
 
-                        {["cho_duyet", "tu_choi"].includes(row.trang_thai) && (isCreator || isCNQYorAdmin) && (
-                            <Tooltip title="Xoá">
-                                <IconButton size="small" color="error"
-                                    onClick={() => setConfirm({ open: true, action: "xoa", id: row.ma_phieu_xuat })}>
-                                    <DeleteIcon fontSize="small" />
-                                </IconButton>
-                            </Tooltip>
-                        )}
-
-
+                        {["cho_duyet", "tu_choi"].includes(row.trang_thai) &&
+                            (isCreator || isCNQYorAdmin) && (
+                                <Tooltip title="Xoá">
+                                    <IconButton
+                                        size="small"
+                                        color="error"
+                                        onClick={() =>
+                                            setConfirm({
+                                                open: true,
+                                                action: "xoa",
+                                                id: row.ma_phieu_xuat,
+                                            })
+                                        }
+                                    >
+                                        <DeleteIcon fontSize="small" />
+                                    </IconButton>
+                                </Tooltip>
+                            )}
                     </Stack>
                 );
             },
@@ -200,31 +350,91 @@ export default function XuatKhoList() {
 
     return (
         <>
+            <StatCardGrid items={statItems} loading={statsLoading} />
+
             <Card sx={{ borderRadius: 3 }}>
                 <CardContent>
                     <Stack spacing={2.5}>
-                        <Stack direction="row" spacing={2} sx={{ justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
-                            <TextField
-                                select
-                                size="small"
-                                label="Trạng thái"
-                                value={trangThai}
-                                onChange={(e) => { setTrangThai(e.target.value); setPage(1); }}
-                                sx={{ minWidth: 160 }}
+                        <Stack
+                            direction="row"
+                            spacing={2}
+                            sx={{
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                flexWrap: "wrap",
+                            }}
+                        >
+                            <Stack
+                                direction="row"
+                                spacing={1.5}
+                                sx={{ alignItems: "center" }}
                             >
-                                {TRANG_THAI_OPTIONS.map((opt) => (
-                                    <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>
-                                ))}
-                            </TextField>
+                                <TextField
+                                    select
+                                    size="small"
+                                    label="Trạng thái"
+                                    value={trangThai}
+                                    onChange={(e) => {
+                                        setTrangThai(e.target.value);
+                                        setPage(1);
+                                    }}
+                                    sx={{ minWidth: 160 }}
+                                >
+                                    {TRANG_THAI_OPTIONS.map((opt) => (
+                                        <MenuItem
+                                            key={opt.value}
+                                            value={opt.value}
+                                        >
+                                            {opt.label}
+                                        </MenuItem>
+                                    ))}
+                                </TextField>
+                                <FormControl
+                                    size="small"
+                                    sx={{ minWidth: 100 }}
+                                >
+                                    <InputLabel id="nam-label">Năm</InputLabel>
+                                    <Select
+                                        labelId="nam-label"
+                                        value={nam ?? ""}
+                                        label="Năm"
+                                        onChange={(e) => {
+                                            setNam(e.target.value || null);
+                                            setPage(1);
+                                        }}
+                                    >
+                                        <MenuItem value="">Tất cả</MenuItem>
+                                        {NAM_OPTIONS.map((y) => (
+                                            <MenuItem key={y} value={y}>
+                                                {y}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Stack>
 
-                            <Button variant="contained" startIcon={<AddIcon />}
-                                onClick={() => setOpenPhieu({ open: true, id: null, mode: "create" })}>
+                            <Button
+                                variant="contained"
+                                startIcon={<AddIcon />}
+                                onClick={() =>
+                                    setOpenPhieu({
+                                        open: true,
+                                        id: null,
+                                        mode: "create",
+                                    })
+                                }
+                            >
                                 Tạo phiếu xuất
                             </Button>
                         </Stack>
 
-                        <DataTable columns={columns} rows={rows} loading={loading} minWidth={800}
-                            emptyMessage="Không có phiếu xuất." />
+                        <DataTable
+                            columns={columns}
+                            rows={rows}
+                            loading={loading}
+                            minWidth={800}
+                            emptyMessage="Không có phiếu xuất."
+                        />
 
                         {total > ROWS_PER_PAGE && (
                             <PaginationWidget
@@ -242,8 +452,13 @@ export default function XuatKhoList() {
                 open={openPhieu.open}
                 phieuId={openPhieu.id}
                 mode={openPhieu.mode}
-                onClose={() => setOpenPhieu({ open: false, id: null, mode: "create" })}
-                onSaved={() => { fetchData(); }}
+                onClose={() =>
+                    setOpenPhieu({ open: false, id: null, mode: "create" })
+                }
+                onSaved={() => {
+                    fetchData();
+                    fetchStats();
+                }}
             />
 
             <ConfirmDialog
@@ -251,16 +466,24 @@ export default function XuatKhoList() {
                 title="Xác nhận"
                 message={`Bạn có chắc muốn ${confirmLabel[confirm.action]?.toLowerCase() || "thực hiện thao tác"} phiếu xuất này?`}
                 confirmLabel={confirmLabel[confirm.action] || "Xác nhận"}
-                confirmColor={confirm.action === "xoa" || confirm.action === "tu_choi" ? "error" : "primary"}
+                confirmColor={
+                    confirm.action === "xoa" || confirm.action === "tu_choi"
+                        ? "error"
+                        : "primary"
+                }
                 onConfirm={() => handleAction(confirm.id, confirm.action)}
-                onClose={() => setConfirm({ open: false, action: null, id: null })}
+                onClose={() =>
+                    setConfirm({ open: false, action: null, id: null })
+                }
             />
 
             <FeedbackSnackbar
                 open={snackbar.open}
                 message={snackbar.message}
                 severity={snackbar.severity}
-                onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
+                onClose={() =>
+                    setSnackbar((prev) => ({ ...prev, open: false }))
+                }
             />
         </>
     );

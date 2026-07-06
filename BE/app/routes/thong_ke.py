@@ -3,9 +3,11 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.database.don_vi import DonVi
-from app.database.quan_nhan import QuanNhan
+from app.database.phieu_du_tru import PhieuDuTru
 from app.database.phieu_kham_suc_khoe import PhieuKhamSucKhoe
+from app.database.phieu_xuat_kho import PhieuXuatKho
 from app.database.lich_kham_sk_nam_chi_tiet import LichKhamSkNamChiTiet
+from app.database.quan_nhan import QuanNhan
 from app.database.session import get_db
 from app.core.dependencies import require_permissions
 
@@ -143,4 +145,52 @@ def thong_ke_lich_kham(
         "dang_kham": tong_dang_kham,
         "con_lai": tong_con_lai,
         "danh_sach_don_vi": danh_sach_don_vi,
+    }
+
+
+@router.get("/phieu-du-tru", dependencies=[Depends(require_permissions("phieu_du_tru:read"))])
+def thong_ke_phieu_du_tru(
+    db: Session = Depends(get_db),
+    nam: int | None = Query(default=None),
+):
+    query = db.query(PhieuDuTru)
+    if nam:
+        query = query.filter(func.extract("year", PhieuDuTru.ngay_lap_phieu) == nam)
+
+    tong = query.count()
+    chua_duyet = query.filter(PhieuDuTru.trang_thai == "chua_duyet").count()
+    da_duyet = query.filter(PhieuDuTru.trang_thai == "da_duyet").count()
+    tu_choi = query.filter(PhieuDuTru.trang_thai == "tu_choi").count()
+    da_nhap = query.filter(PhieuDuTru.trang_thai == "da_nhap").count()
+
+    return {
+        "tong": tong,
+        "chua_duyet": chua_duyet,
+        "da_duyet": da_duyet,
+        "tu_choi": tu_choi,
+        "da_nhap": da_nhap,
+    }
+
+
+@router.get("/phieu-xuat", dependencies=[Depends(require_permissions("phieu_xuat_kho:read"))])
+def thong_ke_phieu_xuat(
+    db: Session = Depends(get_db),
+    nam: int | None = Query(default=None),
+):
+    query = db.query(PhieuXuatKho)
+    if nam:
+        query = query.filter(func.extract("year", PhieuXuatKho.ngay_thang_nam) == nam)
+
+    tong = query.count()
+    cho_duyet = query.filter(PhieuXuatKho.trang_thai == "cho_duyet").count()
+    da_duyet = query.filter(PhieuXuatKho.trang_thai == "da_duyet").count()
+    tu_choi = query.filter(PhieuXuatKho.trang_thai == "tu_choi").count()
+    da_xuat = query.filter(PhieuXuatKho.trang_thai == "da_xuat").count()
+
+    return {
+        "tong": tong,
+        "cho_duyet": cho_duyet,
+        "da_duyet": da_duyet,
+        "tu_choi": tu_choi,
+        "da_xuat": da_xuat,
     }

@@ -68,6 +68,9 @@ export const khoDuocService = {
         api.patch(`/chi_tiet_xuat_kho/${id}`, data),
     deleteChiTietXuatKho: (id) => api.delete(`/chi_tiet_xuat_kho/${id}`),
 
+    getThongKePhieuDuTru: (params) => api.get("/thong-ke/phieu-du-tru", { params }),
+    getThongKePhieuXuat: (params) => api.get("/thong-ke/phieu-xuat", { params }),
+
     listDonVi: (params) => api.get("/don_vi", { params }),
     listQuanNhan: (params) => api.get("/quan_nhan", { params }),
 };

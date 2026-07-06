@@ -22,6 +22,7 @@ import {
 } from "@mui/icons-material";
 import FilterModeToggle from "@/components/common/FilterModeToggle.jsx";
 import useDanhSachNoiTru from "@/hooks/useDanhSachNoiTru.jsx";
+import { getNamOptions } from "@/utils/yearOptions.js";
 import DataTable from "@/components/common/DataTable.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import PaginationWidget from "@/components/common/PaginationWidget.jsx";
@@ -178,14 +179,7 @@ export default function DanhSachNoiTru() {
         return items;
     }, [stats, filterMode]);
 
-    const NAM_OPTIONS = useMemo(() => {
-        const currentYear = new Date().getFullYear();
-        const years = [];
-        for (let y = currentYear; y >= 2025; y--) {
-            years.push(y);
-        }
-        return years;
-    }, []);
+    const NAM_OPTIONS = useMemo(() => getNamOptions(), []);
 
     const THANG_OPTIONS = useMemo(() => {
         return Array.from({ length: 12 }, (_, i) => i + 1);

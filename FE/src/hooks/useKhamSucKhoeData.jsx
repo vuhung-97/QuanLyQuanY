@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
+import { getNamOptions } from "@/utils/yearOptions.js";
 
 export default function useKhamSucKhoeData() {
     const [schedules, setSchedules] = useState([]);
@@ -24,7 +25,7 @@ export default function useKhamSucKhoeData() {
     const [filters, setFilters] = useState({
         schedule: "",
         unit: "",
-        year: "",
+        year: String(new Date().getFullYear()),
     });
 
     const { schedule: selectedSchedule, unit: selectedUnit, year: selectedYear } = filters;
@@ -72,14 +73,6 @@ export default function useKhamSucKhoeData() {
                 if (!ignore) {
                     const data = Array.isArray(res.data) ? res.data : [];
                     setSchedules(data);
-                    const currentYear = String(new Date().getFullYear());
-                    const hasCurrentYear = data.some(
-                        (s) =>
-                            s.thoi_gian_bat_dau &&
-                            new Date(s.thoi_gian_bat_dau).getFullYear() ===
-                                Number(currentYear),
-                    );
-                    setSelectedYear(hasCurrentYear ? currentYear : "");
                 }
             } catch {}
         }
@@ -178,21 +171,7 @@ export default function useKhamSucKhoeData() {
         }
     }, [selectedUnit, allSoldiers, allPhieuMap, unitChildrenMap]);
 
-    const years = useMemo(
-        () =>
-            [
-                ...new Set(
-                    schedules
-                        .map((s) =>
-                            s.thoi_gian_bat_dau
-                                ? new Date(s.thoi_gian_bat_dau).getFullYear()
-                                : null,
-                        )
-                        .filter(Boolean),
-                ),
-            ].sort((a, b) => b - a),
-        [schedules],
-    );
+    const years = useMemo(() => getNamOptions(), []);
 
     const filteredSchedules = useMemo(
         () =>

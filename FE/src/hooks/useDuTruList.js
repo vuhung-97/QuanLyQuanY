@@ -16,12 +16,14 @@ export const STATUS_CHIP = {
     da_nhap: { label: "Đã nhập kho", color: "info" },
 };
 
-const ROWS_PER_PAGE = 20;
+export const ROWS_PER_PAGE = 20;
 
 const ACTION_LABEL = {
     duyet: "Duyệt",
     xoa: "Xoá",
 };
+
+export const EMPTY_STATS = { tong: 0, chua_duyet: 0, da_duyet: 0, tu_choi: 0, da_nhap: 0 };
 
 export default function useDuTruList() {
     const [rows, setRows] = useState([]);
@@ -29,6 +31,9 @@ export default function useDuTruList() {
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const [trangThai, setTrangThai] = useState("");
+    const [nam, setNam] = useState(null);
+    const [stats, setStats] = useState(EMPTY_STATS);
+    const [statsLoading, setStatsLoading] = useState(false);
     const [openPhieu, setOpenPhieu] = useState({ open: false, id: null, mode: "create" });
     const [confirm, setConfirm] = useState({ open: false, action: null, id: null });
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "info" });
@@ -38,6 +43,7 @@ export default function useDuTruList() {
         try {
             const params = { limit: ROWS_PER_PAGE, offset: (page - 1) * ROWS_PER_PAGE };
             if (trangThai) params.trang_thai = trangThai;
+            if (nam) params.nam = nam;
             const res = await khoDuocService.getDanhSachPhieuDuTru(params);
             const body = res.data || {};
             const allData = body.data || [];
@@ -50,11 +56,29 @@ export default function useDuTruList() {
         } finally {
             setLoading(false);
         }
-    }, [page, trangThai]);
+    }, [page, trangThai, nam]);
+
+    const fetchStats = useCallback(async () => {
+        setStatsLoading(true);
+        try {
+            const params = {};
+            if (nam) params.nam = nam;
+            const res = await khoDuocService.getThongKePhieuDuTru(params);
+            setStats(res.data || EMPTY_STATS);
+        } catch {
+            setStats(EMPTY_STATS);
+        } finally {
+            setStatsLoading(false);
+        }
+    }, [nam]);
 
     useEffect(() => {
         fetchData();
     }, [fetchData]);
+
+    useEffect(() => {
+        fetchStats();
+    }, [fetchStats]);
 
     const handleAction = async (id, action) => {
         setConfirm({ open: false, action: null, id: null });
@@ -68,6 +92,7 @@ export default function useDuTruList() {
                 severity: "success",
             });
             fetchData();
+            fetchStats();
         } catch (err) {
             setSnackbar({
                 open: true,
@@ -79,23 +104,33 @@ export default function useDuTruList() {
 
     const openConfirm = (id, action) => setConfirm({ open: true, action, id });
 
+    const handleView = useCallback((id) => setOpenPhieu({ open: true, id, mode: "view" }), []);
+    const handleEdit = useCallback((id) => setOpenPhieu({ open: true, id, mode: "edit" }), []);
+
     return {
         rows,
         total,
         page,
         loading,
         trangThai,
+        nam,
+        stats,
+        statsLoading,
         openPhieu,
         confirm,
         snackbar,
         setPage,
         setTrangThai,
+        setNam,
         setOpenPhieu,
         setSnackbar,
         setConfirm,
         fetchData,
         handleAction,
+        handleView,
+        handleEdit,
         openConfirm,
         ACTION_LABEL,
+        ROWS_PER_PAGE,
     };
 }

@@ -5,20 +5,32 @@ import {
     Card,
     CardContent,
     Chip,
+    FormControl,
     IconButton,
+    InputLabel,
+    MenuItem,
+    Select,
     Stack,
     Tooltip,
-    Typography,
 } from "@mui/material";
-import { Visibility as VisibilityIcon } from "@mui/icons-material";
+import {
+    CheckCircle as CheckCircleIcon,
+    HourglassEmpty as HourglassEmptyIcon,
+    Inventory as InventoryIcon,
+    Visibility as VisibilityIcon,
+} from "@mui/icons-material";
 import DataTable from "@/components/common/DataTable.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import FilterModeToggle from "@/components/common/FilterModeToggle.jsx";
 import PaginationWidget from "@/components/common/PaginationWidget.jsx";
+import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import { khoDuocService } from "@/services/khoDuocService.js";
+import { getNamOptions } from "@/utils/yearOptions.js";
 import NhapKhoDialog from "./NhapKhoDialog.jsx";
 
 const ROWS_PER_PAGE = 20;
+const NAM_OPTIONS = getNamOptions();
+const EMPTY_STATS = { tong: 0, choNhap: 0, daNhap: 0 };
 
 const STATUS_CHIP = {
     da_duyet: { label: "Đã duyệt", color: "success" },
@@ -28,10 +40,13 @@ const STATUS_CHIP = {
 export default function NhapKhoList() {
     const location = useLocation();
     const [filterMode, setFilterMode] = useState("chua_nhap");
+    const [nam, setNam] = useState(null);
     const [rows, setRows] = useState([]);
     const [total, setTotal] = useState(0);
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
+    const [stats, setStats] = useState(EMPTY_STATS);
+    const [statsLoading, setStatsLoading] = useState(false);
     const [selectedPhieuId, setSelectedPhieuId] = useState(
         location.state?.openNhapKhoPhieuId || null,
     );
@@ -60,6 +75,7 @@ export default function NhapKhoList() {
                 offset: (page - 1) * ROWS_PER_PAGE,
             };
             if (filterMode === "chua_nhap") params.trang_thai = "da_duyet";
+            if (nam) params.nam = nam;
             const res = await khoDuocService.getDanhSachPhieuDuTru(params);
             const body = res.data || {};
             const allData = body.data || [];
@@ -79,17 +95,60 @@ export default function NhapKhoList() {
         } finally {
             setLoading(false);
         }
-    }, [page, filterMode]);
+    }, [page, filterMode, nam]);
+
+    const fetchStats = useCallback(async () => {
+        setStatsLoading(true);
+        try {
+            const params = {};
+            if (nam) params.nam = nam;
+            const res = await khoDuocService.getThongKePhieuDuTru(params);
+            const d = res.data || {};
+            setStats({
+                tong: (d.da_duyet || 0) + (d.da_nhap || 0),
+                choNhap: d.da_duyet || 0,
+                daNhap: d.da_nhap || 0,
+            });
+        } catch {
+            setStats(EMPTY_STATS);
+        } finally {
+            setStatsLoading(false);
+        }
+    }, [nam]);
 
     useEffect(() => {
         fetchData();
     }, [fetchData]);
+
+    useEffect(() => {
+        fetchStats();
+    }, [fetchStats]);
 
     const openNhapKho = (id, mode = "create") => {
         setSelectedPhieuId(id);
         setDialogMode(mode);
         setOpenDialog(true);
     };
+
+    const statItems = useMemo(
+        () => [
+            {
+                label: "Chờ nhập",
+                value: stats.choNhap,
+                icon: <HourglassEmptyIcon />,
+                color: "#F59E0B",
+                bg: "#FEF3C7",
+            },
+            {
+                label: "Đã nhập",
+                value: stats.daNhap,
+                icon: <CheckCircleIcon />,
+                color: "#10B981",
+                bg: "#D1FAE5",
+            },
+        ],
+        [stats],
+    );
 
     const columns = useMemo(
         () => [
@@ -121,7 +180,9 @@ export default function NhapKhoList() {
                         <Button
                             size="small"
                             variant="contained"
-                            onClick={() => openNhapKho(row.ma_phieu_du_tru, "create")}
+                            onClick={() =>
+                                openNhapKho(row.ma_phieu_du_tru, "create")
+                            }
                         >
                             Nhập kho
                         </Button>
@@ -130,7 +191,9 @@ export default function NhapKhoList() {
                             <IconButton
                                 size="small"
                                 color="primary"
-                                onClick={() => openNhapKho(row.ma_phieu_du_tru, "view")}
+                                onClick={() =>
+                                    openNhapKho(row.ma_phieu_du_tru, "view")
+                                }
                             >
                                 <VisibilityIcon fontSize="small" />
                             </IconButton>
@@ -148,20 +211,53 @@ export default function NhapKhoList() {
 
     return (
         <>
+            <StatCardGrid items={statItems} loading={statsLoading} />
+
             <Card sx={{ borderRadius: 3 }}>
                 <CardContent>
                     <Stack
                         direction="row"
-                        sx={{ mb: 2, justifyContent: "flex-start" }}
+                        spacing={2}
+                        sx={{
+                            mb: 2,
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            flexWrap: "wrap",
+                        }}
                     >
-                        <FilterModeToggle
-                            filterMode={filterMode}
-                            onChange={handleFilterModeChange}
-                            selectedDate={null}
-                            onDateChange={() => {}}
-                            labelLeft="Tất cả"
-                            labelRight="Chưa nhập"
-                        />
+                        <Stack
+                            direction="row"
+                            spacing={1.5}
+                            sx={{ alignItems: "center" }}
+                        >
+                            <FilterModeToggle
+                                filterMode={filterMode}
+                                onChange={handleFilterModeChange}
+                                selectedDate={null}
+                                onDateChange={() => {}}
+                                labelLeft="Tất cả"
+                                labelRight="Chưa nhập"
+                            />
+                            <FormControl size="small" sx={{ minWidth: 100 }}>
+                                <InputLabel id="nam-label">Năm</InputLabel>
+                                <Select
+                                    labelId="nam-label"
+                                    value={nam ?? ""}
+                                    label="Năm"
+                                    onChange={(e) => {
+                                        setNam(e.target.value || null);
+                                        setPage(1);
+                                    }}
+                                >
+                                    <MenuItem value="">Tất cả</MenuItem>
+                                    {NAM_OPTIONS.map((y) => (
+                                        <MenuItem key={y} value={y}>
+                                            {y}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Stack>
                     </Stack>
                     <Stack spacing={2.5}>
                         <DataTable
@@ -194,6 +290,7 @@ export default function NhapKhoList() {
                     mode={dialogMode}
                     onSaved={() => {
                         fetchData();
+                        fetchStats();
                     }}
                 />
             )}
