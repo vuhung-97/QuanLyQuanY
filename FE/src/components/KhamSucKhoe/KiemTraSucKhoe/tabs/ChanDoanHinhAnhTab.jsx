@@ -1,11 +1,6 @@
-import {
-    forwardRef,
-    memo,
-    useCallback,
-    useImperativeHandle,
-    useState,
-} from "react";
+import { forwardRef, memo } from "react";
 import { Card, CardContent, Grid, Typography } from "@mui/material";
+import useFormTab from "@/hooks/useFormTab";
 import NormalToggleField from "@/components/common/NormalToggleField";
 import SectionTitle from "@/components/KhamSucKhoe/common/SectionTitle.jsx";
 
@@ -21,20 +16,7 @@ const ChanDoanHinhAnhTab = memo(
         { initialData, cardStyle, readOnly = false },
         ref,
     ) {
-        const [cdha, setCdha] = useState({ ...initialData });
-
-        useImperativeHandle(
-            ref,
-            () => ({
-                getData: () => ({ ...cdha }),
-            }),
-            [cdha],
-        );
-
-        const handleChange = useCallback((e) => {
-            const { name, value } = e.target;
-            setCdha((prev) => ({ ...prev, [name]: value }));
-        }, []);
+        const { data, handleChange } = useFormTab(initialData, ref);
 
         return (
             <Card sx={cardStyle}>
@@ -46,7 +28,7 @@ const ChanDoanHinhAnhTab = memo(
                                 <NormalToggleField
                                     label={f.label}
                                     name={f.name}
-                                    value={cdha[f.name]}
+                                    value={data[f.name]}
                                     onChange={handleChange}
                                     readOnly={readOnly}
                                     size="small"

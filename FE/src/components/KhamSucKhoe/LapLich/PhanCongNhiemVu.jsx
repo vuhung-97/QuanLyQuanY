@@ -16,8 +16,8 @@ const columns = [
     { key: "ten_vai_tro", label: "Vai trò" },
 ];
 
-export default function PhanCongNhiemVu({ latestScheduleId }) {
-    const { assignments, loading } = usePhanCongNhiemVu(latestScheduleId);
+export default function PhanCongNhiemVu({ latestScheduleId, refreshCounter }) {
+    const { assignments, loading } = usePhanCongNhiemVu(latestScheduleId, refreshCounter);
 
     return (
         <Card sx={{ borderRadius: 3 }}>

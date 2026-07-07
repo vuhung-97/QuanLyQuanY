@@ -1,10 +1,4 @@
-import {
-    forwardRef,
-    memo,
-    useCallback,
-    useImperativeHandle,
-    useState,
-} from "react";
+import { forwardRef, memo } from "react";
 import {
     Card,
     CardContent,
@@ -16,6 +10,7 @@ import {
     Select,
     Typography,
 } from "@mui/material";
+import useFormTab from "@/hooks/useFormTab";
 import NormalToggleField from "@/components/common/NormalToggleField";
 import SectionTitle from "@/components/KhamSucKhoe/common/SectionTitle.jsx";
 import { PHAN_LOAI_OPTIONS } from "@/constants/khamSucKhoeConstants.js";
@@ -98,20 +93,7 @@ const LamSangTab = memo(
         { initialData, cardStyle, readOnly = false },
         ref,
     ) {
-        const [ls, setLs] = useState({ ...initialData });
-
-        useImperativeHandle(
-            ref,
-            () => ({
-                getData: () => ({ ...ls }),
-            }),
-            [ls],
-        );
-
-        const handleChange = useCallback((e) => {
-            const { name, value } = e.target;
-            setLs((prev) => ({ ...prev, [name]: value }));
-        }, []);
+        const { data, handleChange } = useFormTab(initialData, ref);
 
         return (
             <>
@@ -123,8 +105,8 @@ const LamSangTab = memo(
                                 <ChuyenKhoaRow
                                     key={sp.id}
                                     sp={sp}
-                                    noteValue={ls[`${sp.id}_note`]}
-                                    loaiValue={ls[`${sp.id}_loai`]}
+                                    noteValue={data[`${sp.id}_note`]}
+                                    loaiValue={data[`${sp.id}_loai`]}
                                     onChange={handleChange}
                                     readOnly={readOnly}
                                 />

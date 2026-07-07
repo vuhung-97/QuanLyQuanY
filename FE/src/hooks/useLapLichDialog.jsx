@@ -7,13 +7,13 @@ export default function useLapLichDialog({
     chiTietList,
     onSaved,
     onClose,
+    unitOptions = [],
 }) {
     const isEdit = Boolean(schedule);
     const [thoiGianBatDau, setThoiGianBatDau] = useState("");
     const [thoiGianKetThuc, setThoiGianKetThuc] = useState("");
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
-    const [unitOptions, setUnitOptions] = useState([]);
     const [detailData, setDetailData] = useState({});
 
     // Phân công nhiệm vụ
@@ -24,12 +24,6 @@ export default function useLapLichDialog({
 
     useEffect(() => {
         if (open) {
-            khamSucKhoeService.getDonViList()
-                .then((res) => {
-                    const all = Array.isArray(res.data) ? res.data : [];
-                    setUnitOptions(all.filter((u) => !u.ma_don_vi_truc_thuoc));
-                })
-                .catch(() => {});
             khamSucKhoeService.getNguoiDungList()
                 .then((res) => {
                     const list = Array.isArray(res.data) ? res.data : [];
@@ -217,7 +211,6 @@ export default function useLapLichDialog({
         setThoiGianKetThuc,
         saving,
         error,
-        unitOptions,
         isEdit,
         handleSubmit,
         users,

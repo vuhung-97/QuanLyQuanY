@@ -19,11 +19,13 @@ export default function LapLichPage() {
         schedules,
         chiTietMap,
         unitStats,
+        unitOptions,
         loading,
         error,
         setError,
         summaryItems,
         loadSchedules,
+        refreshCounter,
     } = useLichKhamData();
 
     const latestScheduleId = useMemo(
@@ -164,7 +166,10 @@ export default function LapLichPage() {
                 latestScheduleId={latestScheduleId}
             />
 
-            <PhanCongNhiemVu latestScheduleId={latestScheduleId} />
+            <PhanCongNhiemVu
+                latestScheduleId={latestScheduleId}
+                refreshCounter={refreshCounter}
+            />
 
             <DanhSachLich
                 schedules={filteredSchedules}
@@ -187,6 +192,7 @@ export default function LapLichPage() {
                 onSaved={handleDialogSaved}
                 schedule={dialog.schedule}
                 chiTietList={dialog.chiTietList}
+                unitOptions={unitOptions}
             />
 
             <ConfirmDialog

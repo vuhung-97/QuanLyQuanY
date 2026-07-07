@@ -7,18 +7,16 @@ import {
     Chip,
     FormControl,
     Grid,
-    InputAdornment,
     InputLabel,
     MenuItem,
     Select,
     TextField,
-    Tooltip,
     Typography,
     Stack,
 } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import NormalToggleField from "@/components/common/NormalToggleField";
-import { fieldRanges, isOutOfRange } from "./fieldRanges";
+import RangeField from "../common/fields/RangeField.jsx";
 import useTongQuanTab from "@/hooks/useTongQuanTab";
 import SectionTitle from "@/components/KhamSucKhoe/common/SectionTitle.jsx";
 import { PHAN_LOAI_OPTIONS } from "@/constants/khamSucKhoeConstants.js";
@@ -91,40 +89,7 @@ const getBmiStatus = (bmiStr) => {
     return { text: "Béo phì", color: "error" };
 };
 
-const TheLucField = memo(({ field, value, onChange, readOnly }) => {
-    const outOfRange = isOutOfRange(field.name, value);
-    return (
-        <Grid size={{ xs: 6, sm: 4, md: 2 }}>
-            <Tooltip
-                title={fieldRanges[field.name]?.tooltip || ""}
-                arrow
-                placement="right"
-            >
-                <TextField
-                    name={field.name}
-                    label={field.label}
-                    type="number"
-                    value={value}
-                    onChange={onChange}
-                    disabled={readOnly}
-                    fullWidth
-                    size="small"
-                    error={outOfRange}
-                    slotProps={{
-                        htmlInput: { step: field.step, min: field.min },
-                        input: {
-                            endAdornment: (
-                                <InputAdornment position="end">
-                                    {field.unit}
-                                </InputAdornment>
-                            ),
-                        },
-                    }}
-                />
-            </Tooltip>
-        </Grid>
-    );
-});
+
 
 const MatNumberField = memo(({ name, label, value, onChange, readOnly }) => (
     <Grid size={{ xs: 6, sm: 4, md: true }}>
@@ -286,12 +251,16 @@ const TongQuanTab = memo(
                             sx={{ alignItems: "center" }}
                         >
                             {THE_LUC_FIELDS.map((f) => (
-                                <TheLucField
+                                <RangeField
                                     key={f.name}
-                                    field={f}
+                                    name={f.name}
+                                    label={f.label}
                                     value={data[f.name]}
+                                    unit={f.unit}
                                     onChange={handleChange}
                                     readOnly={readOnly}
+                                    step={f.step}
+                                    min={f.min}
                                 />
                             ))}
                             <BmiDisplay bmi={data.bmi} />
@@ -308,12 +277,16 @@ const TongQuanTab = memo(
                             sx={{ alignItems: "center" }}
                         >
                             {VITAL_SIGNS_FIELDS.map((f) => (
-                                <TheLucField
+                                <RangeField
                                     key={f.name}
-                                    field={f}
+                                    name={f.name}
+                                    label={f.label}
                                     value={data[f.name]}
+                                    unit={f.unit}
                                     onChange={handleChange}
                                     readOnly={readOnly}
+                                    step={f.step}
+                                    min={f.min}
                                 />
                             ))}
                         </Grid>

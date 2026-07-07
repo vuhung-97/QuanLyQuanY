@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
 
-export default function usePhanCongNhiemVu(scheduleId) {
+export default function usePhanCongNhiemVu(scheduleId, refreshCounter) {
     const [assignments, setAssignments] = useState([]);
     const [loading, setLoading] = useState(false);
 
@@ -28,7 +28,7 @@ export default function usePhanCongNhiemVu(scheduleId) {
         return () => {
             ignore = true;
         };
-    }, [scheduleId]);
+    }, [scheduleId, refreshCounter]);
 
     return { assignments, loading };
 }

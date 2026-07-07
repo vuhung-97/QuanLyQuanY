@@ -1,8 +1,19 @@
-import { useCallback, useImperativeHandle, useState } from "react";
+import { useCallback, useEffect, useImperativeHandle, useState } from "react";
 
 export default function useTongQuanTab(initialData, ref) {
     const [data, setData] = useState({ ...initialData });
     const [showCoKinh, setShowCoKinh] = useState(false);
+
+    useEffect(() => {
+        const h = parseFloat(initialData?.chieu_cao);
+        const w = parseFloat(initialData?.can_nang);
+        if (h > 0 && w > 0) {
+            setData((prev) => ({
+                ...prev,
+                bmi: (w / Math.pow(h / 100, 2)).toFixed(1),
+            }));
+        }
+    }, []);
 
     useImperativeHandle(
         ref,

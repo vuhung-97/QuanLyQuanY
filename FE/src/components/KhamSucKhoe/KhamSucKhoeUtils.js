@@ -47,7 +47,7 @@ export function findNearestDetail(details) {
 
 import {
     DEFAULT_TS, DEFAULT_LS, DEFAULT_XN, DEFAULT_CDHA, DEFAULT_KL,
-    TRANG_THAI_LABEL,
+    DEFAULT_PHAN_LOAI, TRANG_THAI_LABEL,
 } from "@/constants/khamSucKhoeConstants.js";
 
 export function getStatus(phieu) {
@@ -64,12 +64,12 @@ function parseWithDefault(str, defaultObj, fallbackKey) {
             Object.keys(defaultObj)
                 .filter((k) => k.endsWith("_loai"))
                 .forEach((k) => {
-                    if (!mapped[k]) mapped[k] = "Loại 1";
+                    if (!mapped[k]) mapped[k] = DEFAULT_PHAN_LOAI;
                 });
             return mapped;
         }
     } catch {}
-    return { ...defaultObj, [fallbackKey]: str };
+    return { ...defaultObj };
 }
 
 export const parseTienSu = (str) =>

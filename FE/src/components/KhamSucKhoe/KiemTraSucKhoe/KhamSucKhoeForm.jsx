@@ -30,11 +30,7 @@ import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
 import KetLuanTab from "./tabs/KetLuanTab";
 
 function FormHeader({ quanNhan }) {
-    return (
-        <DialogTitleWrapper>
-            Phiếu khám sức khỏe định kỳ
-        </DialogTitleWrapper>
-    );
+    return <DialogTitleWrapper>Phiếu khám sức khỏe định kỳ</DialogTitleWrapper>;
 }
 
 const itemSx = {
@@ -309,7 +305,7 @@ export default function KhamSucKhoeForm({
 
                 <DialogActions
                     sx={{
-                        pt: 1.5,
+                        p: 2,
                         borderTop: "1px solid",
                         borderColor: "divider",
                         bgcolor: "background.paper",

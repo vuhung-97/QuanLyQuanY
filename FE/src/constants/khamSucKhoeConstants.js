@@ -28,6 +28,8 @@ export const ROLE_LABELS = {
 
 export const roleOrder = { ROLE_ADMIN: 0, ROLE_CNQY: 1, ROLE_BACSI: 2, ROLE_YSI: 3 };
 
+export const DEFAULT_PHAN_LOAI = "Loại 1";
+
 export const DEFAULT_TS = {
     ban_than: "",
     di_ung: "",
@@ -45,36 +47,36 @@ export const DEFAULT_TS = {
     mat_khong_kinh_phai: "",
     mat_co_kinh_trai: "",
     mat_co_kinh_phai: "",
-    mat_loai: "Loại 1",
+    mat_loai: DEFAULT_PHAN_LOAI,
 };
 
 export const DEFAULT_LS = {
     tim_mach_note: "",
-    tim_mach_loai: "Loại 1",
+    tim_mach_loai: DEFAULT_PHAN_LOAI,
     ho_hap_note: "",
-    ho_hap_loai: "Loại 1",
+    ho_hap_loai: DEFAULT_PHAN_LOAI,
     tieu_hoa_note: "",
-    tieu_hoa_loai: "Loại 1",
+    tieu_hoa_loai: DEFAULT_PHAN_LOAI,
     than_tiet_nieu_sinh_duc_nam_note: "",
-    than_tiet_nieu_sinh_duc_nam_loai: "Loại 1",
+    than_tiet_nieu_sinh_duc_nam_loai: DEFAULT_PHAN_LOAI,
     tam_than_than_kinh_note: "",
-    tam_than_than_kinh_loai: "Loại 1",
+    tam_than_than_kinh_loai: DEFAULT_PHAN_LOAI,
     co_xuong_khop_note: "",
-    co_xuong_khop_loai: "Loại 1",
+    co_xuong_khop_loai: DEFAULT_PHAN_LOAI,
     noi_tiet_chuyen_hoa_mien_dich_note: "",
-    noi_tiet_chuyen_hoa_mien_dich_loai: "Loại 1",
+    noi_tiet_chuyen_hoa_mien_dich_loai: DEFAULT_PHAN_LOAI,
     benh_mau_note: "",
-    benh_mau_loai: "Loại 1",
+    benh_mau_loai: DEFAULT_PHAN_LOAI,
     ngoai_khoa_note: "",
-    ngoai_khoa_loai: "Loại 1",
+    ngoai_khoa_loai: DEFAULT_PHAN_LOAI,
     da_lieu_note: "",
-    da_lieu_loai: "Loại 1",
+    da_lieu_loai: DEFAULT_PHAN_LOAI,
     phu_san_note: "",
-    phu_san_loai: "Loại 1",
+    phu_san_loai: DEFAULT_PHAN_LOAI,
     tai_mui_hong_note: "",
-    tai_mui_hong_loai: "Loại 1",
+    tai_mui_hong_loai: DEFAULT_PHAN_LOAI,
     rang_ham_mat_note: "",
-    rang_ham_mat_loai: "Loại 1",
+    rang_ham_mat_loai: DEFAULT_PHAN_LOAI,
     khac: "",
 };
 
@@ -100,7 +102,7 @@ export const DEFAULT_CDHA = {
 };
 
 export const DEFAULT_KL = {
-    phan_loai_suc_khoe: "Loại 1",
+    phan_loai_suc_khoe: DEFAULT_PHAN_LOAI,
     ly_do: "",
     benh_tat_theo_doi: "",
     chi_dan_khac: "",
@@ -124,10 +126,10 @@ export const ROLE_TAB_ACCESS = {
     ket_luan: { edit: [4], view: [0, 1, 2, 3, 4] },
 };
 
-export const PHAN_LOAI_OPTIONS = ["Loại 1", "Loại 2", "Loại 3", "Loại 4", "Loại 5"];
+export const PHAN_LOAI_OPTIONS = [DEFAULT_PHAN_LOAI, "Loại 2", "Loại 3", "Loại 4", "Loại 5"];
 
 export const PHAN_LOAI_SUC_KHOE = [
-    { value: "Loại 1", label: "Loại 1 (Rất khỏe)" },
+    { value: DEFAULT_PHAN_LOAI, label: "Loại 1 (Rất khỏe)" },
     { value: "Loại 2", label: "Loại 2 (Khỏe)" },
     { value: "Loại 3", label: "Loại 3 (Trung bình)" },
     { value: "Loại 4", label: "Loại 4 (Yếu)" },

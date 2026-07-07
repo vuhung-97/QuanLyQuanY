@@ -15,6 +15,7 @@ export default function useLichKhamData() {
     const [unitStats, setUnitStats] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [refreshCounter, setRefreshCounter] = useState(0);
 
     const loadSchedules = useCallback(() => {
         let ignore = false;
@@ -30,8 +31,6 @@ export default function useLichKhamData() {
                 const masterList = Array.isArray(schRes.data)
                     ? schRes.data
                     : [];
-                setSchedules(masterList);
-                setUnitStats(Array.isArray(uvRes.data) ? uvRes.data : []);
 
                 const ctMap = {};
                 await Promise.all(
@@ -46,7 +45,12 @@ export default function useLichKhamData() {
                         }
                     }),
                 );
-                if (!ignore) setChiTietMap(ctMap);
+                if (!ignore) {
+                    setSchedules(masterList);
+                    setUnitStats(Array.isArray(uvRes.data) ? uvRes.data : []);
+                    setChiTietMap(ctMap);
+                    setRefreshCounter(c => c + 1);
+                }
             } catch (err) {
                 if (!ignore) {
                     setError(
@@ -132,10 +136,16 @@ export default function useLichKhamData() {
         ];
     }, [unitStats, allDetails, nearestDetail]);
 
+    const unitOptions = useMemo(
+        () => (unitStats ?? []).filter((u) => !u.ma_don_vi_truc_thuoc),
+        [unitStats],
+    );
+
     return {
         schedules,
         chiTietMap,
         unitStats,
+        unitOptions,
         loading,
         error,
         setError,
@@ -144,5 +154,6 @@ export default function useLichKhamData() {
         scheduleStats,
         summaryItems,
         loadSchedules,
+        refreshCounter,
     };
 }

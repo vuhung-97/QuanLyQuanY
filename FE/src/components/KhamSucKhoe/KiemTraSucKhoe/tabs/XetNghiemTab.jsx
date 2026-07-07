@@ -1,20 +1,7 @@
-import {
-    forwardRef,
-    memo,
-    useCallback,
-    useImperativeHandle,
-    useState,
-} from "react";
-import {
-    Card,
-    CardContent,
-    Grid,
-    InputAdornment,
-    MenuItem,
-    TextField,
-    Tooltip,
-    Typography,
-} from "@mui/material";
+import { forwardRef, memo } from "react";
+import { Card, CardContent, Grid, MenuItem, TextField, Typography } from "@mui/material";
+import useFormTab from "@/hooks/useFormTab";
+import RangeField from "../common/fields/RangeField.jsx";
 import { fieldRanges, isOutOfRange } from "./fieldRanges";
 import SectionTitle from "@/components/KhamSucKhoe/common/SectionTitle.jsx";
 
@@ -50,20 +37,7 @@ const XetNghiemTab = memo(
         { initialData, cardStyle, readOnly = false },
         ref,
     ) {
-        const [xn, setXn] = useState({ ...initialData });
-
-        useImperativeHandle(
-            ref,
-            () => ({
-                getData: () => ({ ...xn }),
-            }),
-            [xn],
-        );
-
-        const handleChange = useCallback((e) => {
-            const { name, value } = e.target;
-            setXn((prev) => ({ ...prev, [name]: value }));
-        }, []);
+        const { data, handleChange } = useFormTab(initialData, ref);
 
         return (
             <>
@@ -71,49 +45,18 @@ const XetNghiemTab = memo(
                     <CardContent>
                         <SectionTitle>Xét nghiệm máu</SectionTitle>
                         <Grid container spacing={2}>
-                            {xetNghiemMauFields.map((f) => {
-                                const outOfRange = isOutOfRange(
-                                    f.name,
-                                    xn[f.name],
-                                );
-                                return (
-                                    <Grid size={{ xs: 12, sm: 3 }} key={f.name}>
-                                        <Tooltip
-                                            title={
-                                                fieldRanges[f.name]?.tooltip ||
-                                                ""
-                                            }
-                                            arrow
-                                            placement="right"
-                                        >
-                                            <TextField
-                                                name={f.name}
-                                                label={f.label}
-                                                type="number"
-                                                value={xn[f.name]}
-                                                onChange={handleChange}
-                                                fullWidth
-                                                size="medium"
-                                                error={outOfRange}
-                                                slotProps={{
-                                                    htmlInput: {
-                                                        step: "1",
-                                                        min: "1",
-                                                    },
-                                                    input: {
-                                                        endAdornment: (
-                                                            <InputAdornment position="end">
-                                                                {f.unit}
-                                                            </InputAdornment>
-                                                        ),
-                                                    },
-                                                }}
-                                                disabled={readOnly}
-                                            />
-                                        </Tooltip>
-                                    </Grid>
-                                );
-                            })}
+                            {xetNghiemMauFields.map((f) => (
+                                <RangeField
+                                    key={f.name}
+                                    name={f.name}
+                                    label={f.label}
+                                    value={data[f.name]}
+                                    unit={f.unit}
+                                    onChange={handleChange}
+                                    readOnly={readOnly}
+                                    xs={12} sm={3} md={3}
+                                />
+                            ))}
                         </Grid>
                     </CardContent>
                 </Card>
@@ -123,65 +66,39 @@ const XetNghiemTab = memo(
                         <SectionTitle>Xét nghiệm nước tiểu</SectionTitle>
                         <Grid container spacing={2}>
                             {xetNghiemNuocTieuFields.map((f) => {
-                                const outOfRange = isOutOfRange(
-                                    f.name,
-                                    xn[f.name],
-                                );
+                                const outOfRange = isOutOfRange(f.name, data[f.name]);
+                                if (f.type === "select") {
+                                    return (
+                                        <Grid size={{ xs: 12, sm: 4 }} key={f.name}>
+                                            <TextField
+                                                select
+                                                name={f.name}
+                                                label={f.label}
+                                                value={data[f.name]}
+                                                onChange={handleChange}
+                                                fullWidth
+                                                size="medium"
+                                                error={outOfRange}
+                                                disabled={readOnly}
+                                            >
+                                                <MenuItem value="">-- Chọn --</MenuItem>
+                                                {f.options.map((opt) => (
+                                                    <MenuItem key={opt} value={opt}>{opt}</MenuItem>
+                                                ))}
+                                            </TextField>
+                                        </Grid>
+                                    );
+                                }
                                 return (
-                                    <Grid size={{ xs: 12, sm: 4 }} key={f.name}>
-                                        <Tooltip
-                                            title={
-                                                fieldRanges[f.name]?.tooltip ||
-                                                ""
-                                            }
-                                            arrow
-                                            placement="right"
-                                        >
-                                            {f.type === "select" ? (
-                                                <TextField
-                                                    select
-                                                    name={f.name}
-                                                    label={f.label}
-                                                    value={xn[f.name]}
-                                                    onChange={handleChange}
-                                                    fullWidth
-                                                    size="medium"
-                                                    error={outOfRange}
-                                                    disabled={readOnly}
-                                                >
-                                                    <MenuItem value="">
-                                                        -- Chọn --
-                                                    </MenuItem>
-                                                    {f.options.map((opt) => (
-                                                        <MenuItem
-                                                            key={opt}
-                                                            value={opt}
-                                                        >
-                                                            {opt}
-                                                        </MenuItem>
-                                                    ))}
-                                                </TextField>
-                                            ) : (
-                                                <TextField
-                                                    name={f.name}
-                                                    label={f.label}
-                                                    type="number"
-                                                    value={xn[f.name]}
-                                                    onChange={handleChange}
-                                                    fullWidth
-                                                    size="medium"
-                                                    error={outOfRange}
-                                                    slotProps={{
-                                                        htmlInput: {
-                                                            step: "1",
-                                                            min: "1",
-                                                        },
-                                                    }}
-                                                    disabled={readOnly}
-                                                />
-                                            )}
-                                        </Tooltip>
-                                    </Grid>
+                                    <RangeField
+                                        key={f.name}
+                                        name={f.name}
+                                        label={f.label}
+                                        value={data[f.name]}
+                                        onChange={handleChange}
+                                        readOnly={readOnly}
+                                        xs={12} sm={4} md={4}
+                                    />
                                 );
                             })}
                         </Grid>

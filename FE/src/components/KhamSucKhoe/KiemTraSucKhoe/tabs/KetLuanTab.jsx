@@ -1,10 +1,4 @@
-import {
-    forwardRef,
-    memo,
-    useCallback,
-    useImperativeHandle,
-    useState,
-} from "react";
+import { forwardRef, memo } from "react";
 import {
     Card,
     CardContent,
@@ -16,34 +10,25 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
+import useFormTab from "@/hooks/useFormTab";
 import NormalToggleField from "@/components/common/NormalToggleField";
 import SectionTitle from "@/components/KhamSucKhoe/common/SectionTitle.jsx";
-import { PHAN_LOAI_SUC_KHOE } from "@/constants/khamSucKhoeConstants.js";
+import { DEFAULT_PHAN_LOAI, PHAN_LOAI_SUC_KHOE } from "@/constants/khamSucKhoeConstants.js";
 
 const KetLuanTab = memo(
     forwardRef(function KetLuanTab(
         { initialData, cardStyle, readOnly = false },
         ref,
     ) {
-        const [data, setData] = useState({
-            phan_loai_suc_khoe: initialData?.phan_loai_suc_khoe ?? "Loại 1",
-            ly_do: initialData?.ly_do ?? "",
-            benh_tat_theo_doi: initialData?.benh_tat_theo_doi ?? "",
-            chi_dan_khac: initialData?.chi_dan_khac ?? "",
-        });
-
-        useImperativeHandle(
+        const { data, handleChange } = useFormTab(
+            {
+                phan_loai_suc_khoe: initialData?.phan_loai_suc_khoe ?? DEFAULT_PHAN_LOAI,
+                ly_do: initialData?.ly_do ?? "",
+                benh_tat_theo_doi: initialData?.benh_tat_theo_doi ?? "",
+                chi_dan_khac: initialData?.chi_dan_khac ?? "",
+            },
             ref,
-            () => ({
-                getData: () => ({ ...data }),
-            }),
-            [data],
         );
-
-        const handleChange = useCallback((e) => {
-            const { name, value } = e.target;
-            setData((prev) => ({ ...prev, [name]: value }));
-        }, []);
 
         return (
             <Card sx={cardStyle}>
@@ -58,13 +43,9 @@ const KetLuanTab = memo(
                                     Phân loại sức khỏe chung
                                 </InputLabel>
                                 <Select
+                                    name="phan_loai_suc_khoe"
                                     value={data.phan_loai_suc_khoe}
-                                    onChange={(e) =>
-                                        setData((prev) => ({
-                                            ...prev,
-                                            phan_loai_suc_khoe: e.target.value,
-                                        }))
-                                    }
+                                    onChange={handleChange}
                                     label="Phân loại sức khỏe chung"
                                     disabled={readOnly}
                                 >

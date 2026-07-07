@@ -42,6 +42,7 @@ export default function LapLichDialog({
     onSaved,
     schedule,
     chiTietList,
+    unitOptions,
 }) {
     const {
         thoiGianBatDau,
@@ -50,7 +51,6 @@ export default function LapLichDialog({
         setThoiGianKetThuc,
         saving,
         error,
-        unitOptions,
         isEdit,
         handleSubmit,
         users,
@@ -59,7 +59,14 @@ export default function LapLichDialog({
         handleAssignmentChange,
         detailData,
         handleDetailChange,
-    } = useLapLichDialog({ open, schedule, chiTietList, onSaved, onClose });
+    } = useLapLichDialog({
+        open,
+        schedule,
+        chiTietList,
+        onSaved,
+        onClose,
+        unitOptions,
+    });
 
     const sortedUsers = useMemo(
         () =>
@@ -259,7 +266,7 @@ export default function LapLichDialog({
                         />
                     </Stack>
                 </DialogContent>
-                <DialogActions>
+                <DialogActions sx={{ p: 2 }}>
                     <Button onClick={onClose}>Hủy</Button>
                     <Button type="submit" variant="contained" disabled={saving}>
                         {saving
