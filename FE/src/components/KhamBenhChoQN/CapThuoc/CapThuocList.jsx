@@ -5,6 +5,10 @@ import {
     Card,
     CardContent,
     Chip,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
     Stack,
     Typography,
 } from "@mui/material";
@@ -16,6 +20,7 @@ import {
     Refresh as RefreshIcon,
 } from "@mui/icons-material";
 import useCapThuoc from "@/hooks/useCapThuoc.jsx";
+import { getNamOptions } from "@/utils/yearOptions.js";
 import CapThuocForm from "./CapThuocForm.jsx";
 import DataTable from "@/components/common/DataTable.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
@@ -24,8 +29,14 @@ import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import { STATUS_MAP } from "@/constants/khamBenhConstants.js";
 import { formatDate } from "@/utils/date.js";
 
+const NAM_OPTIONS = getNamOptions();
+
 const columns = [
-    { key: "stt", label: "STT", render: (row, idx, extra) => (extra?.offset || 0) + idx + 1 },
+    {
+        key: "stt",
+        label: "STT",
+        render: (row, idx, extra) => (extra?.offset || 0) + idx + 1,
+    },
     {
         key: "ma_kham_benh",
         label: "Mã KB",
@@ -101,6 +112,8 @@ export default function CapThuocList() {
         totalRecords,
         ROWS_PER_PAGE,
         offset,
+        nam,
+        setNam,
     } = useCapThuoc();
 
     const statItems = useMemo(
@@ -143,15 +156,42 @@ export default function CapThuocList() {
                             spacing={1}
                             sx={{ alignItems: "center" }}
                         >
-                            <Typography variant="h2">
-                                Danh sách quân nhân cấp thuốc
-                            </Typography>
                             <FilterModeToggle
                                 filterMode={filterMode}
                                 onChange={handleFilterModeChange}
                                 selectedDate={selectedDate}
                                 onDateChange={setSelectedDate}
                             />
+                            {filterMode === "tat_ca" && (
+                                <FormControl
+                                    size="small"
+                                    sx={{ minWidth: 100 }}
+                                >
+                                    <InputLabel id="nam-label">
+                                        Năm
+                                    </InputLabel>
+                                    <Select
+                                        labelId="nam-label"
+                                        value={nam ?? ""}
+                                        label="Năm"
+                                        onChange={(e) => {
+                                            setNam(
+                                                e.target.value || null,
+                                            );
+                                            setPage(1);
+                                        }}
+                                    >
+                                        <MenuItem value="">
+                                            Tất cả
+                                        </MenuItem>
+                                        {NAM_OPTIONS.map((y) => (
+                                            <MenuItem key={y} value={y}>
+                                                {y}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            )}
                         </Stack>
                         <Stack direction="row" spacing={1.5}>
                             <Button
@@ -177,8 +217,8 @@ export default function CapThuocList() {
                             filterMode === "tat_ca"
                                 ? "Không có quân nhân cấp thuốc."
                                 : selectedDate.isSame(dayjs(), "day")
-                                    ? "Không có quân nhân chờ cấp thuốc."
-                                    : `Không có quân nhân chờ cấp thuốc ngày ${selectedDate.format("DD/MM/YYYY")}.`
+                                  ? "Không có quân nhân chờ cấp thuốc."
+                                  : `Không có quân nhân chờ cấp thuốc ngày ${selectedDate.format("DD/MM/YYYY")}.`
                         }
                         rowExtra={{ onDispense: handleOpenForm, offset }}
                     />

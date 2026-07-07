@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import inspect
@@ -33,6 +33,7 @@ pre_router = APIRouter()
 def get_kham_benh_all(
     limit: int = Query(default=100, ge=1, le=500),
     offset: int = Query(default=0, ge=0),
+    nam: int | None = Query(default=None, description="Năm (VD: 2026)"),
     db: Session = Depends(get_db),
 ):
     base_query = (
@@ -41,6 +42,11 @@ def get_kham_benh_all(
         .join(DonVi, QuanNhan.ma_don_vi == DonVi.ma_don_vi, isouter=True)
         .order_by(KhamBenh.ngay_kham.desc())
     )
+    if nam:
+        base_query = base_query.filter(
+            KhamBenh.ngay_kham >= date(nam, 1, 1),
+            KhamBenh.ngay_kham < date(nam + 1, 1, 1),
+        )
     total = base_query.count()
     records = base_query.offset(offset).limit(limit).all()
     result = []
@@ -238,6 +244,7 @@ def get_danh_sach_nhap_vien(
 def get_danh_sach_chuyen_tuyen(
     limit: int = Query(default=100, ge=1, le=500),
     offset: int = Query(default=0, ge=0),
+    nam: int | None = Query(default=None, description="Năm (VD: 2026)"),
     db: Session = Depends(get_db),
 ):
     base_query = (
@@ -254,6 +261,11 @@ def get_danh_sach_chuyen_tuyen(
         .filter(KhamBenh.trang_thai == "chuyển_tuyến")
         .order_by(KhamBenh.ngay_kham.desc())
     )
+    if nam:
+        base_query = base_query.filter(
+            KhamBenh.ngay_kham >= date(nam, 1, 1),
+            KhamBenh.ngay_kham < date(nam + 1, 1, 1),
+        )
     total = base_query.count()
     records = base_query.offset(offset).limit(limit).all()
     result = []

@@ -101,7 +101,6 @@ Composite key dùng dấu phẩy: `{id1},{id2}`.
 | Resource                    | Endpoint prefix            | Ghi chú                                                    |
 | --------------------------- | -------------------------- | ---------------------------------------------------------- |
 | `benh_an`                   | `/benh_an`                 | Bệnh án                                                    |
-| `benh_nhan_ra_vao`          | `/benh_nhan_ra_vao`        | Bệnh nhân ra vào                                           |
 | `chi_tiet_don_thuoc`        | `/chi_tiet_don_thuoc`      | Chi tiết đơn thuốc (composite key)                         |
 | `chi_tiet_du_tru`           | `/chi_tiet_du_tru`         | Chi tiết phiếu dự trù (composite key)                      |
 | `chi_tiet_phieu_cham_soc`   | `/chi_tiet_phieu_cham_soc` | Chi tiết phiếu chăm sóc (composite key)                    |
@@ -123,11 +122,15 @@ Composite key dùng dấu phẩy: `{id1},{id2}`.
 | `phieu_xuat_kho`            | `/phieu_xuat_kho`          | Phiếu xuất kho                                             |
 | `quan_nhan`                 | `/quan_nhan`               | Quân nhân (kèm custom routes)                              |
 | `quyen`                     | `/quyen`                   | Quyền (RBAC)                                               |
-| `ra_benh_xa`                | `/ra_benh_xa`              | Ra bệnh xá                                                 |
-| `so_nhap_xuat`              | `/so_nhap_xuat`            | Sổ nhập xuất                                               |
 | `thuoc_vtyt`                | `/thuoc_vtyt`              | Thuốc / VTYT                                               |
 | `vai_tro`                   | `/vai_tro`                 | Vai trò (RBAC)                                             |
 | `vai_tro_quyen`             | `/vai_tro_quyen`           | Gán quyền - vai trò (composite key)                        |
+| `buong`                     | `/buong`                   | Buồng bệnh                                                 |
+| `giuong`                    | `/giuong`                  | Giường bệnh                                                |
+| `chi_tiet_phieu_nhap_kho`   | `/chi_tiet_phieu_nhap_kho` | Chi tiết phiếu nhập kho                                    |
+| `phan_cong_nhiem_vu`        | `/phan_cong_nhiem_vu`      | Phân công nhiệm vụ (User - Vai trò tạm thời)               |
+| `phieu_nhap_kho`            | `/phieu_nhap_kho`          | Phiếu nhập kho (Thay thế sổ nhập xuất)                     |
+| `vai_tro_tam_thoi`          | `/vai_tro_tam_thoi`        | Vai trò tạm thời cho phân công nhiệm vụ                    |
 
 ---
 
@@ -266,17 +269,6 @@ Composite key dùng dấu phẩy: `{id1},{id2}`.
 | `id_quan_nhan`  | string      | ❌                        | max 10                            |
 | `trang_thai`    | bool        | ❌ (default: false)       |                                   |
 
-### BenhNhanRaVao (`/benh_nhan_ra_vao`)
-
-| Field            | Type        | Required | Max |
-| ---------------- | ----------- | -------- | --- |
-| `ma_ra_vao`      | string (PK) | ✅       | 10  |
-| `ma_benh_an`     | string      | ❌       | 10  |
-| `ngay_thang_nam` | date        | ❌       |     |
-| `ly_do`          | string      | ❌       |     |
-| `ngay_vao`       | date        | ❌       |     |
-| `ngay_ra`        | date        | ❌       |     |
-
 ### DiTuyenSauDieuTri (`/di_tuyen_sau_dieu_tri`)
 
 | Field                    | Type        | Required | Max |
@@ -357,17 +349,6 @@ Composite key dùng dấu phẩy: `{id1},{id2}`.
 | `ma_thuoc_vtyt` | string (PK) | ✅              | 10  |
 | `so_luong`      | int         | ❌ (default: 1) |     |
 
-### RaBenhXa (`/ra_benh_xa`)
-
-| Field                  | Type        | Required | Max                     |
-| ---------------------- | ----------- | -------- | ----------------------- |
-| `ma_ra_benh_xa`        | string (PK) | ✅       | 10                      |
-| `ma_benh_an`           | string      | ❌       | 10                      |
-| `thoi_gian_vao`        | datetime    | ❌       |                         |
-| `thoi_gian_ra`         | datetime    | ❌       | (phải >= thoi_gian_vao) |
-| `phuong_phap_dieu_tri` | string      | ❌       |                         |
-| `ghi_chu`              | string      | ❌       |                         |
-
 ### PhieuDuTru (`/phieu_du_tru`)
 
 | Field             | Type        | Required | Max |
@@ -402,22 +383,6 @@ Composite key dùng dấu phẩy: `{id1},{id2}`.
 | `ma_phieu_xuat` | string (PK) | ✅       | 10  |
 | `ma_thuoc_vtyt` | string (PK) | ✅       | 10  |
 | `so_luong`      | int         | ✅       |     |
-
-### SoNhapXuat (`/so_nhap_xuat`)
-
-| Field                | Type        | Required        | Max  |
-| -------------------- | ----------- | --------------- | ---- |
-| `ma_giao_dich`       | string (PK) | ✅              | 10   |
-| `ma_thuoc_vtyt`      | string      | ❌              | 10   |
-| `quy_cach`           | string      | ❌              | 255  |
-| `don_gia`            | Decimal     | ❌              | >= 0 |
-| `ngay_nhap_xuat`     | datetime    | ❌              |      |
-| `ten_don_vi_doi_tac` | string      | ❌              | 255  |
-| `so_xuat_nhap_lenh`  | string      | ❌              | 100  |
-| `so_luong_nhap`      | int         | ❌ (default: 0) | >= 0 |
-| `so_luong_xuat`      | int         | ❌ (default: 0) | >= 0 |
-| `so_luong_con_lai`   | int         | ❌ (default: 0) | >= 0 |
-| `ghi_chu`            | string      | ❌              |      |
 
 ### VaiTro (`/vai_tro`)
 
@@ -475,6 +440,60 @@ Composite key dùng dấu phẩy: `{id1},{id2}`.
 | `id_nguoi_dung` | string      |
 
 ---
+
+### Buong (`/buong`)
+
+| Field              | Type        | Required | Max |
+| ------------------ | ----------- | -------- | --- |
+| `ma_buong`         | string (PK) | ✅       | 10  |
+| `ten_buong`        | string      | ✅       | 50  |
+| `so_giuong_toi_da` | int         | ❌       |     |
+
+### Giuong (`/giuong`)
+
+| Field        | Type        | Required        | Max |
+| ------------ | ----------- | --------------- | --- |
+| `ma_giuong`  | string (PK) | ✅              | 10  |
+| `ma_buong`   | string      | ✅              | 10  |
+| `ten_giuong` | string      | ✅              | 10  |
+| `trang_thai` | string      | ❌ (mặc định: "trống") |     |
+
+### PhieuNhapKho (`/phieu_nhap_kho`)
+
+| Field             | Type        | Required | Max |
+| ----------------- | ----------- | -------- | --- |
+| `ma_phieu_nhap`   | string (PK) | ✅       | 10  |
+| `ma_phieu_du_tru` | string      | ❌       | 10  |
+| `ngay_nhap`       | date        | ❌       |     |
+| `nguoi_nhap`      | string      | ❌       | 10  |
+| `ghi_chu`         | string      | ❌       |     |
+
+### ChiTietPhieuNhapKho (`/chi_tiet_phieu_nhap_kho`)
+
+| Field           | Type        | Required | Max |
+| --------------- | ----------- | -------- | --- |
+| `ma_phieu_nhap` | string (PK) | ✅       | 10  |
+| `ma_thuoc_vtyt` | string (PK) | ✅       | 10  |
+| `so_luong`      | int         | ✅       |     |
+| `so_lo`         | string      | ❌       | 100 |
+| `han_su_dung`   | date        | ❌       |     |
+| `don_gia`       | Decimal     | ❌       | >=0 |
+
+### PhanCongNhiemVu (`/phan_cong_nhiem_vu`)
+
+| Field           | Type        | Required | Max |
+| --------------- | ----------- | -------- | --- |
+| `id`            | string (PK) | ✅       | 10  |
+| `id_nguoi_dung` | string      | ✅       | 20  |
+| `ma_vai_tro`    | string      | ✅       | 30  |
+| `ma_lich_kham`  | string      | ✅       | 10  |
+
+### VaiTroTamThoi (`/vai_tro_tam_thoi`)
+
+| Field         | Type        | Required | Max |
+| ------------- | ----------- | -------- | --- |
+| `ma_vai_tro`  | string (PK) | ✅       | 30  |
+| `ten_vai_tro` | string      | ✅       | 100 |
 
 ## Tech Stack
 

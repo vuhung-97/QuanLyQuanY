@@ -8,192 +8,38 @@ React 19 + MUI + Vite 8 + react-router-dom v7 + Axios + dayjs
 
 ## Folder Structure
 
-```
+`	ext
 FE/
 ├── plan/                   # Tài liệu thiết kế (design_system.md, mockups)
 └── src/
-    │
     ├── pages/              # 1 page = 1 route, thin orchestrator
-    │   ├── Login/              # Đăng nhập
-    │   ├── Dashboard/          # Trang chủ
-    │   ├── KhamBenhChoQN/      # Khám bệnh cho QN (KhamBenhPage.jsx, CapThuocPage.jsx, ChuyenTuyenPage.jsx)
-    │   ├── KhamSucKhoe/        # Khám định kỳ (LapLichPage.jsx, KhamSucKhoePage.jsx)
-    │   ├── NoiTru/             # Nội trú (DanhSachNoiTruPage.jsx, LapBenhAnPage.jsx, QuanLyPhongGiuongPage.jsx)
-    │   ├── KhoDuoc/            # Quản lý Kho dược (Dự trù, Nhập, Xuất)
-    │   │   ├── DuTruPage.jsx       # Trang Dự trù
-    │   │   ├── NhapKhoPage.jsx     # Trang Nhập kho
-    │   │   └── XuatKhoPage.jsx     # Trang Xuất kho
-    │   └── Admin/              # Admin (UserManagement, RolePermission, AuditLog)
+    │   ├── Admin/              # AuditLogPage, RolePermissionPage, UserManagementPage
+    │   ├── Dashboard/          # DashboardPage
+    │   ├── KhamBenhChoQN/      # CapThuocPage, ChuyenTuyenPage, KhamBenhPage
+    │   ├── KhamSucKhoe/        # KhamSucKhoePage, LapLichPage
+    │   ├── KhoDuoc/            # DuTruPage, NhapKhoPage, XuatKhoPage
+    │   ├── Login/              # LoginForm, LoginHero, LoginPage
+    │   └── NoiTru/             # DanhSachNoiTruPage, LapBenhAnPage, QuanLyPhongGiuongPage
     │
     ├── components/         # UI building blocks
-    │   ├── common/         #   Dùng chung toàn app
-    │   │   ├── AdminRoute.jsx
-    │   │   ├── ChonQuanNhanDialog.jsx
-    │   │   ├── ConfirmDialog.jsx
-    │   │   ├── DataTable.jsx
-    │   │   ├── DatePicker.jsx
-    │   │   ├── DialogTitleWrapper.jsx
-    │   │   ├── DonThuoc.jsx
-    │   │   ├── FeedbackSnackbar.jsx
-    │   │   ├── FilterModeToggle.jsx
-    │   │   ├── NormalToggleField.jsx
-    │   │   ├── PaginationWidget.jsx
-    │   │   ├── PlaceHolderPage.jsx
-    │   │   ├── ProtectedRoute.jsx
-    │   │   ├── SearchBar.jsx
-    │   │   └── StatCardGrid.jsx
-    │   │
-    │   ├── layout/          # Bố cục chính
-    │   │   ├── index.js
-    │   │   ├── MainLayout.jsx
-    │   │   ├── accountSetting/
-    │   │   │   ├── AccountSettingsDialog.jsx
-    │   │   │   ├── PasswordChangeForm.jsx
-    │   │   │   ├── ProfileInfo.jsx
-    │   │   │   └── ProfileUpdateForm.jsx
-    │   │   ├── common/
-    │   │   │   ├── constants.js
-    │   │   │   ├── hooks.js
-    │   │   │   └── menuConfig.jsx
-    │   │   ├── footer/
-    │   │   │   └── Footer.jsx
-    │   │   ├── header/
-    │   │   │   ├── Header.jsx
-    │   │   │   └── Header.styles.js
-    │   │   └── sidebar/
-    │   │       ├── Sidebar.jsx
-    │   │       ├── SidebarFooter.jsx
-    │   │       ├── SidebarItem.jsx
-    │   │       └── SidebarProfile.jsx
-    │   │
-    │   ├── KhamBenhChoQN/   # Components cho module Khám bệnh cho QN
-    │   │   ├── KhamBenh/
-    │   │   │   ├── DanhSachKhamBenh.jsx
-    │   │   │   ├── DonThuocForm.jsx
-    │   │   │   ├── KhamBenhForm.jsx
-    │   │   │   ├── KhoThuocDialog.jsx
-    │   │   │   └── TiepNhanQnDialog.jsx
-    │   │   ├── CapThuoc/
-    │   │   │   ├── CapThuocForm.jsx
-    │   │   │   └── CapThuocList.jsx
-    │   │   └── ChuyenTuyen/
-    │   │       ├── ChuyenTuyenDialog.jsx
-    │   │       ├── ChuyenTuyenForm.jsx
-    │   │       ├── ChuyenTuyenList.jsx
-    │   │       ├── ChuyenTuyenPrint.jsx
-    │   │       └── NhapVienDialog.jsx
-    │   │
-    │   ├── KhamSucKhoe/     # Components cho module Khám định kỳ
-    │   │   ├── KhamSucKhoeUtils.js
-    │   │   ├── KiemTraSucKhoe/
-    │   │   │   ├── BangQuanNhan.jsx
-    │   │   │   ├── DanhSachPhieuKhamFilterBar.jsx
-    │   │   │   ├── KhamSucKhoeForm.jsx
-    │   │   │   ├── KhamSucKhoeFormUtils.js
-    │   │   │   ├── KhamSucKhoeMain.jsx
-    │   │   │   ├── LichSuKhamDialog.jsx
-    │   │   │   └── tabs/
-    │   │   │       ├── ChanDoanHinhAnhTab.jsx
-    │   │   │       ├── fieldRanges.js
-    │   │   │       ├── KetLuanTab.jsx
-    │   │   │       ├── LamSangTab.jsx
-    │   │   │       ├── TongQuanTab.jsx
-    │   │   │       └── XetNghiemTab.jsx
-    │   │   └── LapLich/
-    │   │       ├── ChonNgayGio.jsx
-    │   │       ├── DanhSachLich.jsx
-    │   │       ├── LapLichDialog.jsx
-    │   │       ├── PhanCongNhiemVu.jsx
-    │   │       └── TongQuanDonVi.jsx
-    │   │
-    │   ├── NoiTru/           # Components cho module Nội trú
-    │   │   ├── DanhSachNoiTru/
-    │   │   │   ├── ChiTietBenhAn.jsx
-    │   │   │   ├── DanhSachNoiTru.jsx
-    │   │   │   ├── PhieuChamSocForm.jsx
-    │   │   │   ├── PhieuChamSocList.jsx
-    │   │   │   ├── RaVienDialog.jsx
-    │   │   │   └── tabs/
-    │   │   │       ├── TongQuanTab.jsx
-    │   │   │       ├── DienBienTab.jsx
-    │   │   │       └── ThuocTab.jsx
-    │   │   ├── LapBenhAn/
-    │   │   │   ├── ChiTietBenhAnFields.jsx
-    │   │   │   ├── LapBenhAnForm.jsx
-    │   │   │   └── LapBenhAnList.jsx
-    │   │   │   ├── PatientInfoCard.jsx
-    │   │   └── QuanLyPhongGiuong/
-    │   │       ├── BuongDialog.jsx
-    │   │       └── QuanLyPhongGiuong.jsx
-    │   ├── KhoDuoc/          # Components cho Kho dược
-    │   │   ├── DuTru/
-    │   │   │   ├── DuTruList.jsx         # Danh sách + actions phiếu dự trù
-    │   │   │   └── PhieuDuTruDialog.jsx  # Dialog tạo phiếu dự trù
-    │   │   ├── NhapKho/
-    │   │   │   ├── NhapKhoList.jsx       # Danh sách phiếu đã duyệt chờ nhập
-    │   │   │   └── NhapKhoDialog.jsx     # Dialog xác nhận nhập kho
-    │   │   ├── XuatKho/
-    │   │   │   ├── XuatKhoList.jsx       # Danh sách phiếu xuất + lọc + actions
-    │   │   │   ├── PhieuXuatDialog.jsx   # Dialog tạo phiếu xuất
-    │   │   │   └── XuatKhoDialog.jsx     # Dialog xác nhận xuất kho
-    │   │   └── ThuocSearchSelect.jsx     # Autocomplete tìm kiếm thuốc
-    │   └── admin/           # Components cho module Admin
-    │       ├── AdminPageHeader.jsx
-    │       ├── TableCard.jsx
-    │       ├── AuditLog/
-    │       │   ├── AuditDetailDialog.jsx
-    │       │   ├── BackupTab.jsx
-    │       │   ├── DangNhapTab.jsx
-    │       │   └── ThaoTacTab.jsx
-    │       ├── RolePermission/
-    │       │   ├── PermissionCard.jsx
-    │       │   └── RoleFormDialog.jsx
-    │       └── UserManager/
-    │           ├── UserFormDialog.jsx
-    │           └── UserTableRow.jsx
+    │   ├── admin/          # AdminPageHeader, TableCard, AuditLog, RolePermission, UserManager
+    │   ├── common/         # AdminRoute, ProtectedRoute, DataTable, DatePicker, PaginationWidget, print...
+    │   ├── layout/         # MainLayout, Header, Sidebar, AccountSettings...
+    │   ├── KhamBenhChoQN/  # CapThuoc, ChuyenTuyen, KhamBenh (Forms, Dialogs, Lists)
+    │   ├── KhamSucKhoe/    # KiemTraSucKhoe (BangQuanNhan, tabs...), LapLich (ChonNgayGio, PhanCong...)
+    │   ├── KhoDuoc/        # DuTru (ChiTiet, List, Print), NhapKho, XuatKho, ThuocSearchSelect
+    │   └── NoiTru/         # DanhSachNoiTru, LapBenhAn, QuanLyPhongGiuong (BuongDialog)
     │
     ├── hooks/              # Custom hooks — tách logic khỏi UI
-    │   ├── useCapThuoc.jsx
-    │   ├── useChuyenTuyen.jsx
-    │   ├── useDanhSachKhamBenh.jsx
-    │   ├── useDanhSachNoiTru.jsx
-    │   ├── useDebounce.jsx
-    │   ├── useLapBenhAn.jsx
-    │   ├── useLapBenhAnForm.jsx
-    │   ├── useFilterModePagination.jsx
-    │   ├── useKhamBenhForm.jsx
-    │   ├── useKhamSucKhoeData.jsx
-    │   ├── useKhamSucKhoeForm.jsx
-    │   ├── useKhamSucKhoeMain.jsx
-    │   ├── useLapBenhAnForm.jsx
-    │   ├── useLapLichDialog.jsx
-    │   ├── useLichKhamData.jsx
-    │   ├── usePermissionDiff.js
-    │   ├── usePhieuChamSoc.jsx
-    │   ├── useQuanLyPhongGiuong.jsx
-    │   └── useTongQuanTab.jsx
-    │
-    ├── services/           # API layer
-    │   ├── adminService.js
-    │   ├── api.js
-    │   ├── khamBenhService.js
-    │   ├── khoDuocService.js
-    │   ├── noiTruService.js
-    │   └── khamSucKhoeService.js
-    │
+    ├── services/           # API layer (gọi Axios)
     ├── data/               # Dữ liệu tĩnh
-    │   └── trieu_chung.json
-    │
     ├── utils/              # Helper functions thuần
-    │   ├── date.js
-    │   └── xlsExport.js
-    │
     ├── App.jsx             # Root: BrowserRouter + toàn bộ Routes
-    ├── theme.js            # MUI theme (màu sắc, typography, component overrides)
-    └── main.jsx            # Entry point (ReactDOM.createRoot)
-```
+    ├── theme.js            # MUI theme
+    └── main.jsx            # Entry point
+`
 
----
+------
 
 ## Data Flow
 

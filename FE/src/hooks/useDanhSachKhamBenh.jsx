@@ -9,6 +9,7 @@ export default function useDanhSachKhamBenh() {
     const [initialLoading, setInitialLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [searchText, setSearchText] = useState("");
+    const [nam, setNam] = useState(null);
     const debouncedSearchText = useDebounce(searchText);
     const [selectedDate, setSelectedDate] = useState(dayjs());
     const {
@@ -43,7 +44,9 @@ export default function useDanhSachKhamBenh() {
                 setExaminations(res.data || []);
                 setTotalRecords(0);
             } else {
-                const res = await khamBenhService.getAll({ limit: ROWS_PER_PAGE, offset });
+                const params = { limit: ROWS_PER_PAGE, offset };
+                if (nam) params.nam = nam;
+                const res = await khamBenhService.getAll(params);
                 setExaminations(res.data.data || []);
                 setTotalRecords(res.data.total || 0);
             }
@@ -57,7 +60,7 @@ export default function useDanhSachKhamBenh() {
             setRefreshing(false);
             setInitialLoading(false);
         }
-    }, [filterMode, selectedDate, offset, ROWS_PER_PAGE]);
+    }, [filterMode, selectedDate, offset, ROWS_PER_PAGE, nam]);
 
     useEffect(() => { loadData(); }, [loadData]);
 
@@ -175,5 +178,7 @@ export default function useDanhSachKhamBenh() {
         totalRecords,
         ROWS_PER_PAGE,
         offset,
+        nam,
+        setNam,
     };
 }

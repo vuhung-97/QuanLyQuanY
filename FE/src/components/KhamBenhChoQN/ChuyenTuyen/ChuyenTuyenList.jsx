@@ -4,6 +4,10 @@ import {
     Card,
     CardContent,
     Chip,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
     Stack,
     Typography,
 } from "@mui/material";
@@ -16,6 +20,7 @@ import {
     CheckCircle as CheckCircleIcon,
 } from "@mui/icons-material";
 import useChuyenTuyen from "@/hooks/useChuyenTuyen.jsx";
+import { getNamOptions } from "@/utils/yearOptions.js";
 import ChuyenTuyenForm from "./ChuyenTuyenForm.jsx";
 import DataTable from "@/components/common/DataTable.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
@@ -23,6 +28,8 @@ import SearchBar from "@/components/common/SearchBar.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import { CHUYEN_TUYEN_STATUS_MAP } from "@/constants/khamBenhConstants.js";
 import { formatDate } from "@/utils/date.js";
+
+const NAM_OPTIONS = getNamOptions();
 
 const columns = [
     {
@@ -43,9 +50,13 @@ const columns = [
         render: (row) => (
             <Chip
                 label={
-                    CHUYEN_TUYEN_STATUS_MAP[row.chuyen_tuyen_status]?.label || row.trang_thai
+                    CHUYEN_TUYEN_STATUS_MAP[row.chuyen_tuyen_status]?.label ||
+                    row.trang_thai
                 }
-                color={CHUYEN_TUYEN_STATUS_MAP[row.chuyen_tuyen_status]?.color || "default"}
+                color={
+                    CHUYEN_TUYEN_STATUS_MAP[row.chuyen_tuyen_status]?.color ||
+                    "default"
+                }
                 size="small"
                 sx={{ fontWeight: 600 }}
             />
@@ -101,6 +112,8 @@ export default function ChuyenTuyenList() {
         totalRecords,
         ROWS_PER_PAGE,
         offset,
+        nam,
+        setNam,
     } = useChuyenTuyen();
 
     const statItems = useMemo(
@@ -150,9 +163,6 @@ export default function ChuyenTuyenList() {
                             spacing={1}
                             sx={{ alignItems: "center" }}
                         >
-                            <Typography variant="h2">
-                                Danh sách quân nhân đề nghị chuyển tuyến
-                            </Typography>
                             <FilterModeToggle
                                 filterMode={filterMode}
                                 onChange={handleFilterModeChange}
@@ -161,6 +171,28 @@ export default function ChuyenTuyenList() {
                                 labelLeft="Tất cả"
                                 labelRight="Chuyển tuyến"
                             />
+                            <FormControl
+                                size="small"
+                                sx={{ minWidth: 100 }}
+                            >
+                                <InputLabel id="nam-label">Năm</InputLabel>
+                                <Select
+                                    labelId="nam-label"
+                                    value={nam ?? ""}
+                                    label="Năm"
+                                    onChange={(e) => {
+                                        setNam(e.target.value || null);
+                                        setPage(1);
+                                    }}
+                                >
+                                    <MenuItem value="">Tất cả</MenuItem>
+                                    {NAM_OPTIONS.map((y) => (
+                                        <MenuItem key={y} value={y}>
+                                            {y}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
                         </Stack>
                         <Stack direction="row" spacing={1.5}>
                             <Button

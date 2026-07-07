@@ -5,6 +5,10 @@ import {
     Card,
     CardContent,
     Chip,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
     Stack,
     Typography,
 } from "@mui/material";
@@ -18,6 +22,7 @@ import {
     Refresh as RefreshIcon,
 } from "@mui/icons-material";
 import useDanhSachKhamBenh from "@/hooks/useDanhSachKhamBenh.jsx";
+import { getNamOptions } from "@/utils/yearOptions.js";
 import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
 import DataTable from "@/components/common/DataTable.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
@@ -28,6 +33,8 @@ import KhamBenhForm from "./KhamBenhForm.jsx";
 import TiepNhanQnDialog from "./TiepNhanQnDialog.jsx";
 import { STATUS_MAP } from "@/constants/khamBenhConstants.js";
 import { formatDateTime } from "@/utils/date.js";
+
+const NAM_OPTIONS = getNamOptions();
 
 const columns = [
     {
@@ -57,11 +64,14 @@ const columns = [
     {
         key: "ngay_kham",
         label: "Ngày khám",
-        render: (row) => row.ngay_kham ? (
-            <Typography variant="body2" sx={{ lineHeight: 1.3 }}>
-                {formatDateTime(row.ngay_kham)}
-            </Typography>
-        ) : "--",
+        render: (row) =>
+            row.ngay_kham ? (
+                <Typography variant="body2" sx={{ lineHeight: 1.3 }}>
+                    {formatDateTime(row.ngay_kham)}
+                </Typography>
+            ) : (
+                "--"
+            ),
     },
     {
         key: "thao_tac",
@@ -149,6 +159,8 @@ export default function DanhSachKhamBenh() {
         totalRecords,
         ROWS_PER_PAGE,
         offset,
+        nam,
+        setNam,
     } = useDanhSachKhamBenh();
 
     const statItems = useMemo(
@@ -205,13 +217,42 @@ export default function DanhSachKhamBenh() {
                             spacing={1}
                             sx={{ alignItems: "center" }}
                         >
-                            <Typography variant="h2">Danh sách khám</Typography>
                             <FilterModeToggle
                                 filterMode={filterMode}
                                 onChange={handleFilterModeChange}
                                 selectedDate={selectedDate}
                                 onDateChange={setSelectedDate}
                             />
+                            {filterMode === "tat_ca" && (
+                                <FormControl
+                                    size="small"
+                                    sx={{ minWidth: 100 }}
+                                >
+                                    <InputLabel id="nam-label">
+                                        Năm
+                                    </InputLabel>
+                                    <Select
+                                        labelId="nam-label"
+                                        value={nam ?? ""}
+                                        label="Năm"
+                                        onChange={(e) => {
+                                            setNam(
+                                                e.target.value || null,
+                                            );
+                                            setPage(1);
+                                        }}
+                                    >
+                                        <MenuItem value="">
+                                            Tất cả
+                                        </MenuItem>
+                                        {NAM_OPTIONS.map((y) => (
+                                            <MenuItem key={y} value={y}>
+                                                {y}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            )}
                         </Stack>
                         <Toolbar
                             onReceive={() => setOpenReceiveDialog(true)}

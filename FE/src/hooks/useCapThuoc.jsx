@@ -10,6 +10,7 @@ export default function useCapThuoc() {
     const [refreshing, setRefreshing] = useState(false);
     const [selectedDate, setSelectedDate] = useState(dayjs());
     const [searchText, setSearchText] = useState("");
+    const [nam, setNam] = useState(null);
     const debouncedSearchText = useDebounce(searchText);
     const {
         filterMode,
@@ -37,7 +38,9 @@ export default function useCapThuoc() {
                 setExaminations(res.data || []);
                 setTotalRecords(0);
             } else {
-                const res = await khamBenhService.getAll({ limit: ROWS_PER_PAGE, offset });
+                const params = { limit: ROWS_PER_PAGE, offset };
+                if (nam) params.nam = nam;
+                const res = await khamBenhService.getAll(params);
                 setExaminations(res.data.data || []);
                 setTotalRecords(res.data.total || 0);
             }
@@ -51,7 +54,7 @@ export default function useCapThuoc() {
             setRefreshing(false);
             setInitialLoading(false);
         }
-    }, [filterMode, selectedDate, offset, ROWS_PER_PAGE]);
+    }, [filterMode, selectedDate, offset, ROWS_PER_PAGE, nam]);
 
     useEffect(() => { loadData(); }, [loadData]);
 
@@ -155,5 +158,7 @@ export default function useCapThuoc() {
         totalRecords,
         ROWS_PER_PAGE,
         offset,
+        nam,
+        setNam,
     };
 }
