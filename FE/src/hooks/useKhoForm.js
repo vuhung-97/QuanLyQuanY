@@ -14,6 +14,7 @@ export default function useKhoForm({ open, thuocId, mode, onClose, onSaved }) {
     });
     const [errors, setErrors] = useState({});
     const [phanLoaiOptions, setPhanLoaiOptions] = useState([]);
+    const [donViTinhOptions, setDonViTinhOptions] = useState([]);
     const [loadingOptions, setLoadingOptions] = useState(false);
 
     const errorsRef = useRef(errors);
@@ -63,9 +64,14 @@ export default function useKhoForm({ open, thuocId, mode, onClose, onSaved }) {
             setForm({ ...INIT_FORM });
         }
         setLoadingOptions(true);
-        khoDuocService
-            .getPhanLoaiList()
-            .then((res) => setPhanLoaiOptions(res.data || []))
+        Promise.all([
+            khoDuocService.getPhanLoaiList(),
+            khoDuocService.getDonViTinhList(),
+        ])
+            .then(([phanLoaiRes, donViTinhRes]) => {
+                setPhanLoaiOptions(phanLoaiRes.data || []);
+                setDonViTinhOptions(donViTinhRes.data || []);
+            })
             .catch(() => {})
             .finally(() => setLoadingOptions(false));
     }, [open, thuocId, loadData]);
@@ -165,6 +171,7 @@ export default function useKhoForm({ open, thuocId, mode, onClose, onSaved }) {
         snackbar,
         errors,
         phanLoaiOptions,
+        donViTinhOptions,
         loadingOptions,
         handleChange,
         handleLoaiChange,

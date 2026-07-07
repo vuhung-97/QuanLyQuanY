@@ -39,6 +39,19 @@ def get_phan_loai_list(db: Session = Depends(get_db)):
 
 
 @pre_router.get(
+    "/don-vi-tinh-list",
+    dependencies=[Depends(require_permissions("thuoc_vtyt:read"))],
+)
+def get_don_vi_tinh_list(db: Session = Depends(get_db)):
+    results = (
+        db.query(distinct(ThuocVtyt.don_vi_tinh))
+        .order_by(ThuocVtyt.don_vi_tinh)
+        .all()
+    )
+    return [r[0] for r in results if r[0] is not None]
+
+
+@pre_router.get(
     "/search/value",
     dependencies=[Depends(require_permissions("thuoc_vtyt:read"))],
     response_model=list[ThuocVtytRead],

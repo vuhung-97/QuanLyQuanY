@@ -3,19 +3,6 @@ export const LOAI_OPTIONS = [
     { value: "vat_tu", label: "Vật tư y tế" },
 ];
 
-export const DON_VI_TINH_OPTIONS = [
-    "Viên",
-    "Lọ",
-    "Chai",
-    "Hộp",
-    "Tuýp",
-    "Gam",
-    "Mililit",
-    "Ml",
-    "Mg",
-    "Microgam",
-];
-
 export const INIT_FORM = {
     ten_thuoc_vtyt: "",
     loai: "",

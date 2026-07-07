@@ -29,6 +29,7 @@ export const khoDuocService = {
     },
 
     getPhanLoaiList: () => api.get("/thuoc_vtyt/phan-loai-list"),
+    getDonViTinhList: () => api.get("/thuoc_vtyt/don-vi-tinh-list"),
 
     searchThuocVtyt: (search, limit) =>
         api.get("/thuoc_vtyt/search/value", { params: { search, limit } }),

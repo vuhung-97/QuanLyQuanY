@@ -17,7 +17,6 @@ import useKhoForm from "@/hooks/useKhoForm.js";
 import {
     DIALOG_FIELDS,
     LOAI_OPTIONS,
-    DON_VI_TINH_OPTIONS,
     MODE_TITLES,
 } from "@/constants/khoConstant.js";
 
@@ -158,7 +157,7 @@ export default function KhoDialog({
                         value={value}
                         onChange={hook.handleChange}
                         disabled={isView}
-                        options={DON_VI_TINH_OPTIONS}
+                        options={hook.donViTinhOptions}
                         freeSolo
                     />
                 );
