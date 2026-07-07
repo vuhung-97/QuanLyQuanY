@@ -8,36 +8,56 @@ React 19 + MUI + Vite 8 + react-router-dom v7 + Axios + dayjs
 
 ## Folder Structure
 
-`	ext
+```
 FE/
-├── plan/                   # Tài liệu thiết kế (design_system.md, mockups)
+├── plan/                       # Tài liệu thiết kế
 └── src/
-    ├── pages/              # 1 page = 1 route, thin orchestrator
+    ├── pages/                  # 1 page = 1 route, thin orchestrator
     │   ├── Admin/              # AuditLogPage, RolePermissionPage, UserManagementPage
     │   ├── Dashboard/          # DashboardPage
     │   ├── KhamBenhChoQN/      # CapThuocPage, ChuyenTuyenPage, KhamBenhPage
     │   ├── KhamSucKhoe/        # KhamSucKhoePage, LapLichPage
-    │   ├── KhoDuoc/            # DuTruPage, NhapKhoPage, XuatKhoPage
+    │   ├── KhoDuoc/            # DuTruPage, KhoPage, NhapKhoPage, XuatKhoPage
     │   ├── Login/              # LoginForm, LoginHero, LoginPage
     │   └── NoiTru/             # DanhSachNoiTruPage, LapBenhAnPage, QuanLyPhongGiuongPage
     │
-    ├── components/         # UI building blocks
-    │   ├── admin/          # AdminPageHeader, TableCard, AuditLog, RolePermission, UserManager
-    │   ├── common/         # AdminRoute, ProtectedRoute, DataTable, DatePicker, PaginationWidget, PatientInfoCard, print...
-    │   ├── layout/         # MainLayout, Header, Sidebar, AccountSettings...
-    │   ├── KhamBenhChoQN/  # CapThuoc, ChuyenTuyen, KhamBenh (Forms, Dialogs, Lists, Sections)
-    │   ├── KhamSucKhoe/    # KiemTraSucKhoe (BangQuanNhan, tabs...), LapLich (ChonNgayGio, PhanCong...)
-    │   ├── KhoDuoc/        # DuTru (ChiTiet, List, Print), NhapKho, XuatKho, ThuocSearchSelect
-    │   └── NoiTru/         # DanhSachNoiTru, LapBenhAn, QuanLyPhongGiuong (BuongDialog)
+    ├── components/             # UI building blocks
+    │   ├── admin/              # AuditLog/ RolePermission/ UserManager/
+    │   ├── common/             # DataTable, DatePicker, DonThuoc, PatientInfoCard,
+    │   │                       # PaginationWidget, SearchBarDebounced, StatCardGrid,
+    │   │                       # FilterModeToggle, ConfirmDialog, FeedbackSnackbar,
+    │   │                       # DialogTitleWrapper, ChonQuanNhanDialog, ProtectedRoute,
+    │   │                       # print/...
+    │   ├── layout/             # accountSetting/ common/ footer/ header/ sidebar/
+    │   ├── KhamBenhChoQN/      # CapThuoc/ ChuyenTuyen/ KhamBenh/ (forms, dialogs, lists)
+    │   │                       # └── KhamBenhSections/ (Symptoms, Diagnosis, FormActions)
+    │   ├── KhamSucKhoe/        # common/ KiemTraSucKhoe/ LapLich/
+    │   │                       # └── KiemTraSucKhoe/ → common/fields/ tabs/
+    │   ├── KhoDuoc/            # DuTru/ Kho/ NhapKho/ XuatKho/
+    │   └── NoiTru/             # common/ DanhSachNoiTru/→tabs/ LapBenhAn/ QuanLyPhongGiuong/
     │
-    ├── hooks/              # Custom hooks — tách logic khỏi UI
-    ├── services/           # API layer (gọi Axios)
-    ├── data/               # Dữ liệu tĩnh
-    ├── utils/              # Helper functions thuần
-    ├── App.jsx             # Root: BrowserRouter + toàn bộ Routes
-    ├── theme.js            # MUI theme
-    └── main.jsx            # Entry point
-`
+    ├── hooks/                  # 31 hooks — tách logic khỏi UI
+    │                           # useDanhSachKhamBenh, useKhamBenhForm, useCapThuoc,
+    │                           # useChuyenTuyen, useFilterModePagination, useDebounce,
+    │                           # useThuocList, usePhieuDuTru, usePhieuXuat, useKhoList,
+    │                           # useKhoForm, useDanhSachNoiTru, useLapBenhAnForm,
+    │                           # useLapBenhAn, useQuanLyPhongGiuong, usePhieuChamSoc,
+    │                           # useKhamSucKhoeForm, useKhamSucKhoeData, useKhamSucKhoeMain,
+    │                           # useLichKhamData, useLapLichDialog, usePhanCongNhiemVu,
+    │                           # useTongQuanTab, useLichSuKham, useFormTab,
+    │                           # useLogin, usePermissionDiff,
+    │                           # useAdminAuditLogs, useAdminRoles, useAdminUsers, ...
+    ├── services/               # adminService, khamBenhService, khamSucKhoeService,
+    │                           # khoDuocService, noiTruService, api.js (Axios instance)
+    ├── constants/              # khamBenhConstants, khamSucKhoeConstants,
+    │                           # khoConstant, noiTruConstants
+    ├── utils/                  # date.js, khamBenhUtils.js, treeUtils.js,
+    │                           # xlsExport.js, yearOptions.js
+    ├── data/                   # trieu_chung.json
+    ├── App.jsx                 # Root: BrowserRouter + toàn bộ Routes
+    ├── theme.js                # MUI theme
+    └── main.jsx                # Entry point
+```
 
 ------
 
