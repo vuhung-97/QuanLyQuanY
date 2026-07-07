@@ -23,9 +23,9 @@ FE/
     │
     ├── components/         # UI building blocks
     │   ├── admin/          # AdminPageHeader, TableCard, AuditLog, RolePermission, UserManager
-    │   ├── common/         # AdminRoute, ProtectedRoute, DataTable, DatePicker, PaginationWidget, print...
+    │   ├── common/         # AdminRoute, ProtectedRoute, DataTable, DatePicker, PaginationWidget, PatientInfoCard, print...
     │   ├── layout/         # MainLayout, Header, Sidebar, AccountSettings...
-    │   ├── KhamBenhChoQN/  # CapThuoc, ChuyenTuyen, KhamBenh (Forms, Dialogs, Lists)
+    │   ├── KhamBenhChoQN/  # CapThuoc, ChuyenTuyen, KhamBenh (Forms, Dialogs, Lists, Sections)
     │   ├── KhamSucKhoe/    # KiemTraSucKhoe (BangQuanNhan, tabs...), LapLich (ChonNgayGio, PhanCong...)
     │   ├── KhoDuoc/        # DuTru (ChiTiet, List, Print), NhapKho, XuatKho, ThuocSearchSelect
     │   └── NoiTru/         # DanhSachNoiTru, LapBenhAn, QuanLyPhongGiuong (BuongDialog)

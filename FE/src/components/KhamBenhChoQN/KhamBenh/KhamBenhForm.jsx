@@ -1,292 +1,21 @@
-import { memo, useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import {
-    Box,
-    Button,
-    Card,
-    CardContent,
-    Chip,
     Dialog,
-    DialogActions,
     DialogContent,
     Grid,
     Stack,
-    TextField,
     Typography,
 } from "@mui/material";
 import useKhamBenhForm from "@/hooks/useKhamBenhForm.jsx";
+import PatientInfoCard from "@/components/common/PatientInfoCard.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import DonThuocForm from "./DonThuocForm.jsx";
 import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
 import DonThuocTable from "@/components/common/DonThuoc.jsx";
-import symptoms from "@/data/trieu_chung.json";
-import { formatDate } from "@/utils/date.js";
-
-function InfoRow({ label, value }) {
-    return (
-        <Box>
-            <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{ fontWeight: 800 }}
-            >
-                {label}
-            </Typography>
-            <Typography variant="body1" sx={{ textAlign: "center" }}>
-                {value}
-            </Typography>
-        </Box>
-    );
-}
-
-const PatientInfoCard = memo(function PatientInfoCard({ qn, exam }) {
-    const examDate = formatDate(exam?.ngay_kham);
-
-    return (
-        <Card variant="outlined" sx={{ borderRadius: 2, bgcolor: "#F8FAFC" }}>
-            <CardContent>
-                <Stack
-                    direction="row"
-                    spacing={2}
-                    sx={{ "& > *": { flex: 1, minWidth: 0 } }}
-                >
-                    <InfoRow
-                        label="Họ và tên:"
-                        value={qn?.ho_ten || exam?.ma_quan_nhan || "--"}
-                    />
-                    <InfoRow
-                        label="Đơn vị:"
-                        value={qn?.ten_don_vi || qn?.ma_don_vi || "--"}
-                    />
-                    <InfoRow label="Cấp bậc:" value={qn?.cap_bac || "--"} />
-                    <InfoRow label="Chức vụ:" value={qn?.chuc_vu || "--"} />
-                    <InfoRow label="Ngày khám:" value={examDate} />
-                    <InfoRow
-                        label="Bác sĩ khám:"
-                        value={
-                            exam?.ten_nguoi_kham
-                                ? `${exam.ten_nguoi_kham} (${exam.vai_tro_nguoi_kham || "?"})`
-                                : "--"
-                        }
-                    />
-                </Stack>
-            </CardContent>
-        </Card>
-    );
-});
-
-const CHIP_LIMIT = 30;
-
-const ChipList = memo(function ChipList({
-    filteredSymptoms,
-    trieuChungWords,
-    onChipClick,
-}) {
-    const handleChipClick = useCallback(
-        (e) => onChipClick(e.currentTarget.dataset.symptom),
-        [onChipClick],
-    );
-    const hasMore = filteredSymptoms.length > CHIP_LIMIT;
-    const visible = hasMore
-        ? filteredSymptoms.slice(0, CHIP_LIMIT)
-        : filteredSymptoms;
-    return (
-        <>
-            {visible.map((s) => {
-                const selected = trieuChungWords.includes(s);
-                return (
-                    <Chip
-                        key={s}
-                        data-symptom={s}
-                        label={s}
-                        size="small"
-                        variant={selected ? "filled" : "outlined"}
-                        color={selected ? "primary" : "default"}
-                        onClick={handleChipClick}
-                        sx={{ cursor: "pointer" }}
-                    />
-                );
-            })}
-            {hasMore && (
-                <Typography
-                    variant="caption"
-                    color="text.secondary"
-                    sx={{ alignSelf: "center" }}
-                >
-                    +{filteredSymptoms.length - CHIP_LIMIT} khác...
-                </Typography>
-            )}
-        </>
-    );
-});
-
-const SymptomsSection = memo(function SymptomsSection({
-    trieuChung,
-    onTrieuChungChange,
-    onChipClick,
-    readOnly,
-}) {
-    const trieuChungWords = useMemo(
-        () => trieuChung.split(/[,;]\s*/).filter(Boolean),
-        [trieuChung],
-    );
-
-    const filteredSymptoms = useMemo(() => {
-        const segments = trieuChung.split(/[,;]\s*/);
-        const last = segments[segments.length - 1] || "";
-        if (!last.trim()) return symptoms;
-        const q = last.toLowerCase();
-        return symptoms.filter((s) => s.toLowerCase().includes(q));
-    }, [trieuChung]);
-
-    const handleTextFieldChange = useCallback(
-        (e) => onTrieuChungChange(e.target.value),
-        [onTrieuChungChange],
-    );
-
-    return (
-        <Grid size={{ xs: 12, md: 6 }}>
-            <Typography variant="h4" sx={{ mb: 1.5, color: "text.primary" }}>
-                Triệu chứng
-            </Typography>
-            <TextField
-                multiline
-                minRows={4}
-                fullWidth
-                value={trieuChung}
-                onChange={handleTextFieldChange}
-                placeholder="Nhập triệu chứng..."
-                disabled={readOnly}
-            />
-            <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{ mt: 2, mb: 1 }}
-            >
-                Triệu chứng có sẵn:
-            </Typography>
-            <Box
-                sx={{
-                    maxHeight: 160,
-                    overflowY: "auto",
-                    display: "flex",
-                    flexWrap: "wrap",
-                    gap: 0.5,
-                }}
-            >
-                <ChipList
-                    filteredSymptoms={filteredSymptoms}
-                    trieuChungWords={trieuChungWords}
-                    onChipClick={onChipClick}
-                />
-            </Box>
-        </Grid>
-    );
-});
-
-const DiagnosisSection = memo(function DiagnosisSection({
-    chanDoan,
-    onChanDoanChange,
-    phuongPhap,
-    onPhuongPhapChange,
-    readOnly,
-}) {
-    return (
-        <Grid size={{ xs: 12, md: 6 }}>
-            <Typography variant="h4" sx={{ mb: 1.5, color: "text.primary" }}>
-                Chẩn đoán & Phương hướng điều trị
-            </Typography>
-            <Stack spacing={2}>
-                <TextField
-                    label="Kết quả chẩn đoán AI"
-                    fullWidth
-                    disabled
-                    placeholder="Kết quả chẩn đoán AI (đang phát triển)"
-                />
-                <TextField
-                    label="Chẩn đoán bệnh"
-                    multiline
-                    minRows={2}
-                    fullWidth
-                    value={chanDoan}
-                    onChange={(e) => onChanDoanChange(e.target.value)}
-                    disabled={readOnly}
-                />
-                <TextField
-                    label="Phương pháp điều trị"
-                    multiline
-                    minRows={3}
-                    fullWidth
-                    value={phuongPhap}
-                    onChange={(e) => onPhuongPhapChange(e.target.value)}
-                    disabled={readOnly}
-                />
-            </Stack>
-        </Grid>
-    );
-});
-
-const FormActions = memo(function FormActions({
-    saving,
-    hasPrescription,
-    onSave,
-    onPrescription,
-    onReferral,
-    onAdmission,
-    isReadOnly,
-    onClose,
-}) {
-    if (isReadOnly) {
-        return (
-            <DialogActions sx={{ px: 3, py: 2 }}>
-                <Button onClick={onClose} sx={{ textTransform: "none" }}>
-                    Đóng
-                </Button>
-            </DialogActions>
-        );
-    }
-    return (
-        <DialogActions sx={{ px: 3, py: 2, justifyContent: "space-between" }}>
-            <Stack direction="row" spacing={1}>
-                <Button
-                    variant="contained"
-                    color="success"
-                    onClick={onSave}
-                    disabled={saving}
-                    sx={{ textTransform: "none" }}
-                >
-                    Hoàn tất
-                </Button>
-                <Button
-                    variant="contained"
-                    onClick={onPrescription}
-                    disabled={saving}
-                    sx={{ textTransform: "none" }}
-                >
-                    {hasPrescription ? "Sửa đơn thuốc" : "Kê đơn thuốc"}
-                </Button>
-            </Stack>
-            <Stack direction="row" spacing={1}>
-                <Button
-                    variant="outlined"
-                    color="warning"
-                    onClick={onReferral}
-                    sx={{ textTransform: "none" }}
-                >
-                    Chuyển tuyến
-                </Button>
-                <Button
-                    variant="outlined"
-                    color="info"
-                    onClick={onAdmission}
-                    sx={{ textTransform: "none" }}
-                >
-                    Nhập viện
-                </Button>
-            </Stack>
-        </DialogActions>
-    );
-});
+import SymptomsSection from "./KhamBenhSections/SymptomsSection.jsx";
+import DiagnosisSection from "./KhamBenhSections/DiagnosisSection.jsx";
+import FormActions from "./KhamBenhSections/FormActions.jsx";
 
 export default function KhamBenhForm({
     open,
@@ -329,6 +58,20 @@ export default function KhamBenhForm({
         setSnackbar,
     } = useKhamBenhForm({ open, examinationId, rowData, onClose, onSaved });
 
+    const patientInfoData = useMemo(
+        () => ({
+            ho_ten: qn?.ho_ten,
+            ten_don_vi: qn?.ten_don_vi || qn?.ma_don_vi,
+            cap_bac: qn?.cap_bac,
+            chuc_vu: qn?.chuc_vu,
+            ngay_kham: exam?.ngay_kham,
+            ten_nguoi_kham: exam?.ten_nguoi_kham,
+            vai_tro_nguoi_kham: exam?.vai_tro_nguoi_kham,
+            ma_quan_nhan: exam?.ma_quan_nhan,
+        }),
+        [qn, exam],
+    );
+
     return (
         <>
             <Dialog
@@ -358,7 +101,17 @@ export default function KhamBenhForm({
                         </Typography>
                     ) : (
                         <Stack spacing={3}>
-                            <PatientInfoCard qn={qn} exam={exam} />
+                            <PatientInfoCard
+                                data={patientInfoData}
+                                fields={[
+                                    "ho_ten",
+                                    "ten_don_vi",
+                                    "cap_bac",
+                                    "chuc_vu",
+                                    "ngay_kham",
+                                    "bac_si",
+                                ]}
+                            />
 
                             <Grid container spacing={3}>
                                 <SymptomsSection

@@ -8,9 +8,9 @@ import {
     Typography,
 } from "@mui/material";
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
+import PatientInfoCard from "@/components/common/PatientInfoCard.jsx";
 import DonThuocTable from "@/components/common/DonThuoc.jsx";
 import { parseDonThuocToRows } from "@/utils/khamBenhUtils.js";
-import { formatDate } from "@/utils/date.js";
 import DonThuocPrint from "./DonThuocPrint.jsx";
 
 export default function CapThuocForm({
@@ -81,34 +81,10 @@ export default function CapThuocForm({
                     </Typography>
                 ) : (
                     <Stack spacing={2.5} sx={{ "@media print": { display: "none" }, py: 1 }}>
-                        <Typography
-                            variant="h4"
-                            sx={{
-                                mb: 1.5,
-                                fontWeight: 600,
-                                color: "text.primary",
-                            }}
-                        >
-                            Thông tin quân nhân
-                        </Typography>
-                        <Stack spacing={0.5}>
-                            <Typography variant="body1">
-                                <strong>- Họ tên:</strong>{" "}
-                                {selectedExam.ho_ten || "--"}
-                            </Typography>
-                            <Typography variant="body1">
-                                <strong>- Đơn vị:</strong>{" "}
-                                {selectedExam.ten_don_vi || "--"}
-                            </Typography>
-                            <Typography variant="body1">
-                                <strong>- Mã KB:</strong>{" "}
-                                {selectedExam.ma_kham_benh || "--"}
-                            </Typography>
-                            <Typography variant="body1">
-                                <strong>- Ngày khám:</strong>{" "}
-                                {formatDate(selectedExam.ngay_kham) || "--"}
-                            </Typography>
-                        </Stack>
+                        <PatientInfoCard
+                            data={selectedExam}
+                            fields={["ho_ten", "ten_don_vi", "ma_kham_benh", "ngay_kham"]}
+                        />
 
                         {examDetail?.chan_doan && (
                             <Box>

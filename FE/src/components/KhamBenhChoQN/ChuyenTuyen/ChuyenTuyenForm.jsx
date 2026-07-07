@@ -16,11 +16,11 @@ import {
     Typography,
 } from "@mui/material";
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
+import PatientInfoCard from "@/components/common/PatientInfoCard.jsx";
 import DatePicker from "@/components/common/DatePicker.jsx";
 import DonThuocTable from "@/components/common/DonThuoc.jsx";
 import ChuyenTuyenPrint from "./ChuyenTuyenPrint.jsx";
 import { parseDonThuocToRows } from "@/utils/khamBenhUtils.js";
-import { formatDate, tinhTuoi } from "@/utils/date.js";
 
 const sectionSx = { mb: 1, fontWeight: 600, color: "text.primary" };
 function SectionHeading({ children }) {
@@ -132,42 +132,18 @@ export default function ChuyenTuyenForm({
                             spacing={2.5}
                             sx={{ "@media print": { display: "none" }, mt: 1 }}
                         >
-                            {/* ===== A. PATIENT INFO ===== */}
-                            <Box>
-                                <SectionHeading>
-                                    Thông tin quân nhân
-                                </SectionHeading>
-                                <Stack spacing={0.5}>
-                                    <Typography variant="body1">
-                                        <strong>- Họ và tên:</strong>{" "}
-                                        {selectedExam.ho_ten || "--"}
-                                    </Typography>
-                                    <Typography variant="body1">
-                                        <strong>- Tuổi:</strong>{" "}
-                                        {tinhTuoi(selectedExam.ngay_sinh)}
-                                    </Typography>
-                                    <Typography variant="body1">
-                                        <strong>- Cấp bậc:</strong>{" "}
-                                        {selectedExam.cap_bac || "--"}
-                                    </Typography>
-                                    <Typography variant="body1">
-                                        <strong>- Chức vụ:</strong>{" "}
-                                        {selectedExam.chuc_vu || "--"}
-                                    </Typography>
-                                    <Typography variant="body1">
-                                        <strong>- Đơn vị:</strong>{" "}
-                                        {selectedExam.ten_don_vi || "--"}
-                                    </Typography>
-                                    <Typography variant="body1">
-                                        <strong>- Mã KB:</strong>{" "}
-                                        {selectedExam.ma_kham_benh || "--"}
-                                    </Typography>
-                                    <Typography variant="body1">
-                                        <strong>- Ngày khám:</strong>{" "}
-                                        {formatDate(selectedExam.ngay_kham)}
-                                    </Typography>
-                                </Stack>
-                            </Box>
+                            <PatientInfoCard
+                                data={selectedExam}
+                                fields={[
+                                    "ho_ten",
+                                    "tuoi",
+                                    "cap_bac",
+                                    "chuc_vu",
+                                    "ten_don_vi",
+                                    "ma_kham_benh",
+                                    "ngay_kham",
+                                ]}
+                            />
 
                             {/* ===== B. SYMPTOMS & DIAGNOSIS ===== */}
                             {examDetail?.trieu_chung && (
