@@ -18,6 +18,7 @@ class ThuocVtytBase(SchemaBase):
     don_gia: Decimal | None = Field(default=None, ge=0)
     nha_san_xuat: str | None = Field(default=None, max_length=255)
     hoat_chat: str | None = Field(default=None, max_length=255)
+    loai: str | None = Field(default=None, max_length=10)
 
 class ThuocVtytCreate(ThuocVtytBase):
     ma_thuoc_vtyt: str | None = None
@@ -35,6 +36,7 @@ class ThuocVtytUpdate(SchemaBase):
     don_gia: Decimal | None = Field(default=None, ge=0)
     nha_san_xuat: str | None = Field(default=None, max_length=255)
     hoat_chat: str | None = Field(default=None, max_length=255)
+    loai: str | None = Field(default=None, max_length=10)
 
 
 class ThuocVtytRead(ThuocVtytBase):

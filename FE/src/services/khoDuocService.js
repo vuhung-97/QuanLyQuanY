@@ -6,6 +6,30 @@ export const khoDuocService = {
     createThuocVtyt: (data) => api.post("/thuoc_vtyt", data),
     updateThuocVtyt: (id, data) => api.patch(`/thuoc_vtyt/${id}`, data),
     deleteThuocVtyt: (id) => api.delete(`/thuoc_vtyt/${id}`),
+    countThuocVtyt: () => api.get("/thuoc_vtyt/count"),
+
+    fetchAllThuocVtyt: async () => {
+        const countRes = await api.get("/thuoc_vtyt/count");
+        const total = countRes.data ?? 0;
+        const LIMIT = 500;
+        const pageCount = Math.ceil(total / LIMIT);
+        if (pageCount <= 1) {
+            const res = await api.get("/thuoc_vtyt", {
+                params: { limit: LIMIT, offset: 0 },
+            });
+            return res.data || [];
+        }
+        const promises = Array.from({ length: pageCount }, (_, i) =>
+            api.get("/thuoc_vtyt", {
+                params: { limit: LIMIT, offset: i * LIMIT },
+            }),
+        );
+        const results = await Promise.all(promises);
+        return results.flatMap((r) => r.data || []);
+    },
+
+    getPhanLoaiList: () => api.get("/thuoc_vtyt/phan-loai-list"),
+
     searchThuocVtyt: (search, limit) =>
         api.get("/thuoc_vtyt/search/value", { params: { search, limit } }),
     getTonKho: (search) =>

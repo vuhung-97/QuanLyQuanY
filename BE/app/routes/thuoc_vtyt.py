@@ -1,7 +1,7 @@
 from datetime import date, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import or_
+from sqlalchemy import distinct, or_
 from sqlalchemy.orm import Session
 
 from app.core.dependencies import require_permissions
@@ -15,6 +15,27 @@ from app.services.inventory_service import InventoryService
 
 
 pre_router = APIRouter()
+
+
+@pre_router.get(
+    "/count",
+    dependencies=[Depends(require_permissions("thuoc_vtyt:read"))],
+)
+def count_thuoc(db: Session = Depends(get_db)):
+    return thuoc_vtyt_crud.count(db)
+
+
+@pre_router.get(
+    "/phan-loai-list",
+    dependencies=[Depends(require_permissions("thuoc_vtyt:read"))],
+)
+def get_phan_loai_list(db: Session = Depends(get_db)):
+    results = (
+        db.query(distinct(ThuocVtyt.phan_loai))
+        .order_by(ThuocVtyt.phan_loai)
+        .all()
+    )
+    return [r[0] for r in results if r[0] is not None]
 
 
 @pre_router.get(

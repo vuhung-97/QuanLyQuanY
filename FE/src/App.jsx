@@ -19,6 +19,7 @@ import NhapKhoPage from "./pages/KhoDuoc/NhapKhoPage.jsx";
 import XuatKhoPage from "./pages/KhoDuoc/XuatKhoPage.jsx";
 import LapBenhAnPage from "./pages/NoiTru/LapBenhAnPage.jsx";
 import QuanLyPhongGiuongPage from "./pages/NoiTru/QuanLyPhongGiuongPage.jsx";
+import KhoPage from "./pages/KhoDuoc/KhoPage.jsx";
 import UserManagementPage from "./pages/Admin/UserManagementPage.jsx";
 import RolePermissionPage from "./pages/Admin/RolePermissionPage.jsx";
 import AuditLogPage from "./pages/Admin/AuditLogPage.jsx";
@@ -96,8 +97,9 @@ export default function App() {
                         <Route path="kho-duoc">
                             <Route
                                 index
-                                element={<Navigate to="du-tru" replace />}
+                                element={<Navigate to="kho" replace />}
                             />
+                            <Route path="kho" element={<KhoPage />} />
                             <Route path="du-tru" element={<DuTruPage />} />
                             <Route path="nhap" element={<NhapKhoPage />} />
                             <Route path="xuat" element={<XuatKhoPage />} />

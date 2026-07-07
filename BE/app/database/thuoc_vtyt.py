@@ -24,3 +24,4 @@ class ThuocVtyt(Base):
     don_gia: Mapped[Decimal | None] = mapped_column(Numeric(15, 2), nullable=True)
     nha_san_xuat: Mapped[str | None] = mapped_column(String(255), nullable=True)
     hoat_chat: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    loai: Mapped[str | None] = mapped_column(String(10), nullable=True)
