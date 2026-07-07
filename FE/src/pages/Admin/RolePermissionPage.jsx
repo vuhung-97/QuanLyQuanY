@@ -1,21 +1,39 @@
-import { Grid, Stack } from "@mui/material"
-import AdminPageHeader from "@/components/admin/AdminPageHeader"
-import RoleListPanel from "@/components/admin/RolePermission/RoleListPanel"
-import PermissionPanel from "@/components/admin/RolePermission/PermissionPanel"
-import RoleFormDialog from "@/components/admin/RolePermission/RoleFormDialog"
-import FeedbackSnackbar from "@/components/common/FeedbackSnackbar"
-import useAdminRoles from "@/hooks/useAdminRoles"
+import { Grid, Stack } from "@mui/material";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import RoleListPanel from "@/components/admin/RolePermission/RoleListPanel";
+import PermissionPanel from "@/components/admin/RolePermission/PermissionPanel";
+import RoleFormDialog from "@/components/admin/RolePermission/RoleFormDialog";
+import FeedbackSnackbar from "@/components/common/FeedbackSnackbar";
+import useAdminRoles from "@/hooks/useAdminRoles";
 
 export default function RolePermissionPage() {
     const {
-        roles, permissions, selectedRoleId, setSelectedRoleId,
-        loading, saving, error, success, setError, setSuccess,
-        permissionFilter, setPermissionFilter,
-        actionTypes, filteredPermissions, allSelected, selectedRole,
-        openDialog, setOpenDialog, editingRole,
-        togglePermission, handleToggleSelectAll,
-        handleOpenEdit, handleSubmitRole, handleSavePermissions,
-    } = useAdminRoles()
+        roles,
+        permissions,
+        selectedRoleId,
+        setSelectedRoleId,
+        loading,
+        saving,
+        error,
+        success,
+        setError,
+        setSuccess,
+        permissionFilter,
+        setPermissionFilter,
+        actionTypes,
+        filteredPermissions,
+        allSelected,
+        selectedRole,
+        selectedPermissionIds,
+        openDialog,
+        setOpenDialog,
+        editingRole,
+        togglePermission,
+        handleToggleSelectAll,
+        handleOpenEdit,
+        handleSubmitRole,
+        handleSavePermissions,
+    } = useAdminRoles();
 
     return (
         <Stack spacing={3}>
@@ -75,5 +93,5 @@ export default function RolePermissionPage() {
                 onClose={() => setError("")}
             />
         </Stack>
-    )
+    );
 }
