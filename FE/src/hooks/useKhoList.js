@@ -101,8 +101,8 @@ export default function useKhoList() {
         ];
     }, [allItems]);
 
-    const handleSearchChange = useCallback((e) => {
-        setSearch(e.target.value);
+    const handleSearchChange = useCallback((v) => {
+        setSearch(v);
         setPage(1);
     }, []);
 

@@ -22,6 +22,7 @@ import DataTable from "@/components/common/DataTable.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import PaginationWidget from "@/components/common/PaginationWidget.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
+import SearchBarDebounced from "@/components/common/SearchBarDebounced.jsx";
 import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
 import KhoDialog from "./KhoDialog.jsx";
 import useKhoList from "@/hooks/useKhoList.js";
@@ -145,13 +146,9 @@ export default function KhoList() {
                                 spacing={1.5}
                                 sx={{ alignItems: "center" }}
                             >
-                                <TextField
-                                    size="small"
-                                    label="Tìm kiếm"
+                                <SearchBarDebounced
+                                    onSearch={hook.handleSearchChange}
                                     placeholder="Tên, hoạt chất, mã..."
-                                    value={hook.search}
-                                    onChange={hook.handleSearchChange}
-                                    sx={{ minWidth: 280 }}
                                 />
                                 <TextField
                                     select
