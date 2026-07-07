@@ -93,13 +93,14 @@ const AutocompleteFormField = memo(function AutocompleteFormField({
 });
 
 const SelectFormField = memo(function SelectFormField({
-    label, value, onChange, disabled, required,
+    label, name, value, onChange, disabled, required,
     options, emptyLabel = "-- Chọn --", slotProps,
 }) {
     return (
         <TextField
             select
             label={label}
+            name={name}
             value={value}
             onChange={onChange}
             fullWidth
@@ -142,6 +143,7 @@ export default function KhoDialog({
                 return (
                     <SelectFormField
                         label={field.label}
+                        name={field.name}
                         value={value}
                         onChange={hook.handleLoaiChange}
                         disabled={isView}
@@ -165,6 +167,7 @@ export default function KhoDialog({
                 return (
                     <SelectFormField
                         label={field.label}
+                        name={field.name}
                         value={value}
                         onChange={hook.handleChange}
                         disabled={isView}
