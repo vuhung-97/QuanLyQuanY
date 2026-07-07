@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
     Box,
     Button,
@@ -28,6 +28,7 @@ import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import PaginationWidget from "@/components/common/PaginationWidget.jsx";
 import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
 import SearchBar from "@/components/common/SearchBar.jsx";
+import useDebounce from "@/hooks/useDebounce.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import ChiTietBenhAn from "./ChiTietBenhAn.jsx";
 import RaVienDialog from "./RaVienDialog.jsx";
@@ -117,6 +118,23 @@ const columns = [
         ),
     },
 ];
+
+function SearchBarContainer({ setSearchText, placeholder }) {
+    const [local, setLocal] = useState("");
+    const debounced = useDebounce(local, 300);
+
+    useEffect(() => {
+        setSearchText(debounced);
+    }, [debounced, setSearchText]);
+
+    return (
+        <SearchBar
+            value={local}
+            onChange={(e) => setLocal(e.target.value)}
+            placeholder={placeholder}
+        />
+    );
+}
 
 export default function DanhSachNoiTru() {
     const {
@@ -263,9 +281,8 @@ export default function DanhSachNoiTru() {
                             Refresh
                         </Button>
                     </Stack>
-                    <SearchBar
-                        value={searchText}
-                        onChange={(e) => setSearchText(e.target.value)}
+                    <SearchBarContainer
+                        setSearchText={setSearchText}
                         placeholder="Tìm kiếm bệnh án..."
                     />
                     <DataTable
