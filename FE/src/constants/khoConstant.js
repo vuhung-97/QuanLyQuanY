@@ -4,7 +4,16 @@ export const LOAI_OPTIONS = [
 ];
 
 export const DON_VI_TINH_OPTIONS = [
-    "Viên", "Lọ", "Chai", "Hộp", "Tuýp", "Gam", "Mililit", "Ml", "Mg", "Microgam",
+    "Viên",
+    "Lọ",
+    "Chai",
+    "Hộp",
+    "Tuýp",
+    "Gam",
+    "Mililit",
+    "Ml",
+    "Mg",
+    "Microgam",
 ];
 
 export const INIT_FORM = {
@@ -29,22 +38,66 @@ export const MODE_TITLES = {
     view: "Chi tiết thuốc / vật tư y tế",
 };
 
+export const PHAN_LOAI_SLOT_PROPS = { displayEmpty: true };
+
 export const DIALOG_FIELDS = [
-    { name: "ten_thuoc_vtyt", label: "Tên thuốc / VTYT", grid: { xs: 12 }, required: true },
-    { name: "loai", label: "Loại", grid: { xs: 6, sm: 6 }, type: "loai", required: true },
-    { name: "don_vi_tinh", label: "ĐVT", grid: { xs: 6, sm: 6 }, type: "donViTinh" },
-    { name: "phan_loai", label: "Phân loại", grid: { xs: 6, sm: 6 }, type: "phanLoai", slotProps: PHAN_LOAI_SLOT_PROPS },
+    {
+        name: "ten_thuoc_vtyt",
+        label: "Tên thuốc / VTYT",
+        grid: { xs: 12 },
+        required: true,
+    },
+    {
+        name: "loai",
+        label: "Loại",
+        grid: { xs: 6, sm: 6 },
+        type: "loai",
+        required: true,
+    },
+    {
+        name: "don_vi_tinh",
+        label: "ĐVT",
+        grid: { xs: 6, sm: 6 },
+        type: "donViTinh",
+    },
+    {
+        name: "phan_loai",
+        label: "Phân loại",
+        grid: { xs: 6, sm: 6 },
+        type: "phanLoai",
+        slotProps: PHAN_LOAI_SLOT_PROPS,
+    },
     { name: "so_lo_han_dung", label: "Số lô", grid: { xs: 6, sm: 6 } },
-    { name: "so_luong", label: "Số lượng tồn", grid: { xs: 6, sm: 6 }, type: "number", slotProps: { htmlInput: { min: 0 } } },
-    { name: "don_gia", label: "Đơn giá", grid: { xs: 6, sm: 6 }, type: "number", slotProps: { htmlInput: { min: 0, step: 1000 } } },
-    { name: "han_su_dung", label: "Hạn sử dụng", grid: { xs: 6, sm: 6 }, type: "date" },
+    {
+        name: "so_luong",
+        label: "Số lượng tồn",
+        grid: { xs: 6, sm: 6 },
+        type: "number",
+        slotProps: { htmlInput: { min: 0 } },
+    },
+    {
+        name: "don_gia",
+        label: "Đơn giá",
+        grid: { xs: 6, sm: 6 },
+        type: "number",
+        slotProps: { htmlInput: { min: 0, step: 1000 } },
+    },
+    {
+        name: "han_su_dung",
+        label: "Hạn sử dụng",
+        grid: { xs: 6, sm: 6 },
+        type: "date",
+    },
     { name: "cap_chat_luong", label: "Cấp chất lượng", grid: { xs: 6, sm: 6 } },
     { name: "nha_san_xuat", label: "Nhà sản xuất", grid: { xs: 6, sm: 6 } },
-    { name: "nam_san_xuat", label: "Năm sản xuất", grid: { xs: 6, sm: 6 }, type: "number" },
+    {
+        name: "nam_san_xuat",
+        label: "Năm sản xuất",
+        grid: { xs: 6, sm: 6 },
+        type: "number",
+    },
     { name: "hoat_chat", label: "Hoạt chất", grid: { xs: 12 } },
     { name: "mo_ta", label: "Mô tả", grid: { xs: 12 }, type: "textarea" },
 ];
-
-export const PHAN_LOAI_SLOT_PROPS = { displayEmpty: true };
 
 export const ROWS_PER_PAGE = 100;

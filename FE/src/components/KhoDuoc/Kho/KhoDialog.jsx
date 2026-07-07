@@ -1,5 +1,6 @@
 import { memo } from "react";
 import {
+    Autocomplete,
     Button,
     Dialog,
     DialogActions,
@@ -66,6 +67,32 @@ const DateFormField = memo(function DateFormField({ label, value, onChange }) {
     return <DatePicker label={label} value={value} onChange={onChange} size="small" />;
 });
 
+const AutocompleteFormField = memo(function AutocompleteFormField({
+    label, name, value, onChange, disabled, options, freeSolo
+}) {
+    return (
+        <Autocomplete
+            freeSolo={freeSolo}
+            options={options}
+            value={value || ""}
+            onChange={(_, newValue) => {
+                onChange({ target: { name, value: newValue || "" } });
+            }}
+            onInputChange={(_, newInputValue) => {
+                if (freeSolo) {
+                    onChange({ target: { name, value: newInputValue || "" } });
+                }
+            }}
+            disabled={disabled}
+            size="small"
+            fullWidth
+            renderInput={(params) => (
+                <TextField {...params} label={label} name={name} />
+            )}
+        />
+    );
+});
+
 const SelectFormField = memo(function SelectFormField({
     label, value, onChange, disabled, required,
     options, emptyLabel = "-- Chọn --", slotProps,
@@ -125,12 +152,14 @@ export default function KhoDialog({
                 );
             case "donViTinh":
                 return (
-                    <SelectFormField
+                    <AutocompleteFormField
                         label={field.label}
+                        name={field.name}
                         value={value}
                         onChange={hook.handleChange}
                         disabled={isView}
                         options={DON_VI_TINH_OPTIONS}
+                        freeSolo
                     />
                 );
             case "phanLoai":
