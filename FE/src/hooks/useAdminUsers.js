@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
-import useDebounce from "./useDebounce"
+
 import { adminService } from "@/services/adminService"
 
 export default function useAdminUsers() {
@@ -9,7 +9,6 @@ export default function useAdminUsers() {
     const [error, setError] = useState("")
     const [success, setSuccess] = useState("")
     const [query, setQuery] = useState("")
-    const debouncedQuery = useDebounce(query)
     const [openDialog, setOpenDialog] = useState(false)
     const [editingUser, setEditingUser] = useState(null)
     const [deleteTarget, setDeleteTarget] = useState(null)
@@ -42,14 +41,14 @@ export default function useAdminUsers() {
     }, [])
 
     const filteredUsers = useMemo(() => {
-        const keyword = debouncedQuery.trim().toLowerCase()
+        const keyword = query.trim().toLowerCase()
         if (!keyword) return users
         return users.filter((user) =>
             [user.id, user.ten_dang_nhap, user.ho_ten, user.id_vai_tro, user.ten_vai_tro]
                 .filter(Boolean)
                 .some((value) => String(value).toLowerCase().includes(keyword))
         )
-    }, [users, debouncedQuery])
+    }, [users, query])
 
     const activeCount = useMemo(() => users.filter((user) => user.trang_thai).length, [users])
 

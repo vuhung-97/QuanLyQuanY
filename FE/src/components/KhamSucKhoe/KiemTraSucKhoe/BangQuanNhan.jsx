@@ -13,7 +13,7 @@ import {
     Typography,
 } from "@mui/material";
 import { Visibility as VisibilityIcon } from "@mui/icons-material";
-import SearchBar from "@/components/common/SearchBar.jsx";
+import SearchBarDebounced from "@/components/common/SearchBarDebounced.jsx";
 import DataTable from "@/components/common/DataTable.jsx";
 import { STATUS_CHIP } from "@/constants/khamSucKhoeConstants.js";
 import { getStatus } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
@@ -140,8 +140,7 @@ export default function BangQuanNhan({
     phieuMap,
     loading,
     allUnitLookup,
-    searchText,
-    onSearchChange,
+    onSearch,
     filterTab,
     onFilterTabChange,
     onEdit,
@@ -165,9 +164,8 @@ export default function BangQuanNhan({
                     <Typography variant="h2" sx={{ whiteSpace: "nowrap" }}>
                         Danh sách quân nhân
                     </Typography>
-                    <SearchBar
-                        value={searchText}
-                        onChange={onSearchChange}
+                    <SearchBarDebounced
+                        onSearch={onSearch}
                         placeholder="Tìm kiếm quân nhân..."
                     />
                     <Tabs

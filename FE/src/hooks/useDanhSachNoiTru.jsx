@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import useDebounce from "./useDebounce.jsx";
 import { noiTruService } from "@/services/noiTruService.js";
 
 const ROWS_PER_PAGE = 100;
@@ -9,7 +8,6 @@ export default function useDanhSachNoiTru() {
     const [initialLoading, setInitialLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [searchText, setSearchText] = useState("");
-    const debouncedSearchText = useDebounce(searchText);
     const [filterMode, setFilterMode] = useState("dang_dieu_tri");
     const currentYear = new Date().getFullYear();
     const [filterNam, setFilterNam] = useState(null);
@@ -80,15 +78,15 @@ export default function useDanhSachNoiTru() {
     }, [examinations, choNhapVienCount]);
 
     const filtered = useMemo(() => {
-        if (!debouncedSearchText) return examinations;
-        const q = debouncedSearchText.toLowerCase();
+        if (!searchText) return examinations;
+        const q = searchText.toLowerCase();
         return examinations.filter(
             (e) =>
                 (e.ma_benh_an || "").toLowerCase().includes(q) ||
                 (e.ho_ten || "").toLowerCase().includes(q) ||
                 (e.ten_buong || "").toLowerCase().includes(q),
         );
-    }, [examinations, debouncedSearchText]);
+    }, [examinations, searchText]);
 
     const handleOpenChiTiet = useCallback((id) => {
         setSelectedBenhAnId(id);

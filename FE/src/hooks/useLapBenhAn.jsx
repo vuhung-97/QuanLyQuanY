@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import useDebounce from "./useDebounce.jsx";
+
 import { noiTruService } from "@/services/noiTruService.js";
 
 export default function useLapBenhAn() {
@@ -7,7 +7,6 @@ export default function useLapBenhAn() {
     const [initialLoading, setInitialLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [searchText, setSearchText] = useState("");
-    const debouncedSearchText = useDebounce(searchText);
 
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
 
@@ -35,15 +34,15 @@ export default function useLapBenhAn() {
     useEffect(() => { loadData(); }, [loadData]);
 
     const filtered = useMemo(() => {
-        if (!debouncedSearchText) return examinations;
-        const q = debouncedSearchText.toLowerCase();
+        if (!searchText) return examinations;
+        const q = searchText.toLowerCase();
         return examinations.filter(
             (e) =>
                 (e.ma_kham_benh || "").toLowerCase().includes(q) ||
                 (e.ho_ten || "").toLowerCase().includes(q) ||
                 (e.ten_don_vi || "").toLowerCase().includes(q),
         );
-    }, [examinations, debouncedSearchText]);
+    }, [examinations, searchText]);
 
     const handleOpenForm = useCallback((exam) => {
         setSelectedExam(exam);

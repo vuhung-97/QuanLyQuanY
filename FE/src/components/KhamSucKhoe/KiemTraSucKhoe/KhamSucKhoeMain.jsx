@@ -97,8 +97,7 @@ export default function KhamSucKhoeMain() {
                     phieuMap={phieuMap}
                     loading={loading}
                     allUnitLookup={allUnitLookup}
-                    searchText={searchText}
-                    onSearchChange={handleSearchChange}
+                    onSearch={handleSearchChange}
                     filterTab={filterTab}
                     onFilterTabChange={handleFilterTabChange}
                     onEdit={handleEdit}

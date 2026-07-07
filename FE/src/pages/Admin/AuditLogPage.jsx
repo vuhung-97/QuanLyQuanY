@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react"
-import useDebounce from "@/hooks/useDebounce"
 import { Button, Chip, Stack, Tab, Tabs } from "@mui/material"
 import { Backup as BackupIcon, History as HistoryIcon } from "@mui/icons-material"
-import SearchBar from "@/components/common/SearchBar"
+import SearchBarDebounced from "@/components/common/SearchBarDebounced"
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar"
 import PaginationWidget from "@/components/common/PaginationWidget"
 import AdminPageHeader from "@/components/admin/AdminPageHeader"
@@ -13,15 +11,6 @@ import ThaoTacTab from "@/components/admin/AuditLog/ThaoTacTab"
 import BackupTab from "@/components/admin/AuditLog/BackupTab"
 import { adminService } from "@/services/adminService"
 import useAdminAuditLogs, { AUDIT_TABS, ROWS_PER_PAGE } from "@/hooks/useAdminAuditLogs"
-
-function SearchBarWrapper({ onSearch, placeholder }) {
-    const [value, setValue] = useState("")
-    const debouncedValue = useDebounce(value, 300)
-    useEffect(() => { onSearch(debouncedValue) }, [debouncedValue, onSearch])
-    return (
-        <SearchBar value={value} onChange={(e) => setValue(e.target.value)} placeholder={placeholder} />
-    )
-}
 
 export default function AuditLogPage() {
     const {
@@ -60,7 +49,7 @@ export default function AuditLogPage() {
 
                 <Stack direction={{ xs: "column", md: "row" }} spacing={2}
                     sx={{ mb: 2, justifyContent: "space-between" }}>
-                    <SearchBarWrapper onSearch={handleSearch} placeholder="Tìm ID, họ tên, hành động, bảng, IP..." />
+                    <SearchBarDebounced onSearch={handleSearch} placeholder="Tìm ID, họ tên, hành động, bảng, IP..." />
                     <PaginationWidget page={page} totalRecords={totalRecords}
                         rowsPerPage={ROWS_PER_PAGE} onChange={setPage} />
                 </Stack>

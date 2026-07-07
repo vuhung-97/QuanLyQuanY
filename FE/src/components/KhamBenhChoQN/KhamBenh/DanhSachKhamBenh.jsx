@@ -27,7 +27,7 @@ import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
 import DataTable from "@/components/common/DataTable.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import PaginationWidget from "@/components/common/PaginationWidget.jsx";
-import SearchBar from "@/components/common/SearchBar.jsx";
+import SearchBarDebounced from "@/components/common/SearchBarDebounced.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import KhamBenhForm from "./KhamBenhForm.jsx";
 import TiepNhanQnDialog from "./TiepNhanQnDialog.jsx";
@@ -132,7 +132,6 @@ export default function DanhSachKhamBenh() {
     const {
         initialLoading,
         refreshing,
-        searchText,
         setSearchText,
         filtered,
         statusCounts,
@@ -259,9 +258,8 @@ export default function DanhSachKhamBenh() {
                             onRefresh={loadData}
                         />
                     </Stack>
-                    <SearchBar
-                        value={searchText}
-                        onChange={(e) => setSearchText(e.target.value)}
+                    <SearchBarDebounced
+                        onSearch={setSearchText}
                         placeholder="Tìm kiếm ca khám..."
                     />
                     <DataTable

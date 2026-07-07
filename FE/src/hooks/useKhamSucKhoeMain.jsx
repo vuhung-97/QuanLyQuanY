@@ -5,7 +5,6 @@ import {
     PersonAddAlt as PersonAddAltIcon,
     Science as ScienceIcon,
 } from "@mui/icons-material";
-import useDebounce from "@/hooks/useDebounce.jsx";
 import useKhamSucKhoeData from "@/hooks/useKhamSucKhoeData";
 import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
 import { filterSoldiers } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
@@ -40,7 +39,7 @@ export default function useKhamSucKhoeMain() {
     const [searchText, setSearchText] = useState("");
     const [allowedTabs, setAllowedTabs] = useState(ALL_TABS);
     const [editableTabs, setEditableTabs] = useState(ALL_TABS);
-    const debouncedSearchText = useDebounce(searchText);
+
     const [formDialog, setFormDialog] = useState({
         open: false,
         qn: null,
@@ -62,9 +61,9 @@ export default function useKhamSucKhoeMain() {
                 soldiers,
                 phieuMap,
                 filterTab,
-                debouncedSearchText,
+                searchText,
             ),
-        [soldiers, phieuMap, filterTab, debouncedSearchText],
+        [soldiers, phieuMap, filterTab, searchText],
     );
 
     const statsItems = useMemo(
@@ -208,8 +207,8 @@ export default function useKhamSucKhoeMain() {
         }
     }, [selectedSchedule, selectedScheduleObj, setPhieuMap, setAllPhieuMap]);
 
-    const handleSearchChange = useCallback((e) => {
-        setSearchText(e.target.value);
+    const handleSearchChange = useCallback((v) => {
+        setSearchText(v);
     }, []);
 
     const handleFilterTabChange = useCallback((_, v) => {

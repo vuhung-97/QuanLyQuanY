@@ -18,8 +18,7 @@ import {
     Typography,
 } from "@mui/material";
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
-import SearchBar from "@/components/common/SearchBar.jsx";
-import useDebounce from "@/hooks/useDebounce.jsx";
+import SearchBarDebounced from "@/components/common/SearchBarDebounced.jsx";
 import DataTable from "@/components/common/DataTable.jsx";
 import useThuocList from "@/hooks/useThuocList.jsx";
 
@@ -78,7 +77,6 @@ export default function KhoThuocDialog({
     const [selected, setSelected] = useState(new Set());
     const [quantities, setQuantities] = useState({});
     const [error, setError] = useState("");
-    const debouncedSearchText = useDebounce(searchText, 300);
     const { fetchAll } = useThuocList();
 
     useEffect(() => {
@@ -101,14 +99,14 @@ export default function KhoThuocDialog({
     }, [open, cachedItems, fetchAll]);
 
     const displayItems = useMemo(() => {
-        if (!debouncedSearchText) return items;
-        const q = debouncedSearchText.toLowerCase();
+        if (!searchText) return items;
+        const q = searchText.toLowerCase();
         return items.filter(
             (item) =>
                 item.ten_thuoc_vtyt.toLowerCase().includes(q) ||
                 (item.phan_loai || "").toLowerCase().includes(q),
         );
-    }, [items, debouncedSearchText]);
+    }, [items, searchText]);
 
     const grouped = useMemo(() => {
         const map = {};
@@ -202,9 +200,8 @@ export default function KhoThuocDialog({
                 Kho thuốc
             </DialogTitleWrapper>
             <DialogContent dividers sx={{ overflow: "hidden", pb: 0 }}>
-                <SearchBar
-                    value={searchText}
-                    onChange={(e) => setSearchText(e.target.value)}
+                <SearchBarDebounced
+                    onSearch={setSearchText}
                     placeholder="Tìm kiếm theo tên hoặc phân loại..."
                 />
 

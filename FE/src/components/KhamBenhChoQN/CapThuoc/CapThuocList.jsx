@@ -24,7 +24,7 @@ import { getNamOptions } from "@/utils/yearOptions.js";
 import CapThuocForm from "./CapThuocForm.jsx";
 import DataTable from "@/components/common/DataTable.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
-import SearchBar from "@/components/common/SearchBar.jsx";
+import SearchBarDebounced from "@/components/common/SearchBarDebounced.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import { STATUS_MAP } from "@/constants/khamBenhConstants.js";
 import { formatDate } from "@/utils/date.js";
@@ -90,7 +90,6 @@ export default function CapThuocList() {
         refreshing,
         selectedDate,
         setSelectedDate,
-        searchText,
         setSearchText,
         filtered,
         stats,
@@ -204,9 +203,8 @@ export default function CapThuocList() {
                             </Button>
                         </Stack>
                     </Stack>
-                    <SearchBar
-                        value={searchText}
-                        onChange={(e) => setSearchText(e.target.value)}
+                    <SearchBarDebounced
+                        onSearch={setSearchText}
                         placeholder="Tìm kiếm quân nhân..."
                     />
                     <DataTable

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import useDebounce from "./useDebounce.jsx";
+
 import { khamBenhService } from "@/services/khamBenhService.js";
 
 const ROWS_PER_PAGE = 100;
@@ -10,7 +10,6 @@ export default function useChuyenTuyen() {
     const [refreshing, setRefreshing] = useState(false);
     const [searchText, setSearchText] = useState("");
     const [nam, setNam] = useState(null);
-    const debouncedSearchText = useDebounce(searchText);
 
     const [filterMode, setFilterMode] = useState("tat_ca");
     const [page, setPage] = useState(1);
@@ -90,15 +89,15 @@ export default function useChuyenTuyen() {
     }, [examinations]);
 
     const filtered = useMemo(() => {
-        if (!debouncedSearchText) return patients;
-        const q = debouncedSearchText.toLowerCase();
+        if (!searchText) return patients;
+        const q = searchText.toLowerCase();
         return patients.filter(
             (e) =>
                 (e.ma_kham_benh || "").toLowerCase().includes(q) ||
                 (e.ho_ten || "").toLowerCase().includes(q) ||
                 (e.ten_don_vi || "").toLowerCase().includes(q),
         );
-    }, [patients, debouncedSearchText]);
+    }, [patients, searchText]);
 
     const handleViewDetail = useCallback(
         async (id) => {

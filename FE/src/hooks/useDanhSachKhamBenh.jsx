@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import useDebounce from "./useDebounce.jsx";
+
 import useFilterModePagination from "./useFilterModePagination.jsx";
 import { khamBenhService } from "@/services/khamBenhService.js";
 
@@ -10,7 +10,6 @@ export default function useDanhSachKhamBenh() {
     const [refreshing, setRefreshing] = useState(false);
     const [searchText, setSearchText] = useState("");
     const [nam, setNam] = useState(null);
-    const debouncedSearchText = useDebounce(searchText);
     const [selectedDate, setSelectedDate] = useState(dayjs());
     const {
         filterMode,
@@ -65,15 +64,15 @@ export default function useDanhSachKhamBenh() {
     useEffect(() => { loadData(); }, [loadData]);
 
     const filtered = useMemo(() => {
-        if (!debouncedSearchText) return examinations;
-        const q = debouncedSearchText.toLowerCase();
+        if (!searchText) return examinations;
+        const q = searchText.toLowerCase();
         return examinations.filter(
             (e) =>
                 (e.ma_kham_benh || "").toLowerCase().includes(q) ||
                 (e.ho_ten || "").toLowerCase().includes(q) ||
                 (e.ten_don_vi || "").toLowerCase().includes(q),
         );
-    }, [examinations, debouncedSearchText]);
+    }, [examinations, searchText]);
 
     const statusCounts = useMemo(() => {
         const count = (status) => examinations.filter((e) => e.trang_thai === status).length;

@@ -6,7 +6,7 @@ import {
 import useLapBenhAn from "@/hooks/useLapBenhAn.jsx";
 import DataTable from "@/components/common/DataTable.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
-import SearchBar from "@/components/common/SearchBar.jsx";
+import SearchBarDebounced from "@/components/common/SearchBarDebounced.jsx";
 import LapBenhAnForm from "./LapBenhAnForm.jsx";
 import { formatDate } from "@/utils/date.js";
 
@@ -55,7 +55,6 @@ export default function LapBenhAnList() {
     const {
         initialLoading,
         refreshing,
-        searchText,
         setSearchText,
         filtered,
         snackbar,
@@ -94,9 +93,8 @@ export default function LapBenhAnList() {
                             Refresh
                         </Button>
                     </Stack>
-                    <SearchBar
-                        value={searchText}
-                        onChange={(e) => setSearchText(e.target.value)}
+                    <SearchBarDebounced
+                        onSearch={setSearchText}
                         placeholder="Tìm kiếm quân nhân..."
                     />
                     <DataTable

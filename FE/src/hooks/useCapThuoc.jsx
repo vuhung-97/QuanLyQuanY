@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import useDebounce from "./useDebounce.jsx";
+
 import useFilterModePagination from "./useFilterModePagination.jsx";
 import { khamBenhService } from "@/services/khamBenhService.js";
 
@@ -11,7 +11,6 @@ export default function useCapThuoc() {
     const [selectedDate, setSelectedDate] = useState(dayjs());
     const [searchText, setSearchText] = useState("");
     const [nam, setNam] = useState(null);
-    const debouncedSearchText = useDebounce(searchText);
     const {
         filterMode,
         handleFilterModeChange,
@@ -72,15 +71,15 @@ export default function useCapThuoc() {
     }, [patients]);
 
     const filtered = useMemo(() => {
-        if (!debouncedSearchText) return patients;
-        const q = debouncedSearchText.toLowerCase();
+        if (!searchText) return patients;
+        const q = searchText.toLowerCase();
         return patients.filter(
             (e) =>
                 (e.ma_kham_benh || "").toLowerCase().includes(q) ||
                 (e.ho_ten || "").toLowerCase().includes(q) ||
                 (e.ten_don_vi || "").toLowerCase().includes(q),
         );
-    }, [patients, debouncedSearchText]);
+    }, [patients, searchText]);
 
     const handleOpenForm = useCallback(async (id) => {
         const exam = examinations.find((e) => e.ma_kham_benh === id);

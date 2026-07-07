@@ -5,7 +5,7 @@ import TableCard from "@/components/admin/TableCard"
 import UserFormDialog from "@/components/admin/UserManager/UserFormDialog"
 import UserTableRow from "@/components/admin/UserManager/UserTableRow"
 import DataTable from "@/components/common/DataTable"
-import SearchBar from "@/components/common/SearchBar"
+import SearchBarDebounced from "@/components/common/SearchBarDebounced"
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar"
 import ConfirmDialog from "@/components/common/ConfirmDialog"
 import useAdminUsers from "@/hooks/useAdminUsers"
@@ -13,7 +13,7 @@ import useAdminUsers from "@/hooks/useAdminUsers"
 export default function UserManagementPage() {
     const {
         users, roles, loading, error, success, setError, setSuccess,
-        query, setQuery, filteredUsers, activeCount,
+        setQuery, filteredUsers, activeCount,
         openDialog, setOpenDialog, editingUser, deleteTarget, deleting,
         handleOpenCreate, handleOpenEdit, handleOpenDelete,
         handleConfirmDelete, handleDialogSaved,
@@ -67,7 +67,7 @@ export default function UserManagementPage() {
                         <Typography variant="h2">Danh sách người dùng</Typography>
                         <Typography variant="body2" color="text.secondary">Resource /nguoi_dung</Typography>
                     </Box>
-                    <SearchBar value={query} onChange={(e) => setQuery(e.target.value)}
+                    <SearchBarDebounced onSearch={setQuery}
                         placeholder="Tìm tài khoản, họ tên, vai trò" />
                 </Stack>
 
