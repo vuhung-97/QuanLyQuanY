@@ -11,6 +11,7 @@ export default function useCapThuoc() {
     const [selectedDate, setSelectedDate] = useState(dayjs());
     const [searchText, setSearchText] = useState("");
     const [nam, setNam] = useState(null);
+    const [thang, setThang] = useState(null);
     const {
         filterMode,
         handleFilterModeChange,
@@ -39,6 +40,7 @@ export default function useCapThuoc() {
             } else {
                 const params = { limit: ROWS_PER_PAGE, offset };
                 if (nam) params.nam = nam;
+                if (thang) params.thang = thang;
                 const res = await khamBenhService.getAll(params);
                 setExaminations(res.data.data || []);
                 setTotalRecords(res.data.total || 0);
@@ -53,7 +55,7 @@ export default function useCapThuoc() {
             setRefreshing(false);
             setInitialLoading(false);
         }
-    }, [filterMode, selectedDate, offset, ROWS_PER_PAGE, nam]);
+    }, [filterMode, selectedDate, offset, ROWS_PER_PAGE, nam, thang]);
 
     useEffect(() => { loadData(); }, [loadData]);
 
@@ -159,5 +161,7 @@ export default function useCapThuoc() {
         offset,
         nam,
         setNam,
+        thang,
+        setThang,
     };
 }

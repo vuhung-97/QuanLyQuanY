@@ -10,6 +10,7 @@ export default function useChuyenTuyen() {
     const [refreshing, setRefreshing] = useState(false);
     const [searchText, setSearchText] = useState("");
     const [nam, setNam] = useState(null);
+    const [thang, setThang] = useState(null);
 
     const [filterMode, setFilterMode] = useState("tat_ca");
     const [page, setPage] = useState(1);
@@ -46,6 +47,7 @@ export default function useChuyenTuyen() {
         try {
             const params = { limit: ROWS_PER_PAGE, offset };
             if (nam) params.nam = nam;
+            if (thang) params.thang = thang;
             const res = await khamBenhService.getChuyenTuyenList(params);
             const data = res.data?.data || [];
             setExaminations(data);
@@ -60,7 +62,7 @@ export default function useChuyenTuyen() {
             setRefreshing(false);
             setInitialLoading(false);
         }
-    }, [offset, nam]);
+    }, [offset, nam, thang]);
 
     useEffect(() => {
         loadData();
@@ -250,5 +252,7 @@ export default function useChuyenTuyen() {
         offset,
         nam,
         setNam,
+        thang,
+        setThang,
     };
 }
