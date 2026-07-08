@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import {
     Box,
     Grid,
@@ -24,6 +25,10 @@ import {
     Description as DescriptionIcon,
     AddBox as AddBoxIcon,
     CallMade as CallMadeIcon,
+    Bed as BedIcon,
+    Inventory2 as InventoryIcon,
+    Warning as WarningIcon,
+    Healing as HealingIcon,
 } from "@mui/icons-material";
 import {
     AreaChart,
@@ -34,42 +39,7 @@ import {
     Tooltip as RechartsTooltip,
     ResponsiveContainer,
 } from "recharts";
-
-// Mock Data
-const stats = [
-    {
-        title1: "Tổng quan",
-        title2: "số quản lý",
-        value: "68,432",
-        trend: "13.9%",
-        icon: <PeopleAltIcon sx={{ color: "#00B4D8" }} />,
-        bgColor: "rgba(0, 180, 216, 0.1)",
-    },
-    {
-        title1: "Bộ đội đang",
-        title2: "điều trị",
-        value: "118",
-        trend: "89%",
-        icon: <MedicalServicesIcon sx={{ color: "#F59E0B" }} />,
-        bgColor: "rgba(245, 158, 11, 0.1)",
-    },
-    {
-        title1: "Quân nhân",
-        title2: "nội trú",
-        value: "24",
-        trend: "2,4%",
-        icon: <DomainIcon sx={{ color: "#3B82F6" }} />,
-        bgColor: "rgba(59, 130, 246, 0.1)",
-    },
-    {
-        title1: "Nhân viên",
-        title2: "quân y",
-        value: "450",
-        trend: "50%",
-        icon: <LocalHospitalIcon sx={{ color: "#0EA5E9" }} />,
-        bgColor: "rgba(14, 165, 233, 0.1)",
-    },
-];
+import api from "@/services/api.js";
 
 const chartData = [
     { name: "1 Oct", blue: 10, teal: 5 },
@@ -132,94 +102,52 @@ const reports = [
     },
 ];
 
+const statMeta = [
+    { key: "luot_kham", label: "Lượt khám hôm nay", icon: <MedicalServicesIcon sx={{ color: "#00B4D8" }} />, bg: "rgba(0, 180, 216, 0.1)" },
+    { key: "noi_tru", label: "Nội trú", icon: <DomainIcon sx={{ color: "#3B82F6" }} />, bg: "rgba(59, 130, 246, 0.1)" },
+    { key: "chuyen_tuyen", label: "Chuyển tuyến", icon: <HealingIcon sx={{ color: "#F59E0B" }} />, bg: "rgba(245, 158, 11, 0.1)" },
+    { key: "don_thuoc", label: "Đơn thuốc", icon: <DescriptionIcon sx={{ color: "#10B981" }} />, bg: "rgba(16, 185, 129, 0.1)" },
+    { key: "tong_giuong", label: "Tổng giường", icon: <BedIcon sx={{ color: "#8B5CF6" }} />, bg: "rgba(139, 92, 246, 0.1)" },
+    { key: "giuong_trong", label: "Giường trống", icon: <BedIcon sx={{ color: "#EC4899" }} />, bg: "rgba(236, 72, 153, 0.1)" },
+    { key: "sap_het_han", label: "Sắp hết hạn", icon: <WarningIcon sx={{ color: "#EF4444" }} />, bg: "rgba(239, 68, 68, 0.1)" },
+];
+
 export default function DashboardPage() {
+    const [stats, setStats] = useState(null);
+
+    useEffect(() => {
+        api.get("/bao-cao/tong-quan").then((res) => setStats(res.data)).catch(() => {});
+    }, []);
+
+    const flatStats = stats ? {
+        luot_kham: stats.hom_nay.luot_kham,
+        noi_tru: stats.hom_nay.noi_tru,
+        chuyen_tuyen: stats.hom_nay.chuyen_tuyen,
+        don_thuoc: stats.hom_nay.don_thuoc,
+        tong_giuong: stats.tong_quan.tong_giuong,
+        giuong_trong: stats.tong_quan.giuong_trong,
+        sap_het_han: stats.tong_quan.sap_het_han,
+    } : {};
+
     return (
         <Stack spacing={3}>
-            {/* Top Widgets */}
+            {/* 7 Stat Cards */}
             <Grid container spacing={2.5}>
-                {stats.map((stat, index) => (
-                    <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
-                        <Card
-                            sx={{
-                                p: 1,
-                                borderRadius: 3,
-                                boxShadow: "0px 4px 12px rgba(0,0,0,0.03)",
-                            }}
-                        >
+                {statMeta.map((m, i) => (
+                    <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={m.key}>
+                        <Card sx={{ p: 1, borderRadius: 3, boxShadow: "0px 4px 12px rgba(0,0,0,0.03)" }}>
                             <CardContent sx={{ p: "16px !important" }}>
-                                <Stack
-                                    direction="row"
-                                    spacing={1.5}
-                                    sx={{ mb: 2, alignItems: "flex-start" }}
-                                >
-                                    <Avatar
-                                        variant="rounded"
-                                        sx={{
-                                            bgcolor: stat.bgColor,
-                                            width: 40,
-                                            height: 40,
-                                            borderRadius: 2,
-                                        }}
-                                    >
-                                        {stat.icon}
+                                <Stack direction="row" spacing={1.5} sx={{ mb: 1, alignItems: "flex-start" }}>
+                                    <Avatar variant="rounded" sx={{ bgcolor: m.bg, width: 40, height: 40, borderRadius: 2 }}>
+                                        {m.icon}
                                     </Avatar>
-                                    <Box>
-                                        <Typography
-                                            color="text.secondary"
-                                            variant="body2"
-                                            sx={{
-                                                lineHeight: 1.2,
-                                                fontWeight: 500,
-                                            }}
-                                        >
-                                            {stat.title1}
-                                        </Typography>
-                                        <Typography
-                                            color="text.secondary"
-                                            variant="body2"
-                                            sx={{
-                                                lineHeight: 1.2,
-                                                fontWeight: 500,
-                                            }}
-                                        >
-                                            {stat.title2}
-                                        </Typography>
-                                    </Box>
-                                </Stack>
-                                <Stack
-                                    direction="row"
-                                    sx={{
-                                        alignItems: "baseline",
-                                        justifyContent: "space-between",
-                                    }}
-                                >
-                                    <Typography
-                                        variant="h4"
-                                        fontWeight={700}
-                                        sx={{ color: "#1E293B" }}
-                                    >
-                                        {stat.value}
+                                    <Typography color="text.secondary" variant="body2" sx={{ fontWeight: 500 }}>
+                                        {m.label}
                                     </Typography>
-                                    <Stack
-                                        direction="row"
-                                        spacing={0.5}
-                                        sx={{ alignItems: "center" }}
-                                    >
-                                        <CallMadeIcon
-                                            sx={{
-                                                fontSize: 14,
-                                                color: "#10B981",
-                                            }}
-                                        />
-                                        <Typography
-                                            variant="body2"
-                                            fontWeight={600}
-                                            sx={{ color: "#10B981" }}
-                                        >
-                                            {stat.trend}
-                                        </Typography>
-                                    </Stack>
                                 </Stack>
+                                <Typography variant="h4" fontWeight={700} sx={{ color: "#1E293B", ml: 0.5 }}>
+                                    {flatStats[m.key] ?? "--"}
+                                </Typography>
                             </CardContent>
                         </Card>
                     </Grid>
@@ -375,7 +303,6 @@ export default function DashboardPage() {
 
             {/* Bottom Row */}
             <Grid container spacing={2.5}>
-                {/* Table */}
                 <Grid size={{ xs: 12, md: 8 }}>
                     <Card
                         sx={{
@@ -579,8 +506,6 @@ export default function DashboardPage() {
                         </CardContent>
                     </Card>
                 </Grid>
-
-                {/* Reports List */}
                 <Grid size={{ xs: 12, md: 4 }}>
                     <Card
                         sx={{

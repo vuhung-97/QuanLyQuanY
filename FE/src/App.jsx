@@ -12,7 +12,7 @@ import KhamSucKhoePage from "./pages/KhamSucKhoe/KhamSucKhoePage.jsx";
 import KhamBenhPage from "./pages/KhamBenhChoQN/KhamBenhPage.jsx";
 import CapThuocPage from "./pages/KhamBenhChoQN/CapThuocPage.jsx";
 import ChuyenTuyenPage from "./pages/KhamBenhChoQN/ChuyenTuyenPage.jsx";
-import PlaceHolderPage from "./components/common/PlaceHolderPage.jsx";
+import BaoCaoPage from "./pages/BaoCao/BaoCaoPage.jsx";
 import DanhSachNoiTruPage from "./pages/NoiTru/DanhSachNoiTruPage.jsx";
 import DuTruPage from "./pages/KhoDuoc/DuTruPage.jsx";
 import NhapKhoPage from "./pages/KhoDuoc/NhapKhoPage.jsx";
@@ -106,7 +106,7 @@ export default function App() {
                         </Route>
                         <Route
                             path="bao-cao"
-                            element={<PlaceHolderPage title="Báo cáo" />}
+                            element={<BaoCaoPage />}
                         />
                         <Route
                             path="admin"
