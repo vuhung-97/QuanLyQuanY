@@ -28,4 +28,5 @@ class BenhAn(Base):
     chan_doan: Mapped[str | None] = mapped_column(Text, nullable=True)
     tinh_trang_ra_vien: Mapped[str | None] = mapped_column(Text, nullable=True)
     chi_tiet_benh_an: Mapped[str | None] = mapped_column(Text, nullable=True)
+    ma_nhom_benh: Mapped[str | None] = mapped_column(String(10), ForeignKey("dm_nhom_benh.ma_nhom"), nullable=True)
     tong_ket_benh_an: Mapped[str | None] = mapped_column(Text, nullable=True)

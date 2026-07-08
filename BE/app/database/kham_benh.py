@@ -18,4 +18,5 @@ class KhamBenh(Base):
     phuong_phap_dieu_tri: Mapped[str | None] = mapped_column(Text, nullable=True)
     kham_lan: Mapped[int | None] = mapped_column(Integer, nullable=True)
     chan_doan: Mapped[str | None] = mapped_column(Text, nullable=True)
+    ma_nhom_benh: Mapped[str | None] = mapped_column(String(10), ForeignKey("dm_nhom_benh.ma_nhom"), nullable=True)
     id_nguoi_dung: Mapped[str | None] = mapped_column(String(20), nullable=True)

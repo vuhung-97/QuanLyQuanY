@@ -7,6 +7,7 @@ from app.routes.chi_tiet_phieu_cham_soc import router as chi_tiet_phieu_cham_soc
 from app.routes.chi_tiet_phieu_nhap_kho import router as chi_tiet_phieu_nhap_kho_router
 from app.routes.chi_tiet_xuat_kho import router as chi_tiet_xuat_kho_router
 from app.routes.di_tuyen_sau_dieu_tri import router as di_tuyen_sau_dieu_tri_router
+from app.routes.dm_nhom_benh import router as dm_nhom_benh_router
 from app.routes.don_thuoc import router as don_thuoc_router
 from app.routes.don_vi import router as don_vi_router
 from app.routes.giay_gioi_thieu import router as giay_gioi_thieu_router
@@ -43,6 +44,7 @@ RESOURCE_ROUTERS = [
     chi_tiet_xuat_kho_router,
     chi_tiet_lich_kham_sk_nam_router,
     di_tuyen_sau_dieu_tri_router,
+    dm_nhom_benh_router,
     don_thuoc_router,
     don_vi_router,
     giay_gioi_thieu_router,
