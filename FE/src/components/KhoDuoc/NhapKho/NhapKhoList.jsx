@@ -5,11 +5,7 @@ import {
     Card,
     CardContent,
     Chip,
-    FormControl,
     IconButton,
-    InputLabel,
-    MenuItem,
-    Select,
     Stack,
     Tooltip,
 } from "@mui/material";
@@ -22,14 +18,13 @@ import {
 import DataTable from "@/components/common/DataTable.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import FilterModeToggle from "@/components/common/FilterModeToggle.jsx";
+import YearMonthFilter from "@/components/common/YearMonthFilter.jsx";
 import PaginationWidget from "@/components/common/PaginationWidget.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import { khoDuocService } from "@/services/khoDuocService.js";
-import { getNamOptions } from "@/utils/yearOptions.js";
 import NhapKhoDialog from "./NhapKhoDialog.jsx";
 
 const ROWS_PER_PAGE = 20;
-const NAM_OPTIONS = getNamOptions();
 const EMPTY_STATS = { tong: 0, choNhap: 0, daNhap: 0 };
 
 const STATUS_CHIP = {
@@ -41,6 +36,7 @@ export default function NhapKhoList() {
     const location = useLocation();
     const [filterMode, setFilterMode] = useState("chua_nhap");
     const [nam, setNam] = useState(null);
+    const [thang, setThang] = useState(null);
     const [rows, setRows] = useState([]);
     const [total, setTotal] = useState(0);
     const [page, setPage] = useState(1);
@@ -67,6 +63,11 @@ export default function NhapKhoList() {
         setPage(1);
     }, []);
 
+    const handleFilterThangChange = useCallback((value) => {
+        setThang(value || null);
+        setPage(1);
+    }, []);
+
     const fetchData = useCallback(async () => {
         setLoading(true);
         try {
@@ -76,6 +77,7 @@ export default function NhapKhoList() {
             };
             if (filterMode === "chua_nhap") params.trang_thai = "da_duyet";
             if (nam) params.nam = nam;
+            if (thang) params.thang = thang;
             const res = await khoDuocService.getDanhSachPhieuDuTru(params);
             const body = res.data || {};
             const allData = body.data || [];
@@ -95,13 +97,14 @@ export default function NhapKhoList() {
         } finally {
             setLoading(false);
         }
-    }, [page, filterMode, nam]);
+    }, [page, filterMode, nam, thang]);
 
     const fetchStats = useCallback(async () => {
         setStatsLoading(true);
         try {
             const params = {};
             if (nam) params.nam = nam;
+            if (thang) params.thang = thang;
             const res = await khoDuocService.getThongKePhieuDuTru(params);
             const d = res.data || {};
             setStats({
@@ -114,7 +117,7 @@ export default function NhapKhoList() {
         } finally {
             setStatsLoading(false);
         }
-    }, [nam]);
+    }, [nam, thang]);
 
     useEffect(() => {
         fetchData();
@@ -238,25 +241,15 @@ export default function NhapKhoList() {
                                 labelLeft="Tất cả"
                                 labelRight="Chưa nhập"
                             />
-                            <FormControl size="small" sx={{ minWidth: 100 }}>
-                                <InputLabel id="nam-label">Năm</InputLabel>
-                                <Select
-                                    labelId="nam-label"
-                                    value={nam ?? ""}
-                                    label="Năm"
-                                    onChange={(e) => {
-                                        setNam(e.target.value || null);
-                                        setPage(1);
-                                    }}
-                                >
-                                    <MenuItem value="">Tất cả</MenuItem>
-                                    {NAM_OPTIONS.map((y) => (
-                                        <MenuItem key={y} value={y}>
-                                            {y}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
+                            <YearMonthFilter
+                                nam={nam}
+                                onNamChange={(v) => {
+                                    setNam(v);
+                                    setPage(1);
+                                }}
+                                thang={thang}
+                                onThangChange={handleFilterThangChange}
+                            />
                         </Stack>
                     </Stack>
                     <Stack spacing={2.5}>

@@ -152,10 +152,13 @@ def thong_ke_lich_kham(
 def thong_ke_phieu_du_tru(
     db: Session = Depends(get_db),
     nam: int | None = Query(default=None),
+    thang: int | None = Query(default=None, ge=1, le=12),
 ):
     query = db.query(PhieuDuTru)
     if nam:
         query = query.filter(func.extract("year", PhieuDuTru.ngay_lap_phieu) == nam)
+    if thang:
+        query = query.filter(func.extract("month", PhieuDuTru.ngay_lap_phieu) == thang)
 
     tong = query.count()
     chua_duyet = query.filter(PhieuDuTru.trang_thai == "chua_duyet").count()
@@ -176,10 +179,13 @@ def thong_ke_phieu_du_tru(
 def thong_ke_phieu_xuat(
     db: Session = Depends(get_db),
     nam: int | None = Query(default=None),
+    thang: int | None = Query(default=None, ge=1, le=12),
 ):
     query = db.query(PhieuXuatKho)
     if nam:
         query = query.filter(func.extract("year", PhieuXuatKho.ngay_thang_nam) == nam)
+    if thang:
+        query = query.filter(func.extract("month", PhieuXuatKho.ngay_thang_nam) == thang)
 
     tong = query.count()
     cho_duyet = query.filter(PhieuXuatKho.trang_thai == "cho_duyet").count()

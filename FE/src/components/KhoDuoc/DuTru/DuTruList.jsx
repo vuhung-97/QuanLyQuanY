@@ -5,11 +5,8 @@ import {
     Card,
     CardContent,
     Chip,
-    FormControl,
     IconButton,
-    InputLabel,
     MenuItem,
-    Select,
     Stack,
     TextField,
     Tooltip,
@@ -32,15 +29,13 @@ import PaginationWidget from "@/components/common/PaginationWidget.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import PhieuDuTruDialog from "./PhieuDuTruDialog.jsx";
 import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
+import YearMonthFilter from "@/components/common/YearMonthFilter.jsx";
 import useDuTruList, {
     STATUS_CHIP,
     TRANG_THAI_OPTIONS,
     ROWS_PER_PAGE,
 } from "@/hooks/useDuTruList.js";
 import { decodeJWT } from "@/services/api.js";
-import { getNamOptions } from "@/utils/yearOptions.js";
-
-const NAM_OPTIONS = getNamOptions();
 
 const columns = [
     { key: "ma_phieu_du_tru", label: "Mã phiếu" },
@@ -165,6 +160,8 @@ function DuTruListFilterBar({
     onTrangThaiChange,
     nam,
     onNamChange,
+    thang,
+    onThangChange,
 }) {
     return (
         <Stack direction="row" spacing={1.5} sx={{ alignItems: "center" }}>
@@ -185,24 +182,12 @@ function DuTruListFilterBar({
                 ))}
             </TextField>
 
-            <FormControl size="small" sx={{ minWidth: 100 }}>
-                <InputLabel id="nam-label">Năm</InputLabel>
-                <Select
-                    labelId="nam-label"
-                    value={nam ?? ""}
-                    label="Năm"
-                    onChange={(e) => {
-                        onNamChange(e.target.value || null);
-                    }}
-                >
-                    <MenuItem value="">Tất cả</MenuItem>
-                    {NAM_OPTIONS.map((y) => (
-                        <MenuItem key={y} value={y}>
-                            {y}
-                        </MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
+            <YearMonthFilter
+                nam={nam}
+                onNamChange={onNamChange}
+                thang={thang}
+                onThangChange={onThangChange}
+            />
         </Stack>
     );
 }
@@ -216,6 +201,7 @@ export default function DuTruList() {
         loading,
         trangThai,
         nam,
+        thang,
         stats,
         statsLoading,
         openPhieu,
@@ -224,6 +210,7 @@ export default function DuTruList() {
         setPage,
         setTrangThai,
         setNam,
+        setThang,
         setOpenPhieu,
         setSnackbar,
         setConfirm,
@@ -325,6 +312,11 @@ export default function DuTruList() {
                                 nam={nam}
                                 onNamChange={(v) => {
                                     setNam(v);
+                                    setPage(1);
+                                }}
+                                thang={thang}
+                                onThangChange={(v) => {
+                                    setThang(v);
                                     setPage(1);
                                 }}
                             />

@@ -4,11 +4,8 @@ import {
     Card,
     CardContent,
     Chip,
-    FormControl,
     IconButton,
-    InputLabel,
     MenuItem,
-    Select,
     Stack,
     TextField,
     Tooltip,
@@ -29,9 +26,9 @@ import DataTable from "@/components/common/DataTable.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import PaginationWidget from "@/components/common/PaginationWidget.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
+import YearMonthFilter from "@/components/common/YearMonthFilter.jsx";
 import { khoDuocService } from "@/services/khoDuocService.js";
 import { decodeJWT } from "@/services/api.js";
-import { getNamOptions } from "@/utils/yearOptions.js";
 import PhieuXuatDialog from "./PhieuXuatDialog.jsx";
 import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
 
@@ -51,7 +48,6 @@ const STATUS_CHIP = {
 };
 
 const ROWS_PER_PAGE = 20;
-const NAM_OPTIONS = getNamOptions();
 const EMPTY_STATS = {
     tong: 0,
     cho_duyet: 0,
@@ -67,6 +63,7 @@ export default function XuatKhoList() {
     const [loading, setLoading] = useState(false);
     const [trangThai, setTrangThai] = useState("");
     const [nam, setNam] = useState(null);
+    const [thang, setThang] = useState(null);
     const [stats, setStats] = useState(EMPTY_STATS);
     const [statsLoading, setStatsLoading] = useState(false);
     const [confirm, setConfirm] = useState({
@@ -85,6 +82,11 @@ export default function XuatKhoList() {
         mode: "create",
     });
 
+    const handleFilterThangChange = useCallback((value) => {
+        setThang(value || null);
+        setPage(1);
+    }, []);
+
     const currentUser = useMemo(() => {
         const token = localStorage.getItem("datamed_access_token");
         return token ? decodeJWT(token) : null;
@@ -99,6 +101,7 @@ export default function XuatKhoList() {
             };
             if (trangThai) params.trang_thai = trangThai;
             if (nam) params.nam = nam;
+            if (thang) params.thang = thang;
             const res = await khoDuocService.getDanhSachPhieuXuat(params);
             const body = res.data || {};
             const allData = body.data || [];
@@ -111,13 +114,14 @@ export default function XuatKhoList() {
         } finally {
             setLoading(false);
         }
-    }, [page, trangThai, nam]);
+    }, [page, trangThai, nam, thang]);
 
     const fetchStats = useCallback(async () => {
         setStatsLoading(true);
         try {
             const params = {};
             if (nam) params.nam = nam;
+            if (thang) params.thang = thang;
             const res = await khoDuocService.getThongKePhieuXuat(params);
             setStats(res.data || EMPTY_STATS);
         } catch {
@@ -125,7 +129,7 @@ export default function XuatKhoList() {
         } finally {
             setStatsLoading(false);
         }
-    }, [nam]);
+    }, [nam, thang]);
 
     useEffect(() => {
         fetchData();
@@ -389,28 +393,15 @@ export default function XuatKhoList() {
                                         </MenuItem>
                                     ))}
                                 </TextField>
-                                <FormControl
-                                    size="small"
-                                    sx={{ minWidth: 100 }}
-                                >
-                                    <InputLabel id="nam-label">Năm</InputLabel>
-                                    <Select
-                                        labelId="nam-label"
-                                        value={nam ?? ""}
-                                        label="Năm"
-                                        onChange={(e) => {
-                                            setNam(e.target.value || null);
-                                            setPage(1);
-                                        }}
-                                    >
-                                        <MenuItem value="">Tất cả</MenuItem>
-                                        {NAM_OPTIONS.map((y) => (
-                                            <MenuItem key={y} value={y}>
-                                                {y}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
+                                <YearMonthFilter
+                                    nam={nam}
+                                    onNamChange={(v) => {
+                                        setNam(v);
+                                        setPage(1);
+                                    }}
+                                    thang={thang}
+                                    onThangChange={handleFilterThangChange}
+                                />
                             </Stack>
 
                             <Button

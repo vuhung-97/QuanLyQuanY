@@ -5,10 +5,6 @@ import {
     Card,
     CardContent,
     Chip,
-    FormControl,
-    InputLabel,
-    MenuItem,
-    Select,
     Stack,
     Typography,
 } from "@mui/material";
@@ -21,8 +17,8 @@ import {
     ExitToApp as ExitToAppIcon,
 } from "@mui/icons-material";
 import FilterModeToggle from "@/components/common/FilterModeToggle.jsx";
+import YearMonthFilter from "@/components/common/YearMonthFilter.jsx";
 import useDanhSachNoiTru from "@/hooks/useDanhSachNoiTru.jsx";
-import { getNamOptions } from "@/utils/yearOptions.js";
 import DataTable from "@/components/common/DataTable.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import PaginationWidget from "@/components/common/PaginationWidget.jsx";
@@ -178,12 +174,6 @@ export default function DanhSachNoiTru() {
         return items;
     }, [stats, filterMode]);
 
-    const NAM_OPTIONS = useMemo(() => getNamOptions(), []);
-
-    const THANG_OPTIONS = useMemo(() => {
-        return Array.from({ length: 12 }, (_, i) => i + 1);
-    }, []);
-
     return (
         <>
             <StatCardGrid items={statItems} loading={initialLoading} />
@@ -212,46 +202,12 @@ export default function DanhSachNoiTru() {
                                 labelLeft="Tất cả"
                                 labelRight="Đang điều trị"
                             />
-                            <FormControl size="small" sx={{ minWidth: 100 }}>
-                                <InputLabel id="nam-label">Năm</InputLabel>
-                                <Select
-                                    labelId="nam-label"
-                                    value={filterNam ?? ""}
-                                    label="Năm"
-                                    onChange={(e) =>
-                                        handleFilterNamChange(
-                                            e.target.value || null,
-                                        )
-                                    }
-                                >
-                                    <MenuItem value="">Tất cả</MenuItem>
-                                    {NAM_OPTIONS.map((y) => (
-                                        <MenuItem key={y} value={y}>
-                                            {y}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                            <FormControl size="small" sx={{ minWidth: 120 }}>
-                                <InputLabel id="thang-label">Tháng</InputLabel>
-                                <Select
-                                    labelId="thang-label"
-                                    value={filterThang ?? ""}
-                                    label="Tháng"
-                                    onChange={(e) =>
-                                        handleFilterThangChange(
-                                            e.target.value || null,
-                                        )
-                                    }
-                                >
-                                    <MenuItem value="">Tất cả</MenuItem>
-                                    {THANG_OPTIONS.map((m) => (
-                                        <MenuItem key={m} value={m}>
-                                            Tháng {m}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
+                            <YearMonthFilter
+                                nam={filterNam}
+                                onNamChange={handleFilterNamChange}
+                                thang={filterThang}
+                                onThangChange={handleFilterThangChange}
+                            />
                         </Stack>
                         <Button
                             variant="outlined"

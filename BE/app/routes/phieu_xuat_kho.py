@@ -26,12 +26,15 @@ def get_danh_sach_phieu_xuat(
     offset: int = Query(default=0, ge=0),
     trang_thai: str | None = Query(default=None),
     nam: int | None = Query(default=None),
+    thang: int | None = Query(default=None, ge=1, le=12),
 ):
     query = db.query(PhieuXuatKho)
     if trang_thai:
         query = query.filter(PhieuXuatKho.trang_thai == trang_thai)
     if nam:
         query = query.filter(func.extract("year", PhieuXuatKho.ngay_thang_nam) == nam)
+    if thang:
+        query = query.filter(func.extract("month", PhieuXuatKho.ngay_thang_nam) == thang)
     total = query.count()
     rows = (
         query.order_by(PhieuXuatKho.ngay_thang_nam.desc().nullslast())

@@ -32,6 +32,7 @@ export default function useDuTruList() {
     const [loading, setLoading] = useState(false);
     const [trangThai, setTrangThai] = useState("");
     const [nam, setNam] = useState(null);
+    const [thang, setThang] = useState(null);
     const [stats, setStats] = useState(EMPTY_STATS);
     const [statsLoading, setStatsLoading] = useState(false);
     const [openPhieu, setOpenPhieu] = useState({ open: false, id: null, mode: "create" });
@@ -44,6 +45,7 @@ export default function useDuTruList() {
             const params = { limit: ROWS_PER_PAGE, offset: (page - 1) * ROWS_PER_PAGE };
             if (trangThai) params.trang_thai = trangThai;
             if (nam) params.nam = nam;
+            if (thang) params.thang = thang;
             const res = await khoDuocService.getDanhSachPhieuDuTru(params);
             const body = res.data || {};
             const allData = body.data || [];
@@ -56,13 +58,14 @@ export default function useDuTruList() {
         } finally {
             setLoading(false);
         }
-    }, [page, trangThai, nam]);
+    }, [page, trangThai, nam, thang]);
 
     const fetchStats = useCallback(async () => {
         setStatsLoading(true);
         try {
             const params = {};
             if (nam) params.nam = nam;
+            if (thang) params.thang = thang;
             const res = await khoDuocService.getThongKePhieuDuTru(params);
             setStats(res.data || EMPTY_STATS);
         } catch {
@@ -70,7 +73,7 @@ export default function useDuTruList() {
         } finally {
             setStatsLoading(false);
         }
-    }, [nam]);
+    }, [nam, thang]);
 
     useEffect(() => {
         fetchData();
@@ -114,6 +117,7 @@ export default function useDuTruList() {
         loading,
         trangThai,
         nam,
+        thang,
         stats,
         statsLoading,
         openPhieu,
@@ -122,6 +126,7 @@ export default function useDuTruList() {
         setPage,
         setTrangThai,
         setNam,
+        setThang,
         setOpenPhieu,
         setSnackbar,
         setConfirm,

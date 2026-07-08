@@ -10,6 +10,7 @@ export default function useDanhSachKhamBenh() {
     const [refreshing, setRefreshing] = useState(false);
     const [searchText, setSearchText] = useState("");
     const [nam, setNam] = useState(null);
+    const [thang, setThang] = useState(null);
     const [selectedDate, setSelectedDate] = useState(dayjs());
     const {
         filterMode,
@@ -45,6 +46,7 @@ export default function useDanhSachKhamBenh() {
             } else {
                 const params = { limit: ROWS_PER_PAGE, offset };
                 if (nam) params.nam = nam;
+                if (thang) params.thang = thang;
                 const res = await khamBenhService.getAll(params);
                 setExaminations(res.data.data || []);
                 setTotalRecords(res.data.total || 0);
@@ -59,7 +61,7 @@ export default function useDanhSachKhamBenh() {
             setRefreshing(false);
             setInitialLoading(false);
         }
-    }, [filterMode, selectedDate, offset, ROWS_PER_PAGE, nam]);
+    }, [filterMode, selectedDate, offset, ROWS_PER_PAGE, nam, thang]);
 
     useEffect(() => { loadData(); }, [loadData]);
 
@@ -127,6 +129,11 @@ export default function useDanhSachKhamBenh() {
         setOpenExamForm(true);
     }, []);
 
+    const handleFilterThangChange = useCallback((value) => {
+        setThang(value || null);
+        setPage(1);
+    }, []);
+
     const handleCloseExamForm = useCallback(() => {
         setOpenExamForm(false);
         setSelectedExamId(null);
@@ -179,5 +186,8 @@ export default function useDanhSachKhamBenh() {
         offset,
         nam,
         setNam,
+        thang,
+        setThang,
+        handleFilterThangChange,
     };
 }

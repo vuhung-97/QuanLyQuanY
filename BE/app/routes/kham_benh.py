@@ -1,7 +1,7 @@
 from datetime import date, datetime, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import inspect
+from sqlalchemy import extract, inspect
 from sqlalchemy.orm import Session
 
 from app.core.dependencies import get_current_user, require_permissions
@@ -34,6 +34,7 @@ def get_kham_benh_all(
     limit: int = Query(default=100, ge=1, le=500),
     offset: int = Query(default=0, ge=0),
     nam: int | None = Query(default=None, description="Năm (VD: 2026)"),
+    thang: int | None = Query(default=None, ge=1, le=12, description="Tháng (1-12)"),
     db: Session = Depends(get_db),
 ):
     base_query = (
@@ -46,6 +47,10 @@ def get_kham_benh_all(
         base_query = base_query.filter(
             KhamBenh.ngay_kham >= date(nam, 1, 1),
             KhamBenh.ngay_kham < date(nam + 1, 1, 1),
+        )
+    if thang:
+        base_query = base_query.filter(
+            extract('month', KhamBenh.ngay_kham) == thang
         )
     total = base_query.count()
     records = base_query.offset(offset).limit(limit).all()

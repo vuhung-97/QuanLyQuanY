@@ -5,14 +5,9 @@ import {
     Card,
     CardContent,
     Chip,
-    FormControl,
-    InputLabel,
-    MenuItem,
-    Select,
     Stack,
     Typography,
 } from "@mui/material";
-import FilterModeToggle from "@/components/common/FilterModeToggle.jsx";
 import {
     Delete as DeleteIcon,
     Download as DownloadIcon,
@@ -21,8 +16,9 @@ import {
     PersonAddAlt as PersonAddAltIcon,
     Refresh as RefreshIcon,
 } from "@mui/icons-material";
+import FilterModeToggle from "@/components/common/FilterModeToggle.jsx";
+import YearMonthFilter from "@/components/common/YearMonthFilter.jsx";
 import useDanhSachKhamBenh from "@/hooks/useDanhSachKhamBenh.jsx";
-import { getNamOptions } from "@/utils/yearOptions.js";
 import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
 import DataTable from "@/components/common/DataTable.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
@@ -33,8 +29,6 @@ import KhamBenhForm from "./KhamBenhForm.jsx";
 import TiepNhanQnDialog from "./TiepNhanQnDialog.jsx";
 import { STATUS_MAP } from "@/constants/khamBenhConstants.js";
 import { formatDateTime } from "@/utils/date.js";
-
-const NAM_OPTIONS = getNamOptions();
 
 const columns = [
     {
@@ -160,6 +154,8 @@ export default function DanhSachKhamBenh() {
         offset,
         nam,
         setNam,
+        thang,
+        handleFilterThangChange,
     } = useDanhSachKhamBenh();
 
     const statItems = useMemo(
@@ -223,34 +219,15 @@ export default function DanhSachKhamBenh() {
                                 onDateChange={setSelectedDate}
                             />
                             {filterMode === "tat_ca" && (
-                                <FormControl
-                                    size="small"
-                                    sx={{ minWidth: 100 }}
-                                >
-                                    <InputLabel id="nam-label">
-                                        Năm
-                                    </InputLabel>
-                                    <Select
-                                        labelId="nam-label"
-                                        value={nam ?? ""}
-                                        label="Năm"
-                                        onChange={(e) => {
-                                            setNam(
-                                                e.target.value || null,
-                                            );
-                                            setPage(1);
-                                        }}
-                                    >
-                                        <MenuItem value="">
-                                            Tất cả
-                                        </MenuItem>
-                                        {NAM_OPTIONS.map((y) => (
-                                            <MenuItem key={y} value={y}>
-                                                {y}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
+                                <YearMonthFilter
+                                    nam={nam}
+                                    onNamChange={(v) => {
+                                        setNam(v);
+                                        setPage(1);
+                                    }}
+                                    thang={thang}
+                                    onThangChange={handleFilterThangChange}
+                                />
                             )}
                         </Stack>
                         <Toolbar
