@@ -32,6 +32,7 @@ from app.routes.thuoc_vtyt import router as thuoc_vtyt_router
 from app.routes.vai_tro import router as vai_tro_router
 from app.routes.vai_tro_quyen import router as vai_tro_quyen_router
 from app.routes.backup import router as backup_router
+from app.routes.bao_cao import router as bao_cao_router
 from app.routes.thong_ke import router as thong_ke_router
 
 RESOURCE_ROUTERS = [
@@ -68,6 +69,7 @@ RESOURCE_ROUTERS = [
     nhat_ky_dang_nhap_router,
     nhat_ky_thao_tac_router,
     backup_router,
+    bao_cao_router,
     thong_ke_router,
 ]
 
