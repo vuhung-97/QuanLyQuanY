@@ -1,4 +1,4 @@
-import { forwardRef, memo } from "react";
+import { forwardRef, memo, useCallback, useState } from "react";
 import {
     Card,
     CardContent,
@@ -37,63 +37,79 @@ const specialities = [
     { id: "rang_ham_mat", label: "Răng hàm mặt" },
 ];
 
-const ChuyenKhoaRow = memo(
-    ({ sp, noteValue, loaiValue, onChange, readOnly }) => {
-        return (
-            <Grid size={12}>
-                <Grid container spacing={2} sx={{ alignItems: "center" }}>
-                    <Grid size={{ xs: 12, sm: 3 }}>
-                        <Typography
-                            variant="body2"
-                            fontWeight="600"
-                            color="primary"
+const ChuyenKhoaRow = memo(({ sp, dataRef, readOnly }) => {
+    const noteName = `${sp.id}_note`;
+    const loaiName = `${sp.id}_loai`;
+
+    const [noteVal, setNoteVal] = useState(() => dataRef.current?.[noteName] ?? "");
+    const [loaiVal, setLoaiVal] = useState(() => dataRef.current?.[loaiName] ?? PHAN_LOAI_OPTIONS[0]);
+
+    const handleNoteChange = useCallback((e) => {
+        const v = e.target.value;
+        setNoteVal(v);
+        dataRef.current[noteName] = v;
+    }, [noteName, dataRef]);
+
+    const handleLoaiChange = useCallback((e) => {
+        const v = e.target.value;
+        setLoaiVal(v);
+        dataRef.current[loaiName] = v;
+    }, [loaiName, dataRef]);
+
+    return (
+        <Grid size={12}>
+            <Grid container spacing={2} sx={{ alignItems: "center" }}>
+                <Grid size={{ xs: 12, sm: 3 }}>
+                    <Typography
+                        variant="body2"
+                        fontWeight="600"
+                        color="primary"
+                    >
+                        {sp.label}
+                    </Typography>
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                    <NormalToggleField
+                        name={noteName}
+                        label="Kết quả khám"
+                        value={noteVal}
+                        onChange={handleNoteChange}
+                        readOnly={readOnly}
+                        size="small"
+                    />
+                </Grid>
+                <Grid size={{ xs: 12, sm: 3 }}>
+                    <FormControl fullWidth size="small">
+                        <InputLabel>Phân loại</InputLabel>
+                        <Select
+                            name={loaiName}
+                            value={loaiVal}
+                            onChange={handleLoaiChange}
+                            label="Phân loại"
+                            disabled={readOnly}
                         >
-                            {sp.label}
-                        </Typography>
-                    </Grid>
-                    <Grid size={{ xs: 12, sm: 6 }}>
-                        <NormalToggleField
-                            name={`${sp.id}_note`}
-                            label="Kết quả khám"
-                            value={noteValue}
-                            onChange={onChange}
-                            readOnly={readOnly}
-                            size="small"
-                        />
-                    </Grid>
-                    <Grid size={{ xs: 12, sm: 3 }}>
-                        <FormControl fullWidth size="small">
-                            <InputLabel>Phân loại</InputLabel>
-                            <Select
-                                name={`${sp.id}_loai`}
-                                value={loaiValue}
-                                onChange={onChange}
-                                label="Phân loại"
-                                disabled={readOnly}
-                            >
-                                {PHAN_LOAI_OPTIONS.map((loai) => (
-                                    <MenuItem key={loai} value={loai}>
-                                        {loai}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    </Grid>
-                    <Grid size={12}>
-                        <Divider sx={{ opacity: 0.5 }} />
-                    </Grid>
+                            {PHAN_LOAI_OPTIONS.map((loai) => (
+                                <MenuItem key={loai} value={loai}>
+                                    {loai}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </Grid>
+                <Grid size={12}>
+                    <Divider sx={{ opacity: 0.5 }} />
                 </Grid>
             </Grid>
-        );
-    },
-);
+        </Grid>
+    );
+});
 
 const LamSangTab = memo(
     forwardRef(function LamSangTab(
         { initialData, cardStyle, readOnly = false },
         ref,
     ) {
-        const { data, handleChange } = useFormTab(initialData, ref);
+        const { dataRef } = useFormTab(initialData, ref);
 
         return (
             <>
@@ -105,9 +121,7 @@ const LamSangTab = memo(
                                 <ChuyenKhoaRow
                                     key={sp.id}
                                     sp={sp}
-                                    noteValue={data[`${sp.id}_note`]}
-                                    loaiValue={data[`${sp.id}_loai`]}
-                                    onChange={handleChange}
+                                    dataRef={dataRef}
                                     readOnly={readOnly}
                                 />
                             ))}

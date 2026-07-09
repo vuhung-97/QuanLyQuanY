@@ -1,4 +1,4 @@
-import { forwardRef, memo } from "react";
+import { forwardRef, memo, useCallback, useState } from "react";
 import {
     Box,
     Button,
@@ -89,31 +89,127 @@ const getBmiStatus = (bmiStr) => {
     return { text: "Béo phì", color: "error" };
 };
 
+const RangeFieldSM = memo(({ name, label, dataRef, readOnly, unit, step, min, xs, sm, md, onChangeExtra }) => {
+    const [val, setVal] = useState(() => dataRef.current?.[name] ?? "");
 
+    const handleChange = useCallback((e) => {
+        const v = e.target.value;
+        setVal(v);
+        dataRef.current[name] = v;
+        onChangeExtra?.(name, v);
+    }, [name, dataRef, onChangeExtra]);
 
-const MatNumberField = memo(({ name, label, value, onChange, readOnly }) => (
-    <Grid size={{ xs: 6, sm: 4, md: true }}>
-        <TextField
+    return (
+        <RangeField
             name={name}
             label={label}
-            type="number"
-            value={value}
-            onChange={onChange}
-            disabled={readOnly}
-            fullWidth
-            size="small"
-            slotProps={{ htmlInput: { min: 1, max: 10, step: 1 } }}
+            value={val}
+            unit={unit}
+            onChange={handleChange}
+            readOnly={readOnly}
+            step={step}
+            min={min}
+            xs={xs}
+            sm={sm}
+            md={md}
         />
-    </Grid>
-));
+    );
+});
 
-const BmiDisplay = memo(({ bmi }) => {
+const NormalToggleFieldSM = memo(({ name, label, dataRef, readOnly, multiline, minRows, grid }) => {
+    const [val, setVal] = useState(() => dataRef.current?.[name] ?? "");
+
+    const handleChange = useCallback((e) => {
+        const v = e.target.value;
+        setVal(v);
+        dataRef.current[e.target.name] = v;
+    }, [dataRef]);
+
+    return (
+        <Grid size={grid}>
+            <NormalToggleField
+                label={label}
+                name={name}
+                value={val}
+                onChange={handleChange}
+                readOnly={readOnly}
+                size="small"
+                normalText="Không"
+                multiline={multiline}
+                minRows={minRows}
+            />
+        </Grid>
+    );
+});
+
+const MatNumberFieldSM = memo(({ name, label, dataRef, readOnly }) => {
+    const [val, setVal] = useState(() => dataRef.current?.[name] ?? "");
+
+    const handleChange = useCallback((e) => {
+        const v = e.target.value;
+        setVal(v);
+        dataRef.current[name] = v;
+    }, [name, dataRef]);
+
+    return (
+        <Grid size={{ xs: 6, sm: 4, md: true }}>
+            <TextField
+                name={name}
+                label={label}
+                type="number"
+                value={val}
+                onChange={handleChange}
+                disabled={readOnly}
+                fullWidth
+                size="small"
+                slotProps={{ htmlInput: { min: 1, max: 10, step: 1 } }}
+            />
+        </Grid>
+    );
+});
+
+const SelectFieldSM = memo(({ name, label, dataRef, readOnly, options }) => {
+    const [val, setVal] = useState(() => dataRef.current?.[name] ?? options[0]);
+
+    const handleChange = useCallback((e) => {
+        const v = e.target.value;
+        setVal(v);
+        dataRef.current[name] = v;
+    }, [name, dataRef]);
+
+    return (
+        <Grid size={{ xs: 6, sm: 4, md: true }}>
+            <FormControl fullWidth size="small">
+                <InputLabel>{label}</InputLabel>
+                <Select
+                    name={name}
+                    value={val}
+                    onChange={handleChange}
+                    label={label}
+                    disabled={readOnly}
+                >
+                    {options.map((loai) => (
+                        <MenuItem key={loai} value={loai}>
+                            {loai}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+        </Grid>
+    );
+});
+
+const BmiDisplaySM = memo(({ dataRef, tick }) => {
+    const h = parseFloat(dataRef.current.chieu_cao);
+    const w = parseFloat(dataRef.current.can_nang);
+    let bmi = "";
+    if (h > 0 && w > 0) {
+        bmi = (w / Math.pow(h / 100, 2)).toFixed(1);
+    }
     const info = getBmiStatus(bmi);
     return (
         <Grid size={12}>
-            <Box
-                sx={{ mt: 1, display: "flex", alignItems: "center", gap: 1.5 }}
-            >
+            <Box sx={{ mt: 1, display: "flex", alignItems: "center", gap: 1.5 }}>
                 <Typography variant="body2" fontWeight="600">
                     BMI: {bmi || "—"}
                 </Typography>
@@ -131,7 +227,7 @@ const BmiDisplay = memo(({ bmi }) => {
 });
 
 const MatKhamSection = memo(
-    ({ data, onChange, readOnly, showCoKinh, onToggleCoKinh }) => (
+    ({ dataRef, readOnly, showCoKinh, onToggleCoKinh }) => (
         <Card
             sx={{
                 borderRadius: 2,
@@ -146,12 +242,11 @@ const MatKhamSection = memo(
                 <SectionTitle>Khám mắt</SectionTitle>
                 <Grid container spacing={2} sx={{ alignItems: "center" }}>
                     {MAT_KHONG_KINH_FIELDS.map((f) => (
-                        <MatNumberField
+                        <MatNumberFieldSM
                             key={f.name}
                             name={f.name}
                             label={f.label}
-                            value={data[f.name]}
-                            onChange={onChange}
+                            dataRef={dataRef}
                             readOnly={readOnly}
                         />
                     ))}
@@ -174,33 +269,21 @@ const MatKhamSection = memo(
                     </Grid>
                     {showCoKinh &&
                         MAT_CO_KINH_FIELDS.map((f) => (
-                            <MatNumberField
+                            <MatNumberFieldSM
                                 key={f.name}
                                 name={f.name}
                                 label={f.label}
-                                value={data[f.name]}
-                                onChange={onChange}
+                                dataRef={dataRef}
                                 readOnly={readOnly}
                             />
                         ))}
-                    <Grid size={{ xs: 6, sm: 4, md: true }}>
-                        <FormControl fullWidth size="small">
-                            <InputLabel>Phân loại mắt</InputLabel>
-                            <Select
-                                name="mat_loai"
-                                value={data.mat_loai ?? "Loại 1"}
-                                onChange={onChange}
-                                label="Phân loại mắt"
-                                disabled={readOnly}
-                            >
-                                {PHAN_LOAI_OPTIONS.map((loai) => (
-                                    <MenuItem key={loai} value={loai}>
-                                        {loai}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    </Grid>
+                    <SelectFieldSM
+                        name="mat_loai"
+                        label="Phân loại mắt"
+                        dataRef={dataRef}
+                        readOnly={readOnly}
+                        options={PHAN_LOAI_OPTIONS}
+                    />
                 </Grid>
             </CardContent>
         </Card>
@@ -212,10 +295,22 @@ const TongQuanTab = memo(
         { initialData, cardStyle, readOnly = false },
         ref,
     ) {
-        const { data, showCoKinh, handleChange, toggleCoKinh } = useTongQuanTab(
+        const { dataRef, showCoKinh, toggleCoKinh } = useTongQuanTab(
             initialData,
             ref,
         );
+        const [bmiTick, setBmiTick] = useState(0);
+
+        const onBmiChange = useCallback(() => {
+            const h = parseFloat(dataRef.current.chieu_cao);
+            const w = parseFloat(dataRef.current.can_nang);
+            if (h > 0 && w > 0) {
+                dataRef.current.bmi = (w / Math.pow(h / 100, 2)).toFixed(1);
+            } else {
+                dataRef.current.bmi = "";
+            }
+            setBmiTick((t) => t + 1);
+        }, [dataRef]);
 
         return (
             <Stack spacing={2}>
@@ -224,19 +319,16 @@ const TongQuanTab = memo(
                         <SectionTitle>Tiền sử</SectionTitle>
                         <Grid container spacing={2}>
                             {TIEN_SU_FIELDS.map((f) => (
-                                <Grid size={f.grid} key={f.name}>
-                                    <NormalToggleField
-                                        label={f.label}
-                                        name={f.name}
-                                        value={data[f.name]}
-                                        onChange={handleChange}
-                                        readOnly={readOnly}
-                                        size="small"
-                                        normalText="Không"
-                                        multiline={f.multiline}
-                                        minRows={f.minRows}
-                                    />
-                                </Grid>
+                                <NormalToggleFieldSM
+                                    key={f.name}
+                                    name={f.name}
+                                    label={f.label}
+                                    dataRef={dataRef}
+                                    readOnly={readOnly}
+                                    multiline={f.multiline}
+                                    minRows={f.minRows}
+                                    grid={f.grid}
+                                />
                             ))}
                         </Grid>
                     </CardContent>
@@ -251,19 +343,23 @@ const TongQuanTab = memo(
                             sx={{ alignItems: "center" }}
                         >
                             {THE_LUC_FIELDS.map((f) => (
-                                <RangeField
+                                <RangeFieldSM
                                     key={f.name}
                                     name={f.name}
                                     label={f.label}
-                                    value={data[f.name]}
-                                    unit={f.unit}
-                                    onChange={handleChange}
+                                    dataRef={dataRef}
                                     readOnly={readOnly}
+                                    unit={f.unit}
                                     step={f.step}
                                     min={f.min}
+                                    onChangeExtra={
+                                        f.name === "chieu_cao" || f.name === "can_nang"
+                                            ? onBmiChange
+                                            : undefined
+                                    }
                                 />
                             ))}
-                            <BmiDisplay bmi={data.bmi} />
+                            <BmiDisplaySM dataRef={dataRef} tick={bmiTick} />
                         </Grid>
                     </CardContent>
                 </Card>
@@ -277,14 +373,13 @@ const TongQuanTab = memo(
                             sx={{ alignItems: "center" }}
                         >
                             {VITAL_SIGNS_FIELDS.map((f) => (
-                                <RangeField
+                                <RangeFieldSM
                                     key={f.name}
                                     name={f.name}
                                     label={f.label}
-                                    value={data[f.name]}
-                                    unit={f.unit}
-                                    onChange={handleChange}
+                                    dataRef={dataRef}
                                     readOnly={readOnly}
+                                    unit={f.unit}
                                     step={f.step}
                                     min={f.min}
                                 />
@@ -294,8 +389,7 @@ const TongQuanTab = memo(
                 </Card>
 
                 <MatKhamSection
-                    data={data}
-                    onChange={handleChange}
+                    dataRef={dataRef}
                     readOnly={readOnly}
                     showCoKinh={showCoKinh}
                     onToggleCoKinh={toggleCoKinh}

@@ -1,20 +1,15 @@
-import { useCallback, useImperativeHandle, useState } from "react";
+import { useRef, useImperativeHandle } from "react";
 
 export default function useFormTab(initialData, ref) {
-    const [data, setData] = useState({ ...initialData });
+    const dataRef = useRef({ ...initialData });
 
     useImperativeHandle(
         ref,
         () => ({
-            getData: () => ({ ...data }),
+            getData: () => ({ ...dataRef.current }),
         }),
-        [data],
+        [],
     );
 
-    const handleChange = useCallback((e) => {
-        const { name, value } = e.target;
-        setData((prev) => ({ ...prev, [name]: value }));
-    }, []);
-
-    return { data, handleChange };
+    return { dataRef };
 }

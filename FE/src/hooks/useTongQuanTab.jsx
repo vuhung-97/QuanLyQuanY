@@ -1,65 +1,34 @@
-import { useCallback, useEffect, useImperativeHandle, useState } from "react";
+import { useCallback, useImperativeHandle, useRef, useState } from "react";
 
 export default function useTongQuanTab(initialData, ref) {
-    const [data, setData] = useState({ ...initialData });
+    const dataRef = useRef({ ...initialData });
     const [showCoKinh, setShowCoKinh] = useState(false);
-
-    useEffect(() => {
-        const h = parseFloat(initialData?.chieu_cao);
-        const w = parseFloat(initialData?.can_nang);
-        if (h > 0 && w > 0) {
-            setData((prev) => ({
-                ...prev,
-                bmi: (w / Math.pow(h / 100, 2)).toFixed(1),
-            }));
-        }
-    }, []);
 
     useImperativeHandle(
         ref,
         () => ({
-            getData: () => ({ ...data }),
-        }),
-        [data],
-    );
-
-    const handleChange = useCallback((e) => {
-        const { name, value } = e.target;
-        setData((prev) => {
-            const updated = { ...prev, [name]: value };
-            if (name === "chieu_cao" || name === "can_nang") {
-                const h = parseFloat(
-                    name === "chieu_cao" ? value : prev.chieu_cao,
-                );
-                const w = parseFloat(
-                    name === "can_nang" ? value : prev.can_nang,
-                );
+            getData: () => {
+                const data = { ...dataRef.current };
+                const h = parseFloat(data.chieu_cao);
+                const w = parseFloat(data.can_nang);
                 if (h > 0 && w > 0) {
-                    updated.bmi = (w / Math.pow(h / 100, 2)).toFixed(1);
+                    data.bmi = (w / Math.pow(h / 100, 2)).toFixed(1);
                 } else {
-                    updated.bmi = "";
+                    data.bmi = "";
                 }
-            }
-            return updated;
-        });
-    }, []);
-
-    const handleToggle = useCallback((name) => {
-        setData((prev) => ({
-            ...prev,
-            [name]: prev[name] === "Không" ? "" : "Không",
-        }));
-    }, []);
+                return data;
+            },
+        }),
+        [],
+    );
 
     const toggleCoKinh = useCallback(() => {
         setShowCoKinh((p) => !p);
     }, []);
 
     return {
-        data,
+        dataRef,
         showCoKinh,
-        handleChange,
-        handleToggle,
         toggleCoKinh,
     };
 }

@@ -1,4 +1,4 @@
-import { forwardRef, memo } from "react";
+import { forwardRef, memo, useCallback, useState } from "react";
 import { Card, CardContent, Grid, MenuItem, TextField, Typography } from "@mui/material";
 import useFormTab from "@/hooks/useFormTab";
 import RangeField from "../common/fields/RangeField.jsx";
@@ -32,12 +32,67 @@ const xetNghiemNuocTieuFields = [
     { name: "nuoc_tieu_te_bao", label: "Tế bào nước tiểu" },
 ];
 
+const RangeFieldSM = memo(({ name, label, dataRef, readOnly, unit, xs, sm, md }) => {
+    const [val, setVal] = useState(() => dataRef.current?.[name] ?? "");
+
+    const handleChange = useCallback((e) => {
+        const v = e.target.value;
+        setVal(v);
+        dataRef.current[name] = v;
+    }, [name, dataRef]);
+
+    return (
+        <RangeField
+            name={name}
+            label={label}
+            value={val}
+            unit={unit}
+            onChange={handleChange}
+            readOnly={readOnly}
+            xs={xs} sm={sm} md={md}
+        />
+    );
+});
+
+const SelectFieldSM = memo(({ name, label, dataRef, readOnly, options }) => {
+    const [val, setVal] = useState(() => dataRef.current?.[name] ?? "");
+
+    const handleChange = useCallback((e) => {
+        const v = e.target.value;
+        setVal(v);
+        dataRef.current[name] = v;
+    }, [name, dataRef]);
+
+    const outOfRange = isOutOfRange(name, val);
+
+    return (
+        <Grid size={{ xs: 12, sm: 4 }}>
+            <TextField
+                select
+                name={name}
+                label={label}
+                value={val}
+                onChange={handleChange}
+                fullWidth
+                size="medium"
+                error={outOfRange}
+                disabled={readOnly}
+            >
+                <MenuItem value="">-- Chọn --</MenuItem>
+                {options.map((opt) => (
+                    <MenuItem key={opt} value={opt}>{opt}</MenuItem>
+                ))}
+            </TextField>
+        </Grid>
+    );
+});
+
 const XetNghiemTab = memo(
     forwardRef(function XetNghiemTab(
         { initialData, cardStyle, readOnly = false },
         ref,
     ) {
-        const { data, handleChange } = useFormTab(initialData, ref);
+        const { dataRef } = useFormTab(initialData, ref);
 
         return (
             <>
@@ -46,14 +101,13 @@ const XetNghiemTab = memo(
                         <SectionTitle>Xét nghiệm máu</SectionTitle>
                         <Grid container spacing={2}>
                             {xetNghiemMauFields.map((f) => (
-                                <RangeField
+                                <RangeFieldSM
                                     key={f.name}
                                     name={f.name}
                                     label={f.label}
-                                    value={data[f.name]}
-                                    unit={f.unit}
-                                    onChange={handleChange}
+                                    dataRef={dataRef}
                                     readOnly={readOnly}
+                                    unit={f.unit}
                                     xs={12} sm={3} md={3}
                                 />
                             ))}
@@ -66,36 +120,24 @@ const XetNghiemTab = memo(
                         <SectionTitle>Xét nghiệm nước tiểu</SectionTitle>
                         <Grid container spacing={2}>
                             {xetNghiemNuocTieuFields.map((f) => {
-                                const outOfRange = isOutOfRange(f.name, data[f.name]);
                                 if (f.type === "select") {
                                     return (
-                                        <Grid size={{ xs: 12, sm: 4 }} key={f.name}>
-                                            <TextField
-                                                select
-                                                name={f.name}
-                                                label={f.label}
-                                                value={data[f.name]}
-                                                onChange={handleChange}
-                                                fullWidth
-                                                size="medium"
-                                                error={outOfRange}
-                                                disabled={readOnly}
-                                            >
-                                                <MenuItem value="">-- Chọn --</MenuItem>
-                                                {f.options.map((opt) => (
-                                                    <MenuItem key={opt} value={opt}>{opt}</MenuItem>
-                                                ))}
-                                            </TextField>
-                                        </Grid>
+                                        <SelectFieldSM
+                                            key={f.name}
+                                            name={f.name}
+                                            label={f.label}
+                                            dataRef={dataRef}
+                                            readOnly={readOnly}
+                                            options={f.options}
+                                        />
                                     );
                                 }
                                 return (
-                                    <RangeField
+                                    <RangeFieldSM
                                         key={f.name}
                                         name={f.name}
                                         label={f.label}
-                                        value={data[f.name]}
-                                        onChange={handleChange}
+                                        dataRef={dataRef}
                                         readOnly={readOnly}
                                         xs={12} sm={4} md={4}
                                     />
