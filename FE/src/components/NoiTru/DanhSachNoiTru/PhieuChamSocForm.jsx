@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import {
     Button,
     Dialog,
@@ -13,6 +13,98 @@ import {
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
 import { Delete as DeleteIcon, Add as AddIcon } from "@mui/icons-material";
 import KhoThuocDialog from "@/components/KhamBenhChoQN/KhamBenh/KhoThuocDialog.jsx";
+import useThuocList from "@/hooks/useThuocList.jsx";
+
+let _itemKey = 0;
+const nextKey = () => ++_itemKey;
+
+const FormTextField = memo(function FormTextField({
+    name,
+    initialValue,
+    onUpdateRef,
+    ...props
+}) {
+    const [value, setValue] = useState(initialValue ?? "");
+    useEffect(() => {
+        setValue(initialValue ?? "");
+    }, [initialValue]);
+
+    const handleChange = useCallback(
+        (e) => {
+            const v = e.target.value;
+            setValue(v);
+            onUpdateRef(name, v);
+        },
+        [name, onUpdateRef],
+    );
+
+    return <TextField value={value} onChange={handleChange} {...props} />;
+});
+
+const ThuocItemRow = memo(function ThuocItemRow({
+    item,
+    index,
+    onUpdateRef,
+    onRemove,
+    readOnly,
+}) {
+    const [soLuong, setSoLuong] = useState(item.so_luong ?? 1);
+
+    useEffect(() => {
+        setSoLuong(item.so_luong ?? 1);
+    }, [item.so_luong]);
+
+    const handleSoLuongChange = useCallback(
+        (e) => {
+            const v = Math.max(1, parseInt(e.target.value) || 1);
+            setSoLuong(v);
+            onUpdateRef(index, "so_luong", v);
+        },
+        [index, onUpdateRef],
+    );
+
+    return (
+        <Stack
+            direction="row"
+            spacing={1}
+            sx={{
+                alignItems: "center",
+            }}
+        >
+            <Typography variant="body2" sx={{ flex: 1 }}>
+                {index + 1}. {item.ten_thuoc_vtyt || item.ma_thuoc_vtyt}
+            </Typography>
+            <TextField
+                type="number"
+                size="small"
+                value={soLuong}
+                onChange={handleSoLuongChange}
+                disabled={readOnly}
+                slotProps={{
+                    htmlInput: {
+                        min: 1,
+                        style: { width: 60 },
+                    },
+                }}
+                sx={{
+                    "& .MuiInputBase-root": { fontSize: "0.8125rem" },
+                }}
+            />
+            <Typography variant="body2" color="text.secondary">
+                ({item.don_vi_tinh || "?"})
+            </Typography>
+            {!readOnly && (
+                <IconButton
+                    size="small"
+                    color="error"
+                    onClick={() => onRemove(index)}
+                >
+                    <DeleteIcon fontSize="small" />
+                </IconButton>
+            )}
+        </Stack>
+    );
+});
 
 export default function PhieuChamSocForm({
     open,
@@ -23,20 +115,24 @@ export default function PhieuChamSocForm({
     defaultBuong = "",
     readOnly = false,
 }) {
-    const [formState, setFormState] = useState({
+    const formRef = useRef({
         thoi_gian: new Date().toISOString().slice(0, 16),
         so_giuong: "",
         buong: "",
         theo_doi_dien_bien: "",
         thuc_hien_y_lenh: "",
     });
-    const [thuocItems, setThuocItems] = useState([]);
+    const itemsRef = useRef([]);
+    const [keys, setKeys] = useState([]);
+    const keysRef = useRef(keys);
+    keysRef.current = keys;
     const [openThemThuoc, setOpenThemThuoc] = useState(false);
+    const { getCache } = useThuocList();
 
     useEffect(() => {
         if (!open) return;
         if (initialData) {
-            setFormState({
+            formRef.current = {
                 thoi_gian: initialData.thoi_gian
                     ? new Date(initialData.thoi_gian).toISOString().slice(0, 16)
                     : new Date().toISOString().slice(0, 16),
@@ -44,43 +140,76 @@ export default function PhieuChamSocForm({
                 buong: initialData.buong || "",
                 theo_doi_dien_bien: initialData.theo_doi_dien_bien || "",
                 thuc_hien_y_lenh: initialData.thuc_hien_y_lenh || "",
-            });
-            setThuocItems(initialData.chi_tiet || []);
+            };
+            const chiTiet = initialData.chi_tiet || [];
+            itemsRef.current = chiTiet.map((ct) => ({
+                ...ct,
+                so_luong: ct.so_luong ?? 1,
+            }));
+            setKeys(chiTiet.map(() => nextKey()));
         } else {
-            setFormState({
+            formRef.current = {
                 thoi_gian: new Date().toISOString().slice(0, 16),
                 so_giuong: defaultGiuong || "",
                 buong: defaultBuong || "",
                 theo_doi_dien_bien: "",
                 thuc_hien_y_lenh: "",
-            });
-            setThuocItems([]);
+            };
+            itemsRef.current = [];
+            setKeys([]);
         }
     }, [open, initialData, defaultGiuong, defaultBuong]);
 
     const updateField = useCallback((name, value) => {
-        setFormState((prev) => ({ ...prev, [name]: value }));
+        formRef.current[name] = value;
+    }, []);
+
+    const updateItem = useCallback((idx, field, value) => {
+        if (itemsRef.current[idx]) {
+            itemsRef.current[idx][field] = value;
+        }
     }, []);
 
     const handleThemThuocConfirm = useCallback((items) => {
-        setThuocItems((prev) => [...prev, ...items]);
+        const newKeys = [];
+        for (const item of items) {
+            itemsRef.current.push({
+                ma_thuoc_vtyt: item.ma_thuoc_vtyt,
+                ten_thuoc_vtyt: item.ten_thuoc_vtyt,
+                don_vi_tinh: item.don_vi_tinh || "",
+                so_luong: item.so_luong ?? 1,
+                so_luong_max: item.so_luong_max,
+            });
+            newKeys.push(nextKey());
+        }
+        setKeys((prev) => [...prev, ...newKeys]);
+        setOpenThemThuoc(false);
     }, []);
 
-    const handleXoaThuoc = useCallback((index) => {
-        setThuocItems((prev) => prev.filter((_, i) => i !== index));
+    const handleXoaThuoc = useCallback((idx) => {
+        itemsRef.current.splice(idx, 1);
+        setKeys((prev) => prev.filter((_, i) => i !== idx));
     }, []);
 
     const handleSave = useCallback(() => {
         onSave({
-            ...formState,
-            thoi_gian: new Date(formState.thoi_gian).toISOString(),
-            chi_tiet: thuocItems,
+            ...formRef.current,
+            thoi_gian: new Date(formRef.current.thoi_gian).toISOString(),
+            chi_tiet: [...itemsRef.current],
         });
-    }, [formState, thuocItems, onSave]);
+    }, [onSave]);
+
+    const sortedKeys = keys;
 
     return (
         <>
-            <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+            <Dialog
+                open={open}
+                onClose={onClose}
+                maxWidth="md"
+                fullWidth
+                sx={{ "& .MuiDialog-paper": { height: "80vh" } }}
+            >
                 <DialogTitleWrapper wrap={false}>
                     {initialData ? "Sửa phiếu chăm sóc" : "Thêm phiếu chăm sóc"}
                 </DialogTitleWrapper>
@@ -98,14 +227,13 @@ export default function PhieuChamSocForm({
                         )}
                         <Grid container spacing={2}>
                             <Grid size={{ xs: 12, md: 6 }}>
-                                <TextField
+                                <FormTextField
+                                    name="thoi_gian"
+                                    initialValue={formRef.current.thoi_gian}
+                                    onUpdateRef={updateField}
                                     label="Thời gian"
                                     type="datetime-local"
                                     fullWidth
-                                    value={formState.thoi_gian}
-                                    onChange={(e) =>
-                                        updateField("thoi_gian", e.target.value)
-                                    }
                                     disabled={readOnly}
                                     slotProps={{
                                         inputLabel: { shrink: true },
@@ -113,56 +241,50 @@ export default function PhieuChamSocForm({
                                 />
                             </Grid>
                             <Grid size={{ xs: 6, md: 3 }}>
-                                <TextField
+                                <FormTextField
+                                    name="so_giuong"
+                                    initialValue={formRef.current.so_giuong}
+                                    onUpdateRef={updateField}
                                     label="Số giường"
                                     fullWidth
-                                    value={formState.so_giuong}
-                                    onChange={(e) =>
-                                        updateField("so_giuong", e.target.value)
-                                    }
                                     disabled={readOnly}
                                 />
                             </Grid>
                             <Grid size={{ xs: 6, md: 3 }}>
-                                <TextField
+                                <FormTextField
+                                    name="buong"
+                                    initialValue={formRef.current.buong}
+                                    onUpdateRef={updateField}
                                     label="Buồng"
                                     fullWidth
-                                    value={formState.buong}
-                                    onChange={(e) =>
-                                        updateField("buong", e.target.value)
-                                    }
                                     disabled={readOnly}
                                 />
                             </Grid>
                             <Grid size={{ xs: 12 }}>
-                                <TextField
+                                <FormTextField
+                                    name="theo_doi_dien_bien"
+                                    initialValue={
+                                        formRef.current.theo_doi_dien_bien
+                                    }
+                                    onUpdateRef={updateField}
                                     label="Diễn biến"
                                     multiline
                                     minRows={3}
                                     fullWidth
-                                    value={formState.theo_doi_dien_bien}
-                                    onChange={(e) =>
-                                        updateField(
-                                            "theo_doi_dien_bien",
-                                            e.target.value,
-                                        )
-                                    }
                                     disabled={readOnly}
                                 />
                             </Grid>
                             <Grid size={{ xs: 12 }}>
-                                <TextField
+                                <FormTextField
+                                    name="thuc_hien_y_lenh"
+                                    initialValue={
+                                        formRef.current.thuc_hien_y_lenh
+                                    }
+                                    onUpdateRef={updateField}
                                     label="Y lệnh đã thực hiện"
                                     multiline
                                     minRows={3}
                                     fullWidth
-                                    value={formState.thuc_hien_y_lenh}
-                                    onChange={(e) =>
-                                        updateField(
-                                            "thuc_hien_y_lenh",
-                                            e.target.value,
-                                        )
-                                    }
                                     disabled={readOnly}
                                 />
                             </Grid>
@@ -192,7 +314,7 @@ export default function PhieuChamSocForm({
                                     </Button>
                                 )}
                             </Stack>
-                            {thuocItems.length === 0 ? (
+                            {sortedKeys.length === 0 ? (
                                 <Typography
                                     variant="body2"
                                     color="text.secondary"
@@ -201,70 +323,15 @@ export default function PhieuChamSocForm({
                                 </Typography>
                             ) : (
                                 <Stack spacing={1}>
-                                    {thuocItems.map((item, idx) => (
-                                        <Stack
-                                            key={idx}
-                                            direction="row"
-                                            spacing={1}
-                                            sx={{ alignItems: "center" }}
-                                        >
-                                            <Typography
-                                                variant="body2"
-                                                sx={{ flex: 1 }}
-                                            >
-                                                {idx + 1}.{" "}
-                                                {item.ten_thuoc_vtyt ||
-                                                    item.ma_thuoc_vtyt}
-                                            </Typography>
-                                            <TextField
-                                                type="number"
-                                                size="small"
-                                                value={item.so_luong}
-                                                onChange={(e) => {
-                                                    const newItems = [
-                                                        ...thuocItems,
-                                                    ];
-                                                    newItems[idx] = {
-                                                        ...newItems[idx],
-                                                        so_luong: Math.max(
-                                                            1,
-                                                            parseInt(
-                                                                e.target.value,
-                                                            ) || 1,
-                                                        ),
-                                                    };
-                                                    setThuocItems(newItems);
-                                                }}
-                                                slotProps={{
-                                                    htmlInput: {
-                                                        min: 1,
-                                                        style: { width: 60 },
-                                                    },
-                                                }}
-                                                sx={{
-                                                    "& .MuiInputBase-root": {
-                                                        fontSize: "0.8125rem",
-                                                    },
-                                                }}
-                                            />
-                                            <Typography
-                                                variant="body2"
-                                                color="text.secondary"
-                                            >
-                                                ({item.don_vi_tinh || "?"})
-                                            </Typography>
-                                            {!readOnly && (
-                                                <IconButton
-                                                    size="small"
-                                                    color="error"
-                                                    onClick={() =>
-                                                        handleXoaThuoc(idx)
-                                                    }
-                                                >
-                                                    <DeleteIcon fontSize="small" />
-                                                </IconButton>
-                                            )}
-                                        </Stack>
+                                    {sortedKeys.map((key, idx) => (
+                                        <ThuocItemRow
+                                            key={key}
+                                            item={itemsRef.current[idx]}
+                                            index={idx}
+                                            onUpdateRef={updateItem}
+                                            onRemove={handleXoaThuoc}
+                                            readOnly={readOnly}
+                                        />
                                     ))}
                                 </Stack>
                             )}
@@ -291,6 +358,7 @@ export default function PhieuChamSocForm({
                 open={openThemThuoc}
                 onClose={() => setOpenThemThuoc(false)}
                 onConfirm={handleThemThuocConfirm}
+                cachedItems={getCache()}
             />
         </>
     );

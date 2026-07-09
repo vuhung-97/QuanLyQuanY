@@ -60,7 +60,13 @@ export default function LapBenhAnForm({
     const infoSource = benhAn || exam;
 
     return (
-        <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+        <Dialog
+            open={open}
+            onClose={onClose}
+            maxWidth="md"
+            fullWidth
+            sx={{ "& .MuiDialog-paper": { height: "80vh" } }}
+        >
             <DialogTitleWrapper>
                 {isEdit ? "Sửa bệnh án nội trú" : "Lập bệnh án nội trú"}
             </DialogTitleWrapper>
@@ -190,7 +196,9 @@ export default function LapBenhAnForm({
                                             value={selectedNhomBenh}
                                             getOptionLabel={(o) => o.ten_nhom}
                                             onChange={(_, v) =>
-                                                setMaNhomBenh(v ? v.ma_nhom : "")
+                                                setMaNhomBenh(
+                                                    v ? v.ma_nhom : "",
+                                                )
                                             }
                                             renderInput={(params) => (
                                                 <TextField

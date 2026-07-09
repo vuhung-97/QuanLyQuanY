@@ -136,9 +136,7 @@ export default function ChiTietBenhAn({ open, benhAnId, onClose, onSaved }) {
                 fullWidth
                 sx={{ "& .MuiDialog-paper": { height: "90vh" } }}
             >
-                <DialogTitleWrapper>
-                    Chi tiết bệnh án
-                </DialogTitleWrapper>
+                <DialogTitleWrapper>Chi tiết bệnh án</DialogTitleWrapper>
                 <DialogContent dividers>
                     {loading ? (
                         <Typography
@@ -203,7 +201,7 @@ export default function ChiTietBenhAn({ open, benhAnId, onClose, onSaved }) {
                         </Stack>
                     )}
                 </DialogContent>
-                <DialogActions sx={{ px: 3, py: 2 }}>
+                <DialogActions sx={{ p: 1 }}>
                     <Button onClick={onClose} sx={{ textTransform: "none" }}>
                         Đóng
                     </Button>
