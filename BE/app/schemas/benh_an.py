@@ -18,6 +18,7 @@ class BenhAnBase(SchemaBase):
     chan_doan: str | None = None
     tinh_trang_ra_vien: str | None = None
     chi_tiet_benh_an: str | None = None
+    ma_nhom_benh: str | None = Field(default=None, max_length=10)
     tong_ket_benh_an: str | None = None
 
 
@@ -39,6 +40,7 @@ class BenhAnUpdate(SchemaBase):
     chan_doan: str | None = None
     tinh_trang_ra_vien: str | None = None
     chi_tiet_benh_an: str | None = None
+    ma_nhom_benh: str | None = None
     tong_ket_benh_an: str | None = None
 
 
@@ -56,5 +58,6 @@ class BenhAnReadDetail(BenhAnRead):
     ten_buong: str | None = None
     ten_giuong: str | None = None
     nghe_nghiep: str | None = None
+    ten_nhom: str | None = None
     ten_nguoi_lap_ba: str | None = None
     vai_tro_nguoi_lap_ba: str | None = None

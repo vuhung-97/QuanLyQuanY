@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import api from "../services/api";
 import { noiTruService } from "../services/noiTruService";
 
 export default function useLapBenhAnForm({ open, onSave: externalSave, benhAn }) {
@@ -6,9 +7,11 @@ export default function useLapBenhAnForm({ open, onSave: externalSave, benhAn })
     const [giuongList, setGiuongList] = useState([]);
     const [loadingBuong, setLoadingBuong] = useState(false);
     const [loadingGiuong, setLoadingGiuong] = useState(false);
+    const [nhomBenhList, setNhomBenhList] = useState([]);
 
     const [maBuong, setMaBuong] = useState("");
     const [maGiuong, setMaGiuong] = useState("");
+    const [maNhomBenh, setMaNhomBenh] = useState("");
     const [ngayNhapVien, setNgayNhapVien] = useState(new Date().toISOString());
     const [errors, setErrors] = useState({ ma_buong: "", ma_giuong: "" });
 
@@ -70,6 +73,10 @@ export default function useLapBenhAnForm({ open, onSave: externalSave, benhAn })
             fetch
                 .then((res) => setBuongList(Array.isArray(res.data) ? res.data : res.data?.data || []))
                 .finally(() => setLoadingBuong(false));
+
+            api.get("/dm_nhom_benh", { params: { limit: 200 } })
+                .then((res) => setNhomBenhList(Array.isArray(res.data) ? res.data : res.data?.data || []))
+                .catch(() => {});
         }
     }, [open, isEdit]);
 
@@ -78,6 +85,7 @@ export default function useLapBenhAnForm({ open, onSave: externalSave, benhAn })
             if (isEdit) {
                 setMaBuong(benhAn.ma_buong || "");
                 setMaGiuong(benhAn.ma_giuong || "");
+                setMaNhomBenh(benhAn.ma_nhom_benh || "");
                 setNgayNhapVien(benhAn.ngay_nhap_vien || new Date().toISOString());
                 setErrors({ ma_buong: "", ma_giuong: "" });
                 if (nhietDoRef.current) nhietDoRef.current.value = defaultValues.nhiet_do || "";
@@ -88,6 +96,7 @@ export default function useLapBenhAnForm({ open, onSave: externalSave, benhAn })
             } else {
                 setMaBuong("");
                 setMaGiuong("");
+                setMaNhomBenh("");
                 setGiuongList([]);
                 setNgayNhapVien(new Date().toISOString());
                 setErrors({ ma_buong: "", ma_giuong: "" });
@@ -143,6 +152,7 @@ export default function useLapBenhAnForm({ open, onSave: externalSave, benhAn })
         const payload = {
             ma_buong: maBuong,
             ma_giuong: maGiuong,
+            ma_nhom_benh: maNhomBenh,
             ly_do_nhap_vien: getVal(lyDoRef),
             doi_tuong: "",
             quan_ly_nguoi_benh: "",
@@ -159,23 +169,28 @@ export default function useLapBenhAnForm({ open, onSave: externalSave, benhAn })
             payload.ngay_nhap_vien = ngayNhapVien;
         }
         externalSave(payload);
-    }, [maBuong, maGiuong, ngayNhapVien, isEdit, externalSave]);
+    }, [maBuong, maGiuong, maNhomBenh, ngayNhapVien, isEdit, externalSave]);
 
     const selectedBuong = buongList.find((b) => b.ma_buong === maBuong) || null;
     const selectedGiuong = giuongList.find((g) => g.ma_giuong === maGiuong) || null;
+    const selectedNhomBenh = nhomBenhList.find((n) => n.ma_nhom === maNhomBenh) || null;
 
     return {
         buongList,
         giuongList,
+        nhomBenhList,
         loadingBuong,
         loadingGiuong,
         maBuong,
         maGiuong,
+        maNhomBenh,
         ngayNhapVien,
         selectedBuong,
         selectedGiuong,
+        selectedNhomBenh,
         setMaBuong,
         setMaGiuong,
+        setMaNhomBenh,
         errors,
         refMap,
         lyDoRef,

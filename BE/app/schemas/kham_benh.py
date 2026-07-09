@@ -12,6 +12,7 @@ class KhamBenhBase(SchemaBase):
     phuong_phap_dieu_tri: str | None = None
     kham_lan: int | None = None
     chan_doan: str | None = None
+    ma_nhom_benh: str | None = Field(default=None, max_length=10)
 
 
 class KhamBenhCreate(KhamBenhBase):
@@ -25,6 +26,7 @@ class KhamBenhUpdate(SchemaBase):
     phuong_phap_dieu_tri: str | None = None
     kham_lan: int | None = None
     chan_doan: str | None = None
+    ma_nhom_benh: str | None = None
 
 
 class KhamBenhRead(KhamBenhBase):

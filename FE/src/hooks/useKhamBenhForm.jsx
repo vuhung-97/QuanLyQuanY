@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import api from "@/services/api.js";
 import { khamBenhService } from "@/services/khamBenhService.js";
 import { parseHuongDieuTri } from "@/utils/khamBenhUtils.js";
 import { updateThuocCacheItem } from "./useThuocList.jsx";
@@ -22,6 +23,8 @@ export default function useKhamBenhForm({
     const [trieuChung, setTrieuChung] = useState("");
     const [chanDoan, setChanDoan] = useState("");
     const [phuongPhap, setPhuongPhap] = useState("");
+    const [maNhomBenh, setMaNhomBenh] = useState("");
+    const [nhomBenhList, setNhomBenhList] = useState([]);
     const [prescriptionItems, setPrescriptionItems] = useState([]);
     const [openPrescription, setOpenPrescription] = useState(false);
     const [openReferral, setOpenReferral] = useState(false);
@@ -70,6 +73,7 @@ export default function useKhamBenhForm({
                 setTrieuChung(data.trieu_chung || "");
                 setChanDoan(data.chan_doan || "");
                 setPhuongPhap(data.phuong_phap_dieu_tri || "");
+                setMaNhomBenh(data.ma_nhom_benh || "");
                 setPrescriptionItems(items);
                 if (data.ma_quan_nhan) {
                     try {
@@ -107,6 +111,11 @@ export default function useKhamBenhForm({
             }
         }
         load();
+
+        api.get("/dm_nhom_benh", { params: { limit: 200 } })
+            .then((res) => setNhomBenhList(Array.isArray(res.data) ? res.data : res.data?.data || []))
+            .catch(() => {});
+
         return () => {
             ignore = true;
         };
@@ -118,6 +127,7 @@ export default function useKhamBenhForm({
             trieu_chung: trieuChung,
             chan_doan: chanDoan,
             phuong_phap_dieu_tri: phuongPhap,
+            ma_nhom_benh: maNhomBenh || null,
         };
         if (hasPrescription) {
             await khamBenhService.completeExamination(exam.ma_kham_benh, {
@@ -321,6 +331,9 @@ export default function useKhamBenhForm({
         setConfirmAdmission,
         handleAdmissionClick,
         handleAdmissionConfirm,
+        maNhomBenh,
+        setMaNhomBenh,
+        nhomBenhList,
         snackbar,
         setSnackbar,
     };

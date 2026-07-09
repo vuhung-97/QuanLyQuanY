@@ -3,7 +3,7 @@ from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from app.database.models import MODEL_REGISTRY
+from app.core.security import RESOURCES
 from app.database.session import get_db
 
 
@@ -21,4 +21,4 @@ def health_check(db: Session = Depends(get_db)) -> dict[str, str]:
 
 @router.get("/resources")
 def list_resources() -> dict[str, list[str]]:
-    return {"resources": sorted(MODEL_REGISTRY)}
+    return {"resources": sorted(RESOURCES)}

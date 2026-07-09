@@ -36,14 +36,17 @@ export default function LapBenhAnForm({
     const {
         buongList,
         giuongList,
+        nhomBenhList,
         loadingBuong,
         loadingGiuong,
         maBuong,
         ngayNhapVien,
         selectedBuong,
         selectedGiuong,
+        selectedNhomBenh,
         setMaBuong,
         setMaGiuong,
+        setMaNhomBenh,
         errors,
         refMap,
         lyDoRef,
@@ -174,6 +177,32 @@ export default function LapBenhAnForm({
                                     }
                                     inputRef={lyDoRef}
                                 />
+                            </CardContent>
+                        </Card>
+
+                        <Card variant="outlined" sx={{ borderRadius: 2 }}>
+                            <CardContent>
+                                <SectionTitle>Phân loại bệnh</SectionTitle>
+                                <Grid container spacing={2}>
+                                    <Grid size={{ xs: 12, md: 6 }}>
+                                        <Autocomplete
+                                            options={nhomBenhList}
+                                            value={selectedNhomBenh}
+                                            getOptionLabel={(o) => o.ten_nhom}
+                                            onChange={(_, v) =>
+                                                setMaNhomBenh(v ? v.ma_nhom : "")
+                                            }
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label="Nhóm bệnh"
+                                                    fullWidth
+                                                    size="medium"
+                                                />
+                                            )}
+                                        />
+                                    </Grid>
+                                </Grid>
                             </CardContent>
                         </Card>
 

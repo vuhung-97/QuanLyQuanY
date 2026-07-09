@@ -36,6 +36,9 @@ export default function KhamBenhForm({
         setChanDoan,
         phuongPhap,
         setPhuongPhap,
+        maNhomBenh,
+        setMaNhomBenh,
+        nhomBenhList,
         prescriptionItems,
         handleSave,
         handlePrescriptionSave,
@@ -125,6 +128,9 @@ export default function KhamBenhForm({
                                     onChanDoanChange={setChanDoan}
                                     phuongPhap={phuongPhap}
                                     onPhuongPhapChange={setPhuongPhap}
+                                    maNhomBenh={maNhomBenh}
+                                    nhomBenhList={nhomBenhList}
+                                    onMaNhomBenhChange={setMaNhomBenh}
                                     readOnly={isReadOnly}
                                 />
                             </Grid>

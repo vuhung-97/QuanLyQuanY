@@ -16,6 +16,7 @@ from app.database.session import get_db
 from app.database.thuoc_vtyt import ThuocVtyt
 from app.routes.base import _run_crud, create_crud_router
 from app.database.buong import Buong
+from app.database.dm_nhom_benh import DmNhomBenh
 from app.database.giuong import Giuong
 from app.schemas.benh_an import BenhAnCreate, BenhAnReadDetail, BenhAnUpdate
 from app.services.medical_examination import MedicalExaminationService
@@ -154,17 +155,19 @@ def get_benh_an_chi_tiet(id: str, db: Session = Depends(get_db)):
             DonVi.ten_don_vi,
             Buong.ten_buong,
             Giuong.ten_giuong,
+            DmNhomBenh.ten_nhom,
         )
         .join(QuanNhan, BenhAn.ma_quan_nhan == QuanNhan.ma_quan_nhan, isouter=True)
         .join(DonVi, QuanNhan.ma_don_vi == DonVi.ma_don_vi, isouter=True)
         .join(Buong, BenhAn.ma_buong == Buong.ma_buong, isouter=True)
         .join(Giuong, BenhAn.ma_giuong == Giuong.ma_giuong, isouter=True)
+        .join(DmNhomBenh, BenhAn.ma_nhom_benh == DmNhomBenh.ma_nhom, isouter=True)
         .filter(BenhAn.ma_benh_an == id)
         .first()
     )
     if not result:
         raise HTTPException(status_code=404, detail="Không tìm thấy bệnh án.")
-    ba, ho_ten, cap_bac, chuc_vu, so_dien_thoai, so_the_bhyt, nghe_nghiep, ten_don_vi, ten_buong, ten_giuong = result
+    ba, ho_ten, cap_bac, chuc_vu, so_dien_thoai, so_the_bhyt, nghe_nghiep, ten_don_vi, ten_buong, ten_giuong, ten_nhom = result
     d = {c.key: getattr(ba, c.key) for c in inspect(BenhAn).columns}
     d["ho_ten"] = ho_ten
     d["cap_bac"] = cap_bac
@@ -175,6 +178,7 @@ def get_benh_an_chi_tiet(id: str, db: Session = Depends(get_db)):
     d["ten_don_vi"] = ten_don_vi
     d["ten_buong"] = ten_buong
     d["ten_giuong"] = ten_giuong
+    d["ten_nhom"] = ten_nhom
     if ba.ma_nguoi_dung:
         nd = (
             db.query(NguoiDung.ho_ten, VaiTro.ten_vai_tro)

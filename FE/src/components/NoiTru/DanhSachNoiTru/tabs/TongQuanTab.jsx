@@ -121,6 +121,12 @@ export default function TongQuanTab({ benhAn, onEdit }) {
                         </Grid>
                         <Grid size={{ xs: 12, sm: 6, md: 2.4 }}>
                             <InfoItem
+                                label="Nhóm bệnh:"
+                                value={benhAn.ten_nhom || "--"}
+                            />
+                        </Grid>
+                        <Grid size={{ xs: 12, sm: 6, md: 2.4 }}>
+                            <InfoItem
                                 label="Ngày ra viện:"
                                 value={
                                     tongKet?.ngay_ra

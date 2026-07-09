@@ -8,7 +8,7 @@ class DmNhomBenhBase(SchemaBase):
 
 
 class DmNhomBenhCreate(DmNhomBenhBase):
-    ma_nhom: str = Field(max_length=10)
+    ma_nhom: str | None = Field(default=None, max_length=10)
 
 
 class DmNhomBenhUpdate(SchemaBase):
