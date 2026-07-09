@@ -1,39 +1,25 @@
-import { useCallback, useRef } from "react";
+import { useCallback } from "react";
 import { khamBenhService } from "@/services/khamBenhService.js";
+import useStaticList, {
+    ensureCached,
+    getCacheValue,
+    invalidateCache,
+    updateCacheItem,
+} from "@/hooks/useStaticList.js";
 
-let sharedCache = null;
-let lastFetchTime = 0;
-const CACHE_TTL_MS = 5 * 60 * 1000;
+const CACHE_URL = "/thuoc_vtyt";
+const CACHE_PARAMS = { sort_by: "phan_loai" };
+const PAGE_SIZE = 500;
 
 export default function useThuocList() {
-    const cacheRef = useRef(sharedCache);
-    const fetchTimeRef = useRef(lastFetchTime);
+    useStaticList(CACHE_URL, {
+        params: CACHE_PARAMS,
+        pageSize: PAGE_SIZE,
+    });
 
     const fetchAll = useCallback(async ({ force } = {}) => {
-        const now = Date.now();
-        if (!force && cacheRef.current && (now - fetchTimeRef.current) < CACHE_TTL_MS) {
-            return cacheRef.current;
-        }
-        const LIMIT = 500;
-        let offset = 0;
-        let all = [];
-        while (true) {
-            const res = await khamBenhService.listThuoc({
-                limit: LIMIT,
-                offset,
-                sort_by: "phan_loai",
-            });
-            const items = res.data || [];
-            if (items.length === 0) break;
-            all = all.concat(items);
-            if (items.length < LIMIT) break;
-            offset += LIMIT;
-        }
-        sharedCache = all;
-        lastFetchTime = Date.now();
-        cacheRef.current = all;
-        fetchTimeRef.current = lastFetchTime;
-        return all;
+        if (force) invalidateCache(CACHE_URL);
+        return ensureCached(CACHE_URL, CACHE_PARAMS, PAGE_SIZE);
     }, []);
 
     const refreshAll = useCallback(() => fetchAll({ force: true }), [fetchAll]);
@@ -43,22 +29,15 @@ export default function useThuocList() {
         return res.data || [];
     }, []);
 
-    const getCache = useCallback(() => cacheRef.current || [], []);
+    const getCache = useCallback(() => getCacheValue(CACHE_URL), []);
 
     return { fetchAll, refreshAll, searchThuoc, getCache, clearThuocCache };
 }
 
 export function clearThuocCache() {
-    sharedCache = null;
-    lastFetchTime = 0;
+    invalidateCache(CACHE_URL);
 }
 
 export function updateThuocCacheItem(maThuocVtyt, delta) {
-    if (!sharedCache) return;
-    for (const item of sharedCache) {
-        if (item.ma_thuoc_vtyt === maThuocVtyt) {
-            item.so_luong = (item.so_luong || 0) + delta;
-            break;
-        }
-    }
+    updateCacheItem(CACHE_URL, "ma_thuoc_vtyt", maThuocVtyt, "so_luong", delta);
 }

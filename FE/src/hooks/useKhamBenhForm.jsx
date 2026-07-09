@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import api from "@/services/api.js";
 import { khamBenhService } from "@/services/khamBenhService.js";
+import useStaticList from "@/hooks/useStaticList.js";
 import { parseHuongDieuTri } from "@/utils/khamBenhUtils.js";
 import { updateThuocCacheItem } from "./useThuocList.jsx";
 
@@ -24,7 +24,9 @@ export default function useKhamBenhForm({
     const [chanDoan, setChanDoan] = useState("");
     const [phuongPhap, setPhuongPhap] = useState("");
     const [maNhomBenh, setMaNhomBenh] = useState("");
-    const [nhomBenhList, setNhomBenhList] = useState([]);
+    const nhomBenhList = useStaticList("/dm_nhom_benh", {
+        pageSize: 200,
+    });
     const [prescriptionItems, setPrescriptionItems] = useState([]);
     const [openPrescription, setOpenPrescription] = useState(false);
     const [openReferral, setOpenReferral] = useState(false);
@@ -112,10 +114,6 @@ export default function useKhamBenhForm({
         }
         load();
 
-        api.get("/dm_nhom_benh", { params: { limit: 200 } })
-            .then((res) => setNhomBenhList(Array.isArray(res.data) ? res.data : res.data?.data || []))
-            .catch(() => {});
-
         return () => {
             ignore = true;
         };
@@ -197,6 +195,7 @@ export default function useKhamBenhForm({
     }, []);
 
     const handleChipClick = useCallback((symptom) => {
+        if (isReadOnly) return;
         setTrieuChung((prev) => {
             if (!prev.trim()) return symptom + ", ";
 

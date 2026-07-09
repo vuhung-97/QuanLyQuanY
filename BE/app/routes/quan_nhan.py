@@ -31,26 +31,32 @@ def get_quan_nhan_danh_sach(
     offset: int = Query(default=0, ge=0),
     search: str | None = Query(default=None),
     ma_don_vi: str | None = Query(default=None),
+    show_all: bool = Query(
+        default=False,
+        description="Include hospitalized/transferred soldiers",
+    ),
 ):
-    hosp_exists = (
-        db.query(BenhAn)
-        .filter(
-            BenhAn.ma_quan_nhan == QuanNhan.ma_quan_nhan,
-            BenhAn.trang_thai == "đang_điều_trị",
-        )
-        .exists()
-    )
+    query = db.query(QuanNhan)
 
-    transfer_exists = (
-        db.query(DiTuyenSauDieuTri)
-        .filter(
-            DiTuyenSauDieuTri.ma_quan_nhan == QuanNhan.ma_quan_nhan,
-            DiTuyenSauDieuTri.ngay_ve.is_(None),
+    if not show_all:
+        hosp_exists = (
+            db.query(BenhAn)
+            .filter(
+                BenhAn.ma_quan_nhan == QuanNhan.ma_quan_nhan,
+                BenhAn.trang_thai == "đang_điều_trị",
+            )
+            .exists()
         )
-        .exists()
-    )
+        transfer_exists = (
+            db.query(DiTuyenSauDieuTri)
+            .filter(
+                DiTuyenSauDieuTri.ma_quan_nhan == QuanNhan.ma_quan_nhan,
+                DiTuyenSauDieuTri.ngay_ve.is_(None),
+            )
+            .exists()
+        )
+        query = query.filter(~hosp_exists, ~transfer_exists)
 
-    query = db.query(QuanNhan).filter(~hosp_exists, ~transfer_exists)
     if search:
         q = f"%{search}%"
         query = query.filter(QuanNhan.ho_ten.ilike(q) | QuanNhan.ma_quan_nhan.ilike(q))
@@ -63,7 +69,30 @@ def get_quan_nhan_danh_sach(
         .limit(limit)
         .all()
     )
-    return {"data": rows, "total": total}
+
+    if not show_all:
+        return {"data": rows, "total": total}
+
+    active_benh_an = {
+        r[0]
+        for r in db.query(BenhAn.ma_quan_nhan)
+        .filter(BenhAn.trang_thai == "đang_điều_trị")
+        .all()
+    }
+    active_transfer = {
+        r[0]
+        for r in db.query(DiTuyenSauDieuTri.ma_quan_nhan)
+        .filter(DiTuyenSauDieuTri.ngay_ve.is_(None))
+        .all()
+    }
+
+    result = []
+    for qn in rows:
+        d = {c.name: getattr(qn, c.name) for c in qn.__table__.columns}
+        d["is_dang_dieu_tri"] = qn.ma_quan_nhan in active_benh_an
+        d["is_da_chuyen_tuyen"] = qn.ma_quan_nhan in active_transfer
+        result.append(d)
+    return {"data": result, "total": total}
 
 
 @pre_router.get(

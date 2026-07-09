@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import useStaticList from "@/hooks/useStaticList.js";
 import {
     Autocomplete,
     Dialog,
@@ -9,13 +10,12 @@ import {
 } from "@mui/material";
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
 import DataTable from "@/components/common/DataTable.jsx";
-import { khamBenhService } from "@/services/khamBenhService.js";
 import { formatDate } from "@/utils/date.js";
-import useDebounce from "@/hooks/useDebounce.jsx";
 import { buildTree, flattenTree } from "@/utils/treeUtils.js";
+import ConfirmDialog from "@/components/common/ConfirmDialog";
+import SearchBarDebounced from "@/components/common/SearchBarDebounced.jsx";
 
 const ROWS_PER_PAGE = 50;
-const BATCH = 500;
 
 const QN_COLUMNS = [
     { key: "stt", label: "STT", sx: { width: 60 } },
@@ -40,23 +40,23 @@ export default function ChonQuanNhanDialog({
     title = "Danh sách quân nhân",
     fetchFn,
 }) {
-    const [allSoldiers, setAllSoldiers] = useState([]);
     const [page, setPage] = useState(0);
-    const [filterText, setFilterText] = useState("");
-    const debouncedFilterText = useDebounce(filterText);
+    const [searchTerm, setSearchTerm] = useState("");
     const [selectedUnit, setSelectedUnit] = useState(null);
-    const [donViFull, setDonViFull] = useState([]);
-    const [loadingQN, setLoadingQN] = useState(false);
 
-    const loadDonVi = useCallback(async () => {
-        try {
-            const res = await khamBenhService.getDonViList({ limit: 200 });
-            const list = res.data || [];
-            setDonViFull(list);
-        } catch {
-            setDonViFull([]);
-        }
-    }, []);
+    const allSoldiers = useStaticList("/quan_nhan/list", {
+        params: { show_all: 1 },
+        pageSize: 500,
+    });
+    const [loaded, setLoaded] = useState(false);
+    useEffect(() => {
+        if (allSoldiers.length > 0) setLoaded(true);
+    }, [allSoldiers]);
+    const loadingQN = !loaded && allSoldiers.length === 0;
+
+    const [pendingConfirmQn, setPendingConfirmQn] = useState(null);
+
+    const donViFull = useStaticList("/don_vi", { pageSize: 200 });
 
     const donViFlat = useMemo(() => {
         if (!donViFull.length) return [];
@@ -72,58 +72,18 @@ export default function ChonQuanNhanDialog({
 
     useEffect(() => {
         if (!open) return;
-        let ignore = false;
-        async function loadAll() {
-            setLoadingQN(true);
-            try {
-                const fn = fetchFn || khamBenhService.getQuanNhanDanhSach;
-                const first = await fn({ limit: BATCH, offset: 0 });
-                if (ignore) return;
-
-                const body = first.data;
-                let items, total;
-                if (Array.isArray(body)) {
-                    items = body;
-                    total = body.length;
-                } else {
-                    items = body?.data || [];
-                    total = body?.total ?? items.length;
-                }
-
-                let all = [...items];
-                if (total > BATCH) {
-                    const pages = [];
-                    for (let off = BATCH; off < total; off += BATCH) {
-                        pages.push(fn({ limit: BATCH, offset: off }));
-                    }
-                    const results = await Promise.all(pages);
-                    for (const r of results) {
-                        const b = r.data;
-                        all.push(...(Array.isArray(b) ? b : (b?.data || [])));
-                    }
-                }
-                if (!ignore) setAllSoldiers(all);
-            } catch {
-                if (!ignore) setAllSoldiers([]);
-            } finally {
-                if (!ignore) setLoadingQN(false);
-            }
-        }
-        loadAll();
         setPage(0);
-        setFilterText("");
+        setSearchTerm("");
         setSelectedUnit(null);
-        loadDonVi();
-        return () => { ignore = true; };
-    }, [open, fetchFn, loadDonVi]);
+    }, [open]);
 
     const filtered = useMemo(() => {
         let list = allSoldiers;
         if (selectedUnit) {
             list = list.filter((qn) => qn.ma_don_vi === selectedUnit.ma_don_vi);
         }
-        if (debouncedFilterText) {
-            const q = debouncedFilterText.toLowerCase().trim();
+        if (searchTerm) {
+            const q = searchTerm.toLowerCase().trim();
             list = list.filter(
                 (qn) =>
                     (qn.ho_ten || "").toLowerCase().includes(q) ||
@@ -131,7 +91,7 @@ export default function ChonQuanNhanDialog({
             );
         }
         return list;
-    }, [allSoldiers, selectedUnit, debouncedFilterText]);
+    }, [allSoldiers, selectedUnit, searchTerm]);
 
     const totalCount = filtered.length;
 
@@ -158,9 +118,24 @@ export default function ChonQuanNhanDialog({
         setPage(0);
     }, []);
 
-    const handleFilterTextChange = useCallback((e) => {
-        setFilterText(e.target.value);
-        setPage(0);
+    const handleRowClick = useCallback(
+        (qn) => {
+            if (qn.is_dang_dieu_tri || qn.is_da_chuyen_tuyen) {
+                setPendingConfirmQn(qn);
+            } else {
+                onSelected?.(qn);
+            }
+        },
+        [onSelected],
+    );
+
+    const handleConfirmProceed = useCallback(() => {
+        if (pendingConfirmQn) onSelected?.(pendingConfirmQn);
+        setPendingConfirmQn(null);
+    }, [onSelected, pendingConfirmQn]);
+
+    const handleConfirmClose = useCallback(() => {
+        setPendingConfirmQn(null);
     }, []);
 
     return (
@@ -175,6 +150,7 @@ export default function ChonQuanNhanDialog({
             <DialogContent dividers>
                 <Stack direction="row" spacing={2} sx={{ mt: 1, mb: 2 }}>
                     <Autocomplete
+                        loading={!donViFull.length}
                         options={donViFlat}
                         value={selectedUnit}
                         onChange={handleUnitChange}
@@ -183,21 +159,31 @@ export default function ChonQuanNhanDialog({
                             o?.ma_don_vi === v?.ma_don_vi
                         }
                         renderInput={(params) => (
-                            <TextField {...params} label="Đơn vị" size="small" />
+                            <TextField
+                                {...params}
+                                label="Đơn vị"
+                                size="small"
+                            />
                         )}
-                        renderOption={(props, option) => (
-                            <li {...props} style={{ paddingLeft: option.level * 16 + 8 }}>
-                                {option.level > 0 ? "– ".repeat(option.level) : ""}{option.ten_don_vi}
+                        renderOption={({ key, ...rest }, option) => (
+                            <li
+                                key={key}
+                                {...props}
+                                style={{ paddingLeft: option.level * 16 + 8 }}
+                            >
+                                {option.level > 0
+                                    ? "– ".repeat(option.level)
+                                    : ""}
+                                {option.ten_don_vi}
                             </li>
                         )}
                         sx={{ minWidth: 280 }}
                         size="small"
                     />
-                    <TextField
-                        value={filterText}
-                        onChange={handleFilterTextChange}
+                    <SearchBarDebounced
+                        key={open}
+                        onSearch={setSearchTerm}
                         placeholder="Tìm theo họ tên / mã QN..."
-                        size="small"
                         sx={{ minWidth: 220 }}
                     />
                 </Stack>
@@ -206,7 +192,7 @@ export default function ChonQuanNhanDialog({
                     rows={rows}
                     loading={loadingQN}
                     emptyMessage="Không tìm thấy quân nhân."
-                    onRowClick={onSelected}
+                    onRowClick={handleRowClick}
                     minWidth={900}
                 />
                 <TablePagination
@@ -218,6 +204,29 @@ export default function ChonQuanNhanDialog({
                     rowsPerPageOptions={[ROWS_PER_PAGE]}
                 />
             </DialogContent>
+
+            <ConfirmDialog
+                open={Boolean(pendingConfirmQn)}
+                title="Cảnh báo"
+                message={
+                    pendingConfirmQn
+                        ? `Quân nhân ${pendingConfirmQn.ho_ten} (${pendingConfirmQn.ma_quan_nhan}) hiện đang ${[
+                              pendingConfirmQn.is_dang_dieu_tri
+                                  ? "điều trị nội trú"
+                                  : "",
+                              pendingConfirmQn.is_da_chuyen_tuyen
+                                  ? "chuyển tuyến"
+                                  : "",
+                          ]
+                              .filter(Boolean)
+                              .join(" và ")}. Bạn có chắc chắn muốn chọn?`
+                        : ""
+                }
+                confirmLabel="Vẫn chọn"
+                confirmColor="warning"
+                onConfirm={handleConfirmProceed}
+                onClose={handleConfirmClose}
+            />
         </Dialog>
     );
 }

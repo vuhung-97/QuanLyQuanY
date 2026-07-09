@@ -21,6 +21,7 @@ RESOURCES = [
     "di_tuyen_sau_dieu_tri",
     "don_thuoc",
     "dm_nhom_benh",
+    "dm_trieu_chung",
     "don_vi",
     "giay_gioi_thieu",
     "kham_benh",

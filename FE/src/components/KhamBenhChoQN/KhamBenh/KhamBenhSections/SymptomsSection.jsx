@@ -1,8 +1,6 @@
 import { memo, useCallback, useMemo } from "react";
 import { Box, Chip, Grid, TextField, Typography } from "@mui/material";
-import symptoms from "@/data/trieu_chung.json";
-
-const CHIP_LIMIT = 30;
+import useStaticList from "@/hooks/useStaticList.js";
 
 const ChipList = memo(function ChipList({
     filteredSymptoms,
@@ -13,38 +11,21 @@ const ChipList = memo(function ChipList({
         (e) => onChipClick(e.currentTarget.dataset.symptom),
         [onChipClick],
     );
-    const hasMore = filteredSymptoms.length > CHIP_LIMIT;
-    const visible = hasMore
-        ? filteredSymptoms.slice(0, CHIP_LIMIT)
-        : filteredSymptoms;
-    return (
-        <>
-            {visible.map((s) => {
-                const selected = trieuChungWords.includes(s);
-                return (
-                    <Chip
-                        key={s}
-                        data-symptom={s}
-                        label={s}
-                        size="small"
-                        variant={selected ? "filled" : "outlined"}
-                        color={selected ? "primary" : "default"}
-                        onClick={handleChipClick}
-                        sx={{ cursor: "pointer" }}
-                    />
-                );
-            })}
-            {hasMore && (
-                <Typography
-                    variant="caption"
-                    color="text.secondary"
-                    sx={{ alignSelf: "center" }}
-                >
-                    +{filteredSymptoms.length - CHIP_LIMIT} khác...
-                </Typography>
-            )}
-        </>
-    );
+    return filteredSymptoms.map((s) => {
+        const selected = trieuChungWords.includes(s);
+        return (
+            <Chip
+                key={s}
+                data-symptom={s}
+                label={s}
+                size="small"
+                variant={selected ? "filled" : "outlined"}
+                color={selected ? "primary" : "default"}
+                onClick={handleChipClick}
+                sx={{ cursor: "pointer" }}
+            />
+        );
+    });
 });
 
 export default memo(function SymptomsSection({
@@ -53,6 +34,11 @@ export default memo(function SymptomsSection({
     onChipClick,
     readOnly,
 }) {
+    const symptoms = useStaticList("/dm_trieu_chung", {
+        pageSize: 200,
+        transform: (s) => s.ten_trieu_chung,
+    });
+
     const trieuChungWords = useMemo(
         () => trieuChung.split(/[,;]\s*/).filter(Boolean),
         [trieuChung],
@@ -64,11 +50,14 @@ export default memo(function SymptomsSection({
         if (!last.trim()) return symptoms;
         const q = last.toLowerCase();
         return symptoms.filter((s) => s.toLowerCase().includes(q));
-    }, [trieuChung]);
+    }, [trieuChung, symptoms]);
 
     const handleTextFieldChange = useCallback(
-        (e) => onTrieuChungChange(e.target.value),
-        [onTrieuChungChange],
+        (e) => {
+            if (readOnly) return;
+            onTrieuChungChange(e.target.value);
+        },
+        [onTrieuChungChange, readOnly],
     );
 
     return (
