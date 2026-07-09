@@ -5,20 +5,26 @@ import { PHAN_LOAI_COLUMNS } from "@/constants/bao_cao.js";
 
 function ChartSection({ title, data }) {
     return (
-        <Card>
+        <Card
+            sx={{
+                width: "100%",
+                height: "500px",
+            }}
+        >
             <CardContent>
-                <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2, color: "primary.main" }}>
+                <Typography variant="h3" sx={{ mb: 2, color: "primary.main" }}>
                     {title}
                 </Typography>
                 <Grid container spacing={2}>
-                    <Grid size={{ xs: 12, md: 6 }}>
+                    <Grid size={{ xs: 12, md: 7 }}>
                         <PhanLoaiBenhChart data={data} title={title} />
                     </Grid>
-                    <Grid size={{ xs: 12, md: 6 }}>
+                    <Grid size={{ xs: 12, md: 5 }}>
                         <DataTable
                             columns={PHAN_LOAI_COLUMNS}
                             rows={data}
                             minWidth={300}
+                            sx={{ maxHeight: 400, overflow: "auto" }}
                         />
                     </Grid>
                 </Grid>
@@ -31,11 +37,11 @@ export default function BaoCaoThangCharts({ data }) {
     return (
         <>
             <ChartSection
-                title="Phân loại bệnh khám ngoại trú"
+                title="Khám chữa bệnh ngoại trú"
                 data={data.phan_loai_benh_kham}
             />
             <ChartSection
-                title="Bệnh nội trú (nằm bệnh xá)"
+                title="Khám chữa bệnh nội trú"
                 data={data.phan_loai_benh_noi_tru}
             />
         </>

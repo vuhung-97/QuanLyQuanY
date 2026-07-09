@@ -97,8 +97,37 @@ class ReportExportService:
             ws.cell(row=r, column=4, value=item["ty_le"]).border = THIN_BORDER
             ws.cell(row=r, column=4).alignment = CENTER_ALIGN
 
-        ws.cell(row=row_start2 + len(data["phan_loai_benh_noi_tru"]) + 3, column=1, value=f"Ngày lập: {data['ngay_lap']}")
-        ws.cell(row=row_start2 + len(data["phan_loai_benh_noi_tru"]) + 4, column=1, value="Người lập: _________________")
+        thuoc_list = data.get("thuoc_da_su_dung", [])
+        if thuoc_list:
+            row_start3 = row_start2 + len(data["phan_loai_benh_noi_tru"]) + 3
+            ws.merge_cells(f"A{row_start3}:D{row_start3}")
+            ws.cell(row=row_start3, column=1, value="THUỐC ĐÃ SỬ DỤNG")
+            ws.cell(row=row_start3, column=1).font = Font(name="Times New Roman", bold=True, size=12)
+
+            headers3 = ["STT", "Tên thuốc", "ĐVT", "Số lượng"]
+            for col, h in enumerate(headers3, 1):
+                cell = ws.cell(row=row_start3 + 1, column=col, value=h)
+                cell.font = HEADER_FONT
+                cell.fill = HEADER_FILL
+                cell.alignment = CENTER_ALIGN
+                cell.border = THIN_BORDER
+
+            for i, item in enumerate(thuoc_list, 1):
+                r = row_start3 + 1 + i
+                ws.cell(row=r, column=1, value=i).border = THIN_BORDER
+                ws.cell(row=r, column=1).alignment = CENTER_ALIGN
+                ws.cell(row=r, column=2, value=item["ten_thuoc"]).border = THIN_BORDER
+                ws.cell(row=r, column=3, value=item["don_vi_tinh"]).border = THIN_BORDER
+                ws.cell(row=r, column=3).alignment = CENTER_ALIGN
+                ws.cell(row=r, column=4, value=item["so_luong"]).border = THIN_BORDER
+                ws.cell(row=r, column=4).alignment = CENTER_ALIGN
+
+            footer_row = row_start3 + len(thuoc_list) + 2
+        else:
+            footer_row = row_start2 + len(data["phan_loai_benh_noi_tru"]) + 3
+
+        ws.cell(row=footer_row, column=1, value=f"Ngày lập: {data['ngay_lap']}")
+        ws.cell(row=footer_row + 1, column=1, value="Người lập: _________________")
 
         ws.column_dimensions["A"].width = 8
         ws.column_dimensions["B"].width = 45

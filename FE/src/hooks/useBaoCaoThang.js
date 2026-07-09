@@ -13,10 +13,12 @@ export default function useBaoCaoThang() {
         setLoading(true);
         setError(null);
         try {
-            const res = await baoCaoService.getQuanYThang(thang, nam);
+            const res = thang
+                ? await baoCaoService.getQuanYThang(thang, nam)
+                : await baoCaoService.getQuanYNam(nam);
             setData(res.data);
         } catch (err) {
-            setError(err.response?.data?.detail || "Lỗi tải báo cáo tháng");
+            setError(err.response?.data?.detail || "Lỗi tải báo cáo");
             setData(null);
         } finally {
             setLoading(false);

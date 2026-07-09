@@ -20,6 +20,13 @@ export const TON_KHO_COLUMNS = [
     { field: "han_su_dung", headerName: "Hạn sử dụng", width: 120 },
 ];
 
+export const THUOC_SU_DUNG_COLUMNS = [
+    { key: "ten_thuoc", label: "Tên thuốc" },
+    { key: "don_vi_tinh", label: "ĐVT" },
+    { key: "phan_loai", label: "Phân loại" },
+    { key: "so_luong", label: "Số lượng", align: "right" },
+];
+
 export const cardStyle = {
     borderRadius: 2,
     boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)",

@@ -1,18 +1,32 @@
 import { Box, Typography } from "@mui/material";
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import {
+    PieChart,
+    Pie,
+    Cell,
+    Tooltip,
+    ResponsiveContainer,
+    Legend,
+} from "recharts";
 import { CHART_COLORS } from "@/constants/bao_cao.js";
 
 export default function PhanLoaiBenhChart({ data, title }) {
     if (!data || data.length === 0) {
         return (
-            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: 300 }}>
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: 300,
+                }}
+            >
                 <Typography color="text.secondary">Chưa có dữ liệu</Typography>
             </Box>
         );
     }
 
     return (
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={400}>
             <PieChart>
                 <Pie
                     data={data}
@@ -22,15 +36,20 @@ export default function PhanLoaiBenhChart({ data, title }) {
                     cy="50%"
                     outerRadius={100}
                     innerRadius={50}
-                    label={({ ten_nhom, ty_le }) => `${ten_nhom}: ${ty_le}%`}
+                    label={({ ty_le }) => `${ty_le}%`}
                 >
                     {data.map((_, index) => (
-                        <Cell key={index} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                        <Cell
+                            key={index}
+                            fill={CHART_COLORS[index % CHART_COLORS.length]}
+                        />
                     ))}
                 </Pie>
                 <Legend
                     formatter={(value) => (
-                        <span style={{ color: "#64748B", fontSize: 13 }}>{value}</span>
+                        <span style={{ color: "#64748B", fontSize: 13 }}>
+                            {value}
+                        </span>
                     )}
                 />
                 <Tooltip

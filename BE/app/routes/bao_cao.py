@@ -30,6 +30,16 @@ def get_quan_y_thang(
     return service.monthly_medical_report(thang, nam)
 
 
+@router.get("/quan-y-nam")
+def get_quan_y_nam(
+    nam: int = Query(...),
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user),
+):
+    service = ReportService(db)
+    return service.yearly_medical_report(nam)
+
+
 @router.get("/ton-kho")
 def get_ton_kho(
     thang: int = Query(..., ge=1, le=12),

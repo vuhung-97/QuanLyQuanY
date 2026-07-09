@@ -4,6 +4,9 @@ export const baoCaoService = {
     getQuanYThang: (thang, nam) =>
         api.get("/bao-cao/quan-y-thang", { params: { thang, nam } }),
 
+    getQuanYNam: (nam) =>
+        api.get("/bao-cao/quan-y-nam", { params: { nam } }),
+
     getTonKho: (thang, nam) =>
         api.get("/bao-cao/ton-kho", { params: { thang, nam } }),
 
