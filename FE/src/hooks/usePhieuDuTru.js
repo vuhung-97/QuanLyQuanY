@@ -1,13 +1,14 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import dayjs from "dayjs";
 import { khoDuocService } from "@/services/khoDuocService.js";
 import { decodeJWT } from "@/services/api.js";
 
 const EMPTY_ITEM = { tenThuoc: "", donViTinh: "", soLuong: 1, maThuocVtyt: null };
+let _rowKey = 0;
+const nextKey = () => ++_rowKey;
 
 export default function usePhieuDuTru({ open, phieuId = null, mode = "create", onClose, onSaved }) {
     const [ghiChu, setGhiChu] = useState("");
-    const [items, setItems] = useState([{ ...EMPTY_ITEM }]);
     const [saving, setSaving] = useState(false);
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "info" });
     const [openKhoThuoc, setOpenKhoThuoc] = useState(false);
@@ -15,7 +16,11 @@ export default function usePhieuDuTru({ open, phieuId = null, mode = "create", o
     const [loadingData, setLoadingData] = useState(false);
     const [ngayLap, setNgayLap] = useState(dayjs());
     const [creatorName, setCreatorName] = useState("");
-    const [trangThai, setTrangThai] = useState("");
+    const [keys, setKeys] = useState([]);
+
+    const itemsRef = useRef([]);
+    const keysRef = useRef(keys);
+    keysRef.current = keys;
 
     const isView = mode === "view";
 
@@ -24,16 +29,18 @@ export default function usePhieuDuTru({ open, phieuId = null, mode = "create", o
         return token ? decodeJWT(token) : null;
     }, []);
 
+    const getItem = useCallback((idx) => itemsRef.current[idx] || {}, []);
+
     useEffect(() => {
         if (!open) return;
 
         if (mode === "create" || !phieuId) {
             setGhiChu("");
-            setItems([{ ...EMPTY_ITEM }]);
             setSavedPhieu(null);
             setNgayLap(dayjs());
             setCreatorName("");
-            setTrangThai("");
+            itemsRef.current = [{ ...EMPTY_ITEM }];
+            setKeys([nextKey()]);
             return;
         }
 
@@ -49,21 +56,20 @@ export default function usePhieuDuTru({ open, phieuId = null, mode = "create", o
                 const ctItems = Array.isArray(ctData) ? ctData : [];
 
                 if (ctItems.length === 0) {
-                    setItems([{ ...EMPTY_ITEM }]);
+                    itemsRef.current = [{ ...EMPTY_ITEM }];
+                    setKeys([nextKey()]);
                 } else {
-                    setItems(
-                        ctItems.map((ct) => ({
-                            tenThuoc: ct.ten_thuoc_vtyt || "",
-                            donViTinh: ct.don_vi_tinh || "",
-                            soLuong: ct.so_luong,
-                            maThuocVtyt: ct.ma_thuoc_vtyt || null,
-                        }))
-                    );
+                    itemsRef.current = ctItems.map((ct) => ({
+                        tenThuoc: ct.ten_thuoc_vtyt || "",
+                        donViTinh: ct.don_vi_tinh || "",
+                        soLuong: ct.so_luong,
+                        maThuocVtyt: ct.ma_thuoc_vtyt || null,
+                    }));
+                    setKeys(itemsRef.current.map(() => nextKey()));
                 }
 
                 setNgayLap(p.ngay_lap_phieu ? dayjs(p.ngay_lap_phieu) : dayjs());
                 setCreatorName(p.nguoi_lap_ho_ten || p.nguoi_lap || "");
-                setTrangThai(p.trang_thai || "");
 
                 if (isView) {
                     setSavedPhieu({
@@ -90,30 +96,54 @@ export default function usePhieuDuTru({ open, phieuId = null, mode = "create", o
         })();
     }, [open, phieuId, mode, isView]);
 
-    const addItem = () => setItems((prev) => [...prev, { ...EMPTY_ITEM }]);
-    const removeItem = (idx) => setItems((prev) => prev.filter((_, i) => i !== idx));
-    const updateItem = (idx, field, val) =>
-        setItems((prev) => prev.map((item, i) => (i === idx ? { ...item, [field]: val } : item)));
+    const updateItem = useCallback((key, field, val) => {
+        const idx = keysRef.current.indexOf(key);
+        if (idx === -1) return;
+        itemsRef.current[idx][field] = val;
+    }, []);
 
-    const isValid = () => {
-        if (items.length === 0) return false;
-        return items.every((item) => item.tenThuoc.trim() && item.soLuong > 0);
-    };
+    const addItem = useCallback(() => {
+        itemsRef.current.push({ ...EMPTY_ITEM });
+        setKeys((prev) => [...prev, nextKey()]);
+    }, []);
+
+    const removeItem = useCallback((key) => {
+        const idx = keysRef.current.indexOf(key);
+        if (idx === -1) return;
+        itemsRef.current.splice(idx, 1);
+        setKeys((prev) => prev.filter((k) => k !== key));
+    }, []);
+
+    const isValid = useCallback(() => {
+        const arr = itemsRef.current;
+        if (arr.length === 0) return false;
+        return arr.every((item) => item.tenThuoc.trim() && item.soLuong > 0);
+    }, []);
 
     const handleAddFromKhoThuoc = useCallback((selectedItems) => {
-        setItems((prev) => [
-            ...prev,
-            ...selectedItems.map((si) => ({
+        const newKeys = [];
+        for (const si of selectedItems) {
+            itemsRef.current.push({
                 tenThuoc: si.ten_thuoc_vtyt,
                 donViTinh: si.don_vi_tinh || "",
                 soLuong: si.so_luong,
                 maThuocVtyt: si.ma_thuoc_vtyt,
-            })),
-        ]);
+            });
+            newKeys.push(nextKey());
+        }
+        setKeys((prev) => [...prev, ...newKeys]);
     }, []);
 
-    const handleSave = async () => {
-        if (!isValid()) return;
+    const handleSave = useCallback(async () => {
+        const arr = itemsRef.current;
+        if (arr.length === 0 || !arr.every((item) => item.tenThuoc.trim() && item.soLuong > 0)) {
+            setSnackbar({
+                open: true,
+                message: "Vui lòng nhập đủ thông tin các dòng thuốc.",
+                severity: "error",
+            });
+            return;
+        }
         setSaving(true);
         try {
             const nguoiLap = currentUser?.id || null;
@@ -133,7 +163,7 @@ export default function usePhieuDuTru({ open, phieuId = null, mode = "create", o
                     );
                 }
 
-                for (const item of items) {
+                for (const item of arr) {
                     let maThuocVtyt = item.maThuocVtyt;
                     if (!maThuocVtyt) {
                         const res = await khoDuocService.createThuocVtyt({
@@ -167,7 +197,7 @@ export default function usePhieuDuTru({ open, phieuId = null, mode = "create", o
             });
             const maPhieu = phieuRes.data.ma_phieu_du_tru;
 
-            for (const item of items) {
+            for (const item of arr) {
                 let maThuocVtyt = item.maThuocVtyt;
 
                 if (!maThuocVtyt) {
@@ -201,16 +231,17 @@ export default function usePhieuDuTru({ open, phieuId = null, mode = "create", o
         } finally {
             setSaving(false);
         }
-    };
+    }, [phieuId, mode, ghiChu, ngayLap, currentUser, onSaved, onClose]);
 
-    const handleClose = () => {
+    const handleClose = useCallback(() => {
         onClose();
-    };
+    }, [onClose]);
 
     return {
         ghiChu,
         setGhiChu,
-        items,
+        keys,
+        getItem,
         saving,
         loadingData,
         snackbar,
@@ -221,14 +252,13 @@ export default function usePhieuDuTru({ open, phieuId = null, mode = "create", o
         ngayLap,
         setNgayLap,
         creatorName,
-        trangThai,
         setOpenKhoThuoc,
         addItem,
         removeItem,
         updateItem,
-        isValid,
         handleAddFromKhoThuoc,
         handleSave,
         handleClose,
+        setSnackbar,
     };
 }

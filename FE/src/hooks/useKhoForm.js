@@ -4,7 +4,7 @@ import { khoDuocService } from "@/services/khoDuocService.js";
 import { INIT_FORM } from "@/constants/khoConstant.js";
 
 export default function useKhoForm({ open, thuocId, mode, onClose, onSaved }) {
-    const [form, setForm] = useState({ ...INIT_FORM });
+    const formRef = useRef({ ...INIT_FORM });
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
     const [snackbar, setSnackbar] = useState({
@@ -16,11 +16,10 @@ export default function useKhoForm({ open, thuocId, mode, onClose, onSaved }) {
     const [phanLoaiOptions, setPhanLoaiOptions] = useState([]);
     const [donViTinhOptions, setDonViTinhOptions] = useState([]);
     const [loadingOptions, setLoadingOptions] = useState(false);
+    const [fieldVersion, setFieldVersion] = useState({});
 
     const errorsRef = useRef(errors);
     errorsRef.current = errors;
-    const formRef = useRef(form);
-    formRef.current = form;
 
     const loadData = useCallback(async () => {
         if (!thuocId) return;
@@ -28,7 +27,7 @@ export default function useKhoForm({ open, thuocId, mode, onClose, onSaved }) {
         try {
             const res = await khoDuocService.getThuocVtyt(thuocId);
             const d = res.data;
-            setForm({
+            formRef.current = {
                 ten_thuoc_vtyt: d.ten_thuoc_vtyt || "",
                 loai: d.loai || "",
                 don_vi_tinh: d.don_vi_tinh || "",
@@ -43,7 +42,7 @@ export default function useKhoForm({ open, thuocId, mode, onClose, onSaved }) {
                     d.nam_san_xuat != null ? String(d.nam_san_xuat) : "",
                 cap_chat_luong: d.cap_chat_luong || "",
                 mo_ta: d.mo_ta || "",
-            });
+            };
         } catch {
             setSnackbar({
                 open: true,
@@ -58,10 +57,11 @@ export default function useKhoForm({ open, thuocId, mode, onClose, onSaved }) {
     useEffect(() => {
         if (!open) return;
         setErrors({});
+        setFieldVersion({});
         if (thuocId) {
             loadData();
         } else {
-            setForm({ ...INIT_FORM });
+            formRef.current = { ...INIT_FORM };
         }
         setLoadingOptions(true);
         Promise.all([
@@ -76,36 +76,28 @@ export default function useKhoForm({ open, thuocId, mode, onClose, onSaved }) {
             .finally(() => setLoadingOptions(false));
     }, [open, thuocId, loadData]);
 
-    const handleChange = useCallback((e) => {
-        const { name, value } = e.target;
-        setForm((prev) => ({ ...prev, [name]: value }));
-        if (errorsRef.current[name])
+    const getFieldDefault = useCallback((name) => {
+        return formRef.current[name];
+    }, []);
+
+    const updateField = useCallback((name, value) => {
+        formRef.current[name] = value;
+
+        if (name === "loai") {
+            formRef.current.phan_loai = "";
+            setFieldVersion((prev) => ({
+                ...prev,
+                phan_loai: (prev.phan_loai || 0) + 1,
+            }));
+        }
+
+        if (errorsRef.current[name]) {
             setErrors((prev) => {
                 const next = { ...prev };
                 delete next[name];
                 return next;
             });
-    }, []);
-
-    const handleLoaiChange = useCallback((e) => {
-        const val = e.target.value;
-        setForm((prev) => ({ ...prev, loai: val, phan_loai: "" }));
-        if (errorsRef.current.loai)
-            setErrors((prev) => {
-                const next = { ...prev };
-                delete next.loai;
-                return next;
-            });
-    }, []);
-
-    const handleDateChange = useCallback((value) => {
-        setForm((prev) => ({ ...prev, han_su_dung: value }));
-        if (errorsRef.current.han_su_dung)
-            setErrors((prev) => {
-                const next = { ...prev };
-                delete next.han_su_dung;
-                return next;
-            });
+        }
     }, []);
 
     const handleClose = useCallback(() => {
@@ -113,18 +105,9 @@ export default function useKhoForm({ open, thuocId, mode, onClose, onSaved }) {
         onClose();
     }, [onClose]);
 
-    const validate = useCallback(() => {
-        const f = formRef.current;
-        const e = {};
-        if (!f.ten_thuoc_vtyt.trim())
-            e.ten_thuoc_vtyt = "Tên thuốc/VTYT không được để trống";
-        setErrors(e);
-        return Object.keys(e).length === 0;
-    }, []);
-
     const handleSave = useCallback(async () => {
         const f = formRef.current;
-        if (!f.ten_thuoc_vtyt.trim()) {
+        if (!f.ten_thuoc_vtyt?.trim()) {
             setErrors({ ten_thuoc_vtyt: "Tên thuốc/VTYT không được để trống" });
             return;
         }
@@ -165,7 +148,8 @@ export default function useKhoForm({ open, thuocId, mode, onClose, onSaved }) {
     }, [thuocId, mode, onSaved, handleClose]);
 
     return {
-        form,
+        getFieldDefault,
+        fieldVersion,
         loading,
         saving,
         snackbar,
@@ -173,9 +157,7 @@ export default function useKhoForm({ open, thuocId, mode, onClose, onSaved }) {
         phanLoaiOptions,
         donViTinhOptions,
         loadingOptions,
-        handleChange,
-        handleLoaiChange,
-        handleDateChange,
+        updateField,
         handleSave,
         handleClose,
         setSnackbar,

@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { tinhTuoi } from "@/utils/date.js";
 import PrintOverlay from "@/components/common/print/PrintOverlay.jsx";
 import PrintHeaderDonVi from "@/components/common/print/PrintHeaderDonVi.jsx";
@@ -31,7 +32,7 @@ function DottedField({ label, value, numrows = 2 }) {
     );
 }
 
-export default function ChuyenTuyenPrint({
+const ChuyenTuyenPrint = memo(function ChuyenTuyenPrint({
     selectedExam,
     examDetail,
     tenBenhVien,
@@ -133,4 +134,6 @@ export default function ChuyenTuyenPrint({
             </div>
         </PrintOverlay>
     );
-}
+});
+
+export default ChuyenTuyenPrint;

@@ -1,3 +1,4 @@
+import { memo } from "react";
 import {
     Button,
     IconButton,
@@ -12,7 +13,7 @@ import {
 } from "@mui/icons-material";
 import DatePicker from "@/components/common/DatePicker.jsx";
 
-export default function PhieuXuatForm({
+const PhieuXuatForm = memo(function PhieuXuatForm({
     donViFlat,
     donViNhan,
     onDonViNhanChange,
@@ -138,4 +139,6 @@ export default function PhieuXuatForm({
             />
         </Stack>
     );
-}
+});
+
+export default PhieuXuatForm;

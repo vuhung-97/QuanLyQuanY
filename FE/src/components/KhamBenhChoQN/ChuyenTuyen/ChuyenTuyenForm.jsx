@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
     Box,
     Button,
@@ -7,11 +7,6 @@ import {
     DialogActions,
     DialogContent,
     Stack,
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableRow,
     TextField,
     Typography,
 } from "@mui/material";
@@ -22,6 +17,10 @@ import DonThuocTable from "@/components/common/DonThuoc.jsx";
 import ChuyenTuyenPrint from "./ChuyenTuyenPrint.jsx";
 import { parseDonThuocToRows } from "@/utils/khamBenhUtils.js";
 
+const PATIENT_FIELDS = [
+    "ho_ten", "tuoi", "cap_bac", "chuc_vu", "ten_don_vi", "ma_kham_benh", "ngay_kham",
+];
+
 const sectionSx = { mb: 1, fontWeight: 600, color: "text.primary" };
 function SectionHeading({ children }) {
     return (
@@ -30,6 +29,35 @@ function SectionHeading({ children }) {
         </Typography>
     );
 }
+
+const FormTextField = memo(function FormTextField({ name, initialValue, onUpdateRef, onBlurSync, ...props }) {
+    const [value, setValue] = useState(initialValue ?? "");
+    useEffect(() => { setValue(initialValue ?? ""); }, [initialValue]);
+
+    const handleChange = useCallback((e) => {
+        const v = e.target.value;
+        setValue(v);
+        onUpdateRef(name, v);
+    }, [name, onUpdateRef]);
+
+    const handleBlur = useCallback(() => {
+        onBlurSync(name, value);
+    }, [name, value, onBlurSync]);
+
+    return <TextField value={value} onChange={handleChange} onBlur={handleBlur} {...props} />;
+});
+
+const FormDatePicker = memo(function FormDatePicker({ name, initialValue, onUpdateRef, onBlurSync, ...props }) {
+    const [value, setValue] = useState(initialValue ?? null);
+    useEffect(() => { setValue(initialValue ?? null); }, [initialValue]);
+
+    const handleChange = useCallback((v) => {
+        setValue(v);
+        onUpdateRef(name, v);
+    }, [name, onUpdateRef]);
+
+    return <DatePicker value={value} onChange={handleChange} {...props} />;
+});
 
 export default function ChuyenTuyenForm({
     open,
@@ -42,56 +70,66 @@ export default function ChuyenTuyenForm({
     onClose,
     onSave,
 }) {
+    const formRef = useRef({});
     const [tenBenhVien, setTenBenhVien] = useState("");
     const [yKienDeNghi, setYKienDeNghi] = useState("");
-    const [ngayDi, setNgayDi] = useState(null);
-    const [thoiGianDen, setThoiGianDen] = useState(null);
-    const [chanDoan, setChanDoan] = useState("");
-    const [quyetDinhYSinh, setQuyetDinhYSinh] = useState("");
-    const [ngayVe, setNgayVe] = useState(null);
-    const [chanDoanLucVe, setChanDoanLucVe] = useState("");
-    const [ketQuaDieuTri, setKetQuaDieuTri] = useState("");
 
     useEffect(() => {
         if (!open) return;
-        setTenBenhVien(giayGt?.ten_benh_vien || "");
-        setYKienDeNghi(giayGt?.y_kien_de_nghi || "");
-        setNgayDi(diTuyen?.ngay_di ? dayjs(diTuyen.ngay_di) : null);
-        setThoiGianDen(
-            giayGt?.thoi_gian_den_benh_vien
-                ? dayjs(giayGt.thoi_gian_den_benh_vien)
-                : null,
-        );
-        setChanDoan(giayGt?.chan_doan || "");
-        setQuyetDinhYSinh(giayGt?.quyet_dinh_y_sinh || "");
-        setNgayVe(diTuyen?.ngay_ve ? dayjs(diTuyen.ngay_ve) : null);
-        setChanDoanLucVe(diTuyen?.chan_doan_luc_ve || "");
-        setKetQuaDieuTri(diTuyen?.ket_qua_huong_dieu_tri || "");
+        const data = {
+            tenBenhVien: giayGt?.ten_benh_vien || "",
+            yKienDeNghi: giayGt?.y_kien_de_nghi || "",
+            ngayDi: diTuyen?.ngay_di ? dayjs(diTuyen.ngay_di) : null,
+            thoiGianDen: giayGt?.thoi_gian_den_benh_vien ? dayjs(giayGt.thoi_gian_den_benh_vien) : null,
+            chanDoan: giayGt?.chan_doan || "",
+            quyetDinhYSinh: giayGt?.quyet_dinh_y_sinh || "",
+            ngayVe: diTuyen?.ngay_ve ? dayjs(diTuyen.ngay_ve) : null,
+            chanDoanLucVe: diTuyen?.chan_doan_luc_ve || "",
+            ketQuaDieuTri: diTuyen?.ket_qua_huong_dieu_tri || "",
+        };
+        formRef.current = data;
+        setTenBenhVien(data.tenBenhVien);
+        setYKienDeNghi(data.yKienDeNghi);
     }, [open, giayGt, diTuyen]);
+
+    const updateField = useCallback((name, value) => {
+        formRef.current[name] = value;
+    }, []);
+
+    const blurSync = useCallback((name, value) => {
+        formRef.current[name] = value;
+        if (name === "tenBenhVien") setTenBenhVien(value);
+        if (name === "yKienDeNghi") setYKienDeNghi(value);
+    }, []);
 
     const isNew = !giayGt?.ma_giay_gt;
 
-    const handleSave = () => {
+    const handleSave = useCallback(() => {
+        const d = formRef.current;
         const giayData = {
-            ten_benh_vien: tenBenhVien,
-            y_kien_de_nghi: yKienDeNghi,
-            thoi_gian_den_benh_vien: thoiGianDen?.toISOString() || null,
-            chan_doan: chanDoan,
-            quyet_dinh_y_sinh: quyetDinhYSinh,
+            ten_benh_vien: d.tenBenhVien,
+            y_kien_de_nghi: d.yKienDeNghi,
+            thoi_gian_den_benh_vien: d.thoiGianDen?.toISOString?.() || null,
+            chan_doan: d.chanDoan,
+            quyet_dinh_y_sinh: d.quyetDinhYSinh,
         };
         const diTuyenData = {};
-        if (ngayDi) diTuyenData.ngay_di = ngayDi.format("YYYY-MM-DD");
-        if (ngayVe) diTuyenData.ngay_ve = ngayVe.format("YYYY-MM-DD");
-        if (chanDoanLucVe) diTuyenData.chan_doan_luc_ve = chanDoanLucVe;
-        if (ketQuaDieuTri) diTuyenData.ket_qua_huong_dieu_tri = ketQuaDieuTri;
+        if (d.ngayDi) diTuyenData.ngay_di = d.ngayDi.format("YYYY-MM-DD");
+        if (d.ngayVe) diTuyenData.ngay_ve = d.ngayVe.format("YYYY-MM-DD");
+        if (d.chanDoanLucVe) diTuyenData.chan_doan_luc_ve = d.chanDoanLucVe;
+        if (d.ketQuaDieuTri) diTuyenData.ket_qua_huong_dieu_tri = d.ketQuaDieuTri;
         onSave(giayData, diTuyenData);
-    };
+    }, [onSave]);
 
-    const handlePrint = () => {
-        window.print();
-    };
+    const handlePrint = useCallback(() => {
+        if (document.activeElement?.blur) document.activeElement.blur();
+        setTimeout(() => window.print(), 0);
+    }, []);
 
-    const prescriptionRows = parseDonThuocToRows(examDetail);
+    const prescriptionRows = useMemo(
+        () => parseDonThuocToRows(examDetail),
+        [examDetail],
+    );
 
     return (
         <Dialog
@@ -134,18 +172,9 @@ export default function ChuyenTuyenForm({
                         >
                             <PatientInfoCard
                                 data={selectedExam}
-                                fields={[
-                                    "ho_ten",
-                                    "tuoi",
-                                    "cap_bac",
-                                    "chuc_vu",
-                                    "ten_don_vi",
-                                    "ma_kham_benh",
-                                    "ngay_kham",
-                                ]}
+                                fields={PATIENT_FIELDS}
                             />
 
-                            {/* ===== B. SYMPTOMS & DIAGNOSIS ===== */}
                             {examDetail?.trieu_chung && (
                                 <Box>
                                     <SectionHeading>Triệu chứng</SectionHeading>
@@ -181,25 +210,24 @@ export default function ChuyenTuyenForm({
                                 hideWhenEmpty
                             />
 
-                            {/* ===== D. CHUYỂN TUYẾN INPUTS ===== */}
                             <Box>
                                 <SectionHeading>Chuyển tuyến</SectionHeading>
                                 <Stack spacing={2}>
-                                    <TextField
+                                    <FormTextField
+                                        name="tenBenhVien"
+                                        initialValue={tenBenhVien}
+                                        onUpdateRef={updateField}
+                                        onBlurSync={blurSync}
                                         label="Đơn vị chuyển đến"
-                                        value={tenBenhVien}
-                                        onChange={(e) =>
-                                            setTenBenhVien(e.target.value)
-                                        }
                                         fullWidth
                                         size="small"
                                     />
-                                    <TextField
+                                    <FormTextField
+                                        name="yKienDeNghi"
+                                        initialValue={yKienDeNghi}
+                                        onUpdateRef={updateField}
+                                        onBlurSync={blurSync}
                                         label="Ý kiến đề nghị"
-                                        value={yKienDeNghi}
-                                        onChange={(e) =>
-                                            setYKienDeNghi(e.target.value)
-                                        }
                                         multiline
                                         minRows={2}
                                         fullWidth
@@ -216,16 +244,17 @@ export default function ChuyenTuyenForm({
                                         >
                                             Ngày đi:
                                         </Typography>
-                                        <DatePicker
-                                            value={ngayDi}
-                                            onChange={setNgayDi}
+                                        <FormDatePicker
+                                            name="ngayDi"
+                                            initialValue={formRef.current.ngayDi}
+                                            onUpdateRef={updateField}
+                                            onBlurSync={blurSync}
                                             size="small"
                                         />
                                     </Stack>
                                 </Stack>
                             </Box>
 
-                            {/* ===== E. SAU KHI VỀ INPUTS ===== */}
                             <Box>
                                 <SectionHeading>
                                     Sau khi quân nhân về
@@ -242,29 +271,31 @@ export default function ChuyenTuyenForm({
                                         >
                                             Thời gian đến bệnh viện, bệnh xá:
                                         </Typography>
-                                        <DatePicker
-                                            value={thoiGianDen}
-                                            onChange={setThoiGianDen}
+                                        <FormDatePicker
+                                            name="thoiGianDen"
+                                            initialValue={formRef.current.thoiGianDen}
+                                            onUpdateRef={updateField}
+                                            onBlurSync={blurSync}
                                             size="small"
                                         />
                                     </Stack>
-                                    <TextField
+                                    <FormTextField
+                                        name="chanDoan"
+                                        initialValue={formRef.current.chanDoan}
+                                        onUpdateRef={updateField}
+                                        onBlurSync={blurSync}
                                         label="Chẩn đoán"
-                                        value={chanDoan}
-                                        onChange={(e) =>
-                                            setChanDoan(e.target.value)
-                                        }
                                         multiline
                                         minRows={2}
                                         fullWidth
                                         size="small"
                                     />
-                                    <TextField
+                                    <FormTextField
+                                        name="quyetDinhYSinh"
+                                        initialValue={formRef.current.quyetDinhYSinh}
+                                        onUpdateRef={updateField}
+                                        onBlurSync={blurSync}
                                         label="Quyết định của y sinh"
-                                        value={quyetDinhYSinh}
-                                        onChange={(e) =>
-                                            setQuyetDinhYSinh(e.target.value)
-                                        }
                                         multiline
                                         minRows={2}
                                         fullWidth
@@ -281,29 +312,31 @@ export default function ChuyenTuyenForm({
                                         >
                                             Ngày về:
                                         </Typography>
-                                        <DatePicker
-                                            value={ngayVe}
-                                            onChange={setNgayVe}
+                                        <FormDatePicker
+                                            name="ngayVe"
+                                            initialValue={formRef.current.ngayVe}
+                                            onUpdateRef={updateField}
+                                            onBlurSync={blurSync}
                                             size="small"
                                         />
                                     </Stack>
-                                    <TextField
+                                    <FormTextField
+                                        name="chanDoanLucVe"
+                                        initialValue={formRef.current.chanDoanLucVe}
+                                        onUpdateRef={updateField}
+                                        onBlurSync={blurSync}
                                         label="Chẩn đoán lúc về"
-                                        value={chanDoanLucVe}
-                                        onChange={(e) =>
-                                            setChanDoanLucVe(e.target.value)
-                                        }
                                         multiline
                                         minRows={2}
                                         fullWidth
                                         size="small"
                                     />
-                                    <TextField
+                                    <FormTextField
+                                        name="ketQuaDieuTri"
+                                        initialValue={formRef.current.ketQuaDieuTri}
+                                        onUpdateRef={updateField}
+                                        onBlurSync={blurSync}
                                         label="Kết quả hướng điều trị"
-                                        value={ketQuaDieuTri}
-                                        onChange={(e) =>
-                                            setKetQuaDieuTri(e.target.value)
-                                        }
                                         multiline
                                         minRows={2}
                                         fullWidth

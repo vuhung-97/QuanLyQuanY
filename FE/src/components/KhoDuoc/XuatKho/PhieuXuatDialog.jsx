@@ -11,6 +11,7 @@ import DialogTitleWrapper from "@/components/common/DialogTitleWrapper.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import ChonQuanNhanDialog from "@/components/common/ChonQuanNhanDialog.jsx";
 import KhoThuocDialog from "@/components/KhamBenhChoQN/KhamBenh/KhoThuocDialog.jsx";
+import { useCallback } from "react";
 import usePhieuXuat from "@/hooks/usePhieuXuat.js";
 import PhieuXuatForm from "./PhieuXuatForm.jsx";
 import ChiTietXuatTable from "./ChiTietXuatTable.jsx";
@@ -58,6 +59,8 @@ export default function PhieuXuatDialog({
         handleSave,
         handleXuatKho,
     } = usePhieuXuat({ open, phieuId, mode, onClose, onSaved });
+
+    const handleOpenKhoThuoc = useCallback(() => setOpenKhoThuoc(true), []);
 
     return (
         <>
@@ -117,7 +120,7 @@ export default function PhieuXuatDialog({
                             <ChiTietXuatTable
                                 items={selectedItems}
                                 isView={isView}
-                                onAdd={() => setOpenKhoThuoc(true)}
+                                onAdd={handleOpenKhoThuoc}
                                 onRemove={removeItem}
                             />
                         </Stack>

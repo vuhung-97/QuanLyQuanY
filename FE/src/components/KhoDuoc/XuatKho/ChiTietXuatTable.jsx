@@ -1,3 +1,4 @@
+import { memo } from "react";
 import {
     Button,
     IconButton,
@@ -12,7 +13,7 @@ import {
 } from "@mui/material";
 import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
 
-export default function ChiTietXuatTable({ items, isView, onAdd, onRemove }) {
+const ChiTietXuatTable = memo(function ChiTietXuatTable({ items, isView, onAdd, onRemove }) {
     return (
         <>
             <Stack
@@ -96,4 +97,6 @@ export default function ChiTietXuatTable({ items, isView, onAdd, onRemove }) {
             )}
         </>
     );
-}
+});
+
+export default ChiTietXuatTable;

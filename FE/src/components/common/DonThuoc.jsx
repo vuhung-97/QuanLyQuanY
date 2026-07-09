@@ -1,3 +1,4 @@
+import { memo } from "react";
 import {
     Box,
     Stack,
@@ -9,7 +10,7 @@ import {
     Typography,
 } from "@mui/material";
 
-export default function DonThuocTable({
+const DonThuocTable = memo(function DonThuocTable({
     rows = [],
     heading = "Đơn thuốc",
     emptyMessage = "Không có thuốc trong đơn.",
@@ -87,4 +88,6 @@ export default function DonThuocTable({
             )}
         </Box>
     );
-}
+});
+
+export default DonThuocTable;

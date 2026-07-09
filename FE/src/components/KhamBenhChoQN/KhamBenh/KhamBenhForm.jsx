@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import {
     Dialog,
     DialogContent,
@@ -16,6 +16,15 @@ import DonThuocTable from "@/components/common/DonThuoc.jsx";
 import SymptomsSection from "./KhamBenhSections/SymptomsSection.jsx";
 import DiagnosisSection from "./KhamBenhSections/DiagnosisSection.jsx";
 import FormActions from "./KhamBenhSections/FormActions.jsx";
+
+const PATIENT_FIELDS = [
+    "ho_ten",
+    "ten_don_vi",
+    "cap_bac",
+    "chuc_vu",
+    "ngay_kham",
+    "bac_si",
+];
 
 export default function KhamBenhForm({
     open,
@@ -75,6 +84,11 @@ export default function KhamBenhForm({
         [qn, exam],
     );
 
+    const handleOpenPrescription = useCallback(
+        () => setOpenPrescription(true),
+        [],
+    );
+
     return (
         <>
             <Dialog
@@ -106,14 +120,7 @@ export default function KhamBenhForm({
                         <Stack spacing={3}>
                             <PatientInfoCard
                                 data={patientInfoData}
-                                fields={[
-                                    "ho_ten",
-                                    "ten_don_vi",
-                                    "cap_bac",
-                                    "chuc_vu",
-                                    "ngay_kham",
-                                    "bac_si",
-                                ]}
+                                fields={PATIENT_FIELDS}
                             />
 
                             <Grid container spacing={3}>
@@ -148,7 +155,7 @@ export default function KhamBenhForm({
                         saving={saving}
                         hasPrescription={prescriptionItems.length > 0}
                         onSave={handleSave}
-                        onPrescription={() => setOpenPrescription(true)}
+                        onPrescription={handleOpenPrescription}
                         onReferral={handleReferClick}
                         onAdmission={handleAdmissionClick}
                         isReadOnly={isReadOnly}

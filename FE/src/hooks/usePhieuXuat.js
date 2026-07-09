@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import dayjs from "dayjs";
 import { khoDuocService } from "@/services/khoDuocService.js";
 import { khamBenhService } from "@/services/khamBenhService.js";
@@ -139,8 +139,13 @@ export default function usePhieuXuat({ open, phieuId, mode, onClose, onSaved }) 
         setOpenChonQN(false);
     };
 
-    const removeItem = (maThuoc) =>
-        setSelectedItems((prev) => prev.filter((item) => item.ma_thuoc_vtyt !== maThuoc));
+    const removeItem = useCallback(
+        (maThuoc) =>
+            setSelectedItems((prev) =>
+                prev.filter((item) => item.ma_thuoc_vtyt !== maThuoc),
+            ),
+        [],
+    );
 
     const handleSave = async () => {
         if (selectedItems.length === 0) return;

@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import {
     Autocomplete,
     Button,
@@ -21,15 +21,24 @@ import {
 } from "@/constants/khoConstant.js";
 
 const TextFormField = memo(function TextFormField({
-    label, name, value, onChange, error, helperText, disabled,
+    label, name, initialValue = "", onChange, error, helperText, disabled,
     required, multiline, rows,
 }) {
+    const [value, setValue] = useState(initialValue);
+
+    useEffect(() => { setValue(initialValue); }, [initialValue]);
+
+    const handleChange = useCallback((e) => {
+        setValue(e.target.value);
+        onChange?.(name, e.target.value);
+    }, [name, onChange]);
+
     return (
         <TextField
             label={label}
             name={name}
             value={value}
-            onChange={onChange}
+            onChange={handleChange}
             fullWidth
             size="small"
             disabled={disabled}
@@ -43,14 +52,23 @@ const TextFormField = memo(function TextFormField({
 });
 
 const NumberFormField = memo(function NumberFormField({
-    label, name, value, onChange, disabled, error, helperText, slotProps,
+    label, name, initialValue = "", onChange, disabled, error, helperText, slotProps,
 }) {
+    const [value, setValue] = useState(initialValue);
+
+    useEffect(() => { setValue(initialValue); }, [initialValue]);
+
+    const handleChange = useCallback((e) => {
+        setValue(e.target.value);
+        onChange?.(name, e.target.value);
+    }, [name, onChange]);
+
     return (
         <TextField
             label={label}
             name={name}
             value={value}
-            onChange={onChange}
+            onChange={handleChange}
             fullWidth
             size="small"
             disabled={disabled}
@@ -62,26 +80,45 @@ const NumberFormField = memo(function NumberFormField({
     );
 });
 
-const DateFormField = memo(function DateFormField({ label, value, onChange }) {
-    return <DatePicker label={label} value={value} onChange={onChange} size="small" />;
+const DateFormField = memo(function DateFormField({ label, initialValue = null, onChange }) {
+    const [value, setValue] = useState(initialValue);
+
+    useEffect(() => { setValue(initialValue); }, [initialValue]);
+
+    const handleChange = useCallback((newValue) => {
+        setValue(newValue);
+        onChange?.("han_su_dung", newValue);
+    }, [onChange]);
+
+    return <DatePicker label={label} value={value} onChange={handleChange} size="small" />;
 });
 
 const AutocompleteFormField = memo(function AutocompleteFormField({
-    label, name, value, onChange, disabled, options, freeSolo
+    label, name, initialValue = "", onChange, disabled, options, freeSolo,
 }) {
+    const [value, setValue] = useState(initialValue);
+
+    useEffect(() => { setValue(initialValue); }, [initialValue]);
+
+    const handleChange = useCallback((_, newValue) => {
+        setValue(newValue || "");
+        onChange?.(name, newValue || "");
+    }, [name, onChange]);
+
+    const handleInputChange = useCallback((_, newInputValue) => {
+        if (freeSolo) {
+            setValue(newInputValue || "");
+            onChange?.(name, newInputValue || "");
+        }
+    }, [name, onChange, freeSolo]);
+
     return (
         <Autocomplete
             freeSolo={freeSolo}
             options={options}
             value={value || ""}
-            onChange={(_, newValue) => {
-                onChange({ target: { name, value: newValue || "" } });
-            }}
-            onInputChange={(_, newInputValue) => {
-                if (freeSolo) {
-                    onChange({ target: { name, value: newInputValue || "" } });
-                }
-            }}
+            onChange={handleChange}
+            onInputChange={handleInputChange}
             disabled={disabled}
             size="small"
             fullWidth
@@ -93,16 +130,25 @@ const AutocompleteFormField = memo(function AutocompleteFormField({
 });
 
 const SelectFormField = memo(function SelectFormField({
-    label, name, value, onChange, disabled, required,
+    label, name, initialValue = "", onChange, disabled, required,
     options, emptyLabel = "-- Chọn --", slotProps,
 }) {
+    const [value, setValue] = useState(initialValue);
+
+    useEffect(() => { setValue(initialValue); }, [initialValue]);
+
+    const handleChange = useCallback((e) => {
+        setValue(e.target.value);
+        onChange?.(name, e.target.value);
+    }, [name, onChange]);
+
     return (
         <TextField
             select
             label={label}
             name={name}
             value={value}
-            onChange={onChange}
+            onChange={handleChange}
             fullWidth
             size="small"
             disabled={disabled}
@@ -136,7 +182,8 @@ export default function KhoDialog({
     const hook = useKhoForm({ open, thuocId, mode, onClose, onSaved });
 
     const renderField = (field) => {
-        const value = hook.form[field.name];
+        const error = hook.errors[field.name];
+        const helperText = error;
 
         switch (field.type) {
             case "loai":
@@ -144,8 +191,8 @@ export default function KhoDialog({
                     <SelectFormField
                         label={field.label}
                         name={field.name}
-                        value={value}
-                        onChange={hook.handleLoaiChange}
+                        initialValue={hook.getFieldDefault(field.name)}
+                        onChange={hook.updateField}
                         disabled={isView}
                         required={field.required}
                         options={LOAI_OPTIONS}
@@ -156,8 +203,8 @@ export default function KhoDialog({
                     <AutocompleteFormField
                         label={field.label}
                         name={field.name}
-                        value={value}
-                        onChange={hook.handleChange}
+                        initialValue={hook.getFieldDefault(field.name)}
+                        onChange={hook.updateField}
                         disabled={isView}
                         options={hook.donViTinhOptions}
                         freeSolo
@@ -166,10 +213,11 @@ export default function KhoDialog({
             case "phanLoai":
                 return (
                     <SelectFormField
+                        key={`phan_loai-${hook.fieldVersion.phan_loai || 0}`}
                         label={field.label}
                         name={field.name}
-                        value={value}
-                        onChange={hook.handleChange}
+                        initialValue={hook.getFieldDefault(field.name)}
+                        onChange={hook.updateField}
                         disabled={isView}
                         options={hook.phanLoaiOptions}
                         emptyLabel={hook.loadingOptions ? "Đang tải..." : "-- Chọn --"}
@@ -180,8 +228,8 @@ export default function KhoDialog({
                 return (
                     <DateFormField
                         label={field.label}
-                        value={hook.form.han_su_dung}
-                        onChange={hook.handleDateChange}
+                        initialValue={hook.getFieldDefault(field.name)}
+                        onChange={hook.updateField}
                     />
                 );
             case "number":
@@ -189,11 +237,11 @@ export default function KhoDialog({
                     <NumberFormField
                         label={field.label}
                         name={field.name}
-                        value={value}
-                        onChange={hook.handleChange}
+                        initialValue={hook.getFieldDefault(field.name)}
+                        onChange={hook.updateField}
                         disabled={isView}
-                        error={!!hook.errors[field.name]}
-                        helperText={hook.errors[field.name]}
+                        error={error}
+                        helperText={helperText}
                         slotProps={field.slotProps}
                     />
                 );
@@ -202,8 +250,8 @@ export default function KhoDialog({
                     <TextFormField
                         label={field.label}
                         name={field.name}
-                        value={value}
-                        onChange={hook.handleChange}
+                        initialValue={hook.getFieldDefault(field.name)}
+                        onChange={hook.updateField}
                         disabled={isView}
                         multiline
                         rows={3}
@@ -214,12 +262,12 @@ export default function KhoDialog({
                     <TextFormField
                         label={field.label}
                         name={field.name}
-                        value={value}
-                        onChange={hook.handleChange}
+                        initialValue={hook.getFieldDefault(field.name)}
+                        onChange={hook.updateField}
                         disabled={isView}
                         required={field.required}
-                        error={!!hook.errors[field.name]}
-                        helperText={hook.errors[field.name]}
+                        error={error}
+                        helperText={helperText}
                     />
                 );
         }

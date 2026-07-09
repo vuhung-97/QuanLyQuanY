@@ -20,7 +20,8 @@ export default function PhieuDuTruDialog({ open, onClose, onSaved, phieuId = nul
     const {
         ghiChu,
         setGhiChu,
-        items,
+        keys,
+        getItem,
         saving,
         loadingData,
         snackbar,
@@ -35,7 +36,6 @@ export default function PhieuDuTruDialog({ open, onClose, onSaved, phieuId = nul
         addItem,
         removeItem,
         updateItem,
-        isValid,
         handleAddFromKhoThuoc,
         handleSave,
         handleClose,
@@ -99,7 +99,8 @@ export default function PhieuDuTruDialog({ open, onClose, onSaved, phieuId = nul
             />
 
             <ChiTietDuTruTable
-                items={items}
+                keys={keys}
+                getItem={getItem}
                 onUpdateItem={updateItem}
                 onRemoveItem={removeItem}
                 onAddItem={addItem}
@@ -173,7 +174,7 @@ export default function PhieuDuTruDialog({ open, onClose, onSaved, phieuId = nul
                                     <Button
                                         onClick={handleSave}
                                         variant="contained"
-                                        disabled={saving || !isValid()}
+                                        disabled={saving}
                                     >
                                         {saving
                                             ? "Đang xử lý..."
