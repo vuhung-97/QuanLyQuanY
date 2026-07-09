@@ -1,9 +1,10 @@
-import { useState, useEffect, useCallback } from "react";
 import { Button, Stack } from "@mui/material";
-import { FileDownload as FileDownloadIcon } from "@mui/icons-material";
+import { FileDownload as FileDownloadIcon, Refresh as RefreshIcon } from "@mui/icons-material";
 import YearMonthFilter from "@/components/common/YearMonthFilter.jsx";
 
-export default function BaoCaoToolbar({ thang, nam, onThangChange, onNamChange, onExport, onRefresh }) {
+export default function BaoCaoToolbar({
+    thang, nam, onThangChange, onNamChange, onExport, onRefresh, loading = false,
+}) {
     return (
         <Stack direction="row" spacing={2} sx={{ alignItems: "center", flexWrap: "wrap" }}>
             <YearMonthFilter
@@ -13,10 +14,20 @@ export default function BaoCaoToolbar({ thang, nam, onThangChange, onNamChange, 
                 onNamChange={onNamChange}
                 showThang={true}
             />
-            <Button variant="contained" onClick={onRefresh}>
-                Tạo báo cáo
+            <Button
+                variant="contained"
+                startIcon={<RefreshIcon />}
+                onClick={onRefresh}
+                disabled={loading}
+            >
+                {loading ? "Đang tải..." : "Tạo báo cáo"}
             </Button>
-            <Button variant="outlined" startIcon={<FileDownloadIcon />} onClick={onExport}>
+            <Button
+                variant="outlined"
+                startIcon={<FileDownloadIcon />}
+                onClick={onExport}
+                disabled={loading}
+            >
                 Xuất Excel
             </Button>
         </Stack>

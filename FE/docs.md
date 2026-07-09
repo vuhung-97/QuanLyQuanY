@@ -14,6 +14,7 @@ FE/
 └── src/
     ├── pages/                  # 1 page = 1 route, thin orchestrator
     │   ├── Admin/              # AuditLogPage, RolePermissionPage, UserManagementPage
+    │   ├── BaoCao/             # BaoCaoPage
     │   ├── Dashboard/          # DashboardPage
     │   ├── KhamBenhChoQN/      # CapThuocPage, ChuyenTuyenPage, KhamBenhPage
     │   ├── KhamSucKhoe/        # KhamSucKhoePage, LapLichPage
@@ -26,13 +27,15 @@ FE/
     │   ├── common/             # DataTable, DatePicker, DonThuoc, PatientInfoCard,
     │   │                       # PaginationWidget, SearchBarDebounced, StatCardGrid,
     │   │                       # FilterModeToggle, ConfirmDialog, FeedbackSnackbar,
-    │   │                       # DialogTitleWrapper, ChonQuanNhanDialog, ProtectedRoute,
-    │   │                       # print/...
+    │   │                       # LoadingAlert, DialogTitleWrapper, ChonQuanNhanDialog,
+    │   │                       # ProtectedRoute, print/...
     │   ├── layout/             # accountSetting/ common/ footer/ header/ sidebar/
     │   ├── KhamBenhChoQN/      # CapThuoc/ ChuyenTuyen/ KhamBenh/ (forms, dialogs, lists)
     │   │                       # └── KhamBenhSections/ (Symptoms, Diagnosis, FormActions)
     │   ├── KhamSucKhoe/        # common/ KiemTraSucKhoe/ LapLich/
     │   │                       # └── KiemTraSucKhoe/ → common/fields/ tabs/
+    │   ├── BaoCao/             # BaoCaoThangMain, BaoCaoTonKhoMain, BaoCaoToolbar,
+    │   │                       # PhanLoaiBenhChart, ChartSection, ...
     │   ├── KhoDuoc/            # DuTru/ Kho/ NhapKho/ XuatKho/
     │   └── NoiTru/             # common/ DanhSachNoiTru/→tabs/ LapBenhAn/ QuanLyPhongGiuong/
     │
@@ -47,9 +50,10 @@ FE/
     │                           # useTongQuanTab, useLichSuKham, useFormTab,
     │                           # useLogin, usePermissionDiff,
     │                           # useAdminAuditLogs, useAdminRoles, useAdminUsers, ...
-    ├── services/               # adminService, khamBenhService, khamSucKhoeService,
-    │                           # khoDuocService, noiTruService, api.js (Axios instance)
-    ├── constants/              # khamBenhConstants, khamSucKhoeConstants,
+    ├── services/               # adminService, baoCaoService, khamBenhService,
+    │                           # khamSucKhoeService, khoDuocService, noiTruService,
+    │                           # api.js (Axios instance)
+    ├── constants/              # bao_cao, khamBenhConstants, khamSucKhoeConstants,
     │                           # khoConstant, noiTruConstants
     ├── utils/                  # date.js, khamBenhUtils.js, treeUtils.js,
     │                           # xlsExport.js, yearOptions.js

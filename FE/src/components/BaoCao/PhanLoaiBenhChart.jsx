@@ -1,13 +1,14 @@
-import { useTheme } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
-
-const COLORS = ["#00B4D8", "#0B3B60", "#F59E0B", "#10B981", "#EF4444", "#8B5CF6", "#EC4899", "#F97316"];
+import { CHART_COLORS } from "@/constants/bao_cao.js";
 
 export default function PhanLoaiBenhChart({ data, title }) {
-    const theme = useTheme();
-
     if (!data || data.length === 0) {
-        return null;
+        return (
+            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: 300 }}>
+                <Typography color="text.secondary">Chưa có dữ liệu</Typography>
+            </Box>
+        );
     }
 
     return (
@@ -24,9 +25,14 @@ export default function PhanLoaiBenhChart({ data, title }) {
                     label={({ ten_nhom, ty_le }) => `${ten_nhom}: ${ty_le}%`}
                 >
                     {data.map((_, index) => (
-                        <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                        <Cell key={index} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                     ))}
                 </Pie>
+                <Legend
+                    formatter={(value) => (
+                        <span style={{ color: "#64748B", fontSize: 13 }}>{value}</span>
+                    )}
+                />
                 <Tooltip
                     contentStyle={{
                         borderRadius: 8,

@@ -17,6 +17,7 @@ export default function useBaoCaoTonKho() {
             setData(res.data);
         } catch (err) {
             setError(err.response?.data?.detail || "Lỗi tải báo cáo tồn kho");
+            setData(null);
         } finally {
             setLoading(false);
         }
@@ -29,13 +30,14 @@ export default function useBaoCaoTonKho() {
     const handleExport = useCallback(async () => {
         try {
             const res = await baoCaoService.exportTonKho(thang, nam);
-            const url = URL.createObjectURL(res.data);
+            const blob = res.data;
+            const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
             a.download = `BC_ton_kho_${nam}_${String(thang).padStart(2, "0")}.xlsx`;
             document.body.appendChild(a);
             a.click();
-            document.body.removeChild(a);
+            a.remove();
             URL.revokeObjectURL(url);
         } catch (err) {
             setError(err.response?.data?.detail || "Lỗi xuất Excel");
