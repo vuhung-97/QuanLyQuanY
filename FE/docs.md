@@ -16,7 +16,7 @@ FE/
     │   ├── Admin/              # AuditLogPage, RolePermissionPage, UserManagementPage
     │   ├── BaoCao/             # BaoCaoPage
     │   ├── Dashboard/          # DashboardPage
-    │   ├── KhamBenhChoQN/      # CapThuocPage, ChuyenTuyenPage, KhamBenhPage
+    │   ├── KhamBenhChoQN/      # CapThuocPage, ChuyenTuyenPage, DanhMucPage, KhamBenhPage
     │   ├── KhamSucKhoe/        # KhamSucKhoePage, LapLichPage
     │   ├── KhoDuoc/            # DuTruPage, KhoPage, NhapKhoPage, XuatKhoPage
     │   ├── Login/              # LoginForm, LoginHero, LoginPage
@@ -30,7 +30,8 @@ FE/
     │   │                       # LoadingAlert, DialogTitleWrapper, ChonQuanNhanDialog,
     │   │                       # ProtectedRoute, print/...
     │   ├── layout/             # accountSetting/ common/ footer/ header/ sidebar/
-    │   ├── KhamBenhChoQN/      # CapThuoc/ ChuyenTuyen/ KhamBenh/ (forms, dialogs, lists)
+    │   ├── KhamBenhChoQN/      # CapThuoc/ ChuyenTuyen/ DanhMuc/ KhamBenh/ (forms, dialogs, lists)
+    │   │                       # └── DanhMuc/ → DanhMucList, DanhMucDialog
     │   │                       # └── KhamBenhSections/ (Symptoms, Diagnosis, FormActions)
     │   ├── KhamSucKhoe/        # common/ KiemTraSucKhoe/ LapLich/
     │   │                       # └── KiemTraSucKhoe/ → common/fields/ tabs/
@@ -46,12 +47,12 @@ FE/
     │                           # useKhoForm, useDanhSachNoiTru, useLapBenhAnForm,
     │                           # useLapBenhAn, useQuanLyPhongGiuong, usePhieuChamSoc,
     │                           # useKhamSucKhoeForm, useKhamSucKhoeData, useKhamSucKhoeMain,
+    │                           # useDanhMucForm,
     │                           # useLichKhamData, useLapLichDialog, usePhanCongNhiemVu,
     │                           # useTongQuanTab, useLichSuKham, useFormTab,
     │                           # useLogin, usePermissionDiff,
     │                           # useAdminAuditLogs, useAdminRoles, useAdminUsers, ...
-    ├── services/               # adminService, baoCaoService, khamBenhService,
-    │                           # khamSucKhoeService, khoDuocService, noiTruService,
+    ├── services/               # adminService, baoCaoService, danhMucService, khamBenhService,
     │                           # api.js (Axios instance)
     ├── constants/              # bao_cao, khamBenhConstants, khamSucKhoeConstants,
     │                           # khoConstant, noiTruConstants

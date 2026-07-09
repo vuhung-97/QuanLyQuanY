@@ -103,6 +103,13 @@ export const defaultMenuItems = [
                 icon: <CircleIcon sx={{ fontSize: 12 }} />,
                 allowedRoles: ALL,
             },
+            {
+                id: "disease-catalog",
+                title: "DM nhóm bệnh & triệu chứng",
+                path: "/kham-benh/danh-muc",
+                icon: <CircleIcon sx={{ fontSize: 12 }} />,
+                allowedRoles: ALL,
+            },
         ],
     },
     {
