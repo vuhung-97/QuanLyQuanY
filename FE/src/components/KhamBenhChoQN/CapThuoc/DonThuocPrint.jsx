@@ -8,21 +8,21 @@ export default function DonThuocPrint({ data, paperSize = "A5" }) {
         <PrintOverlay
             className="don-thuoc-print"
             paperSize={paperSize}
-            fontSize="12pt"
+            fontSize="11pt"
         >
             <div
                 style={{
                     display: "flex",
                     justifyContent: "space-around",
                     alignItems: "flex-start",
-                    marginBottom: "12pt",
+                    marginBottom: "6pt",
                 }}
             >
                 <PrintHeaderDonVi />
                 <div style={{ textAlign: "center" }}>
                     <div
                         style={{
-                            fontSize: "14pt",
+                            fontSize: "13pt",
                             textTransform: "uppercase",
                             fontWeight: "bold",
                         }}
@@ -37,10 +37,12 @@ export default function DonThuocPrint({ data, paperSize = "A5" }) {
                     </p>
                 </div>
             </div>
-            <div style={{
+            <div
+                style={{
                     display: "flex",
                     justifyContent: "space-between",
-                }}>
+                }}
+            >
                 <p>
                     <strong>Họ tên:</strong> {data.hoTenQN || "—"}
                 </p>
@@ -93,7 +95,7 @@ export default function DonThuocPrint({ data, paperSize = "A5" }) {
                             </td>
                             <td>
                                 <div>
-                                    {row.lieu} | {row.cach_dung || "Uống"} | {" "}
+                                    {row.lieu} | {row.cach_dung || "Uống"} |{" "}
                                     {row.thoi_diem || "Sau ăn"}
                                 </div>
 

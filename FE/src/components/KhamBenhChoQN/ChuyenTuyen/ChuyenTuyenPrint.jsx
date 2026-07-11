@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { tinhTuoi } from "@/utils/date.js";
 import PrintOverlay from "@/components/common/print/PrintOverlay.jsx";
+import { UNIT_NAME } from "@/components/layout/common/constants.js";
 import PrintHeaderDonVi from "@/components/common/print/PrintHeaderDonVi.jsx";
 import PrintSignature from "@/components/common/print/PrintSignature.jsx";
 
@@ -52,7 +53,7 @@ const ChuyenTuyenPrint = memo(function ChuyenTuyenPrint({
             >
                 <PrintHeaderDonVi
                     title="QUÂN ĐỘI NHÂN DÂN VIỆT NAM"
-                    childTitle="ĐƠN VỊ LỮ ĐOÀN 170"
+                    childTitle={`ĐƠN VỊ ${UNIT_NAME}`}
                 />
                 <div style={{ textAlign: "center", paddingTop: "24pt" }}>
                     <p

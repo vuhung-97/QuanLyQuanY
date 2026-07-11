@@ -10,7 +10,8 @@ export const FONT_SIZE_LG = 18;
 export const FONT_SIZE_XL = 22;
 export const FONT_SIZE_XXL = 28;
 
-export const APP_NAME = "Quản lý Quân y Lữ đoàn Hải quân";
+export const UNIT_NAME = "Lữ đoàn 170";
+export const APP_NAME = `Quản lý Quân y ${UNIT_NAME}`;
 export const APP_SUBTITLE = "Hệ thống quản lý nghiệp vụ";
 export const APP_VERSION = "1.0.0";
 

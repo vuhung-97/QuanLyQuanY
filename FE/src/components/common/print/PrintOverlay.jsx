@@ -31,6 +31,9 @@ const flowStyles = (className, padding, fontFamily, pageSize, fontSize) => `
 .${className} { display: none; }
 @page { margin: 0; size: ${pageSize}; }
 @media print {
+    html, body { height: auto; overflow: visible; margin: 0; padding: 0; }
+    body * { visibility: hidden !important; }
+    .${className}, .${className} * { visibility: visible !important; }
     .${className} { display: block; width: 100%; padding: ${padding}; font-size: ${fontSize}; font-family: ${fontFamily}; box-sizing: border-box; }
     .${className} p { margin: 3pt 0; line-height: 1.4; }
     .${className} table { width: 100%; border-collapse: collapse; margin-top: 6pt; }
@@ -47,10 +50,12 @@ export default function PrintOverlay({
     fontFamily = "'Times New Roman', Times, serif",
     children,
     fontSize = "13pt",
+    fixed: fixedOverride,
 }) {
     const config = paperSizes[paperSize] || paperSizes.A4;
     const padding = customPadding || config.padding;
-    const styles = config.fixed ? fixedStyles : flowStyles;
+    const useFixed = fixedOverride !== undefined ? fixedOverride : config.fixed;
+    const styles = useFixed ? fixedStyles : flowStyles;
 
     return (
         <>

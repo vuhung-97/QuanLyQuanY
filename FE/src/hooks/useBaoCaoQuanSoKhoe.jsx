@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { baoCaoService } from "@/services/baoCaoService.js";
 import { buildTree, flattenTree, aggregateTree } from "@/utils/treeUtils.js";
+import { UNIT_NAME } from "@/components/layout/common/constants.js";
 
 export const COLUMNS = [
     { key: "ten_don_vi", label: "Đơn vị", sx: { minWidth: 280 } },
@@ -65,7 +66,7 @@ export default function useBaoCaoQuanSoKhoe() {
         const tq = data.tong_quan;
         treeRows.push({
             ma_don_vi: "__total__",
-            ten_don_vi: <span style={{ fontWeight: 700 }}>Lữ đoàn (tổng cộng)</span>,
+            ten_don_vi: <span style={{ fontWeight: 700 }}>{`${UNIT_NAME} (tổng cộng)`}</span>,
             quan_so: tq.tong_quan_so,
             so_nguoi_om: tq.tong_nguoi_om,
             so_luot_om: tq.tong_luot_om,

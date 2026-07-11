@@ -31,6 +31,7 @@ export default function PhieuDuTruDialog({
         saving,
         loadingData,
         snackbar,
+        setSnackbar,
         openKhoThuoc,
         savedPhieu,
         currentUser,

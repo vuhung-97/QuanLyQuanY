@@ -6,6 +6,7 @@ import {
     Stack,
     Typography,
 } from "@mui/material";
+import { UNIT_NAME } from "@/components/layout/common/constants.js";
 
 export default function LoginHero() {
     return (
@@ -60,7 +61,7 @@ export default function LoginHero() {
                                 fontSize: 24,
                             }}
                         >
-                            -- Lữ đoàn 170 --
+                            {`-- ${UNIT_NAME} --`}
                         </Typography>
                     </Box>
                 </Stack>

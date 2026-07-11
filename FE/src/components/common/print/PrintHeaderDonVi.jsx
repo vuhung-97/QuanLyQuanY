@@ -1,6 +1,8 @@
+import { UNIT_NAME } from "@/components/layout/common/constants.js";
+
 export default function PrintHeaderDonVi({
     subText,
-    title = "LỮ ĐOÀN 170",
+    title = UNIT_NAME,
     childTitle = "PHÒNG HC-KT",
     align = "center",
 }) {

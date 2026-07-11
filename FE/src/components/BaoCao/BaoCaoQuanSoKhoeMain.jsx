@@ -19,7 +19,7 @@ import {
     Mood as MoodIcon,
     Refresh as RefreshIcon,
 } from "@mui/icons-material";
-import useBaoCaoQuanSoKhoe, { COLUMNS } from "@/hooks/useBaoCaoQuanSoKhoe.js";
+import useBaoCaoQuanSoKhoe, { COLUMNS } from "@/hooks/useBaoCaoQuanSoKhoe.jsx";
 
 const CHART_COLORS = ["#0B3B60", "#00B4D8", "#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6"];
 
