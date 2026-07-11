@@ -57,7 +57,7 @@ const ChuyenTuyenPrint = memo(function ChuyenTuyenPrint({
                 <div style={{ textAlign: "center", paddingTop: "24pt" }}>
                     <p
                         style={{
-                            fontSize: "18pt",
+                            fontSize: "14pt",
                             fontWeight: "bold",
                             textAlign: "center",
                             textTransform: "uppercase",
@@ -93,8 +93,16 @@ const ChuyenTuyenPrint = memo(function ChuyenTuyenPrint({
             <p>
                 <strong>Đơn vị:</strong> {selectedExam?.ten_don_vi || "—"}
             </p>
-            <DottedField label="Triệu chứng" value={examDetail?.trieu_chung} />
-            <DottedField label="Chẩn đoán" value={examDetail?.chan_doan} />
+            <DottedField
+                label="Triệu chứng"
+                value={examDetail?.trieu_chung}
+                numrows={2}
+            />
+            <DottedField
+                label="Chẩn đoán"
+                value={examDetail?.chan_doan}
+                numrows={1}
+            />
             <DottedField label="Ý kiến đề nghị" value={yKienDeNghi} />
             <PrintSignature
                 justify="flex-end"
@@ -116,10 +124,10 @@ const ChuyenTuyenPrint = memo(function ChuyenTuyenPrint({
                     margin: "2cm 0",
                 }}
             >
-                <DottedField label="Thời gian đến bệnh xá" numrows={1} />
+                <DottedField label="Thời gian đến bệnh xá" numrows={0} />
 
                 <DottedField label="Chẩn đoán" numrows={3} />
-                <DottedField label="Quyết định của y sinh" numrows={7} />
+                <DottedField label="Quyết định của y sinh" numrows={5} />
 
                 <PrintSignature
                     justify="flex-end"

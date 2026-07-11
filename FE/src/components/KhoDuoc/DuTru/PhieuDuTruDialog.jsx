@@ -16,7 +16,13 @@ import ChiTietDuTruTable from "./ChiTietDuTruTable.jsx";
 import DatePicker from "@/components/common/DatePicker.jsx";
 import usePhieuDuTru from "@/hooks/usePhieuDuTru.js";
 
-export default function PhieuDuTruDialog({ open, onClose, onSaved, phieuId = null, mode = "create" }) {
+export default function PhieuDuTruDialog({
+    open,
+    onClose,
+    onSaved,
+    phieuId = null,
+    mode = "create",
+}) {
     const {
         ghiChu,
         setGhiChu,
@@ -58,19 +64,27 @@ export default function PhieuDuTruDialog({ open, onClose, onSaved, phieuId = nul
                     "@media print": { display: "none" },
                 }}
             >
-                <Stack direction="row" spacing={4} sx={{ flexWrap: "wrap", alignItems: "center" }}>
+                <Stack
+                    direction="row"
+                    spacing={4}
+                    sx={{ flexWrap: "wrap", alignItems: "center" }}
+                >
                     <Stack spacing={0.5}>
                         <Typography variant="caption" color="text.secondary">
                             Người lập
                         </Typography>
-                        <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+                        <Stack
+                            direction="row"
+                            spacing={1}
+                            sx={{ alignItems: "center" }}
+                        >
                             <PersonIcon fontSize="small" />
                             <Typography variant="body2">
                                 {isView
-                                    ? (creatorName || "—")
-                                    : (currentUser
-                                        ? `${currentUser.ho_ten} (${currentUser.role})`
-                                        : "—")}
+                                    ? creatorName || "—"
+                                    : currentUser
+                                      ? `${currentUser.ho_ten} (${currentUser.role})`
+                                      : "—"}
                             </Typography>
                         </Stack>
                     </Stack>
@@ -139,7 +153,9 @@ export default function PhieuDuTruDialog({ open, onClose, onSaved, phieuId = nul
                     }}
                 >
                     {loadingData ? (
-                        <Typography sx={{ textAlign: "center", py: 4 }}>Đang tải...</Typography>
+                        <Typography sx={{ textAlign: "center", py: 4 }}>
+                            Đang tải...
+                        </Typography>
                     ) : (
                         <>
                             {formContent}
@@ -154,7 +170,7 @@ export default function PhieuDuTruDialog({ open, onClose, onSaved, phieuId = nul
 
                 {!loadingData && (
                     <Box sx={{ "@media print": { display: "none" } }}>
-                        <DialogActions sx={{ px: 3, pb: 2.5 }}>
+                        <DialogActions sx={{ p: 2 }}>
                             {isView ? (
                                 <>
                                     <Button onClick={handleClose}>Đóng</Button>
@@ -168,7 +184,10 @@ export default function PhieuDuTruDialog({ open, onClose, onSaved, phieuId = nul
                                 </>
                             ) : (
                                 <>
-                                    <Button onClick={handleClose} disabled={saving}>
+                                    <Button
+                                        onClick={handleClose}
+                                        disabled={saving}
+                                    >
                                         Hủy
                                     </Button>
                                     <Button

@@ -5,7 +5,7 @@ const paperSizes = {
         fixed: true,
     },
     A5: {
-        padding: "2cm 1.5cm 2cm 1.5cm",
+        padding: "1cm 0.8cm 1cm 1.3cm",
         pageSize: "A5 portrait",
         fixed: false,
     },
@@ -46,7 +46,7 @@ export default function PrintOverlay({
     padding: customPadding,
     fontFamily = "'Times New Roman', Times, serif",
     children,
-    fontSize = "14pt",
+    fontSize = "13pt",
 }) {
     const config = paperSizes[paperSize] || paperSizes.A4;
     const padding = customPadding || config.padding;

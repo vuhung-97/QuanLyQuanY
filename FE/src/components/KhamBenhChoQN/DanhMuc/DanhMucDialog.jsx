@@ -13,17 +13,30 @@ import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import useDanhMucForm from "@/hooks/useDanhMucForm.js";
 
 const TextFormField = memo(function TextFormField({
-    label, name, initialValue = "", onChange, error, helperText, disabled,
-    required, multiline, rows,
+    label,
+    name,
+    initialValue = "",
+    onChange,
+    error,
+    helperText,
+    disabled,
+    required,
+    multiline,
+    rows,
 }) {
     const [value, setValue] = useState(initialValue);
 
-    useEffect(() => { setValue(initialValue); }, [initialValue]);
+    useEffect(() => {
+        setValue(initialValue);
+    }, [initialValue]);
 
-    const handleChange = useCallback((e) => {
-        setValue(e.target.value);
-        onChange?.(name, e.target.value);
-    }, [name, onChange]);
+    const handleChange = useCallback(
+        (e) => {
+            setValue(e.target.value);
+            onChange?.(name, e.target.value);
+        },
+        [name, onChange],
+    );
 
     return (
         <TextField
@@ -117,7 +130,7 @@ export default function DanhMucDialog({
                 </DialogContent>
 
                 {!hook.loading && (
-                    <DialogActions sx={{ px: 3, pb: 2.5 }}>
+                    <DialogActions sx={{ p: 2 }}>
                         {isView ? (
                             <Button onClick={hook.handleClose}>Đóng</Button>
                         ) : (

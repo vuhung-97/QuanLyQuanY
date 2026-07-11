@@ -5,7 +5,11 @@ import PrintSignature from "@/components/common/print/PrintSignature.jsx";
 
 export default function DonThuocPrint({ data, paperSize = "A5" }) {
     return (
-        <PrintOverlay className="don-thuoc-print" paperSize={paperSize}>
+        <PrintOverlay
+            className="don-thuoc-print"
+            paperSize={paperSize}
+            fontSize="12pt"
+        >
             <div
                 style={{
                     display: "flex",
@@ -18,7 +22,7 @@ export default function DonThuocPrint({ data, paperSize = "A5" }) {
                 <div style={{ textAlign: "center" }}>
                     <div
                         style={{
-                            fontSize: "18pt",
+                            fontSize: "14pt",
                             textTransform: "uppercase",
                             fontWeight: "bold",
                         }}
@@ -33,19 +37,23 @@ export default function DonThuocPrint({ data, paperSize = "A5" }) {
                     </p>
                 </div>
             </div>
-
-            <p>
-                <strong>Họ tên:</strong> {data.hoTenQN || "—"}
-            </p>
+            <div style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                }}>
+                <p>
+                    <strong>Họ tên:</strong> {data.hoTenQN || "—"}
+                </p>
+                <p>
+                    <strong>Cấp bậc:</strong> {data.capBac || "—"}
+                </p>
+            </div>
             <div
                 style={{
                     display: "flex",
                     justifyContent: "space-between",
                 }}
             >
-                <p>
-                    <strong>Cấp bậc:</strong> {data.capBac || "—"}
-                </p>
                 <p>
                     <strong> Chức vụ:</strong> {data.chucVu || "—"}
                 </p>
@@ -70,11 +78,9 @@ export default function DonThuocPrint({ data, paperSize = "A5" }) {
             <table>
                 <thead>
                     <tr>
-                        <th style={{ width: 40 }}>STT</th>
-                        <th>Tên thuốc</th>
-                        <th style={{ width: 50 }}>SL</th>
-                        <th style={{ width: 50 }}>ĐVT</th>
-                        <th>Hướng dẫn sử dụng</th>
+                        <th style={{ width: "7%" }}>STT</th>
+                        <th style={{ width: "30%" }}>Thuốc-SL-ĐVT</th>
+                        <th style={{ width: "63%" }}>Hướng dẫn sử dụng</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -82,24 +88,15 @@ export default function DonThuocPrint({ data, paperSize = "A5" }) {
                         <tr key={idx}>
                             <td style={{ textAlign: "center" }}>{idx + 1}</td>
                             <td style={{ fontWeight: "bold" }}>
-                                {row.ten_thuoc || row.ten_thuoc_vtyt || "--"}
-                            </td>
-                            <td className="so-luong">{row.so_luong}</td>
-                            <td style={{ textAlign: "center" }}>
-                                {row.don_vi_tinh || "—"}
+                                {row.ten_thuoc || row.ten_thuoc_vtyt || "--"}:{" "}
+                                {row.so_luong} {row.don_vi_tinh || "--"}
                             </td>
                             <td>
-                                {row.lieu && (
-                                    <div>
-                                        <strong>Liều:</strong> {row.lieu}
-                                    </div>
-                                )}
                                 <div>
-                                    <strong>Cách dùng:</strong>{" "}
-                                    {row.cach_dung || "Uống"} |{" "}
-                                    <strong>Thời điểm:</strong>{" "}
+                                    {row.lieu} | {row.cach_dung || "Uống"} | {" "}
                                     {row.thoi_diem || "Sau ăn"}
                                 </div>
+
                                 {row.ghi_chu && (
                                     <div>
                                         <strong>Ghi chú:</strong> {row.ghi_chu}

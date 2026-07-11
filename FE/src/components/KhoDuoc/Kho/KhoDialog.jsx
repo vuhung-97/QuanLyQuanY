@@ -21,17 +21,30 @@ import {
 } from "@/constants/khoConstant.js";
 
 const TextFormField = memo(function TextFormField({
-    label, name, initialValue = "", onChange, error, helperText, disabled,
-    required, multiline, rows,
+    label,
+    name,
+    initialValue = "",
+    onChange,
+    error,
+    helperText,
+    disabled,
+    required,
+    multiline,
+    rows,
 }) {
     const [value, setValue] = useState(initialValue);
 
-    useEffect(() => { setValue(initialValue); }, [initialValue]);
+    useEffect(() => {
+        setValue(initialValue);
+    }, [initialValue]);
 
-    const handleChange = useCallback((e) => {
-        setValue(e.target.value);
-        onChange?.(name, e.target.value);
-    }, [name, onChange]);
+    const handleChange = useCallback(
+        (e) => {
+            setValue(e.target.value);
+            onChange?.(name, e.target.value);
+        },
+        [name, onChange],
+    );
 
     return (
         <TextField
@@ -52,16 +65,28 @@ const TextFormField = memo(function TextFormField({
 });
 
 const NumberFormField = memo(function NumberFormField({
-    label, name, initialValue = "", onChange, disabled, error, helperText, slotProps,
+    label,
+    name,
+    initialValue = "",
+    onChange,
+    disabled,
+    error,
+    helperText,
+    slotProps,
 }) {
     const [value, setValue] = useState(initialValue);
 
-    useEffect(() => { setValue(initialValue); }, [initialValue]);
+    useEffect(() => {
+        setValue(initialValue);
+    }, [initialValue]);
 
-    const handleChange = useCallback((e) => {
-        setValue(e.target.value);
-        onChange?.(name, e.target.value);
-    }, [name, onChange]);
+    const handleChange = useCallback(
+        (e) => {
+            setValue(e.target.value);
+            onChange?.(name, e.target.value);
+        },
+        [name, onChange],
+    );
 
     return (
         <TextField
@@ -80,37 +105,67 @@ const NumberFormField = memo(function NumberFormField({
     );
 });
 
-const DateFormField = memo(function DateFormField({ label, initialValue = null, onChange }) {
-    const [value, setValue] = useState(initialValue);
-
-    useEffect(() => { setValue(initialValue); }, [initialValue]);
-
-    const handleChange = useCallback((newValue) => {
-        setValue(newValue);
-        onChange?.("han_su_dung", newValue);
-    }, [onChange]);
-
-    return <DatePicker label={label} value={value} onChange={handleChange} size="small" />;
-});
-
-const AutocompleteFormField = memo(function AutocompleteFormField({
-    label, name, initialValue = "", onChange, disabled, options, freeSolo,
+const DateFormField = memo(function DateFormField({
+    label,
+    initialValue = null,
+    onChange,
 }) {
     const [value, setValue] = useState(initialValue);
 
-    useEffect(() => { setValue(initialValue); }, [initialValue]);
+    useEffect(() => {
+        setValue(initialValue);
+    }, [initialValue]);
 
-    const handleChange = useCallback((_, newValue) => {
-        setValue(newValue || "");
-        onChange?.(name, newValue || "");
-    }, [name, onChange]);
+    const handleChange = useCallback(
+        (newValue) => {
+            setValue(newValue);
+            onChange?.("han_su_dung", newValue);
+        },
+        [onChange],
+    );
 
-    const handleInputChange = useCallback((_, newInputValue) => {
-        if (freeSolo) {
-            setValue(newInputValue || "");
-            onChange?.(name, newInputValue || "");
-        }
-    }, [name, onChange, freeSolo]);
+    return (
+        <DatePicker
+            label={label}
+            value={value}
+            onChange={handleChange}
+            size="small"
+        />
+    );
+});
+
+const AutocompleteFormField = memo(function AutocompleteFormField({
+    label,
+    name,
+    initialValue = "",
+    onChange,
+    disabled,
+    options,
+    freeSolo,
+}) {
+    const [value, setValue] = useState(initialValue);
+
+    useEffect(() => {
+        setValue(initialValue);
+    }, [initialValue]);
+
+    const handleChange = useCallback(
+        (_, newValue) => {
+            setValue(newValue || "");
+            onChange?.(name, newValue || "");
+        },
+        [name, onChange],
+    );
+
+    const handleInputChange = useCallback(
+        (_, newInputValue) => {
+            if (freeSolo) {
+                setValue(newInputValue || "");
+                onChange?.(name, newInputValue || "");
+            }
+        },
+        [name, onChange, freeSolo],
+    );
 
     return (
         <Autocomplete
@@ -130,17 +185,29 @@ const AutocompleteFormField = memo(function AutocompleteFormField({
 });
 
 const SelectFormField = memo(function SelectFormField({
-    label, name, initialValue = "", onChange, disabled, required,
-    options, emptyLabel = "-- Chọn --", slotProps,
+    label,
+    name,
+    initialValue = "",
+    onChange,
+    disabled,
+    required,
+    options,
+    emptyLabel = "-- Chọn --",
+    slotProps,
 }) {
     const [value, setValue] = useState(initialValue);
 
-    useEffect(() => { setValue(initialValue); }, [initialValue]);
+    useEffect(() => {
+        setValue(initialValue);
+    }, [initialValue]);
 
-    const handleChange = useCallback((e) => {
-        setValue(e.target.value);
-        onChange?.(name, e.target.value);
-    }, [name, onChange]);
+    const handleChange = useCallback(
+        (e) => {
+            setValue(e.target.value);
+            onChange?.(name, e.target.value);
+        },
+        [name, onChange],
+    );
 
     return (
         <TextField
@@ -220,7 +287,9 @@ export default function KhoDialog({
                         onChange={hook.updateField}
                         disabled={isView}
                         options={hook.phanLoaiOptions}
-                        emptyLabel={hook.loadingOptions ? "Đang tải..." : "-- Chọn --"}
+                        emptyLabel={
+                            hook.loadingOptions ? "Đang tải..." : "-- Chọn --"
+                        }
                         slotProps={field.slotProps}
                     />
                 );
@@ -302,7 +371,7 @@ export default function KhoDialog({
                 </DialogContent>
 
                 {!hook.loading && (
-                    <DialogActions sx={{ px: 3, pb: 2.5 }}>
+                    <DialogActions sx={{ p: 2 }}>
                         {isView ? (
                             <Button onClick={hook.handleClose}>Đóng</Button>
                         ) : (

@@ -70,7 +70,7 @@ export default function DonThuocForm({ open, onClose, onSave, initialItems }) {
                     )}
                 </Stack>
             </DialogContent>
-            <DialogActions>
+            <DialogActions sx={{ p: 2 }}>
                 <Button onClick={onClose}>Hủy</Button>
                 <Button
                     variant="contained"

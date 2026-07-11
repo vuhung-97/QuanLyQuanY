@@ -143,7 +143,7 @@ export default function PhieuXuatDialog({
                     )}
                 </DialogContent>
                 <Box sx={{ "@media print": { display: "none" } }}>
-                    <DialogActions sx={{ px: 3, py: 2 }}>
+                    <DialogActions sx={{ p: 2 }}>
                         {isView ? (
                             <>
                                 <Button onClick={onClose} disabled={saving}>

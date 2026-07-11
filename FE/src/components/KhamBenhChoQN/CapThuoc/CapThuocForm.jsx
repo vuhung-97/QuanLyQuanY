@@ -31,15 +31,19 @@ export default function CapThuocForm({
     };
 
     return (
-        <Dialog
-            open={open}
-            onClose={onClose}
-            maxWidth="md"
-            fullWidth
-        >
-            <DialogTitleWrapper
-                sx={{ "@media print": { display: "none" } }}
-            >
+        <>
+            <style>{`
+                @media print {
+                    #root { display: none !important; }
+                    .MuiBackdrop-root { display: none !important; }
+                    .MuiModal-root { display: contents !important; }
+                    .MuiDialog-container { display: contents !important; }
+                    .MuiDialog-paper { display: contents !important; }
+                    .MuiDialogContent-root { display: contents !important; }
+                }
+            `}</style>
+            <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+            <DialogTitleWrapper sx={{ "@media print": { display: "none" } }}>
                 {isDaNhanThuoc ? "Đơn thuốc đã cấp" : "Cấp thuốc"}
             </DialogTitleWrapper>
 
@@ -48,7 +52,8 @@ export default function CapThuocForm({
                 sx={{
                     pt: 0,
                     "@media print": { border: "none !important" },
-                }}>
+                }}
+            >
                 {selectedExam && (
                     <DonThuocPrint
                         data={{
@@ -61,7 +66,8 @@ export default function CapThuocForm({
                             chanDoan: examDetail?.chan_doan,
                             phuongPhapDieuTri: examDetail?.phuong_phap_dieu_tri,
                             prescriptionRows,
-                            nguoiCapThuoc: examDetail?.don_thuoc?.[0]?.ten_nguoi_cap_thuoc,
+                            nguoiCapThuoc:
+                                examDetail?.don_thuoc?.[0]?.ten_nguoi_cap_thuoc,
                         }}
                     />
                 )}
@@ -80,10 +86,18 @@ export default function CapThuocForm({
                         Không tìm thấy thông tin.
                     </Typography>
                 ) : (
-                    <Stack spacing={2.5} sx={{ "@media print": { display: "none" }, py: 1 }}>
+                    <Stack
+                        spacing={2.5}
+                        sx={{ "@media print": { display: "none" }, py: 1 }}
+                    >
                         <PatientInfoCard
                             data={selectedExam}
-                            fields={["ho_ten", "ten_don_vi", "ma_kham_benh", "ngay_kham"]}
+                            fields={[
+                                "ho_ten",
+                                "ten_don_vi",
+                                "ma_kham_benh",
+                                "ngay_kham",
+                            ]}
                         />
 
                         {examDetail?.chan_doan && (
@@ -172,8 +186,8 @@ export default function CapThuocForm({
                 )}
             </DialogContent>
 
-            <Box sx={{ "@media print": { display: "none" } }}>
-                <DialogActions>
+            <Box sx={{ "@media print": { display: "none" }, p: 2 }}>
+                <DialogActions sx={{ p: 0 }}>
                     <Button onClick={onClose}>Hủy</Button>
                     <Button
                         variant="outlined"
@@ -198,5 +212,6 @@ export default function CapThuocForm({
                 </DialogActions>
             </Box>
         </Dialog>
+        </>
     );
 }

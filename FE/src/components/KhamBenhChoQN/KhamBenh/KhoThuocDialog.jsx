@@ -196,9 +196,7 @@ export default function KhoThuocDialog({
             fullWidth
             height="90vh"
         >
-            <DialogTitleWrapper wrap={false}>
-                Kho thuốc
-            </DialogTitleWrapper>
+            <DialogTitleWrapper wrap={false}>Kho thuốc</DialogTitleWrapper>
             <DialogContent dividers sx={{ overflow: "hidden", pb: 0 }}>
                 <SearchBarDebounced
                     onSearch={setSearchText}
@@ -288,12 +286,8 @@ export default function KhoThuocDialog({
                     </Typography>
                 )}
             </DialogContent>
-            <DialogActions>
-                <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ mr: "auto", ml: 2 }}
-                >
+            <DialogActions sx={{ p: 2 }}>
+                <Typography variant="body2" color="text.secondary">
                     Đã chọn: {selectedCount} thuốc
                 </Typography>
                 <Button onClick={onClose}>Hủy</Button>

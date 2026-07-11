@@ -18,7 +18,13 @@ import ChuyenTuyenPrint from "./ChuyenTuyenPrint.jsx";
 import { parseDonThuocToRows } from "@/utils/khamBenhUtils.js";
 
 const PATIENT_FIELDS = [
-    "ho_ten", "tuoi", "cap_bac", "chuc_vu", "ten_don_vi", "ma_kham_benh", "ngay_kham",
+    "ho_ten",
+    "tuoi",
+    "cap_bac",
+    "chuc_vu",
+    "ten_don_vi",
+    "ma_kham_benh",
+    "ngay_kham",
 ];
 
 const sectionSx = { mb: 1, fontWeight: 600, color: "text.primary" };
@@ -30,31 +36,60 @@ function SectionHeading({ children }) {
     );
 }
 
-const FormTextField = memo(function FormTextField({ name, initialValue, onUpdateRef, onBlurSync, ...props }) {
+const FormTextField = memo(function FormTextField({
+    name,
+    initialValue,
+    onUpdateRef,
+    onBlurSync,
+    ...props
+}) {
     const [value, setValue] = useState(initialValue ?? "");
-    useEffect(() => { setValue(initialValue ?? ""); }, [initialValue]);
+    useEffect(() => {
+        setValue(initialValue ?? "");
+    }, [initialValue]);
 
-    const handleChange = useCallback((e) => {
-        const v = e.target.value;
-        setValue(v);
-        onUpdateRef(name, v);
-    }, [name, onUpdateRef]);
+    const handleChange = useCallback(
+        (e) => {
+            const v = e.target.value;
+            setValue(v);
+            onUpdateRef(name, v);
+        },
+        [name, onUpdateRef],
+    );
 
     const handleBlur = useCallback(() => {
         onBlurSync(name, value);
     }, [name, value, onBlurSync]);
 
-    return <TextField value={value} onChange={handleChange} onBlur={handleBlur} {...props} />;
+    return (
+        <TextField
+            value={value}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            {...props}
+        />
+    );
 });
 
-const FormDatePicker = memo(function FormDatePicker({ name, initialValue, onUpdateRef, onBlurSync, ...props }) {
+const FormDatePicker = memo(function FormDatePicker({
+    name,
+    initialValue,
+    onUpdateRef,
+    onBlurSync,
+    ...props
+}) {
     const [value, setValue] = useState(initialValue ?? null);
-    useEffect(() => { setValue(initialValue ?? null); }, [initialValue]);
+    useEffect(() => {
+        setValue(initialValue ?? null);
+    }, [initialValue]);
 
-    const handleChange = useCallback((v) => {
-        setValue(v);
-        onUpdateRef(name, v);
-    }, [name, onUpdateRef]);
+    const handleChange = useCallback(
+        (v) => {
+            setValue(v);
+            onUpdateRef(name, v);
+        },
+        [name, onUpdateRef],
+    );
 
     return <DatePicker value={value} onChange={handleChange} {...props} />;
 });
@@ -80,7 +115,9 @@ export default function ChuyenTuyenForm({
             tenBenhVien: giayGt?.ten_benh_vien || "",
             yKienDeNghi: giayGt?.y_kien_de_nghi || "",
             ngayDi: diTuyen?.ngay_di ? dayjs(diTuyen.ngay_di) : null,
-            thoiGianDen: giayGt?.thoi_gian_den_benh_vien ? dayjs(giayGt.thoi_gian_den_benh_vien) : null,
+            thoiGianDen: giayGt?.thoi_gian_den_benh_vien
+                ? dayjs(giayGt.thoi_gian_den_benh_vien)
+                : null,
             chanDoan: giayGt?.chan_doan || "",
             quyetDinhYSinh: giayGt?.quyet_dinh_y_sinh || "",
             ngayVe: diTuyen?.ngay_ve ? dayjs(diTuyen.ngay_ve) : null,
@@ -117,7 +154,8 @@ export default function ChuyenTuyenForm({
         if (d.ngayDi) diTuyenData.ngay_di = d.ngayDi.format("YYYY-MM-DD");
         if (d.ngayVe) diTuyenData.ngay_ve = d.ngayVe.format("YYYY-MM-DD");
         if (d.chanDoanLucVe) diTuyenData.chan_doan_luc_ve = d.chanDoanLucVe;
-        if (d.ketQuaDieuTri) diTuyenData.ket_qua_huong_dieu_tri = d.ketQuaDieuTri;
+        if (d.ketQuaDieuTri)
+            diTuyenData.ket_qua_huong_dieu_tri = d.ketQuaDieuTri;
         onSave(giayData, diTuyenData);
     }, [onSave]);
 
@@ -132,15 +170,19 @@ export default function ChuyenTuyenForm({
     );
 
     return (
-        <Dialog
-            open={open}
-            onClose={onClose}
-            maxWidth="md"
-            fullWidth
-        >
-            <DialogTitleWrapper
-                sx={{ "@media print": { display: "none" } }}
-            >
+        <>
+            <style>{`
+                @media print {
+                    #root { display: none !important; }
+                    .MuiBackdrop-root { display: none !important; }
+                    .MuiModal-root { display: contents !important; }
+                    .MuiDialog-container { display: contents !important; }
+                    .MuiDialog-paper { display: contents !important; }
+                    .MuiDialogContent-root { display: contents !important; }
+                }
+            `}</style>
+            <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+            <DialogTitleWrapper sx={{ "@media print": { display: "none" } }}>
                 Thông tin chuyển tuyến
             </DialogTitleWrapper>
 
@@ -149,7 +191,8 @@ export default function ChuyenTuyenForm({
                 sx={{
                     pt: 0,
                     "@media print": { border: "none !important" },
-                }}>
+                }}
+            >
                 {loading ? (
                     <Typography
                         color="text.secondary"
@@ -246,7 +289,9 @@ export default function ChuyenTuyenForm({
                                         </Typography>
                                         <FormDatePicker
                                             name="ngayDi"
-                                            initialValue={formRef.current.ngayDi}
+                                            initialValue={
+                                                formRef.current.ngayDi
+                                            }
                                             onUpdateRef={updateField}
                                             onBlurSync={blurSync}
                                             size="small"
@@ -273,7 +318,9 @@ export default function ChuyenTuyenForm({
                                         </Typography>
                                         <FormDatePicker
                                             name="thoiGianDen"
-                                            initialValue={formRef.current.thoiGianDen}
+                                            initialValue={
+                                                formRef.current.thoiGianDen
+                                            }
                                             onUpdateRef={updateField}
                                             onBlurSync={blurSync}
                                             size="small"
@@ -292,7 +339,9 @@ export default function ChuyenTuyenForm({
                                     />
                                     <FormTextField
                                         name="quyetDinhYSinh"
-                                        initialValue={formRef.current.quyetDinhYSinh}
+                                        initialValue={
+                                            formRef.current.quyetDinhYSinh
+                                        }
                                         onUpdateRef={updateField}
                                         onBlurSync={blurSync}
                                         label="Quyết định của y sinh"
@@ -314,7 +363,9 @@ export default function ChuyenTuyenForm({
                                         </Typography>
                                         <FormDatePicker
                                             name="ngayVe"
-                                            initialValue={formRef.current.ngayVe}
+                                            initialValue={
+                                                formRef.current.ngayVe
+                                            }
                                             onUpdateRef={updateField}
                                             onBlurSync={blurSync}
                                             size="small"
@@ -322,7 +373,9 @@ export default function ChuyenTuyenForm({
                                     </Stack>
                                     <FormTextField
                                         name="chanDoanLucVe"
-                                        initialValue={formRef.current.chanDoanLucVe}
+                                        initialValue={
+                                            formRef.current.chanDoanLucVe
+                                        }
                                         onUpdateRef={updateField}
                                         onBlurSync={blurSync}
                                         label="Chẩn đoán lúc về"
@@ -333,7 +386,9 @@ export default function ChuyenTuyenForm({
                                     />
                                     <FormTextField
                                         name="ketQuaDieuTri"
-                                        initialValue={formRef.current.ketQuaDieuTri}
+                                        initialValue={
+                                            formRef.current.ketQuaDieuTri
+                                        }
                                         onUpdateRef={updateField}
                                         onBlurSync={blurSync}
                                         label="Kết quả hướng điều trị"
@@ -356,8 +411,8 @@ export default function ChuyenTuyenForm({
                 )}
             </DialogContent>
 
-            <Box sx={{ "@media print": { display: "none" } }}>
-                <DialogActions>
+            <Box sx={{ "@media print": { display: "none" }, p: 2 }}>
+                <DialogActions sx={{ p: 0 }}>
                     <Button onClick={onClose}>Hủy</Button>
                     <Button
                         variant="outlined"
@@ -378,5 +433,6 @@ export default function ChuyenTuyenForm({
                 </DialogActions>
             </Box>
         </Dialog>
+        </>
     );
 }
