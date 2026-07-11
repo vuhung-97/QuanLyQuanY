@@ -20,3 +20,20 @@ export function flattenTree(nodes, level = 0) {
     }
     return result;
 }
+
+export function aggregateTree(tree) {
+    function walk(node) {
+        for (const child of node.children) {
+            walk(child);
+            node.quan_so += child.quan_so;
+            node.so_nguoi_om += child.so_nguoi_om;
+            node.so_luot_om += child.so_luot_om;
+        }
+        node.quan_so_khoe = Math.max(0, node.quan_so - node.so_nguoi_om);
+        node.ty_le_khoe = node.quan_so > 0
+            ? Math.round(node.quan_so_khoe / node.quan_so * 1000) / 10
+            : 100.0;
+    }
+    for (const root of tree) walk(root);
+    return tree;
+}

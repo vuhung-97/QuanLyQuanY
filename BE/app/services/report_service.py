@@ -5,14 +5,19 @@ from sqlalchemy.orm import Session
 
 from app.database.benh_an import BenhAn
 from app.database.chi_tiet_don_thuoc import ChiTietDonThuoc
+from app.database.chi_tiet_phieu_cham_soc import ChiTietPhieuChamSoc
 from app.database.chi_tiet_phieu_nhap_kho import ChiTietPhieuNhapKho
 from app.database.chi_tiet_xuat_kho import ChiTietXuatKho
+from app.database.di_tuyen_sau_dieu_tri import DiTuyenSauDieuTri
 from app.database.dm_nhom_benh import DmNhomBenh
 from app.database.don_thuoc import DonThuoc
+from app.database.don_vi import DonVi
 from app.database.giuong import Giuong
 from app.database.kham_benh import KhamBenh
+from app.database.phieu_cham_soc import PhieuChamSoc
 from app.database.phieu_nhap_kho import PhieuNhapKho
 from app.database.phieu_xuat_kho import PhieuXuatKho
+from app.database.quan_nhan import QuanNhan
 from app.database.thuoc_vtyt import ThuocVtyt
 
 
@@ -24,6 +29,7 @@ class ReportService:
         base_filter_kham = (
             extract("year", KhamBenh.ngay_kham) == nam,
             extract("month", KhamBenh.ngay_kham) == thang,
+            KhamBenh.trang_thai != "chờ",
         )
 
         tong_luot_kham = self.db.query(func.count(KhamBenh.ma_kham_benh)).filter(*base_filter_kham).scalar() or 0
@@ -95,7 +101,10 @@ class ReportService:
         }
 
     def yearly_medical_report(self, nam: int) -> dict:
-        base_filter = (extract("year", KhamBenh.ngay_kham) == nam,)
+        base_filter = (
+            extract("year", KhamBenh.ngay_kham) == nam,
+            KhamBenh.trang_thai != "chờ",
+        )
 
         tong_luot_kham = self.db.query(func.count(KhamBenh.ma_kham_benh)).filter(*base_filter).scalar() or 0
         tong_noi_tru = (
@@ -158,11 +167,15 @@ class ReportService:
         }
 
     def _thuoc_da_su_dung(self, thang: int | None, nam: int) -> list[dict]:
-        filters = [extract("year", KhamBenh.ngay_kham) == nam]
+        # --- Từ đơn thuốc (chỉ tính đã cấp) ---
+        dt_filters = [
+            extract("year", KhamBenh.ngay_kham) == nam,
+            KhamBenh.trang_thai == "đã_nhận_thuốc",
+        ]
         if thang is not None:
-            filters.append(extract("month", KhamBenh.ngay_kham) == thang)
+            dt_filters.append(extract("month", KhamBenh.ngay_kham) == thang)
 
-        records = (
+        don_thuoc_records = (
             self.db.query(
                 ThuocVtyt.ma_thuoc_vtyt,
                 ThuocVtyt.ten_thuoc_vtyt,
@@ -173,27 +186,54 @@ class ReportService:
             .join(ChiTietDonThuoc, ThuocVtyt.ma_thuoc_vtyt == ChiTietDonThuoc.ma_thuoc_vtyt)
             .join(DonThuoc, ChiTietDonThuoc.ma_don_thuoc == DonThuoc.ma_don_thuoc)
             .join(KhamBenh, DonThuoc.ma_kham_benh == KhamBenh.ma_kham_benh)
-            .filter(*filters)
+            .filter(*dt_filters)
             .group_by(ThuocVtyt.ma_thuoc_vtyt, ThuocVtyt.ten_thuoc_vtyt, ThuocVtyt.don_vi_tinh, ThuocVtyt.phan_loai)
-            .order_by(func.sum(ChiTietDonThuoc.so_luong).desc())
             .all()
         )
-        return [
-            {
-                "ma_thuoc": r.ma_thuoc_vtyt,
-                "ten_thuoc": r.ten_thuoc_vtyt,
-                "don_vi_tinh": r.don_vi_tinh or "",
-                "phan_loai": r.phan_loai or "",
-                "so_luong": r.tong_luong,
-            }
-            for r in records
-        ]
+
+        # --- Từ phiếu chăm sóc ---
+        cs_filters = [extract("year", PhieuChamSoc.thoi_gian) == nam]
+        if thang is not None:
+            cs_filters.append(extract("month", PhieuChamSoc.thoi_gian) == thang)
+
+        cham_soc_records = (
+            self.db.query(
+                ThuocVtyt.ma_thuoc_vtyt,
+                ThuocVtyt.ten_thuoc_vtyt,
+                ThuocVtyt.don_vi_tinh,
+                ThuocVtyt.phan_loai,
+                func.coalesce(func.sum(ChiTietPhieuChamSoc.so_luong), 0).label("tong_luong"),
+            )
+            .join(ChiTietPhieuChamSoc, ThuocVtyt.ma_thuoc_vtyt == ChiTietPhieuChamSoc.ma_thuoc_vtyt)
+            .join(PhieuChamSoc, ChiTietPhieuChamSoc.ma_phieu_cs == PhieuChamSoc.ma_phieu_cs)
+            .filter(*cs_filters)
+            .group_by(ThuocVtyt.ma_thuoc_vtyt, ThuocVtyt.ten_thuoc_vtyt, ThuocVtyt.don_vi_tinh, ThuocVtyt.phan_loai)
+            .all()
+        )
+
+        # --- Merge 2 nguồn theo mã thuốc ---
+        merged: dict[str, dict] = {}
+        for r in don_thuoc_records + cham_soc_records:
+            key = r.ma_thuoc_vtyt
+            if key not in merged:
+                merged[key] = {
+                    "ma_thuoc": r.ma_thuoc_vtyt,
+                    "ten_thuoc": r.ten_thuoc_vtyt,
+                    "don_vi_tinh": r.don_vi_tinh or "",
+                    "phan_loai": r.phan_loai or "",
+                    "so_luong": 0,
+                }
+            merged[key]["so_luong"] += r.tong_luong
+
+        return sorted(merged.values(), key=lambda x: x["so_luong"], reverse=True)
 
     def _so_sanh_thang_truoc(self, thang: int, nam: int, thang_truoc: int, nam_truoc: int) -> dict:
         def _calc(nam: int, thang: int, field: str) -> int:
             if field == "luot_kham":
                 return self.db.query(func.count(KhamBenh.ma_kham_benh)).filter(
-                    extract("year", KhamBenh.ngay_kham) == nam, extract("month", KhamBenh.ngay_kham) == thang
+                    extract("year", KhamBenh.ngay_kham) == nam,
+                    extract("month", KhamBenh.ngay_kham) == thang,
+                    KhamBenh.trang_thai != "chờ",
                 ).scalar() or 0
             elif field == "noi_tru":
                 return self.db.query(func.count(BenhAn.ma_benh_an)).filter(
@@ -341,5 +381,105 @@ class ReportService:
                 "giuong_trong": giuong_trong,
                 "tong_thuoc_vtyt": tong_thuoc,
                 "sap_het_han": sap_het_han,
+            },
+        }
+
+    def quan_so_khoe(self, thang: int, nam: int) -> dict:
+        units = {u.ma_don_vi: u for u in self.db.query(DonVi).all()}
+
+        qs_rows = (
+            self.db.query(
+                QuanNhan.ma_don_vi,
+                func.count(QuanNhan.ma_quan_nhan).label("quan_so"),
+            )
+            .group_by(QuanNhan.ma_don_vi)
+            .all()
+        )
+        qs_map = {r.ma_don_vi: r.quan_so for r in qs_rows}
+
+        hosp_raw = (
+            self.db.query(BenhAn.ma_quan_nhan, QuanNhan.ma_don_vi)
+            .join(QuanNhan, BenhAn.ma_quan_nhan == QuanNhan.ma_quan_nhan)
+            .filter(
+                extract("year", BenhAn.ngay_nhap_vien) == nam,
+                extract("month", BenhAn.ngay_nhap_vien) == thang,
+            )
+            .all()
+        )
+
+        hosp_people: dict[str, set] = {}
+        hosp_luot: dict[str, int] = {}
+        for r in hosp_raw:
+            dv = r.ma_don_vi or "__none__"
+            hosp_people.setdefault(dv, set()).add(r.ma_quan_nhan)
+            hosp_luot[dv] = hosp_luot.get(dv, 0) + 1
+
+        ct_kb_raw = (
+            self.db.query(KhamBenh.ma_quan_nhan, QuanNhan.ma_don_vi)
+            .join(QuanNhan, KhamBenh.ma_quan_nhan == QuanNhan.ma_quan_nhan)
+            .filter(
+                KhamBenh.trang_thai == "chuyển_tuyến",
+                extract("year", KhamBenh.ngay_kham) == nam,
+                extract("month", KhamBenh.ngay_kham) == thang,
+            )
+            .all()
+        )
+
+        ct_dt_raw = (
+            self.db.query(DiTuyenSauDieuTri.ma_quan_nhan, QuanNhan.ma_don_vi)
+            .join(QuanNhan, DiTuyenSauDieuTri.ma_quan_nhan == QuanNhan.ma_quan_nhan)
+            .filter(
+                extract("year", DiTuyenSauDieuTri.ngay_di) == nam,
+                extract("month", DiTuyenSauDieuTri.ngay_di) == thang,
+            )
+            .all()
+        )
+
+        ct_people: dict[str, set] = {}
+        ct_luot: dict[str, int] = {}
+        for r in ct_kb_raw + ct_dt_raw:
+            dv = r.ma_don_vi or "__none__"
+            ct_people.setdefault(dv, set()).add(r.ma_quan_nhan)
+            ct_luot[dv] = ct_luot.get(dv, 0) + 1
+
+        danh_sach = []
+        tong_quan_so = 0
+        tong_nguoi_om = 0
+        tong_luot_om = 0
+
+        for ma_dv, u in units.items():
+            qs = qs_map.get(ma_dv, 0)
+            nguoi_om = len(hosp_people.get(ma_dv, set()) | ct_people.get(ma_dv, set()))
+            luot_om = hosp_luot.get(ma_dv, 0) + ct_luot.get(ma_dv, 0)
+            qk = max(0, qs - nguoi_om)
+            tl = round(qk / qs * 100, 1) if qs > 0 else 100.0
+
+            danh_sach.append({
+                "ma_don_vi": ma_dv,
+                "ten_don_vi": u.ten_don_vi,
+                "ma_don_vi_truc_thuoc": u.ma_don_vi_truc_thuoc,
+                "quan_so": qs,
+                "so_nguoi_om": nguoi_om,
+                "so_luot_om": luot_om,
+                "quan_so_khoe": qk,
+                "ty_le_khoe": tl,
+            })
+
+            tong_quan_so += qs
+            tong_nguoi_om += nguoi_om
+            tong_luot_om += luot_om
+
+        tong_qk = max(0, tong_quan_so - tong_nguoi_om)
+
+        return {
+            "thang": thang,
+            "nam": nam,
+            "don_vi": danh_sach,
+            "tong_quan": {
+                "tong_quan_so": tong_quan_so,
+                "tong_nguoi_om": tong_nguoi_om,
+                "tong_luot_om": tong_luot_om,
+                "quan_so_khoe": tong_qk,
+                "ty_le_khoe": round(tong_qk / tong_quan_so * 100, 1) if tong_quan_so > 0 else 100.0,
             },
         }

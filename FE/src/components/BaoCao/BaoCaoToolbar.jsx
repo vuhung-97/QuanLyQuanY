@@ -1,12 +1,25 @@
 import { Button, Stack } from "@mui/material";
-import { FileDownload as FileDownloadIcon, Refresh as RefreshIcon } from "@mui/icons-material";
+import {
+    FileDownload as FileDownloadIcon,
+    Refresh as RefreshIcon,
+} from "@mui/icons-material";
 import YearMonthFilter from "@/components/common/YearMonthFilter.jsx";
 
 export default function BaoCaoToolbar({
-    thang, nam, onThangChange, onNamChange, onExport, onRefresh, loading = false,
+    thang,
+    nam,
+    onThangChange,
+    onNamChange,
+    onExport,
+    onRefresh,
+    loading = false,
 }) {
     return (
-        <Stack direction="row" spacing={2} sx={{ alignItems: "center", flexWrap: "wrap" }}>
+        <Stack
+            direction="row"
+            spacing={2}
+            sx={{ alignItems: "center", flexWrap: "wrap" }}
+        >
             <YearMonthFilter
                 thang={thang}
                 nam={nam}
@@ -20,7 +33,7 @@ export default function BaoCaoToolbar({
                 onClick={onRefresh}
                 disabled={loading}
             >
-                {loading ? "Đang tải..." : "Tạo báo cáo"}
+                {loading ? "Đang tải..." : "Refresh"}
             </Button>
             <Button
                 variant="outlined"

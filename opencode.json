@@ -1,10 +1,15 @@
 {
     "$schema": "https://opencode.ai/config.json",
-
     "provider": {
-        "nvidia": {
+        "opencode-zen": {
             "models": {
-                "minimaxai/minimax-m3": {}
+                "deepseek-v4-flash-free": {
+                    "options": {
+                        "thinking": {
+                            "type": "enabled"
+                        }
+                    }
+                }
             }
         }
     }

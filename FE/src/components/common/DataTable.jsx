@@ -73,7 +73,7 @@ export default function DataTable({
                                       <TableCell
                                           key={col.key}
                                           align={col.align || "left"}
-                                          sx={col.sx}
+                                          sx={{ color: "inherit", fontWeight: "inherit", ...col.sx }}
                                       >
                                            {col.render ? col.render(row, idx, rowExtra) : row[col.key]}
                                       </TableCell>

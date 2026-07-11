@@ -4,7 +4,6 @@ import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import BaoCaoToolbar from "./BaoCaoToolbar.jsx";
 import BaoCaoThangCharts from "./BaoCaoThangCharts.jsx";
 import BaoCaoThangSoSanh from "./BaoCaoThangSoSanh.jsx";
-import BaoCaoThangDanhGia from "./BaoCaoThangDanhGia.jsx";
 import BaoCaoThuocDaSuDung from "./BaoCaoThuocDaSuDung.jsx";
 import LoadingAlert from "@/components/common/LoadingAlert.jsx";
 import {
@@ -91,7 +90,6 @@ export default function BaoCaoThangMain() {
                     <BaoCaoThangCharts data={data} />
                     <BaoCaoThangSoSanh key={data.thang ? "month" : "year"} mode={data.thang ? "month" : "year"} />
                     <BaoCaoThuocDaSuDung data={data.thuoc_da_su_dung} thang={data.thang} />
-                    <BaoCaoThangDanhGia data={data} />
                 </>
             )}
         </Stack>

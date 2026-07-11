@@ -168,7 +168,7 @@ export default function ChonQuanNhanDialog({
                         renderOption={({ key, ...rest }, option) => (
                             <li
                                 key={key}
-                                {...props}
+                                {...rest}
                                 style={{ paddingLeft: option.level * 16 + 8 }}
                             >
                                 {option.level > 0
