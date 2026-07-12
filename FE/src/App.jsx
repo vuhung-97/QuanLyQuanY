@@ -9,6 +9,7 @@ import ProtectedRoute from "./components//common/ProtectedRoute.jsx";
 import AdminRoute from "./components/common/AdminRoute.jsx";
 import LapLichPage from "./pages/KhamSucKhoe/LapLichPage.jsx";
 import KhamSucKhoePage from "./pages/KhamSucKhoe/KhamSucKhoePage.jsx";
+import KetQuaKhamPage from "./pages/KhamSucKhoe/KetQuaKhamPage.jsx";
 import KhamBenhPage from "./pages/KhamBenhChoQN/KhamBenhPage.jsx";
 import CapThuocPage from "./pages/KhamBenhChoQN/CapThuocPage.jsx";
 import ChuyenTuyenPage from "./pages/KhamBenhChoQN/ChuyenTuyenPage.jsx";
@@ -55,6 +56,10 @@ export default function App() {
                         <Route
                             path="kham-dinh-ky/kham-suc-khoe"
                             element={<KhamSucKhoePage />}
+                        />
+                        <Route
+                            path="kham-dinh-ky/ket-qua-kham"
+                            element={<KetQuaKhamPage />}
                         />
                         <Route
                             path="noi-tru"

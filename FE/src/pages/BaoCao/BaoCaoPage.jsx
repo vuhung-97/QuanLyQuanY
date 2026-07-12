@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Tabs, Tab, Box } from "@mui/material";
-import BaoCaoThangMain from "../../components/BaoCao/BaoCaoThangMain.jsx";
-import BaoCaoQuanSoKhoeMain from "../../components/BaoCao/BaoCaoQuanSoKhoeMain.jsx";
+import BaoCaoThangMain from "../../components/BaoCao/BaoCaoThang/BaoCaoThangMain.jsx";
+import BaoCaoQuanSoKhoeMain from "../../components/BaoCao/BaoCaoQSKhoe/BaoCaoQuanSoKhoeMain.jsx";
 
 export default function BaoCaoPage() {
     const [tab, setTab] = useState(0);

@@ -43,6 +43,13 @@ export const defaultMenuItems = [
                 icon: <CircleIcon sx={{ fontSize: 12 }} />,
                 allowedRoles: ALL,
             },
+            {
+                id: "periodic-result",
+                title: "Kết quả khám tổng hợp",
+                path: "/kham-dinh-ky/ket-qua-kham",
+                icon: <CircleIcon sx={{ fontSize: 12 }} />,
+                allowedRoles: ALL,
+            },
         ],
     },
     {

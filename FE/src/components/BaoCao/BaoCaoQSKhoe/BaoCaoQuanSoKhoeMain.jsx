@@ -18,7 +18,7 @@ import {
     Mood as MoodIcon,
 } from "@mui/icons-material";
 import useBaoCaoQuanSoKhoe from "@/hooks/useBaoCaoQuanSoKhoe.jsx";
-import BaoCaoToolbar from "./BaoCaoToolbar.jsx";
+import BaoCaoToolbar from "../BaoCaoToolbar.jsx";
 import BaoCaoQuanSoKhoePrintDialog from "./BaoCaoQuanSoKhoePrintDialog.jsx";
 import { QUAN_SO_KHOE_COLUMNS, CHART_COLORS } from "@/constants/bao_cao.js";
 

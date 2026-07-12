@@ -1,7 +1,7 @@
 import { Stack, Typography } from "@mui/material";
 import useBaoCaoThang from "@/hooks/useBaoCaoThang.js";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
-import BaoCaoToolbar from "./BaoCaoToolbar.jsx";
+import BaoCaoToolbar from "../BaoCaoToolbar.jsx";
 import BaoCaoThangCharts from "./BaoCaoThangCharts.jsx";
 import BaoCaoThangSoSanh from "./BaoCaoThangSoSanh.jsx";
 import BaoCaoThuocDaSuDung from "./BaoCaoThuocDaSuDung.jsx";
