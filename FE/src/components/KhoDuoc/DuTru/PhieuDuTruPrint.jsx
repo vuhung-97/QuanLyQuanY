@@ -8,14 +8,15 @@ export default function PhieuDuTruPrint({ data }) {
         <PrintOverlay
             className="phieu-du-tru-print"
             paperSize="A4"
-            fontSize="20pt"
+            fontSize="14pt"
+            fixed={false}
         >
             <PrintHeaderDonVi />
 
             <div style={{ margin: "12pt 0", textAlign: "center" }}>
                 <p
                     style={{
-                        fontSize: "22pt",
+                        fontSize: "16pt",
                         textTransform: "uppercase",
                         fontWeight: "bold",
                         margin: 0,

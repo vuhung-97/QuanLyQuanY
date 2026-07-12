@@ -130,6 +130,16 @@ export default function PhieuDuTruDialog({
 
     return (
         <>
+            <style>{`
+                @media print {
+                    #root { display: none !important; }
+                    .MuiBackdrop-root { display: none !important; }
+                    .MuiModal-root { display: contents !important; }
+                    .MuiDialog-container { display: contents !important; }
+                    .MuiDialog-paper { display: contents !important; }
+                    .MuiDialogContent-root { display: contents !important; }
+                }
+            `}</style>
             <Dialog
                 open={open}
                 onClose={saving ? undefined : handleClose}
@@ -150,6 +160,8 @@ export default function PhieuDuTruDialog({
                         "@media print": {
                             border: "none !important",
                             p: "0 !important",
+                            height: "auto !important",
+                            overflow: "visible !important",
                         },
                     }}
                 >
@@ -159,9 +171,11 @@ export default function PhieuDuTruDialog({
                         </Typography>
                     ) : (
                         <>
-                            {formContent}
+                            <Box sx={{ "@media print": { display: "none !important" } }}>
+                                {formContent}
+                            </Box>
                             {isView && savedPhieu && (
-                                <Box sx={{ mt: 3 }}>
+                                <Box sx={{ mt: 3, "@media print": { display: "contents !important" } }}>
                                     <PhieuDuTruPrint data={savedPhieu} />
                                 </Box>
                             )}

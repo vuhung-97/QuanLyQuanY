@@ -29,12 +29,12 @@ const fixedStyles = (className, padding, fontFamily, pageSize, fontSize) => `
 
 const flowStyles = (className, padding, fontFamily, pageSize, fontSize) => `
 .${className} { display: none; }
-@page { margin: 0; size: ${pageSize}; }
+@page { margin: ${padding}; size: ${pageSize}; }
 @media print {
     html, body { height: auto; overflow: visible; margin: 0; padding: 0; }
     body * { visibility: hidden !important; }
     .${className}, .${className} * { visibility: visible !important; }
-    .${className} { display: block; width: 100%; padding: ${padding}; font-size: ${fontSize}; font-family: ${fontFamily}; box-sizing: border-box; }
+    .${className} { display: block; width: 100%; font-size: ${fontSize}; font-family: ${fontFamily}; box-sizing: border-box; }
     .${className} p { margin: 3pt 0; line-height: 1.4; }
     .${className} table { width: 100%; border-collapse: collapse; margin-top: 6pt; }
     .${className} th, .${className} td { border: 1px solid #000; padding: 3pt 3pt; text-align: left; }
