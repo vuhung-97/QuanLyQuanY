@@ -16,6 +16,22 @@ export const THUOC_SU_DUNG_COLUMNS = [
     { key: "so_luong", label: "Số lượng", align: "right" },
 ];
 
+export const THUOC_NHAP_COLUMNS = [
+    { key: "ten_thuoc", label: "Tên thuốc" },
+    { key: "don_vi_tinh", label: "ĐVT" },
+    { key: "phan_loai", label: "Phân loại" },
+    { key: "so_luong", label: "Số lượng", align: "right" },
+];
+
+export const QUAN_SO_KHOE_COLUMNS = [
+    { key: "ten_don_vi", label: "Đơn vị", sx: { minWidth: 280 } },
+    { key: "quan_so", label: "Tổng quân số", sx: { width: 140, textAlign: "center" } },
+    { key: "so_nguoi_om", label: "Người ốm", sx: { width: 120, textAlign: "center" } },
+    { key: "so_luot_om", label: "Lượt ốm", sx: { width: 120, textAlign: "center" } },
+    { key: "quan_so_khoe", label: "Quân số khỏe", sx: { width: 140, textAlign: "center" } },
+    { key: "ty_le_khoe", label: "Tỷ lệ", sx: { width: 100, textAlign: "center" } },
+];
+
 export const cardStyle = {
     borderRadius: 2,
     boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)",

@@ -12,6 +12,7 @@ import PatientInfoCard from "@/components/common/PatientInfoCard.jsx";
 import DonThuocTable from "@/components/common/DonThuoc.jsx";
 import { parseDonThuocToRows } from "@/utils/khamBenhUtils.js";
 import DonThuocPrint from "./DonThuocPrint.jsx";
+import { PRINT_STYLES, PRINT_DIALOG_CONTENT_SX, triggerPrint } from "@/utils/printUtils.js";
 
 export default function CapThuocForm({
     open,
@@ -26,22 +27,9 @@ export default function CapThuocForm({
 
     const isDaNhanThuoc = selectedExam?.trang_thai === "đã_nhận_thuốc";
 
-    const handlePrint = () => {
-        window.print();
-    };
-
     return (
         <>
-            <style>{`
-                @media print {
-                    #root { display: none !important; }
-                    .MuiBackdrop-root { display: none !important; }
-                    .MuiModal-root { display: contents !important; }
-                    .MuiDialog-container { display: contents !important; }
-                    .MuiDialog-paper { display: contents !important; }
-                    .MuiDialogContent-root { display: contents !important; }
-                }
-            `}</style>
+            <style>{PRINT_STYLES}</style>
             <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
             <DialogTitleWrapper sx={{ "@media print": { display: "none" } }}>
                 {isDaNhanThuoc ? "Đơn thuốc đã cấp" : "Cấp thuốc"}
@@ -51,7 +39,7 @@ export default function CapThuocForm({
                 dividers
                 sx={{
                     pt: 0,
-                    "@media print": { border: "none !important" },
+                    ...PRINT_DIALOG_CONTENT_SX,
                 }}
             >
                 {selectedExam && (
@@ -191,7 +179,7 @@ export default function CapThuocForm({
                     <Button onClick={onClose}>Hủy</Button>
                     <Button
                         variant="outlined"
-                        onClick={handlePrint}
+                        onClick={triggerPrint}
                         disabled={!selectedExam}
                     >
                         In đơn thuốc

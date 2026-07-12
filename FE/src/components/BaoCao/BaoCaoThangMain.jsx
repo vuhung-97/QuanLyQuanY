@@ -5,6 +5,8 @@ import BaoCaoToolbar from "./BaoCaoToolbar.jsx";
 import BaoCaoThangCharts from "./BaoCaoThangCharts.jsx";
 import BaoCaoThangSoSanh from "./BaoCaoThangSoSanh.jsx";
 import BaoCaoThuocDaSuDung from "./BaoCaoThuocDaSuDung.jsx";
+import BaoCaoThuocDaNhap from "./BaoCaoThuocDaNhap.jsx";
+import BaoCaoPrintDialog from "./BaoCaoPrintDialog.jsx";
 import LoadingAlert from "@/components/common/LoadingAlert.jsx";
 import {
     MedicalServices as MedicalServicesIcon,
@@ -21,23 +23,25 @@ export default function BaoCaoThangMain() {
         loading,
         error,
         fetchData,
-        handleExport,
         setThang,
         setNam,
+        printOpen,
+        setPrintOpen,
     } = useBaoCaoThang();
 
     return (
+        <>
         <Stack spacing={3}>
             <BaoCaoToolbar
                 thang={thang}
                 nam={nam}
                 onThangChange={setThang}
                 onNamChange={setNam}
-                onExport={handleExport}
+                onPrint={() => setPrintOpen(true)}
                 onRefresh={fetchData}
                 loading={loading}
+                dataAvailable={!!data}
             />
-
             <LoadingAlert
                 loading={loading}
                 error={error}
@@ -90,8 +94,17 @@ export default function BaoCaoThangMain() {
                     <BaoCaoThangCharts data={data} />
                     <BaoCaoThangSoSanh key={data.thang ? "month" : "year"} mode={data.thang ? "month" : "year"} />
                     <BaoCaoThuocDaSuDung data={data.thuoc_da_su_dung} thang={data.thang} />
+                    <BaoCaoThuocDaNhap data={data.thuoc_da_nhap} thang={data.thang} />
                 </>
             )}
+            {data && (
+                <BaoCaoPrintDialog
+                    open={printOpen}
+                    onClose={() => setPrintOpen(false)}
+                    data={data}
+                />
+            )}
         </Stack>
+        </>
     );
 }

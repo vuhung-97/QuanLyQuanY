@@ -10,7 +10,7 @@ import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
 import { filterSoldiers } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
 import { filterTabs } from "@/constants/khamSucKhoeConstants.js";
 import { ALL_TABS, ROLE_TAB_ACCESS } from "@/constants/khamSucKhoeConstants.js";
-import { buildXlsContent, buildXlsContentChuaLayMau, saveWorkbook } from "@/utils/xlsExport";
+
 
 export default function useKhamSucKhoeMain() {
     const {
@@ -48,6 +48,10 @@ export default function useKhamSucKhoeMain() {
     const [historyDialog, setHistoryDialog] = useState({
         open: false,
         qn: null,
+    });
+    const [printDialog, setPrintDialog] = useState({
+        open: false,
+        data: null,
     });
 
     const daTaoMa = useMemo(
@@ -139,7 +143,7 @@ export default function useKhamSucKhoeMain() {
         [formDialog.qn, setPhieuMap, setAllPhieuMap, refreshStats],
     );
 
-    const handleExport = useCallback(async (type = "chua_hoan_thanh") => {
+    const handlePrint = useCallback(async (type = "chua_hoan_thanh") => {
         if (!selectedSchedule) return;
         try {
             const [qnRes, pRes] = await Promise.all([
@@ -157,12 +161,35 @@ export default function useKhamSucKhoeMain() {
                 ? new Date(selectedScheduleObj.thoi_gian_bat_dau).getFullYear()
                 : "";
             const isChuaLayMau = type === "chua_lay_mau";
-            const wb = isChuaLayMau
-                ? buildXlsContentChuaLayMau(allSoldiers, allPhieuMap, allUnitLookup, nam)
-                : buildXlsContent(allSoldiers, allPhieuMap, allUnitLookup, nam);
-            await saveWorkbook(wb, isChuaLayMau ? "quan_nhan_chua_lay_mau.xlsx" : "quan_nhan_chua_hoan_thanh.xlsx");
+            const filtered = allSoldiers
+                .filter((qn) => {
+                    const p = allPhieuMap[qn.ma_quan_nhan];
+                    if (isChuaLayMau) return !p || !p.ma_lay_mau || !p.xet_nghiem;
+                    return !p || p.trang_thai === "chua_kham" || p.trang_thai === "dang_kham";
+                })
+                .sort((a, b) => {
+                    const uA = a.ma_don_vi || "";
+                    const uB = b.ma_don_vi || "";
+                    if (uA < uB) return -1;
+                    if (uA > uB) return 1;
+                    return (a.ho_ten || "").localeCompare(b.ho_ten || "", "vi");
+                });
+            setPrintDialog({
+                open: true,
+                data: {
+                    soldiers: filtered,
+                    phieuMap: allPhieuMap,
+                    type,
+                    nam,
+                    unitLookup: allUnitLookup,
+                },
+            });
         } catch {}
     }, [selectedSchedule, allUnitLookup, selectedScheduleObj]);
+
+    const closePrintDialog = useCallback(() => {
+        setPrintDialog({ open: false, data: null });
+    }, []);
 
     const handleEdit = useCallback((qn) => {
         document.activeElement?.blur();
@@ -240,7 +267,9 @@ export default function useKhamSucKhoeMain() {
         allowedTabs,
         editableTabs,
         handleFormSaved,
-        handleExport,
+        handlePrint,
+        printDialog,
+        closePrintDialog,
         handleEdit,
         handleViewHistory,
         handleViewPhieu,

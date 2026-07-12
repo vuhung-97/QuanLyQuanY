@@ -1,7 +1,7 @@
 import { Button, Stack } from "@mui/material";
 import {
-    FileDownload as FileDownloadIcon,
     Refresh as RefreshIcon,
+    Print as PrintIcon,
 } from "@mui/icons-material";
 import YearMonthFilter from "@/components/common/YearMonthFilter.jsx";
 
@@ -10,9 +10,10 @@ export default function BaoCaoToolbar({
     nam,
     onThangChange,
     onNamChange,
-    onExport,
+    onPrint,
     onRefresh,
     loading = false,
+    dataAvailable = false,
 }) {
     return (
         <Stack
@@ -37,11 +38,11 @@ export default function BaoCaoToolbar({
             </Button>
             <Button
                 variant="outlined"
-                startIcon={<FileDownloadIcon />}
-                onClick={onExport}
-                disabled={loading}
+                startIcon={<PrintIcon />}
+                onClick={onPrint}
+                disabled={!dataAvailable || loading}
             >
-                Xuất Excel
+                In báo cáo
             </Button>
         </Stack>
     );

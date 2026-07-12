@@ -3,9 +3,13 @@ import PrintOverlay from "@/components/common/print/PrintOverlay.jsx";
 import PrintHeaderDonVi from "@/components/common/print/PrintHeaderDonVi.jsx";
 import PrintSignature from "@/components/common/print/PrintSignature.jsx";
 
-export default function NhapKhoPrint({ data }) {
+export default function NhapKhoPrint({ data, paperSize = "A4" }) {
     return (
-        <PrintOverlay className="nhap-kho-print" paperSize="A4" fontSize="14pt" fixed={false}>
+        <PrintOverlay
+            className="nhap-kho-print"
+            paperSize={paperSize}
+            fontSize="14pt"
+        >
             <PrintHeaderDonVi />
 
             <div style={{ margin: "12pt 0", textAlign: "center" }}>
@@ -63,7 +67,10 @@ export default function NhapKhoPrint({ data }) {
 
             <PrintSignature
                 justify="space-between"
-                items={[{ label: "NGƯỜI NHẬP" }, { label: "CHỦ NHIỆM QUÂN Y" }]}
+                items={[
+                    { label: "NGƯỜI NHẬP" },
+                    { label: "CHỦ NHIỆM QUÂN Y", date: true },
+                ]}
                 style={{ padding: "0 20px" }}
             />
         </PrintOverlay>

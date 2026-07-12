@@ -9,13 +9,15 @@ export default function PrintSignature({
             style={{
                 display: "flex",
                 justifyContent: justify,
-                marginTop: 40,
+                marginTop: "12pt",
                 ...extraStyle,
             }}
         >
             {items.map((item, idx) => (
                 <div key={idx} style={{ textAlign: "center" }}>
-                    {date && <div>Ngày ..... tháng ..... năm .....</div>}
+                    <div style={date || item.date ? {} : { opacity: 0 }}>
+                        Ngày ..... tháng ..... năm .....
+                    </div>
                     <div
                         style={{
                             fontWeight: "bold",

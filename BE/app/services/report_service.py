@@ -96,6 +96,7 @@ class ReportService:
             ],
             "so_sanh_thang_truoc": so_sanh,
             "thuoc_da_su_dung": self._thuoc_da_su_dung(thang, nam),
+            "thuoc_da_nhap": self._thuoc_da_nhap(thang, nam),
             "ngay_lap": datetime.now().strftime("%Y-%m-%d"),
             "nguoi_lap": "",
         }
@@ -162,9 +163,45 @@ class ReportService:
             ],
             "so_sanh_thang_truoc": None,
             "thuoc_da_su_dung": self._thuoc_da_su_dung(None, nam),
+            "thuoc_da_nhap": self._thuoc_da_nhap(None, nam),
             "ngay_lap": datetime.now().strftime("%Y-%m-%d"),
             "nguoi_lap": "",
         }
+
+    def _thuoc_da_nhap(self, thang: int | None, nam: int) -> list[dict]:
+        nk_filters = [extract("year", PhieuNhapKho.ngay_nhap) == nam]
+        if thang is not None:
+            nk_filters.append(extract("month", PhieuNhapKho.ngay_nhap) == thang)
+
+        nhap_kho_records = (
+            self.db.query(
+                ThuocVtyt.ma_thuoc_vtyt,
+                ThuocVtyt.ten_thuoc_vtyt,
+                ThuocVtyt.don_vi_tinh,
+                ThuocVtyt.phan_loai,
+                func.coalesce(func.sum(ChiTietPhieuNhapKho.so_luong), 0).label("tong_luong"),
+            )
+            .join(ChiTietPhieuNhapKho, ThuocVtyt.ma_thuoc_vtyt == ChiTietPhieuNhapKho.ma_thuoc_vtyt)
+            .join(PhieuNhapKho, ChiTietPhieuNhapKho.ma_phieu_nhap == PhieuNhapKho.ma_phieu_nhap)
+            .filter(*nk_filters)
+            .group_by(ThuocVtyt.ma_thuoc_vtyt, ThuocVtyt.ten_thuoc_vtyt, ThuocVtyt.don_vi_tinh, ThuocVtyt.phan_loai)
+            .all()
+        )
+
+        merged: dict[str, dict] = {}
+        for r in nhap_kho_records:
+            key = r.ma_thuoc_vtyt
+            if key not in merged:
+                merged[key] = {
+                    "ma_thuoc": r.ma_thuoc_vtyt,
+                    "ten_thuoc": r.ten_thuoc_vtyt,
+                    "don_vi_tinh": r.don_vi_tinh or "",
+                    "phan_loai": r.phan_loai or "",
+                    "so_luong": 0,
+                }
+            merged[key]["so_luong"] += r.tong_luong
+
+        return sorted(merged.values(), key=lambda x: x["so_luong"], reverse=True)
 
     def _thuoc_da_su_dung(self, thang: int | None, nam: int) -> list[dict]:
         # --- Từ đơn thuốc (chỉ tính đã cấp) ---
@@ -211,9 +248,32 @@ class ReportService:
             .all()
         )
 
-        # --- Merge 2 nguồn theo mã thuốc ---
+        # --- Từ phiếu xuất kho ---
+        xk_filters = [
+            extract("year", PhieuXuatKho.ngay_thang_nam) == nam,
+            PhieuXuatKho.trang_thai == "da_xuat",
+        ]
+        if thang is not None:
+            xk_filters.append(extract("month", PhieuXuatKho.ngay_thang_nam) == thang)
+
+        xuat_kho_records = (
+            self.db.query(
+                ThuocVtyt.ma_thuoc_vtyt,
+                ThuocVtyt.ten_thuoc_vtyt,
+                ThuocVtyt.don_vi_tinh,
+                ThuocVtyt.phan_loai,
+                func.coalesce(func.sum(ChiTietXuatKho.so_luong), 0).label("tong_luong"),
+            )
+            .join(ChiTietXuatKho, ThuocVtyt.ma_thuoc_vtyt == ChiTietXuatKho.ma_thuoc_vtyt)
+            .join(PhieuXuatKho, ChiTietXuatKho.ma_phieu_xuat == PhieuXuatKho.ma_phieu_xuat)
+            .filter(*xk_filters)
+            .group_by(ThuocVtyt.ma_thuoc_vtyt, ThuocVtyt.ten_thuoc_vtyt, ThuocVtyt.don_vi_tinh, ThuocVtyt.phan_loai)
+            .all()
+        )
+
+        # --- Merge các nguồn theo mã thuốc ---
         merged: dict[str, dict] = {}
-        for r in don_thuoc_records + cham_soc_records:
+        for r in don_thuoc_records + cham_soc_records + xuat_kho_records:
             key = r.ma_thuoc_vtyt
             if key not in merged:
                 merged[key] = {

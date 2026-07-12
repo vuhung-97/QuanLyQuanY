@@ -13,6 +13,7 @@ import ChonQuanNhanDialog from "@/components/common/ChonQuanNhanDialog.jsx";
 import KhoThuocDialog from "@/components/KhamBenhChoQN/KhamBenh/KhoThuocDialog.jsx";
 import { useCallback } from "react";
 import usePhieuXuat from "@/hooks/usePhieuXuat.js";
+import { PRINT_STYLES, PRINT_DIALOG_CONTENT_SX, triggerPrint } from "@/utils/printUtils.js";
 import PhieuXuatForm from "./PhieuXuatForm.jsx";
 import ChiTietXuatTable from "./ChiTietXuatTable.jsx";
 import PhieuXuatPrint from "./PhieuXuatPrint.jsx";
@@ -64,16 +65,7 @@ export default function PhieuXuatDialog({
 
     return (
         <>
-            <style>{`
-                @media print {
-                    #root { display: none !important; }
-                    .MuiBackdrop-root { display: none !important; }
-                    .MuiModal-root { display: contents !important; }
-                    .MuiDialog-container { display: contents !important; }
-                    .MuiDialog-paper { display: contents !important; }
-                    .MuiDialogContent-root { display: contents !important; }
-                }
-            `}</style>
+            <style>{PRINT_STYLES}</style>
             <Dialog
                 open={open}
                 onClose={saving ? undefined : onClose}
@@ -101,7 +93,7 @@ export default function PhieuXuatDialog({
                     sx={{
                         pt: 1,
                         px: 3,
-                        "@media print": { border: "none !important", p: "0 !important", height: "auto !important", overflow: "visible !important" },
+                        ...PRINT_DIALOG_CONTENT_SX,
                     }}
                 >
                     <Box sx={{ "@media print": { display: "none" } }}>
@@ -176,7 +168,7 @@ export default function PhieuXuatDialog({
                                             <Button
                                                 variant="outlined"
                                                 startIcon={<PrintIcon />}
-                                                onClick={() => window.print()}
+                                                onClick={triggerPrint}
                                                 disabled={saving}
                                             >
                                                 In phiếu
@@ -187,7 +179,7 @@ export default function PhieuXuatDialog({
                                     <Button
                                         variant="outlined"
                                         startIcon={<PrintIcon />}
-                                        onClick={() => window.print()}
+                                        onClick={triggerPrint}
                                         disabled={saving}
                                     >
                                         In phiếu

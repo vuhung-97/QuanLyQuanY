@@ -3,13 +3,12 @@ import PrintOverlay from "@/components/common/print/PrintOverlay.jsx";
 import PrintHeaderDonVi from "@/components/common/print/PrintHeaderDonVi.jsx";
 import PrintSignature from "@/components/common/print/PrintSignature.jsx";
 
-export default function PhieuDuTruPrint({ data }) {
+export default function PhieuDuTruPrint({ data, paperSize = "A4" }) {
     return (
         <PrintOverlay
             className="phieu-du-tru-print"
-            paperSize="A4"
+            paperSize={paperSize}
             fontSize="14pt"
-            fixed={false}
         >
             <PrintHeaderDonVi />
 
@@ -67,7 +66,10 @@ export default function PhieuDuTruPrint({ data }) {
 
             <PrintSignature
                 justify="space-between"
-                items={[{ label: "NGƯỜI LẬP" }, { label: "CHỦ NHIỆM QUÂN Y" }]}
+                items={[
+                    { label: "NGƯỜI LẬP" },
+                    { label: "CHỦ NHIỆM QUÂN Y", date: true },
+                ]}
                 style={{ padding: "0 20px" }}
             />
         </PrintOverlay>

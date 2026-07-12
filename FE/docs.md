@@ -34,9 +34,10 @@ FE/
     │   │                       # └── DanhMuc/ → DanhMucList, DanhMucDialog
     │   │                       # └── KhamBenhSections/ (Symptoms, Diagnosis, FormActions)
     │   ├── KhamSucKhoe/        # common/ KiemTraSucKhoe/ LapLich/
-    │   │                       # └── KiemTraSucKhoe/ → common/fields/ tabs/
+    │   │                       # └── KiemTraSucKhoe/ → common/fields/ tabs/ KhamSucKhoePrint
     │   ├── BaoCao/             # BaoCaoThangMain, BaoCaoTonKhoMain, BaoCaoToolbar,
-    │   │                       # PhanLoaiBenhChart, ChartSection, ...
+│   │                       # BaoCaoThangPrint, BaoCaoPrintDialog, BaoCaoThuocDaNhap,
+│   │                       # PhanLoaiBenhChart, ChartSection, ...
     │   ├── KhoDuoc/            # DuTru/ Kho/ NhapKho/ XuatKho/
     │   └── NoiTru/             # common/ DanhSachNoiTru/→tabs/ LapBenhAn/ QuanLyPhongGiuong/
     │

@@ -1,8 +1,7 @@
-import { Stack, Typography, Card, CardContent, Grid, Button } from "@mui/material";
+import { Stack, Typography, Card, CardContent, Grid } from "@mui/material";
 import DataTable from "@/components/common/DataTable.jsx";
 import LoadingAlert from "@/components/common/LoadingAlert.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
-import YearMonthFilter from "@/components/common/YearMonthFilter.jsx";
 import {
     BarChart,
     Bar,
@@ -17,38 +16,32 @@ import {
     Sick as SickIcon,
     LocalHospital as LocalHospitalIcon,
     Mood as MoodIcon,
-    Refresh as RefreshIcon,
 } from "@mui/icons-material";
-import useBaoCaoQuanSoKhoe, { COLUMNS } from "@/hooks/useBaoCaoQuanSoKhoe.jsx";
-
-const CHART_COLORS = ["#0B3B60", "#00B4D8", "#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6"];
+import useBaoCaoQuanSoKhoe from "@/hooks/useBaoCaoQuanSoKhoe.jsx";
+import BaoCaoToolbar from "./BaoCaoToolbar.jsx";
+import BaoCaoQuanSoKhoePrintDialog from "./BaoCaoQuanSoKhoePrintDialog.jsx";
+import { QUAN_SO_KHOE_COLUMNS, CHART_COLORS } from "@/constants/bao_cao.js";
 
 export default function BaoCaoQuanSoKhoeMain() {
     const {
         thang, setThang, nam, setNam,
         data, loading, error,
         fetchData, treeRows, chartData,
+        printOpen, setPrintOpen,
     } = useBaoCaoQuanSoKhoe();
 
     return (
         <Stack spacing={3}>
-            <Stack direction="row" spacing={2} sx={{ alignItems: "center", flexWrap: "wrap" }}>
-                <YearMonthFilter
-                    thang={thang}
-                    nam={nam}
-                    onThangChange={setThang}
-                    onNamChange={setNam}
-                    showThang={true}
-                />
-                <Button
-                    variant="contained"
-                    startIcon={<RefreshIcon />}
-                    onClick={fetchData}
-                    disabled={loading}
-                >
-                    {loading ? "Đang tải..." : "Refresh"}
-                </Button>
-            </Stack>
+            <BaoCaoToolbar
+                thang={thang}
+                nam={nam}
+                onThangChange={setThang}
+                onNamChange={setNam}
+                onPrint={() => setPrintOpen(true)}
+                onRefresh={fetchData}
+                loading={loading}
+                dataAvailable={!!data}
+            />
 
             <Typography variant="h3" sx={{ color: "text.primary" }}>
                 Quân số khỏe tháng {thang}/{nam}
@@ -102,7 +95,7 @@ export default function BaoCaoQuanSoKhoeMain() {
                                 Chi tiết theo đơn vị
                             </Typography>
                             <DataTable
-                                columns={COLUMNS}
+                                columns={QUAN_SO_KHOE_COLUMNS}
                                 rows={treeRows}
                                 minWidth={900}
                                 emptyMessage="Không có dữ liệu đơn vị."
@@ -155,6 +148,12 @@ export default function BaoCaoQuanSoKhoeMain() {
                     )}
                 </>
             )}
+
+            <BaoCaoQuanSoKhoePrintDialog
+                open={printOpen}
+                onClose={() => setPrintOpen(false)}
+                data={data}
+            />
         </Stack>
     );
 }

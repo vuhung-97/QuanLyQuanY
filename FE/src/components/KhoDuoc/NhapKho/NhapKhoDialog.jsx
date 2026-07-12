@@ -24,6 +24,7 @@ import DatePicker from "@/components/common/DatePicker.jsx";
 import NhapKhoPrint from "./NhapKhoPrint.jsx";
 import { decodeJWT } from "@/services/api.js";
 import { khoDuocService } from "@/services/khoDuocService.js";
+import { PRINT_STYLES, PRINT_DIALOG_CONTENT_SX, triggerPrint } from "@/utils/printUtils.js";
 
 export default function NhapKhoDialog({ open, onClose, phieuId, mode = "create", onSaved }) {
     const isView = mode === "view";
@@ -148,7 +149,7 @@ export default function NhapKhoDialog({ open, onClose, phieuId, mode = "create",
             <Button
                 variant="contained"
                 startIcon={<PrintIcon />}
-                onClick={() => window.print()}
+                onClick={triggerPrint}
             >
                 In phiếu
             </Button>
@@ -168,19 +169,10 @@ export default function NhapKhoDialog({ open, onClose, phieuId, mode = "create",
 
     return (
         <>
-            <style>{`
-                @media print {
-                    #root { display: none !important; }
-                    .MuiBackdrop-root { display: none !important; }
-                    .MuiModal-root { display: contents !important; }
-                    .MuiDialog-container { display: contents !important; }
-                    .MuiDialog-paper { display: contents !important; }
-                    .MuiDialogContent-root { display: contents !important; }
-                }
-            `}</style>
+            <style>{PRINT_STYLES}</style>
             <Dialog open={open} onClose={saving ? undefined : onClose} fullWidth maxWidth="md">
                 <DialogTitleWrapper sx={{ "@media print": { display: "none" } }}>{isView ? "Chi tiết nhập kho" : "Xác nhận nhập kho"}</DialogTitleWrapper>
-                <DialogContent dividers sx={{ height: 500, overflow: "auto", "@media print": { border: "none !important", p: "0 !important", height: "auto !important", overflow: "visible !important" } }}>
+                <DialogContent dividers sx={{ height: 500, overflow: "auto", ...PRINT_DIALOG_CONTENT_SX }}>
                     {loading ? (
                         <Typography color="text.secondary" sx={{ py: 2, textAlign: "center" }}>
                             Đang tải...

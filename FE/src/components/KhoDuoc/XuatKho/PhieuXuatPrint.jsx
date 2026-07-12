@@ -9,7 +9,6 @@ export default function PhieuXuatPrint({ data, paperSize = "A4" }) {
             className="phieu-xuat-print"
             paperSize={paperSize}
             fontSize="14pt"
-            fixed={false}
         >
             <PrintHeaderDonVi />
 
@@ -35,31 +34,36 @@ export default function PhieuXuatPrint({ data, paperSize = "A4" }) {
             <p>
                 <strong>I. Thông tin người nhận</strong>
             </p>
-            <div style={{ marginLeft: "12pt", marginBottom: "6pt" }}>
-                <p>
-                    <strong>Họ tên người nhận:</strong>{" "}
-                    {data.hoTenNguoiNhan || "—"}
+            <div
+                style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: "6pt",
+                    marginLeft: "12pt",
+                    marginBottom: "6pt",
+                }}
+            >
+                <p style={{ margin: 0 }}>
+                    <strong>Người nhận:</strong> {data.hoTenNguoiNhan || "—"}
                 </p>
-                <div
-                    style={{ display: "flex", justifyContent: "space-between" }}
-                >
-                    <p>
-                        <strong>Cấp bậc:</strong> {data.capBac || "—"}
-                    </p>
-                    <p>
-                        <strong>Chức vụ:</strong> {data.chucVu || "—"}
-                    </p>
-                    <p>
-                        <strong>Đơn vị:</strong> {data.qnTenDonVi || "—"}
-                    </p>
-                </div>
-                <p>
+                <p style={{ margin: 0 }}>
+                    <strong>Cấp bậc:</strong> {data.capBac || "—"}
+                </p>
+                <p style={{ margin: 0 }}>
+                    <strong>Chức vụ:</strong> {data.chucVu || "—"}
+                </p>
+
+                <p style={{ margin: 0 }}>
+                    <strong>Đơn vị:</strong> {data.qnTenDonVi || "—"}
+                </p>
+                <p style={{ margin: 0 }}>
                     <strong>Đơn vị nhận:</strong> {data.tenDonViNhan || "—"}
                 </p>
-                <p>
+
+                <p style={{ margin: 0, gridColumn: "1 / -1" }}>
                     <strong>Lý do xuất:</strong> {data.lyDoXuat || "—"}
                 </p>
-                <p>
+                <p style={{ margin: 0, gridColumn: "1 / -1" }}>
                     <strong>Ghi chú:</strong> {data.ghiChu || "—"}
                 </p>
             </div>
@@ -94,9 +98,8 @@ export default function PhieuXuatPrint({ data, paperSize = "A4" }) {
                 items={[
                     { label: "NGƯỜI NHẬN" },
                     { label: "NGƯỜI XUẤT" },
-                    { label: "CHỦ NHIỆM QUÂN Y" },
+                    { label: "CHỦ NHIỆM QUÂN Y", date: true },
                 ]}
-                style={{ padding: "0 20px" }}
             />
         </PrintOverlay>
     );

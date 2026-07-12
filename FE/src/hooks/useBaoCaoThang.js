@@ -8,6 +8,7 @@ export default function useBaoCaoThang() {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [printOpen, setPrintOpen] = useState(false);
 
     const fetchData = useCallback(async () => {
         setLoading(true);
@@ -29,26 +30,10 @@ export default function useBaoCaoThang() {
         fetchData();
     }, [fetchData]);
 
-    const handleExport = useCallback(async () => {
-        try {
-            const res = await baoCaoService.exportQuanYThang(thang, nam);
-            const blob = res.data;
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = `BC_quan_y_thang_${nam}_${String(thang).padStart(2, "0")}.xlsx`;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            URL.revokeObjectURL(url);
-        } catch (err) {
-            setError(err.response?.data?.detail || "Lỗi xuất Excel");
-        }
-    }, [thang, nam]);
-
     return {
         thang, setThang, nam, setNam,
         data, loading, error,
-        fetchData, handleExport,
+        fetchData,
+        printOpen, setPrintOpen,
     };
 }

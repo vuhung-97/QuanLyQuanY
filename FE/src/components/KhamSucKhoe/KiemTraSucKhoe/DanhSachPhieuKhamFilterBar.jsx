@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, Card, CardContent, Menu, MenuItem, Stack, TextField } from "@mui/material";
-import { Download as DownloadIcon } from "@mui/icons-material";
+import { Print as PrintIcon } from "@mui/icons-material";
 
 export default function DanhSachPhieuKhamFilterBar({
     years,
@@ -79,11 +79,11 @@ export default function DanhSachPhieuKhamFilterBar({
                             <Button
                                 variant="outlined"
                                 size="small"
-                                startIcon={<DownloadIcon />}
+                                startIcon={<PrintIcon />}
                                 onClick={(e) => setAnchorEl(e.currentTarget)}
                                 sx={{ whiteSpace: "nowrap" }}
                             >
-                                Xuất Excel
+                                In danh sách
                             </Button>
                             <Menu
                                 anchorEl={anchorEl}

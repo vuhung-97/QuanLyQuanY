@@ -10,9 +10,4 @@ export const baoCaoService = {
     getQuanSoKhoe: (thang, nam) =>
         api.get("/bao-cao/quan-so-khoe", { params: { thang, nam } }),
 
-    exportQuanYThang: (thang, nam) =>
-        api.get("/bao-cao/quan-y-thang/export", {
-            params: { thang, nam },
-            responseType: "blob",
-        }),
 };

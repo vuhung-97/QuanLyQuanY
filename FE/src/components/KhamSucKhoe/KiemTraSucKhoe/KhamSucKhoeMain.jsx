@@ -7,6 +7,8 @@ import BangQuanNhan from "./BangQuanNhan.jsx";
 import KhamSucKhoeForm from "./KhamSucKhoeForm.jsx";
 import DanhSachPhieuKhamFilterBar from "./DanhSachPhieuKhamFilterBar.jsx";
 import LichSuKhamDialog from "./LichSuKhamDialog.jsx";
+import KhamSucKhoePrint from "./KhamSucKhoePrint.jsx";
+import PrintDialog from "@/components/common/print/PrintDialog.jsx";
 
 function EmptyState({ show, message }) {
     if (!show) return null;
@@ -45,7 +47,9 @@ export default function KhamSucKhoeMain() {
         allowedTabs,
         editableTabs,
         handleFormSaved,
-        handleExport,
+        handlePrint,
+        printDialog,
+        closePrintDialog,
         handleEdit,
         handleViewHistory,
         handleViewPhieu,
@@ -86,7 +90,7 @@ export default function KhamSucKhoeMain() {
                 selectedUnit={selectedUnit}
                 onUnitChange={setSelectedUnit}
                 exportEnabled={!!selectedSchedule}
-                onExport={handleExport}
+                onExport={handlePrint}
             />
 
             {stats && <StatCardGrid items={statsItems} />}
@@ -149,6 +153,15 @@ export default function KhamSucKhoeMain() {
                     editableTabs={editableTabs}
                 />
             )}
+
+            <PrintDialog
+                open={printDialog.open}
+                onClose={closePrintDialog}
+                title="In danh sách"
+                screenClass="kham-suc-khoe-print"
+            >
+                {printDialog.data && <KhamSucKhoePrint data={printDialog.data} />}
+            </PrintDialog>
 
             <FeedbackSnackbar
                 open={snackbar.open}

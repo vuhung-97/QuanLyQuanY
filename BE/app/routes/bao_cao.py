@@ -62,20 +62,6 @@ def get_ton_kho(
     return service.inventory_report(thang, nam)
 
 
-@router.get("/quan-y-thang/export")
-def export_quan_y_thang(
-    thang: int = Query(..., ge=1, le=12),
-    nam: int = Query(...),
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_user),
-):
-    service = ReportService(db)
-    data = service.monthly_medical_report(thang, nam)
-    export_service = ReportExportService()
-    wb = export_service.export_monthly_report(data)
-    return _stream_excel(wb, f"BC_quan_y_thang_{nam}_{thang:02d}.xlsx")
-
-
 @router.get("/ton-kho/export")
 def export_ton_kho(
     thang: int = Query(..., ge=1, le=12),

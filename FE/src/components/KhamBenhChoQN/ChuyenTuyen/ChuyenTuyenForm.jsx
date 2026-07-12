@@ -16,6 +16,7 @@ import DatePicker from "@/components/common/DatePicker.jsx";
 import DonThuocTable from "@/components/common/DonThuoc.jsx";
 import ChuyenTuyenPrint from "./ChuyenTuyenPrint.jsx";
 import { parseDonThuocToRows } from "@/utils/khamBenhUtils.js";
+import { PRINT_STYLES, PRINT_DIALOG_CONTENT_SX, triggerPrint } from "@/utils/printUtils.js";
 
 const PATIENT_FIELDS = [
     "ho_ten",
@@ -159,11 +160,6 @@ export default function ChuyenTuyenForm({
         onSave(giayData, diTuyenData);
     }, [onSave]);
 
-    const handlePrint = useCallback(() => {
-        if (document.activeElement?.blur) document.activeElement.blur();
-        setTimeout(() => window.print(), 0);
-    }, []);
-
     const prescriptionRows = useMemo(
         () => parseDonThuocToRows(examDetail),
         [examDetail],
@@ -171,16 +167,7 @@ export default function ChuyenTuyenForm({
 
     return (
         <>
-            <style>{`
-                @media print {
-                    #root { display: none !important; }
-                    .MuiBackdrop-root { display: none !important; }
-                    .MuiModal-root { display: contents !important; }
-                    .MuiDialog-container { display: contents !important; }
-                    .MuiDialog-paper { display: contents !important; }
-                    .MuiDialogContent-root { display: contents !important; }
-                }
-            `}</style>
+            <style>{PRINT_STYLES}</style>
             <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
             <DialogTitleWrapper sx={{ "@media print": { display: "none" } }}>
                 Thông tin chuyển tuyến
@@ -190,7 +177,7 @@ export default function ChuyenTuyenForm({
                 dividers
                 sx={{
                     pt: 0,
-                    "@media print": { border: "none !important" },
+                    ...PRINT_DIALOG_CONTENT_SX,
                 }}
             >
                 {loading ? (
@@ -416,7 +403,7 @@ export default function ChuyenTuyenForm({
                     <Button onClick={onClose}>Hủy</Button>
                     <Button
                         variant="outlined"
-                        onClick={handlePrint}
+                        onClick={triggerPrint}
                         disabled={!selectedExam}
                     >
                         In giấy giới thiệu

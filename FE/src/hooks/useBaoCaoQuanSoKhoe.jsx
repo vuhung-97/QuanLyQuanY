@@ -3,15 +3,6 @@ import { baoCaoService } from "@/services/baoCaoService.js";
 import { buildTree, flattenTree, aggregateTree } from "@/utils/treeUtils.js";
 import { UNIT_NAME } from "@/components/layout/common/constants.js";
 
-export const COLUMNS = [
-    { key: "ten_don_vi", label: "Đơn vị", sx: { minWidth: 280 } },
-    { key: "quan_so", label: "Tổng quân số", sx: { width: 140, textAlign: "center" } },
-    { key: "so_nguoi_om", label: "Người ốm", sx: { width: 120, textAlign: "center" } },
-    { key: "so_luot_om", label: "Lượt ốm", sx: { width: 120, textAlign: "center" } },
-    { key: "quan_so_khoe", label: "Quân số khỏe", sx: { width: 140, textAlign: "center" } },
-    { key: "ty_le_khoe", label: "Tỷ lệ", sx: { width: 100, textAlign: "center" } },
-];
-
 function getRowStyle(level, isParent, isTotal) {
     if (isTotal || isParent) return { fontWeight: level === 0 ? 700 : 600, bgcolor: "#F5F5F5" };
     return {};
@@ -24,6 +15,7 @@ export default function useBaoCaoQuanSoKhoe() {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [printOpen, setPrintOpen] = useState(false);
 
     const fetchData = useCallback(async () => {
         if (!thang || !nam) return;
@@ -86,5 +78,6 @@ export default function useBaoCaoQuanSoKhoe() {
         thang, setThang, nam, setNam,
         data, loading, error,
         fetchData, treeRows, chartData,
+        printOpen, setPrintOpen,
     };
 }

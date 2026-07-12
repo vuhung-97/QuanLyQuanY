@@ -12,6 +12,7 @@ import { Person as PersonIcon, Print as PrintIcon } from "@mui/icons-material";
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import PhieuDuTruPrint from "./PhieuDuTruPrint.jsx";
+import { PRINT_STYLES, PRINT_DIALOG_CONTENT_SX, triggerPrint } from "@/utils/printUtils.js";
 import ChiTietDuTruTable from "./ChiTietDuTruTable.jsx";
 import DatePicker from "@/components/common/DatePicker.jsx";
 import usePhieuDuTru from "@/hooks/usePhieuDuTru.js";
@@ -130,16 +131,7 @@ export default function PhieuDuTruDialog({
 
     return (
         <>
-            <style>{`
-                @media print {
-                    #root { display: none !important; }
-                    .MuiBackdrop-root { display: none !important; }
-                    .MuiModal-root { display: contents !important; }
-                    .MuiDialog-container { display: contents !important; }
-                    .MuiDialog-paper { display: contents !important; }
-                    .MuiDialogContent-root { display: contents !important; }
-                }
-            `}</style>
+            <style>{PRINT_STYLES}</style>
             <Dialog
                 open={open}
                 onClose={saving ? undefined : handleClose}
@@ -157,12 +149,7 @@ export default function PhieuDuTruDialog({
                     sx={{
                         height: 500,
                         overflow: "auto",
-                        "@media print": {
-                            border: "none !important",
-                            p: "0 !important",
-                            height: "auto !important",
-                            overflow: "visible !important",
-                        },
+                        ...PRINT_DIALOG_CONTENT_SX,
                     }}
                 >
                     {loadingData ? (
@@ -192,7 +179,7 @@ export default function PhieuDuTruDialog({
                                     <Button
                                         variant="contained"
                                         startIcon={<PrintIcon />}
-                                        onClick={() => window.print()}
+                                        onClick={triggerPrint}
                                     >
                                         In phiếu
                                     </Button>

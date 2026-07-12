@@ -7,10 +7,7 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
-import {
-    Close as CloseIcon,
-    Person as PersonIcon,
-} from "@mui/icons-material";
+import { Close as CloseIcon, Person as PersonIcon } from "@mui/icons-material";
 import DatePicker from "@/components/common/DatePicker.jsx";
 
 const PhieuXuatForm = memo(function PhieuXuatForm({
@@ -44,7 +41,9 @@ const PhieuXuatForm = memo(function PhieuXuatForm({
                     select: {
                         MenuProps: {
                             slotProps: {
-                                paper: { sx: { maxHeight: 300, minWidth: "100%" } },
+                                paper: {
+                                    sx: { maxHeight: 300, minWidth: "100%" },
+                                },
                             },
                         },
                     },
@@ -84,12 +83,20 @@ const PhieuXuatForm = memo(function PhieuXuatForm({
                             Chọn quân nhân
                         </Button>
                     ) : (
-<Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+                        <Stack
+                            direction="row"
+                            spacing={1}
+                            sx={{ alignItems: "center" }}
+                        >
                             <PersonIcon fontSize="small" />
                             <Typography variant="body2">
                                 {hoTenNguoiNhan} ({maQuanNhanNhan})
                             </Typography>
-                            <IconButton size="small" color="error" onClick={onRemoveQN}>
+                            <IconButton
+                                size="small"
+                                color="error"
+                                onClick={onRemoveQN}
+                            >
                                 <CloseIcon fontSize="small" />
                             </IconButton>
                         </Stack>
@@ -99,24 +106,32 @@ const PhieuXuatForm = memo(function PhieuXuatForm({
                     <Typography variant="caption" color="text.secondary">
                         Người tạo
                     </Typography>
-                    <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+                    <Stack
+                        direction="row"
+                        spacing={1}
+                        sx={{ alignItems: "center" }}
+                    >
                         <PersonIcon fontSize="small" />
                         <Typography variant="body2">
                             {isView
                                 ? creatorName || "—"
                                 : currentUser
-                                    ? `${currentUser.ho_ten} (${currentUser.role})`
-                                    : "—"}
+                                  ? `${currentUser.ho_ten} (${currentUser.role})`
+                                  : "—"}
                         </Typography>
                     </Stack>
                 </Stack>
             </Stack>
-
-            <DatePicker
-                value={ngayXuat}
-                onChange={onNgayXuatChange}
-                size="small"
-            />
+            <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
+                <Typography variant="caption" color="text.secondary">
+                    Ngày đề nghị:
+                </Typography>
+                <DatePicker
+                    value={ngayXuat}
+                    onChange={onNgayXuatChange}
+                    size="small"
+                />
+            </Stack>
 
             <TextField
                 label="Lý do xuất"
