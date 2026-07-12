@@ -5,13 +5,13 @@ import PrintSignature from "@/components/common/print/PrintSignature.jsx";
 
 export default function NhapKhoPrint({ data }) {
     return (
-        <PrintOverlay className="nhap-kho-print" paperSize="A4" fontSize="20pt">
+        <PrintOverlay className="nhap-kho-print" paperSize="A4" fontSize="14pt" fixed={false}>
             <PrintHeaderDonVi />
 
             <div style={{ margin: "12pt 0", textAlign: "center" }}>
                 <p
                     style={{
-                        fontSize: "22pt",
+                        fontSize: "16pt",
                         textTransform: "uppercase",
                         fontWeight: "bold",
                         margin: 0,

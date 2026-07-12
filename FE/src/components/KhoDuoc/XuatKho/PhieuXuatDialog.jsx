@@ -64,6 +64,16 @@ export default function PhieuXuatDialog({
 
     return (
         <>
+            <style>{`
+                @media print {
+                    #root { display: none !important; }
+                    .MuiBackdrop-root { display: none !important; }
+                    .MuiModal-root { display: contents !important; }
+                    .MuiDialog-container { display: contents !important; }
+                    .MuiDialog-paper { display: contents !important; }
+                    .MuiDialogContent-root { display: contents !important; }
+                }
+            `}</style>
             <Dialog
                 open={open}
                 onClose={saving ? undefined : onClose}
@@ -91,7 +101,7 @@ export default function PhieuXuatDialog({
                     sx={{
                         pt: 1,
                         px: 3,
-                        "@media print": { border: "none !important" },
+                        "@media print": { border: "none !important", p: "0 !important", height: "auto !important", overflow: "visible !important" },
                     }}
                 >
                     <Box sx={{ "@media print": { display: "none" } }}>

@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import { Person as PersonIcon, Print as PrintIcon } from "@mui/icons-material";
 import dayjs from "dayjs";
+import { clearThuocCache } from "@/hooks/useThuocList.jsx";
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import DatePicker from "@/components/common/DatePicker.jsx";
@@ -111,6 +112,7 @@ export default function NhapKhoDialog({ open, onClose, phieuId, mode = "create",
                 items,
                 ngay_nhap: ngayNhap.format("YYYY-MM-DD"),
             });
+            clearThuocCache();
             setSnackbar({ open: true, message: "Nhập kho thành công.", severity: "success" });
             onSaved?.();
             onClose();
@@ -166,14 +168,26 @@ export default function NhapKhoDialog({ open, onClose, phieuId, mode = "create",
 
     return (
         <>
+            <style>{`
+                @media print {
+                    #root { display: none !important; }
+                    .MuiBackdrop-root { display: none !important; }
+                    .MuiModal-root { display: contents !important; }
+                    .MuiDialog-container { display: contents !important; }
+                    .MuiDialog-paper { display: contents !important; }
+                    .MuiDialogContent-root { display: contents !important; }
+                }
+            `}</style>
             <Dialog open={open} onClose={saving ? undefined : onClose} fullWidth maxWidth="md">
-                <DialogTitleWrapper>{isView ? "Chi tiết nhập kho" : "Xác nhận nhập kho"}</DialogTitleWrapper>
-                <DialogContent dividers sx={{ height: 500, overflow: "auto" }}>
+                <DialogTitleWrapper sx={{ "@media print": { display: "none" } }}>{isView ? "Chi tiết nhập kho" : "Xác nhận nhập kho"}</DialogTitleWrapper>
+                <DialogContent dividers sx={{ height: 500, overflow: "auto", "@media print": { border: "none !important", p: "0 !important", height: "auto !important", overflow: "visible !important" } }}>
                     {loading ? (
                         <Typography color="text.secondary" sx={{ py: 2, textAlign: "center" }}>
                             Đang tải...
                         </Typography>
                     ) : (
+                        <>
+                        <Box sx={{ "@media print": { display: "none !important" } }}>
                         <Stack spacing={2} sx={{ pt: 1 }}>
                             <Stack direction="row" spacing={4} sx={{ flexWrap: "wrap", alignItems: "center" }}>
                                 <Stack spacing={0.5}>
@@ -258,16 +272,17 @@ export default function NhapKhoDialog({ open, onClose, phieuId, mode = "create",
                                     </TableBody>
                                 </Table>
                             </TableContainer>
-
-                            {isView && printData && (
-                                <Box sx={{ mt: 3 }}>
-                                    <NhapKhoPrint data={printData} />
-                                </Box>
-                            )}
                         </Stack>
+                        </Box>
+                        {isView && printData && (
+                            <Box sx={{ mt: 3, "@media print": { display: "contents !important" } }}>
+                                <NhapKhoPrint data={printData} />
+                            </Box>
+                        )}
+                        </>
                     )}
                 </DialogContent>
-                <DialogActions sx={{ p: 2, pb: 2.5 }}>
+                <DialogActions sx={{ p: 2, pb: 2.5, "@media print": { display: "none" } }}>
                     {actionButtons}
                 </DialogActions>
             </Dialog>

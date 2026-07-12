@@ -8,14 +8,15 @@ export default function PhieuXuatPrint({ data, paperSize = "A4" }) {
         <PrintOverlay
             className="phieu-xuat-print"
             paperSize={paperSize}
-            fontSize="20pt"
+            fontSize="14pt"
+            fixed={false}
         >
             <PrintHeaderDonVi />
 
             <div style={{ margin: "12pt 0", textAlign: "center" }}>
                 <p
                     style={{
-                        fontSize: "22pt",
+                        fontSize: "16pt",
                         textTransform: "uppercase",
                         fontWeight: "bold",
                         m: 0,

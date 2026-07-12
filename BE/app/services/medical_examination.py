@@ -91,17 +91,12 @@ class MedicalExaminationService:
         if prescription_items:
             old_dts = self.db.query(DonThuoc).filter(DonThuoc.ma_kham_benh == kb_id).all()
             for old_dt in old_dts:
-                old_chi_tiet = self.db.query(ChiTietDonThuoc).filter(
-                    ChiTietDonThuoc.ma_don_thuoc == old_dt.ma_don_thuoc
-                ).all()
-                self._restore_stock(old_chi_tiet)
                 self.db.query(ChiTietDonThuoc).filter(
                     ChiTietDonThuoc.ma_don_thuoc == old_dt.ma_don_thuoc
                 ).delete()
                 self.db.delete(old_dt)
             self.db.flush()
 
-            self._decrement_stock(prescription_items)
             dt = DonThuoc(
                 ma_quan_nhan=kb.ma_quan_nhan,
                 ma_kham_benh=kb_id,
@@ -242,6 +237,14 @@ class MedicalExaminationService:
         if nguoi_dung_id:
             dt = self.db.query(DonThuoc).filter(DonThuoc.ma_kham_benh == kb_id).first()
             if dt:
+                chi_tiets = self.db.query(ChiTietDonThuoc).filter(
+                    ChiTietDonThuoc.ma_don_thuoc == dt.ma_don_thuoc
+                ).all()
+                items = [
+                    {"ma_thuoc_vtyt": ct.ma_thuoc_vtyt, "so_luong": ct.so_luong}
+                    for ct in chi_tiets
+                ]
+                self._decrement_stock(items)
                 dt.id_nguoi_dung = nguoi_dung_id
         self.db.commit()
         self.db.refresh(kb)

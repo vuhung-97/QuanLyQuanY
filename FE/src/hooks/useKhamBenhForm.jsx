@@ -2,8 +2,6 @@ import { useCallback, useEffect, useState } from "react";
 import { khamBenhService } from "@/services/khamBenhService.js";
 import useStaticList from "@/hooks/useStaticList.js";
 import { parseHuongDieuTri } from "@/utils/khamBenhUtils.js";
-import { updateThuocCacheItem } from "./useThuocList.jsx";
-
 export default function useKhamBenhForm({
     open,
     examinationId,
@@ -131,23 +129,6 @@ export default function useKhamBenhForm({
             await khamBenhService.completeExamination(exam.ma_kham_benh, {
                 ...payload,
                 prescription_items: prescriptionItems,
-            });
-            const oldMap = {};
-            if (exam?.don_thuoc) {
-                for (const dt of exam.don_thuoc) {
-                    for (const ct of dt.chi_tiet_don_thuoc || []) {
-                        oldMap[ct.ma_thuoc_vtyt] = (oldMap[ct.ma_thuoc_vtyt] || 0) + (ct.so_luong || 0);
-                    }
-                }
-            }
-            const newMap = {};
-            prescriptionItems.forEach((item) => {
-                newMap[item.ma_thuoc_vtyt] = (newMap[item.ma_thuoc_vtyt] || 0) + (item.so_luong || 0);
-            });
-            const allKeys = new Set([...Object.keys(oldMap), ...Object.keys(newMap)]);
-            allKeys.forEach((key) => {
-                const delta = (oldMap[key] || 0) - (newMap[key] || 0);
-                if (delta !== 0) updateThuocCacheItem(key, delta);
             });
         } else {
             if (status) payload.trang_thai = status;

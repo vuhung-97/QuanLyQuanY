@@ -4,6 +4,7 @@ import { khoDuocService } from "@/services/khoDuocService.js";
 import { khamBenhService } from "@/services/khamBenhService.js";
 import { decodeJWT } from "@/services/api.js";
 import { buildTree, flattenTree } from "@/utils/treeUtils.js";
+import { clearThuocCache } from "./useThuocList.jsx";
 
 export default function usePhieuXuat({ open, phieuId, mode, onClose, onSaved }) {
     const [donViNhan, setDonViNhan] = useState("");
@@ -204,6 +205,7 @@ export default function usePhieuXuat({ open, phieuId, mode, onClose, onSaved }) 
         setSaving(true);
         try {
             await khoDuocService.xuatKho(phieuId);
+            clearThuocCache();
             setSnackbar({ open: true, message: "Xuất kho thành công.", severity: "success" });
             onSaved?.();
             onClose();

@@ -38,6 +38,3 @@ export function clearThuocCache() {
     invalidateCache(CACHE_URL);
 }
 
-export function updateThuocCacheItem(maThuocVtyt, delta) {
-    updateCacheItem(CACHE_URL, "ma_thuoc_vtyt", maThuocVtyt, "so_luong", delta);
-}
