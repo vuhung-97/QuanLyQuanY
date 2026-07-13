@@ -11,6 +11,7 @@ import {
     Add as AddIcon,
     Delete as DeleteIcon,
     Edit as EditIcon,
+    Refresh as RefreshIcon,
 } from "@mui/icons-material";
 import DataTable from "@/components/common/DataTable.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
@@ -23,7 +24,8 @@ import useStaticList, { invalidateCache } from "@/hooks/useStaticList.js";
 const ROWS_PER_PAGE = 100;
 
 export default function DanhMucList({ config }) {
-    const allItems = useStaticList(config.url, { pageSize: 500 });
+    const [refreshKey, setRefreshKey] = useState(0);
+    const allItems = useStaticList(config.url, { pageSize: 500, version: refreshKey });
 
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(1);
@@ -60,6 +62,8 @@ export default function DanhMucList({ config }) {
         return filteredItems.slice(start, start + ROWS_PER_PAGE);
     }, [filteredItems, page]);
 
+    const handleRefresh = useCallback(() => setRefreshKey((k) => k + 1), []);
+
     const handleSearchChange = useCallback((v) => {
         setSearch(v);
         setPage(1);
@@ -76,7 +80,8 @@ export default function DanhMucList({ config }) {
 
     const handleSaved = useCallback(() => {
         invalidateCache(config.url);
-    }, [config.url]);
+        handleRefresh();
+    }, [config.url, handleRefresh]);
 
     const confirmDelete = useCallback(async () => {
         if (!confirm.id) return;
@@ -89,11 +94,12 @@ export default function DanhMucList({ config }) {
             });
             setConfirm({ open: false, id: null });
             invalidateCache(config.url);
+            handleRefresh();
         } catch (err) {
             const msg = err?.response?.data?.detail || "Lỗi xoá dữ liệu";
             setSnackbar({ open: true, message: msg, severity: "error" });
         }
-    }, [confirm.id, config.service, config.url]);
+    }, [confirm.id, config.service, config.url, handleRefresh]);
 
     const rowExtra = useMemo(
         () => ({
@@ -156,6 +162,13 @@ export default function DanhMucList({ config }) {
                                 onSearch={handleSearchChange}
                                 placeholder="Tìm kiếm..."
                             />
+                            <Button
+                                variant="outlined"
+                                startIcon={<RefreshIcon />}
+                                onClick={handleRefresh}
+                            >
+                                Refresh
+                            </Button>
                             <Button
                                 variant="contained"
                                 startIcon={<AddIcon />}

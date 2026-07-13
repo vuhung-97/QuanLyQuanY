@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { buildHuongDieuTri } from "@/utils/khamBenhUtils.js";
+import { CACH_DUNG_LABEL_MAP, THOI_DIEM_LABEL_MAP } from "@/constants/khamBenhConstants.js";
 
 export default function usePrescriptionRow(initialData) {
     const [maThuoc] = useState(initialData?.ma_thuoc_vtyt ?? "");
@@ -40,6 +41,9 @@ export default function usePrescriptionRow(initialData) {
                 cach_su_dung: cachSuDung,
                 ghi_chu: ghiChu,
             }),
+            cach_dung: CACH_DUNG_LABEL_MAP[cachSuDung] || "Uống",
+            thoi_diem: THOI_DIEM_LABEL_MAP[thoiDiemDung] || "Sau ăn",
+            lieu: `Sáng: ${sang} - Trưa: ${trua} - Tối: ${toi}`,
         }),
         [
             maThuoc,

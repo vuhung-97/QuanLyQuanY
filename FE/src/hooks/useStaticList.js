@@ -1,21 +1,31 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import api from "@/services/api.js";
 
 const _cache = new Map();
 const _pending = new Map();
 
-export default function useStaticList(url, { params, transform, pageSize } = {}) {
+export default function useStaticList(url, { params, transform, pageSize, version = 0 } = {}) {
     const [data, setData] = useState(() => _cache.get(url) || []);
+    const prevVersion = useRef(version);
 
     useEffect(() => {
+        if (version !== prevVersion.current) {
+            prevVersion.current = version;
+            _cache.delete(url);
+            _pending.delete(url);
+        }
         if (_cache.has(url)) return;
         if (_pending.has(url)) {
             _pending.get(url).then(setData);
             return;
         }
-        const promise = fetchAllPages(url, params, pageSize, transform);
+        const promise = fetchAllPages(url, params, pageSize, transform)
+            .then((data) => {
+                setData(data);
+                return data;
+            });
         _pending.set(url, promise);
-    }, [url]);
+    }, [url, version]);
 
     return data;
 }
