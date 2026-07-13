@@ -105,6 +105,7 @@ export default function ChuyenTuyenForm({
     saving,
     onClose,
     onSave,
+    readOnly = false,
 }) {
     const formRef = useRef({});
     const [tenBenhVien, setTenBenhVien] = useState("");
@@ -196,10 +197,15 @@ export default function ChuyenTuyenForm({
                     </Typography>
                 ) : (
                     <>
-                        <Stack
-                            spacing={2.5}
-                            sx={{ "@media print": { display: "none" }, mt: 1 }}
+                        <Box
+                            sx={{
+                                "@media print": { display: "none" },
+                                mt: 1,
+                                pointerEvents: readOnly ? "none" : undefined,
+                                opacity: readOnly ? 0.7 : 1,
+                            }}
                         >
+                        <Stack spacing={2.5}>
                             <PatientInfoCard
                                 data={selectedExam}
                                 fields={PATIENT_FIELDS}
@@ -387,6 +393,7 @@ export default function ChuyenTuyenForm({
                                 </Stack>
                             </Box>
                         </Stack>
+                        </Box>
 
                         <ChuyenTuyenPrint
                             selectedExam={selectedExam}
@@ -408,6 +415,7 @@ export default function ChuyenTuyenForm({
                     >
                         In giấy giới thiệu
                     </Button>
+                    {!readOnly && (
                     <Button
                         variant="contained"
                         color="primary"
@@ -417,6 +425,7 @@ export default function ChuyenTuyenForm({
                     >
                         {saving ? "Đang xử lý..." : "Lưu"}
                     </Button>
+                    )}
                 </DialogActions>
             </Box>
         </Dialog>

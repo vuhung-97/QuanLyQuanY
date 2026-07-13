@@ -26,7 +26,7 @@ const QN_COLUMNS = [
     },
     { key: "ho_ten", label: "Họ tên" },
     { key: "ngay_sinh", label: "Ngày sinh" },
-    { key: "don_vi", label: "Đơn vị" },
+    { key: "ten_don_vi", label: "Đơn vị" },
     { key: "cap_bac", label: "Cấp bậc" },
     { key: "chuc_vu", label: "Chức vụ" },
     { key: "ngay_nhap_ngu", label: "Nhập ngũ" },
@@ -104,7 +104,7 @@ export default function ChonQuanNhanDialog({
             ...qn,
             stt: page * ROWS_PER_PAGE + idx + 1,
             ngay_sinh: formatDate(qn.ngay_sinh),
-            don_vi: getTenDonVi(qn.ma_don_vi),
+            ten_don_vi: getTenDonVi(qn.ma_don_vi),
             ngay_nhap_ngu: formatDate(qn.ngay_nhap_ngu),
         }));
     }, [filtered, page, getTenDonVi]);

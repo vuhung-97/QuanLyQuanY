@@ -32,6 +32,7 @@ export default function KhamBenhForm({
     rowData,
     onClose,
     onSaved,
+    readOnly = false,
 }) {
     const {
         exam,
@@ -68,7 +69,7 @@ export default function KhamBenhForm({
         handleAdmissionConfirm,
         snackbar,
         setSnackbar,
-    } = useKhamBenhForm({ open, examinationId, rowData, onClose, onSaved });
+    } = useKhamBenhForm({ open, examinationId, rowData, onClose, onSaved, readOnly });
 
     const patientInfoData = useMemo(
         () => ({

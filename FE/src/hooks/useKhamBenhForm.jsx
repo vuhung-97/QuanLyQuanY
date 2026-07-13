@@ -8,13 +8,15 @@ export default function useKhamBenhForm({
     rowData,
     onClose,
     onSaved,
+    readOnly: forceReadOnly = false,
 }) {
     const [exam, setExam] = useState(null);
-    const isReadOnly =
+    const statusReadOnly =
         exam &&
         ["đã_nhận_thuốc", "chuyển_tuyến", "nhập_viện"].includes(
             exam.trang_thai,
         );
+    const isReadOnly = forceReadOnly || statusReadOnly;
     const [qn, setQn] = useState(null);
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);

@@ -35,6 +35,7 @@ def get_kham_benh_all(
     offset: int = Query(default=0, ge=0),
     nam: int | None = Query(default=None, description="Năm (VD: 2026)"),
     thang: int | None = Query(default=None, ge=1, le=12, description="Tháng (1-12)"),
+    ma_quan_nhan: str | None = Query(default=None, description="Mã quân nhân"),
     db: Session = Depends(get_db),
 ):
     base_query = (
@@ -52,6 +53,8 @@ def get_kham_benh_all(
         base_query = base_query.filter(
             extract('month', KhamBenh.ngay_kham) == thang
         )
+    if ma_quan_nhan:
+        base_query = base_query.filter(KhamBenh.ma_quan_nhan == ma_quan_nhan)
     total = base_query.count()
     records = base_query.offset(offset).limit(limit).all()
     result = []
@@ -251,6 +254,7 @@ def get_danh_sach_chuyen_tuyen(
     offset: int = Query(default=0, ge=0),
     nam: int | None = Query(default=None, description="Năm (VD: 2026)"),
     thang: int | None = Query(default=None, ge=1, le=12, description="Tháng (1-12)"),
+    ma_quan_nhan: str | None = Query(default=None, description="Mã quân nhân"),
     db: Session = Depends(get_db),
 ):
     base_query = (
@@ -276,6 +280,8 @@ def get_danh_sach_chuyen_tuyen(
         base_query = base_query.filter(
             extract('month', KhamBenh.ngay_kham) == thang
         )
+    if ma_quan_nhan:
+        base_query = base_query.filter(KhamBenh.ma_quan_nhan == ma_quan_nhan)
     total = base_query.count()
     records = base_query.offset(offset).limit(limit).all()
     result = []

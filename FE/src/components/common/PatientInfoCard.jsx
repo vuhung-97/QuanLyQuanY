@@ -7,6 +7,35 @@ const FIELD_DEFS = {
         label: "Họ và tên",
         get: (d) => d?.ho_ten || d?.ma_quan_nhan || "--",
     },
+    ma_quan_nhan: {
+        label: "Mã QN",
+        get: (d) => d?.ma_quan_nhan || "--",
+    },
+    ngay_sinh: {
+        label: "Ngày sinh",
+        get: (d) => d?.ngay_sinh || "--",
+    },
+    gioi_tinh: {
+        label: "Giới tính",
+        get: (d) =>
+            d?.gioi_tinh === true
+                ? "Nam"
+                : d?.gioi_tinh === false
+                  ? "Nữ"
+                  : "--",
+    },
+    nghe_nghiep: {
+        label: "Nghề nghiệp",
+        get: (d) => d?.nghe_nghiep || "--",
+    },
+    so_dien_thoai: {
+        label: "Số ĐT",
+        get: (d) => d?.so_dien_thoai || "--",
+    },
+    so_the_bhyt: {
+        label: "BHYT",
+        get: (d) => d?.so_the_bhyt || "--",
+    },
     ten_don_vi: {
         label: "Đơn vị",
         get: (d) => d?.ten_don_vi || "--",
@@ -49,57 +78,73 @@ const FIELD_DEFS = {
 function InfoRow({ label, value }) {
     return (
         <Box>
-            <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{ fontWeight: 800 }}
-            >
+            <Typography variant="body2" color="text.secondary">
                 {label}
             </Typography>
-            <Typography variant="body1" sx={{ textAlign: "center" }}>
+            <Typography variant="body1" sx={{ fontWeight: 800 }}>
                 {value}
             </Typography>
         </Box>
     );
 }
 
-const PatientInfoCard = memo(function PatientInfoCard({ data, fields }) {
-    const items = useMemo(() => {
+const PatientInfoCard = memo(function PatientInfoCard({
+    data,
+    fields,
+    columnsPerRow,
+}) {
+    const rows = useMemo(() => {
+        let items;
         if (fields) {
-            return fields
+            items = fields
                 .filter((f) => FIELD_DEFS[f])
                 .map((f) => ({
                     key: f,
                     label: FIELD_DEFS[f].label,
                     value: FIELD_DEFS[f].get(data),
                 }));
+        } else {
+            items = Object.entries(FIELD_DEFS)
+                .filter(([, def]) => {
+                    const v = def.get(data);
+                    return v !== "--" && v != null;
+                })
+                .map(([key, def]) => ({
+                    key,
+                    label: def.label,
+                    value: def.get(data),
+                }));
         }
-        return Object.entries(FIELD_DEFS)
-            .filter(([, def]) => {
-                const v = def.get(data);
-                return v !== "--" && v != null;
-            })
-            .map(([key, def]) => ({
-                key,
-                label: def.label,
-                value: def.get(data),
-            }));
-    }, [data, fields]);
+
+        if (columnsPerRow > 0 && items.length > columnsPerRow) {
+            const result = [];
+            for (let i = 0; i < items.length; i += columnsPerRow) {
+                result.push(items.slice(i, i + columnsPerRow));
+            }
+            return result;
+        }
+        return [items];
+    }, [data, fields, columnsPerRow]);
 
     return (
         <Card variant="outlined" sx={{ borderRadius: 2, bgcolor: "#F8FAFC" }}>
             <CardContent>
-                <Stack
-                    direction="row"
-                    spacing={2}
-                    sx={{ "& > *": { flex: 1, minWidth: 0 } }}
-                >
-                    {items.map((item) => (
-                        <InfoRow
-                            key={item.key}
-                            label={item.label}
-                            value={item.value}
-                        />
+                <Stack spacing={1.5}>
+                    {rows.map((rowItems, ri) => (
+                        <Stack
+                            key={ri}
+                            direction="row"
+                            spacing={2}
+                            sx={{ "& > *": { flex: 1, minWidth: 0 } }}
+                        >
+                            {rowItems.map((item) => (
+                                <InfoRow
+                                    key={item.key}
+                                    label={item.label}
+                                    value={item.value}
+                                />
+                            ))}
+                        </Stack>
                     ))}
                 </Stack>
             </CardContent>

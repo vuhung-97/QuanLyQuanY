@@ -26,13 +26,13 @@ import InfoItem from "@/components/NoiTru/common/InfoItem.jsx";
 import TinhTrangChip from "@/components/NoiTru/common/TinhTrangChip.jsx";
 import { formatDate } from "@/utils/date.js";
 
-export default function ChiTietBenhAn({ open, benhAnId, onClose, onSaved }) {
+export default function ChiTietBenhAn({ open, benhAnId, onClose, onSaved, readOnly: forceReadOnly = false }) {
     const [benhAn, setBenhAn] = useState(null);
     const [loading, setLoading] = useState(false);
     const [tabIndex, setTabIndex] = useState(0);
     const [openEditForm, setOpenEditForm] = useState(false);
     const [savingEdit, setSavingEdit] = useState(false);
-    const readOnly = benhAn?.trang_thai === "đã_ra_viện";
+    const readOnly = forceReadOnly || benhAn?.trang_thai === "đã_ra_viện";
 
     const {
         records,
@@ -184,7 +184,7 @@ export default function ChiTietBenhAn({ open, benhAnId, onClose, onSaved }) {
                             {tabIndex === 0 && (
                                 <TongQuanTab
                                     benhAn={benhAn}
-                                    onEdit={handleOpenEdit}
+                                    onEdit={readOnly ? null : handleOpenEdit}
                                 />
                             )}
                             {tabIndex === 1 && (

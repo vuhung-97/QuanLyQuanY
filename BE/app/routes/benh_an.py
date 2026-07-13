@@ -83,6 +83,7 @@ def get_danh_sach_noi_tru(
     trang_thai: str | None = Query(default=None),
     nam: int | None = Query(default=None),
     thang: int | None = Query(default=None, ge=1, le=12),
+    ma_quan_nhan: str | None = Query(default=None, description="Mã quân nhân"),
     db: Session = Depends(get_db),
 ):
     base_query = (
@@ -98,6 +99,8 @@ def get_danh_sach_noi_tru(
         base_query = base_query.filter(extract('year', BenhAn.ngay_nhap_vien) == nam)
     if thang:
         base_query = base_query.filter(extract('month', BenhAn.ngay_nhap_vien) == thang)
+    if ma_quan_nhan:
+        base_query = base_query.filter(BenhAn.ma_quan_nhan == ma_quan_nhan)
     total = base_query.count()
     records = base_query.offset(offset).limit(limit).all()
     result = []

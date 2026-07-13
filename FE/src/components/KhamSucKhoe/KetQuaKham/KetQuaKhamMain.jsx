@@ -110,7 +110,7 @@ export default function KetQuaKhamMain() {
                         XN_FIELDS={XN_FIELDS}
                     />
 
-                    <KetQuaKhamDonVi donViData={donViData} />
+                    <KetQuaKhamDonVi phanBoPhanLoai={phanBoPhanLoai} />
                 </>
             )}
         </Stack>

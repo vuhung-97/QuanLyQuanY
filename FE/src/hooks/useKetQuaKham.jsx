@@ -142,7 +142,7 @@ export default function useKetQuaKham() {
             if (counts[loai] !== undefined) counts[loai]++;
         });
         const total = daKhamPhieu.length || 1;
-        return PHAN_LOAI_LABELS.filter((l) => counts[l] > 0).map((l, i) => ({
+        return PHAN_LOAI_LABELS.map((l, i) => ({
             name: l,
             value: counts[l],
             ty_le: ((counts[l] / total) * 100).toFixed(1),
