@@ -1,77 +1,28 @@
 import { useState, useEffect } from "react";
 import {
-    Box,
     Grid,
     Card,
     CardContent,
     Typography,
     Stack,
     Avatar,
-    Chip,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Button,
 } from "@mui/material";
 import {
     PeopleAlt as PeopleAltIcon,
     MedicalServices as MedicalServicesIcon,
     Domain as DomainIcon,
     Description as DescriptionIcon,
-    AddBox as AddBoxIcon,
     Bed as BedIcon,
     Healing as HealingIcon,
 } from "@mui/icons-material";
 import api from "@/services/api.js";
 import ChartQuanSoKhamChuaBenh from "@/components/Dashboard/ChartQuanSoKhamChuaBenh.jsx";
-
-const tableData = [
-    {
-        id: "0001E38",
-        name: "Quân nhân",
-        dept: "Viện Y",
-        doctor: "Bác sĩ",
-        status: "Đã khám",
-        time: "28 day ngo",
-        avatar: "https://i.pravatar.cc/150?img=12",
-    },
-    {
-        id: "0001E39",
-        name: "Tran Van B",
-        dept: "Khám Bên",
-        doctor: "Dr. Kuyen",
-        status: "Chờ khám",
-        time: "28 day ngo",
-        avatar: "https://i.pravatar.cc/150?img=13",
-    },
-    {
-        id: "0001E39",
-        name: "Dr. Nguyễn",
-        dept: "Viện Y",
-        doctor: "Bác sĩ",
-        status: "Đã khám",
-        time: "28 day ngo",
-        avatar: "https://i.pravatar.cc/150?img=14",
-    },
-];
-
-const reports = [
-    {
-        title: "Báo cáo sức khỏe định kỳ năm",
-        icon: <DescriptionIcon sx={{ color: "#3B82F6" }} />,
-    },
-    {
-        title: "Thống kê quân nhân nội trú",
-        icon: <AddBoxIcon sx={{ color: "#3B82F6" }} />,
-    },
-    {
-        title: "Báo cáo tình hình dịch tễ\nBáo cáo tồn kho dược",
-        icon: <DescriptionIcon sx={{ color: "#3B82F6" }} />,
-    },
-];
+import PhanLoaiBenhChart from "@/components/BaoCao/BaoCaoThang/PhanLoaiBenhChart.jsx";
+import SucKhoeDonViWidget from "@/components/Dashboard/SucKhoeDonViWidget.jsx";
+import SoSanhThangTruoc from "@/components/Dashboard/SoSanhThangTruoc.jsx";
+import TonKhoCanhBao from "@/components/Dashboard/TonKhoCanhBao.jsx";
+import YearMonthFilter from "@/components/common/YearMonthFilter.jsx";
+import useBaoCaoThang from "@/hooks/useBaoCaoThang.js";
 
 const statMeta = [
     {
@@ -120,6 +71,14 @@ const statMeta = [
 
 export default function DashboardPage() {
     const [stats, setStats] = useState(null);
+    const {
+        thang,
+        setThang,
+        nam,
+        setNam,
+        data: thangData,
+        loading: thangLoading,
+    } = useBaoCaoThang();
 
     useEffect(() => {
         api.get("/bao-cao/tong-quan")
@@ -192,262 +151,72 @@ export default function DashboardPage() {
 
             <ChartQuanSoKhamChuaBenh />
 
-            {/* Bottom Row */}
-            <Grid container spacing={2.5}>
-                <Grid size={{ xs: 12, md: 8 }}>
+            <SoSanhThangTruoc
+                thang={thang}
+                nam={nam}
+                currentData={thangData}
+            />
+
+            <TonKhoCanhBao />
+
+            {/* Bottom Row: Disease Distribution + Unit Health */}
+            <Grid container spacing={2.5} alignItems="stretch">
+                <Grid size={{ xs: 12, md: 6 }} sx={{ display: "flex" }}>
                     <Card
                         sx={{
                             borderRadius: 3,
                             boxShadow: "0px 4px 12px rgba(0,0,0,0.03)",
-                            height: "100%",
+                            flex: 1,
+                            display: "flex",
+                            flexDirection: "column",
                         }}
                     >
                         <CardContent
-                            sx={{ p: "24px !important", pb: "16px !important" }}
+                            sx={{
+                                p: "24px !important",
+                                flex: 1,
+                                display: "flex",
+                                flexDirection: "column",
+                            }}
                         >
-                            <Typography
-                                variant="h6"
-                                fontWeight={700}
-                                sx={{ color: "#1E293B", mb: 2 }}
-                            >
-                                Danh sách khám bệnh gần đây
-                            </Typography>
-                            <TableContainer>
-                                <Table
-                                    sx={{ minWidth: 600 }}
-                                    aria-label="recent patients table"
+                            <Stack spacing={2} sx={{ flex: 1 }}>
+                                <Stack
+                                    direction="row"
+                                    justifyContent="space-between"
+                                    alignItems="center"
                                 >
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell
-                                                sx={{
-                                                    color: "#1E293B",
-                                                    fontWeight: 600,
-                                                    borderBottom:
-                                                        "1px solid #F1F5F9",
-                                                    pl: 0,
-                                                }}
-                                            >
-                                                Bệnh nhân
-                                            </TableCell>
-                                            <TableCell
-                                                sx={{
-                                                    color: "#1E293B",
-                                                    fontWeight: 600,
-                                                    borderBottom:
-                                                        "1px solid #F1F5F9",
-                                                }}
-                                            >
-                                                Mã QN
-                                            </TableCell>
-                                            <TableCell
-                                                sx={{
-                                                    color: "#1E293B",
-                                                    fontWeight: 600,
-                                                    borderBottom:
-                                                        "1px solid #F1F5F9",
-                                                }}
-                                            >
-                                                Khoa
-                                            </TableCell>
-                                            <TableCell
-                                                sx={{
-                                                    color: "#1E293B",
-                                                    fontWeight: 600,
-                                                    borderBottom:
-                                                        "1px solid #F1F5F9",
-                                                }}
-                                            >
-                                                Bác sĩ
-                                            </TableCell>
-                                            <TableCell
-                                                sx={{
-                                                    color: "#1E293B",
-                                                    fontWeight: 600,
-                                                    borderBottom:
-                                                        "1px solid #F1F5F9",
-                                                }}
-                                            >
-                                                Trạng thái
-                                            </TableCell>
-                                            <TableCell
-                                                sx={{
-                                                    color: "#1E293B",
-                                                    fontWeight: 600,
-                                                    borderBottom:
-                                                        "1px solid #F1F5F9",
-                                                    pr: 0,
-                                                }}
-                                            >
-                                                Thời gian
-                                            </TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {tableData.map((row, idx) => (
-                                            <TableRow
-                                                key={idx}
-                                                sx={{
-                                                    "&:last-child td, &:last-child th":
-                                                        { border: 0 },
-                                                }}
-                                            >
-                                                <TableCell
-                                                    sx={{
-                                                        borderBottom:
-                                                            "1px solid #F1F5F9",
-                                                        pl: 0,
-                                                        py: 1.5,
-                                                    }}
-                                                >
-                                                    <Stack
-                                                        direction="row"
-                                                        spacing={1.5}
-                                                        sx={{
-                                                            alignItems:
-                                                                "center",
-                                                        }}
-                                                    >
-                                                        <Avatar
-                                                            src={row.avatar}
-                                                            sx={{
-                                                                width: 32,
-                                                                height: 32,
-                                                            }}
-                                                        />
-                                                        <Typography
-                                                            variant="body2"
-                                                            fontWeight={500}
-                                                            sx={{
-                                                                color: "#334155",
-                                                            }}
-                                                        >
-                                                            {row.name}
-                                                        </Typography>
-                                                    </Stack>
-                                                </TableCell>
-                                                <TableCell
-                                                    sx={{
-                                                        borderBottom:
-                                                            "1px solid #F1F5F9",
-                                                        color: "#64748B",
-                                                    }}
-                                                >
-                                                    {row.id}
-                                                </TableCell>
-                                                <TableCell
-                                                    sx={{
-                                                        borderBottom:
-                                                            "1px solid #F1F5F9",
-                                                        color: "#64748B",
-                                                    }}
-                                                >
-                                                    {row.dept}
-                                                </TableCell>
-                                                <TableCell
-                                                    sx={{
-                                                        borderBottom:
-                                                            "1px solid #F1F5F9",
-                                                        color: "#64748B",
-                                                    }}
-                                                >
-                                                    {row.doctor}
-                                                </TableCell>
-                                                <TableCell
-                                                    sx={{
-                                                        borderBottom:
-                                                            "1px solid #F1F5F9",
-                                                    }}
-                                                >
-                                                    <Chip
-                                                        label={row.status}
-                                                        size="small"
-                                                        sx={{
-                                                            bgcolor:
-                                                                row.status ===
-                                                                "Đã khám"
-                                                                    ? "rgba(0, 180, 216, 0.15)"
-                                                                    : "rgba(245, 158, 11, 0.15)",
-                                                            color:
-                                                                row.status ===
-                                                                "Đã khám"
-                                                                    ? "#00B4D8"
-                                                                    : "#F59E0B",
-                                                            fontWeight: 600,
-                                                            borderRadius: 1.5,
-                                                            px: 0.5,
-                                                        }}
-                                                    />
-                                                </TableCell>
-                                                <TableCell
-                                                    sx={{
-                                                        borderBottom:
-                                                            "1px solid #F1F5F9",
-                                                        color: "#64748B",
-                                                        pr: 0,
-                                                    }}
-                                                >
-                                                    {row.time}
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
-                        </CardContent>
-                    </Card>
-                </Grid>
-                <Grid size={{ xs: 12, md: 4 }}>
-                    <Card
-                        sx={{
-                            borderRadius: 3,
-                            boxShadow: "0px 4px 12px rgba(0,0,0,0.03)",
-                            height: "100%",
-                        }}
-                    >
-                        <CardContent sx={{ p: "24px !important" }}>
-                            <Typography
-                                variant="h6"
-                                fontWeight={700}
-                                sx={{ color: "#1E293B", mb: 3 }}
-                            >
-                                Tổng quan báo cáo
-                            </Typography>
-                            <Stack spacing={3}>
-                                {reports.map((report, idx) => (
-                                    <Stack
-                                        direction="row"
-                                        spacing={2}
-                                        key={idx}
-                                        sx={{ alignItems: "center" }}
+                                    <Typography
+                                        variant="h6"
+                                        fontWeight={700}
+                                        sx={{ color: "#1E293B", mr: 2 }}
                                     >
-                                        <Avatar
-                                            variant="rounded"
-                                            sx={{
-                                                bgcolor:
-                                                    "rgba(59, 130, 246, 0.1)",
-                                                width: 40,
-                                                height: 40,
-                                                borderRadius: 2,
-                                            }}
-                                        >
-                                            {report.icon}
-                                        </Avatar>
-                                        <Typography
-                                            variant="body2"
-                                            sx={{
-                                                color: "#334155",
-                                                fontWeight: 500,
-                                                whiteSpace: "pre-line",
-                                            }}
-                                        >
-                                            {report.title}
-                                        </Typography>
-                                    </Stack>
-                                ))}
+                                        Phân bố bệnh theo nhóm
+                                    </Typography>
+                                    <YearMonthFilter
+                                        thang={thang}
+                                        nam={nam}
+                                        onThangChange={setThang}
+                                        onNamChange={setNam}
+                                    />
+                                </Stack>
+                                {thangLoading ? (
+                                    <Typography color="text.secondary">
+                                        Đang tải...
+                                    </Typography>
+                                ) : (
+                                    <PhanLoaiBenhChart
+                                        data={
+                                            thangData?.phan_loai_benh_kham || []
+                                        }
+                                        title=""
+                                    />
+                                )}
                             </Stack>
                         </CardContent>
                     </Card>
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }} sx={{ display: "flex" }}>
+                    <SucKhoeDonViWidget sx={{ flex: 1 }} />
                 </Grid>
             </Grid>
         </Stack>
