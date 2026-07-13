@@ -2,6 +2,11 @@ import { memo, useMemo } from "react";
 import { Box, Card, CardContent, Stack, Typography } from "@mui/material";
 import { formatDate, tinhTuoi } from "@/utils/date.js";
 
+const TRANG_THAI_LABEL = {
+    đang_điều_trị: "Đang điều trị",
+    đã_ra_viện: "Đã ra viện",
+};
+
 const FIELD_DEFS = {
     ho_ten: {
         label: "Họ và tên",
@@ -73,6 +78,17 @@ const FIELD_DEFS = {
             return `${ten} (${vaiTro})`;
         },
     },
+    ma_benh_an: { label: "Mã BA", get: (d) => d?.ma_benh_an || "--" },
+    ngay_nhap_vien: {
+        label: "Ngày nhập viện",
+        get: (d) => formatDate(d?.ngay_nhap_vien) || "--",
+    },
+    trang_thai: {
+        label: "Trạng thái",
+        get: (d) => TRANG_THAI_LABEL[d?.trang_thai] || d?.trang_thai || "--",
+    },
+    ten_buong: { label: "Buồng", get: (d) => d?.ten_buong || "--" },
+    ten_giuong: { label: "Giường", get: (d) => d?.ten_giuong || "--" },
 };
 
 function InfoRow({ label, value }) {

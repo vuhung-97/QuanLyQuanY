@@ -2,12 +2,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
     Box,
     Button,
-    Card,
-    CardContent,
     Dialog,
     DialogActions,
     DialogContent,
-    Grid,
     Stack,
     Tab,
     Tabs,
@@ -22,9 +19,7 @@ import LapBenhAnForm from "@/components/NoiTru/LapBenhAn/LapBenhAnForm.jsx";
 import TongQuanTab from "./tabs/TongQuanTab.jsx";
 import DienBienTab from "./tabs/DienBienTab.jsx";
 import ThuocTab from "./tabs/ThuocTab.jsx";
-import InfoItem from "@/components/NoiTru/common/InfoItem.jsx";
-import TinhTrangChip from "@/components/NoiTru/common/TinhTrangChip.jsx";
-import { formatDate } from "@/utils/date.js";
+import PatientInfoCard from "@/components/common/PatientInfoCard.jsx";
 
 export default function ChiTietBenhAn({ open, benhAnId, onClose, onSaved, readOnly: forceReadOnly = false }) {
     const [benhAn, setBenhAn] = useState(null);
@@ -109,22 +104,10 @@ export default function ChiTietBenhAn({ open, benhAnId, onClose, onSaved, readOn
         [benhAn, benhAnId, onSaved],
     );
 
-    const headerFields = [
-        { label: "Mã BA", value: benhAn?.ma_benh_an },
-        { label: "Mã QN", value: benhAn?.ma_quan_nhan },
-        { label: "Ngày nhập viện", value: formatDate(benhAn?.ngay_nhap_vien) },
-        {
-            label: "Trạng thái",
-            value: benhAn && <TinhTrangChip trangThai={benhAn.trang_thai} />,
-        },
-        { label: "Buồng", value: benhAn?.ten_buong },
-        { label: "Giường", value: benhAn?.ten_giuong },
-        { label: "Họ tên", value: benhAn?.ho_ten },
-        { label: "Cấp bậc", value: benhAn?.cap_bac },
-        { label: "Chức vụ", value: benhAn?.chuc_vu },
-        { label: "Đơn vị", value: benhAn?.ten_don_vi },
-        { label: "Số ĐT", value: benhAn?.so_dien_thoai },
-        { label: "Mã BHYT", value: benhAn?.so_the_bhyt },
+    const FIELDS = [
+        "ho_ten", "ma_quan_nhan", "cap_bac", "chuc_vu", "ten_don_vi",
+        "so_dien_thoai", "so_the_bhyt", "ma_benh_an", "ngay_nhap_vien",
+        "trang_thai", "ten_buong", "ten_giuong",
     ];
 
     return (
@@ -154,23 +137,11 @@ export default function ChiTietBenhAn({ open, benhAnId, onClose, onSaved, readOn
                         </Typography>
                     ) : (
                         <Stack spacing={3}>
-                            <Card
-                                variant="outlined"
-                                sx={{ borderRadius: 2, bgcolor: "#F8FAFC" }}
-                            >
-                                <CardContent>
-                                    <Grid container spacing={2}>
-                                        {headerFields.map((f, i) => (
-                                            <Grid size={{ xs: 2 }} key={i}>
-                                                <InfoItem
-                                                    label={f.label}
-                                                    value={f.value}
-                                                />
-                                            </Grid>
-                                        ))}
-                                    </Grid>
-                                </CardContent>
-                            </Card>
+                            <PatientInfoCard
+                                data={benhAn}
+                                fields={FIELDS}
+                                columnsPerRow={6}
+                            />
 
                             <Tabs
                                 value={tabIndex}
