@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
     Stack, Button, Card, CardContent, Typography, Box, Chip,
 } from "@mui/material";
@@ -10,6 +10,7 @@ import PatientInfoCard from "@/components/common/PatientInfoCard.jsx";
 import DataTable from "@/components/common/DataTable.jsx";
 import LoadingAlert from "@/components/common/LoadingAlert.jsx";
 import useBaoCaoQuanNhan from "@/hooks/useBaoCaoQuanNhan.jsx";
+import { khamBenhService } from "@/services/khamBenhService.js";
 import KhamSucKhoeForm from "@/components/KhamSucKhoe/KiemTraSucKhoe/KhamSucKhoeForm.jsx";
 import KhamBenhForm from "@/components/KhamBenhChoQN/KhamBenh/KhamBenhForm.jsx";
 import ChiTietBenhAn from "@/components/NoiTru/DanhSachNoiTru/ChiTietBenhAn.jsx";
@@ -20,16 +21,16 @@ const CARD_SX = { borderRadius: 3, height: CARD_HEIGHT };
 const DATA_TABLE_SX = { maxHeight: CARD_HEIGHT - 100, overflow: "auto" };
 
 function formatDateShort(d) {
-    if (!d) return "—";
+    if (!d) return "\u2014";
     const s = d.split("T")[0];
-    return s || "—";
+    return s || "\u2014";
 }
 
 const LONG_TEXT_SX = { maxHeight: 80, overflowY: "auto" };
 
 function StatusChip({ value, map }) {
     const item = map?.[value];
-    if (!item) return <Typography variant="body2" color="text.secondary">—</Typography>;
+    if (!item) return <Typography variant="body2" color="text.secondary">\u2014</Typography>;
     return (
         <Chip
             label={item.label}
@@ -80,10 +81,10 @@ const KSK_COLUMNS = [
 const KB_COLUMNS = [
     { key: "ngay_kham", label: "Ngày khám", sx: { width: "15%" } },
     { key: "trieu_chung", label: "Triệu chứng", render: (row) => (
-        <Box sx={LONG_TEXT_SX}>{row.trieu_chung || "—"}</Box>
+        <Box sx={LONG_TEXT_SX}>{row.trieu_chung || "\u2014"}</Box>
     )},
     { key: "chan_doan", label: "Chẩn đoán", render: (row) => (
-        <Box sx={LONG_TEXT_SX}>{row.chan_doan || "—"}</Box>
+        <Box sx={LONG_TEXT_SX}>{row.chan_doan || "\u2014"}</Box>
     )},
     { key: "trang_thai", label: "Trạng thái", sx: { width: "15%" }, render: (row) => (
         <StatusChip value={row.trang_thai} map={KB_STATUS} />
@@ -95,7 +96,7 @@ const BA_COLUMNS = [
     { key: "ngay_ra_vien", label: "Ngày ra viện", sx: { width: "15%" } },
     { key: "phong_giuong", label: "Phòng/Giường", sx: { width: "20%" } },
     { key: "chan_doan", label: "Chẩn đoán", render: (row) => (
-        <Box sx={LONG_TEXT_SX}>{row.chan_doan || "—"}</Box>
+        <Box sx={LONG_TEXT_SX}>{row.chan_doan || "\u2014"}</Box>
     )},
     { key: "trang_thai", label: "Trạng thái", sx: { width: "15%" }, render: (row) => (
         <StatusChip value={row.trang_thai} map={BA_STATUS} />
@@ -111,7 +112,7 @@ const CT_COLUMNS = [
     )},
 ];
 
-export default function BaoCaoQuanNhanMain() {
+export default function BaoCaoQuanNhanMain({ maQuanNhan }) {
     const {
         quanNhan, setQuanNhan,
         kskList, khamBenhList, benhAnList, chuyenTuyenList,
@@ -119,6 +120,37 @@ export default function BaoCaoQuanNhanMain() {
     } = useBaoCaoQuanNhan();
 
     const [openChonQn, setOpenChonQn] = useState(false);
+    const [initLoading, setInitLoading] = useState(false);
+    const [initError, setInitError] = useState(null);
+
+    useEffect(() => {
+        if (!maQuanNhan) return;
+        if (quanNhan) return;
+        let cancelled = false;
+        setInitLoading(true);
+        setInitError(null);
+        khamBenhService
+            .getQuanNhan(maQuanNhan)
+            .then((res) => {
+                if (!cancelled && res.data) {
+                    setQuanNhan(res.data);
+                }
+            })
+            .catch((err) => {
+                if (!cancelled) {
+                    setInitError(
+                        err.response?.data?.detail ||
+                            "Không thể tải thông tin quân nhân",
+                    );
+                }
+            })
+            .finally(() => {
+                if (!cancelled) setInitLoading(false);
+            });
+        return () => {
+            cancelled = true;
+        };
+    }, [maQuanNhan]); // eslint-disable-line
 
     const [dialogKsk, setDialogKsk] = useState({ open: false, record: null });
     const [dialogKb, setDialogKb] = useState({ open: false, record: null });
@@ -144,7 +176,7 @@ export default function BaoCaoQuanNhanMain() {
         ...p,
         ngay_nhap_vien: formatDateShort(p.ngay_nhap_vien),
         ngay_ra_vien: formatDateShort(p.ngay_ra_vien),
-        phong_giuong: [p.ten_buong, p.ten_giuong].filter(Boolean).join(" / ") || "—",
+        phong_giuong: [p.ten_buong, p.ten_giuong].filter(Boolean).join(" / ") || "\u2014",
     })), [benhAnList]);
 
     const ctRows = useMemo(() => chuyenTuyenList.map((p) => ({
@@ -154,15 +186,17 @@ export default function BaoCaoQuanNhanMain() {
 
     return (
         <Stack spacing={3}>
-            <Stack direction="row" spacing={2}>
-                <Button
-                    variant="contained"
-                    startIcon={<PersonSearchIcon />}
-                    onClick={() => setOpenChonQn(true)}
-                >
-                    Chọn quân nhân
-                </Button>
-            </Stack>
+            {!maQuanNhan && (
+                <Stack direction="row" spacing={2}>
+                    <Button
+                        variant="contained"
+                        startIcon={<PersonSearchIcon />}
+                        onClick={() => setOpenChonQn(true)}
+                    >
+                        Chọn quân nhân
+                    </Button>
+                </Stack>
+            )}
 
             {quanNhan && (
                 <PatientInfoCard
@@ -176,10 +210,12 @@ export default function BaoCaoQuanNhanMain() {
             )}
 
             <LoadingAlert
-                loading={loading}
-                error={error}
-                empty={!quanNhan}
-                emptyMessage="Vui lòng chọn quân nhân để xem thông tin."
+                loading={loading || initLoading}
+                error={error || initError}
+                empty={!quanNhan && !initLoading && !initError}
+                emptyMessage={
+                    maQuanNhan ? "Đang tải..." : "Vui lòng chọn quân nhân để xem thông tin."
+                }
             />
 
             {quanNhan && !loading && !error && (
@@ -246,14 +282,16 @@ export default function BaoCaoQuanNhanMain() {
                 </>
             )}
 
-            <ChonQuanNhanDialog
-                open={openChonQn}
-                onClose={() => setOpenChonQn(false)}
-                onSelected={(qn) => {
-                    setOpenChonQn(false);
-                    setQuanNhan(qn);
-                }}
-            />
+            {!maQuanNhan && (
+                <ChonQuanNhanDialog
+                    open={openChonQn}
+                    onClose={() => setOpenChonQn(false)}
+                    onSelected={(qn) => {
+                        setOpenChonQn(false);
+                        setQuanNhan(qn);
+                    }}
+                />
+            )}
 
             {dialogKsk.open && dialogKsk.record && (
                 <KhamSucKhoeForm

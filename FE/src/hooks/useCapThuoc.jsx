@@ -14,7 +14,7 @@ export default function useCapThuoc() {
     const [nam, setNam] = useState(null);
     const [thang, setThang] = useState(null);
     const {
-        filterMode,
+        isLeft,
         handleFilterModeChange,
         page,
         setPage,
@@ -33,7 +33,7 @@ export default function useCapThuoc() {
     const loadData = useCallback(async () => {
         setRefreshing(true);
         try {
-            if (filterMode === "theo_ngay") {
+            if (!isLeft) {
                 const ngay = selectedDate.format("YYYY-MM-DD");
                 const res = await khamBenhService.getHomNay(ngay);
                 setExaminations(res.data || []);
@@ -56,7 +56,7 @@ export default function useCapThuoc() {
             setRefreshing(false);
             setInitialLoading(false);
         }
-    }, [filterMode, selectedDate, offset, ROWS_PER_PAGE, nam, thang]);
+    }, [isLeft, selectedDate, offset, ROWS_PER_PAGE, nam, thang]);
 
     useEffect(() => { loadData(); }, [loadData]);
 
@@ -154,7 +154,7 @@ export default function useCapThuoc() {
         handleDispense,
         dispensing,
         loadData,
-        filterMode,
+        isLeft,
         handleFilterModeChange,
         page,
         setPage,

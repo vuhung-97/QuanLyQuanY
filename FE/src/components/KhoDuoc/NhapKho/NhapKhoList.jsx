@@ -34,7 +34,7 @@ const STATUS_CHIP = {
 
 export default function NhapKhoList() {
     const location = useLocation();
-    const [filterMode, setFilterMode] = useState("chua_nhap");
+    const [isLeft, setIsLeft] = useState(false);
     const [nam, setNam] = useState(null);
     const [thang, setThang] = useState(null);
     const [rows, setRows] = useState([]);
@@ -57,9 +57,7 @@ export default function NhapKhoList() {
     });
 
     const handleFilterModeChange = useCallback(() => {
-        setFilterMode((prev) =>
-            prev === "chua_nhap" ? "tat_ca" : "chua_nhap",
-        );
+        setIsLeft((prev) => !prev);
         setPage(1);
     }, []);
 
@@ -75,14 +73,14 @@ export default function NhapKhoList() {
                 limit: ROWS_PER_PAGE,
                 offset: (page - 1) * ROWS_PER_PAGE,
             };
-            if (filterMode === "chua_nhap") params.trang_thai = "da_duyet";
+            if (!isLeft) params.trang_thai = "da_duyet";
             if (nam) params.nam = nam;
             if (thang) params.thang = thang;
             const res = await khoDuocService.getDanhSachPhieuDuTru(params);
             const body = res.data || {};
             const allData = body.data || [];
             const filtered =
-                filterMode === "chua_nhap"
+                !isLeft
                     ? allData
                     : allData.filter(
                           (p) =>
@@ -97,7 +95,7 @@ export default function NhapKhoList() {
         } finally {
             setLoading(false);
         }
-    }, [page, filterMode, nam, thang]);
+    }, [page, isLeft, nam, thang]);
 
     const fetchStats = useCallback(async () => {
         setStatsLoading(true);
@@ -208,7 +206,7 @@ export default function NhapKhoList() {
     );
 
     const emptyMessage =
-        filterMode === "chua_nhap"
+        !isLeft
             ? "Không có phiếu dự trù đã duyệt nào chờ nhập kho."
             : "Không có phiếu dự trù đã duyệt hoặc đã nhập kho.";
 
@@ -234,7 +232,7 @@ export default function NhapKhoList() {
                             sx={{ alignItems: "center" }}
                         >
                             <FilterModeToggle
-                                filterMode={filterMode}
+                                isLeft={isLeft}
                                 onChange={handleFilterModeChange}
                                 selectedDate={null}
                                 onDateChange={() => {}}

@@ -15,7 +15,7 @@ import {
     Description as DescriptionIcon,
 } from "@mui/icons-material";
 
-export default function BaoCaoThangMain() {
+export default function BaoCaoThangMain({ hidePrint = false }) {
     const {
         thang,
         nam,
@@ -41,6 +41,7 @@ export default function BaoCaoThangMain() {
                 onRefresh={fetchData}
                 loading={loading}
                 dataAvailable={!!data}
+                hidePrint={hidePrint}
             />
             <LoadingAlert
                 loading={loading}

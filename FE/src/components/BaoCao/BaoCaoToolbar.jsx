@@ -14,6 +14,7 @@ export default function BaoCaoToolbar({
     onRefresh,
     loading = false,
     dataAvailable = false,
+    hidePrint = false,
 }) {
     return (
         <Stack
@@ -36,14 +37,16 @@ export default function BaoCaoToolbar({
             >
                 {loading ? "Đang tải..." : "Refresh"}
             </Button>
-            <Button
-                variant="outlined"
-                startIcon={<PrintIcon />}
-                onClick={onPrint}
-                disabled={!dataAvailable || loading}
-            >
-                In báo cáo
-            </Button>
+            {!hidePrint && (
+                <Button
+                    variant="outlined"
+                    startIcon={<PrintIcon />}
+                    onClick={onPrint}
+                    disabled={!dataAvailable || loading}
+                >
+                    In báo cáo
+                </Button>
+            )}
         </Stack>
     );
 }

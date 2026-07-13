@@ -57,7 +57,7 @@ def login(
 
     _ghi_log_dang_nhap(db, id_nguoi_dung=user.id, thanh_cong=True, thiet_bi=thiet_bi)
 
-    access_token = create_access_token(data={"sub": user.ten_dang_nhap, "role": user.id_vai_tro, "ho_ten": user.ho_ten, "id": user.id})
+    access_token = create_access_token(data={"sub": user.ten_dang_nhap, "role": user.id_vai_tro, "ho_ten": user.ho_ten, "id": user.id, "id_quan_nhan": user.id_quan_nhan})
     return {"access_token": access_token, "token_type": "bearer"}
 
 

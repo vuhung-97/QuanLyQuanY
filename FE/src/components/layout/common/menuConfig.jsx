@@ -11,6 +11,7 @@ import {
 } from "@mui/icons-material";
 
 const ALL = ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"];
+const QN_ACCESSIBLE = [...ALL, "ROLE_QN"];
 const NO_YSI = ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI"];
 const ADMIN = ["ROLE_ADMIN", "ROLE_CNQY"];
 
@@ -20,7 +21,7 @@ export const defaultMenuItems = [
         title: "Tổng quan",
         path: "/",
         icon: <DashboardIcon />,
-        allowedRoles: ALL,
+        allowedRoles: QN_ACCESSIBLE,
     },
     {
         id: "periodic-checkup",
@@ -161,7 +162,7 @@ export const defaultMenuItems = [
         title: "Báo cáo",
         path: "/bao-cao",
         icon: <AssessmentIcon />,
-        allowedRoles: ALL,
+        allowedRoles: QN_ACCESSIBLE,
     },
 ];
 

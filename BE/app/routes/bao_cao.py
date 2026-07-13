@@ -1,3 +1,5 @@
+from datetime import date
+
 from fastapi import APIRouter, Depends, Query
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
@@ -74,6 +76,24 @@ def export_ton_kho(
     export_service = ReportExportService()
     wb = export_service.export_inventory_report(data)
     return _stream_excel(wb, f"BC_ton_kho_{nam}_{thang:02d}.xlsx")
+
+
+@router.get("/quan-so-kham-chua-benh")
+def get_quan_so_kham_chua_benh(
+    mode: str = Query(default="day", pattern="^(day|month)$"),
+    end_date: date | None = Query(default=None),
+    nam: int | None = Query(default=None),
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user),
+):
+    service = ReportService(db)
+    if mode == "month":
+        nam_value = nam or date.today().year
+        data = service.monthly_visit_stats(nam_value)
+    else:
+        end = end_date or date.today()
+        data = service.daily_visit_stats(end)
+    return {"data": data}
 
 
 def _stream_excel(wb, filename: str):

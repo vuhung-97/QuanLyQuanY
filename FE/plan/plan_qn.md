@@ -2,10 +2,10 @@
 
 ## Tổng quan
 
-| Thành phần | Số file sửa | Loại |
-|---|---|---|
-| **BE** | 5 file | 1 schema, 1 route, 1 migration, 1 auth, 1 security |
-| **FE** | 4 file | 1 constants, 1 menu, 1 page, 1 component |
+| Thành phần | Số file sửa | Loại                                               |
+| ---------- | ----------- | -------------------------------------------------- |
+| **BE**     | 5 file      | 1 schema, 1 route, 1 migration, 1 auth, 1 security |
+| **FE**     | 4 file      | 1 constants, 1 menu, 1 page, 1 component           |
 
 ROLE_QN: quân nhân chỉ xem được Dashboard + Báo cáo (3 tab). Tự động load data của chính họ, ẩn nút chọn quân nhân.
 
@@ -41,7 +41,7 @@ class Role:
     CNQY = "chu_nhiem_quan_y"
     BAC_SI = "bac_si"
     Y_SI = "y_si"
-    QN = "ROLE_QN"                    # THÊM
+    QN = "quan_nhan"                    # THÊM
 ```
 
 > Class Role chỉ là tài liệu tham khảo (`Role.` không được dùng trong code).
@@ -56,12 +56,12 @@ class Role:
 - Thêm role `ROLE_QN` vào `vai_tro`
 - Thêm 4 permissions vào `vai_tro_quyen`:
 
-| Permission | API cần dùng |
-|---|---|
-| `quan_nhan:read` | GET `/quan_nhan/{id}` |
-| `phieu_kham_suc_khoe:read` | GET `/phieu_kham_suc_khoe/quan-nhan/{maQuanNhan}` |
-| `kham_benh:read` | GET `/kham_benh/danh-sach`, GET `/kham_benh/chuyen-tuyen` |
-| `benh_an:read` | GET `/benh_an/noi-tru` |
+| Permission                 | API cần dùng                                              |
+| -------------------------- | --------------------------------------------------------- |
+| `quan_nhan:read`           | GET `/quan_nhan/{id}`                                     |
+| `phieu_kham_suc_khoe:read` | GET `/phieu_kham_suc_khoe/quan-nhan/{maQuanNhan}`         |
+| `kham_benh:read`           | GET `/kham_benh/danh-sach`, GET `/kham_benh/chuyen-tuyen` |
+| `benh_an:read`             | GET `/benh_an/noi-tru`                                    |
 
 > Migration idempotent: SELECT trước khi INSERT.
 > Các permissions đã tồn tại trong `quyen` từ seed ban đầu → không insert trùng.
@@ -122,7 +122,7 @@ export const ROLE_NAME_MAP = {
     ROLE_CNQY: "Chủ nhiệm Quân y",
     ROLE_BACSI: "Bác sĩ",
     ROLE_YSI: "Y sĩ",
-    ROLE_QN: "Quân nhân",        // THÊM
+    ROLE_QN: "Quân nhân", // THÊM
 };
 ```
 
@@ -134,12 +134,13 @@ export const ROLE_NAME_MAP = {
 
 ```jsx
 const ALL = ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"];
-const QN_ACCESSIBLE = [...ALL, "ROLE_QN"];   // THÊM
+const QN_ACCESSIBLE = [...ALL, "ROLE_QN"]; // THÊM
 const NO_YSI = ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI"];
 const ADMIN = ["ROLE_ADMIN", "ROLE_CNQY"];
 ```
 
 Sửa 2 `allowedRoles`:
+
 - **Dashboard** (line 23): `allowedRoles: QN_ACCESSIBLE`
 - **Báo cáo** (line 164): `allowedRoles: QN_ACCESSIBLE`
 
@@ -197,17 +198,20 @@ export default function BaoCaoPage() {
 **File:** `FE/src/components/BaoCao/BaoCaoQuanNhan/BaoCaoQuanNhanMain.jsx`
 
 ### a) Thêm imports
+
 ```jsx
-import { useState, useMemo, useEffect } from "react";  // thêm useEffect
+import { useState, useMemo, useEffect } from "react"; // thêm useEffect
 import { khamBenhService } from "@/services/khamBenhService.js";
 ```
 
 ### b) Sửa signature
+
 ```jsx
 export default function BaoCaoQuanNhanMain({ maQuanNhan }) {
 ```
 
 ### c) Thêm state + effect
+
 ```jsx
 const [initLoading, setInitLoading] = useState(false);
 const [initError, setInitError] = useState(null);
@@ -218,37 +222,50 @@ useEffect(() => {
     let cancelled = false;
     setInitLoading(true);
     setInitError(null);
-    khamBenhService.getQuanNhan(maQuanNhan)
+    khamBenhService
+        .getQuanNhan(maQuanNhan)
         .then((res) => {
             if (!cancelled && res.data) {
-                setQuanNhan(res.data);  // có ten_don_vi nhờ BE
+                setQuanNhan(res.data); // có ten_don_vi nhờ BE
             }
         })
         .catch((err) => {
             if (!cancelled) {
-                setInitError(err.response?.data?.detail || "Không thể tải thông tin quân nhân");
+                setInitError(
+                    err.response?.data?.detail ||
+                        "Không thể tải thông tin quân nhân",
+                );
             }
         })
         .finally(() => {
             if (!cancelled) setInitLoading(false);
         });
-    return () => { cancelled = true; };
+    return () => {
+        cancelled = true;
+    };
 }, [maQuanNhan]); // eslint-disable-line
 ```
 
 ### d) Ẩn nút "Chọn quân nhân"
+
 ```jsx
-{!maQuanNhan && (
-    <Stack direction="row" spacing={2}>
-        <Button variant="contained" startIcon={<PersonSearchIcon />}
-            onClick={() => setOpenChonQn(true)}>
-            Chọn quân nhân
-        </Button>
-    </Stack>
-)}
+{
+    !maQuanNhan && (
+        <Stack direction="row" spacing={2}>
+            <Button
+                variant="contained"
+                startIcon={<PersonSearchIcon />}
+                onClick={() => setOpenChonQn(true)}
+            >
+                Chọn quân nhân
+            </Button>
+        </Stack>
+    );
+}
 ```
 
 ### e) Ẩn Dialog
+
 ```jsx
 {!maQuanNhan && (
     <ChonQuanNhanDialog ... />
@@ -256,12 +273,15 @@ useEffect(() => {
 ```
 
 ### f) Cập nhật LoadingAlert
+
 ```jsx
 <LoadingAlert
     loading={loading || initLoading}
     error={error || initError}
     empty={!quanNhan && !initLoading && !initError}
-    emptyMessage={maQuanNhan ? "Đang tải..." : "Vui lòng chọn quân nhân để xem thông tin."}
+    emptyMessage={
+        maQuanNhan ? "Đang tải..." : "Vui lòng chọn quân nhân để xem thông tin."
+    }
 />
 ```
 

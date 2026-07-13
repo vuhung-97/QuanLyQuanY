@@ -98,7 +98,7 @@ export default function ChuyenTuyenList() {
         handleCloseForm,
         handleSave,
         loadData,
-        filterMode,
+        isLeft,
         handleFilterModeChange,
         page,
         setPage,
@@ -159,7 +159,7 @@ export default function ChuyenTuyenList() {
                             sx={{ alignItems: "center" }}
                         >
                             <FilterModeToggle
-                                filterMode={filterMode}
+                                isLeft={isLeft}
                                 onChange={handleFilterModeChange}
                                 selectedDate={null}
                                 onDateChange={() => {}}
@@ -199,13 +199,13 @@ export default function ChuyenTuyenList() {
                         rows={filtered}
                         loading={initialLoading || refreshing}
                         emptyMessage={
-                            filterMode === "tat_ca"
+                            isLeft
                                 ? "Không có quân nhân chuyển tuyến."
                                 : "Không có quân nhân đề nghị chuyển tuyến."
                         }
                         rowExtra={{ onView: handleViewDetail, offset }}
                     />
-                    {filterMode === "tat_ca" && totalRecords > 0 && (
+                    {isLeft && totalRecords > 0 && (
                         <PaginationWidget
                             page={page}
                             totalRecords={totalRecords}

@@ -20,42 +20,13 @@ import {
     PeopleAlt as PeopleAltIcon,
     MedicalServices as MedicalServicesIcon,
     Domain as DomainIcon,
-    LocalHospital as LocalHospitalIcon,
-    KeyboardArrowDown as ArrowDownIcon,
     Description as DescriptionIcon,
     AddBox as AddBoxIcon,
-    CallMade as CallMadeIcon,
     Bed as BedIcon,
-    Inventory2 as InventoryIcon,
-    Warning as WarningIcon,
     Healing as HealingIcon,
 } from "@mui/icons-material";
-import {
-    AreaChart,
-    Area,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip as RechartsTooltip,
-    ResponsiveContainer,
-} from "recharts";
 import api from "@/services/api.js";
-
-const chartData = [
-    { name: "1 Oct", blue: 10, teal: 5 },
-    { name: "3 Oct", blue: 25, teal: 18 },
-    { name: "5 Oct", blue: 15, teal: 28 },
-    { name: "7 Oct", blue: 30, teal: 25 },
-    { name: "9 Oct", blue: 20, teal: 48 },
-    { name: "11 Oct", blue: 35, teal: 25 },
-    { name: "14 Oct", blue: 20, teal: 42 },
-    { name: "17 Oct", blue: 40, teal: 30 },
-    { name: "19 Oct", blue: 22, teal: 18 },
-    { name: "25 Oct", blue: 25, teal: 45 },
-    { name: "27 Oct", blue: 42, teal: 45 },
-    { name: "29 Oct", blue: 22, teal: 32 },
-    { name: "31 Oct", blue: 48, teal: 40 },
-];
+import ChartQuanSoKhamChuaBenh from "@/components/Dashboard/ChartQuanSoKhamChuaBenh.jsx";
 
 const tableData = [
     {
@@ -103,31 +74,70 @@ const reports = [
 ];
 
 const statMeta = [
-    { key: "luot_kham", label: "Lượt khám hôm nay", icon: <MedicalServicesIcon sx={{ color: "#00B4D8" }} />, bg: "rgba(0, 180, 216, 0.1)" },
-    { key: "noi_tru", label: "Nội trú", icon: <DomainIcon sx={{ color: "#3B82F6" }} />, bg: "rgba(59, 130, 246, 0.1)" },
-    { key: "chuyen_tuyen", label: "Chuyển tuyến", icon: <HealingIcon sx={{ color: "#F59E0B" }} />, bg: "rgba(245, 158, 11, 0.1)" },
-    { key: "don_thuoc", label: "Đơn thuốc", icon: <DescriptionIcon sx={{ color: "#10B981" }} />, bg: "rgba(16, 185, 129, 0.1)" },
-    { key: "tong_giuong", label: "Tổng giường", icon: <BedIcon sx={{ color: "#8B5CF6" }} />, bg: "rgba(139, 92, 246, 0.1)" },
-    { key: "giuong_trong", label: "Giường trống", icon: <BedIcon sx={{ color: "#EC4899" }} />, bg: "rgba(236, 72, 153, 0.1)" },
-    { key: "sap_het_han", label: "Sắp hết hạn", icon: <WarningIcon sx={{ color: "#EF4444" }} />, bg: "rgba(239, 68, 68, 0.1)" },
+    {
+        key: "tong_quan_so",
+        label: "Tổng quân số",
+        icon: <PeopleAltIcon sx={{ color: "#0B3B60" }} />,
+        bg: "rgba(11, 59, 96, 0.1)",
+    },
+    {
+        key: "luot_kham",
+        label: "Lượt khám trong ngày",
+        icon: <MedicalServicesIcon sx={{ color: "#00B4D8" }} />,
+        bg: "rgba(0, 180, 216, 0.1)",
+    },
+    {
+        key: "noi_tru",
+        label: "Đang nội trú",
+        icon: <DomainIcon sx={{ color: "#3B82F6" }} />,
+        bg: "rgba(59, 130, 246, 0.1)",
+    },
+    {
+        key: "chuyen_tuyen",
+        label: "Đang chuyển tuyến",
+        icon: <HealingIcon sx={{ color: "#F59E0B" }} />,
+        bg: "rgba(245, 158, 11, 0.1)",
+    },
+    {
+        key: "don_thuoc",
+        label: "Đơn thuốc đã kê trong ngày",
+        icon: <DescriptionIcon sx={{ color: "#10B981" }} />,
+        bg: "rgba(16, 185, 129, 0.1)",
+    },
+    {
+        key: "tong_giuong",
+        label: "Tổng giường",
+        icon: <BedIcon sx={{ color: "#8B5CF6" }} />,
+        bg: "rgba(139, 92, 246, 0.1)",
+    },
+    {
+        key: "giuong_trong",
+        label: "Giường trống",
+        icon: <BedIcon sx={{ color: "#EC4899" }} />,
+        bg: "rgba(236, 72, 153, 0.1)",
+    },
 ];
 
 export default function DashboardPage() {
     const [stats, setStats] = useState(null);
 
     useEffect(() => {
-        api.get("/bao-cao/tong-quan").then((res) => setStats(res.data)).catch(() => {});
+        api.get("/bao-cao/tong-quan")
+            .then((res) => setStats(res.data))
+            .catch(() => {});
     }, []);
 
-    const flatStats = stats ? {
-        luot_kham: stats.hom_nay.luot_kham,
-        noi_tru: stats.hom_nay.noi_tru,
-        chuyen_tuyen: stats.hom_nay.chuyen_tuyen,
-        don_thuoc: stats.hom_nay.don_thuoc,
-        tong_giuong: stats.tong_quan.tong_giuong,
-        giuong_trong: stats.tong_quan.giuong_trong,
-        sap_het_han: stats.tong_quan.sap_het_han,
-    } : {};
+    const flatStats = stats
+        ? {
+              luot_kham: stats.hom_nay.luot_kham,
+              noi_tru: stats.hom_nay.noi_tru,
+              chuyen_tuyen: stats.hom_nay.chuyen_tuyen,
+              don_thuoc: stats.hom_nay.don_thuoc,
+              tong_giuong: stats.tong_quan.tong_giuong,
+              giuong_trong: stats.tong_quan.giuong_trong,
+              tong_quan_so: stats.tong_quan.tong_quan_so,
+          }
+        : {};
 
     return (
         <Stack spacing={3}>
@@ -135,17 +145,43 @@ export default function DashboardPage() {
             <Grid container spacing={2.5}>
                 {statMeta.map((m, i) => (
                     <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={m.key}>
-                        <Card sx={{ p: 1, borderRadius: 3, boxShadow: "0px 4px 12px rgba(0,0,0,0.03)" }}>
+                        <Card
+                            sx={{
+                                p: 1,
+                                borderRadius: 3,
+                                boxShadow: "0px 4px 12px rgba(0,0,0,0.03)",
+                            }}
+                        >
                             <CardContent sx={{ p: "16px !important" }}>
-                                <Stack direction="row" spacing={1.5} sx={{ mb: 1, alignItems: "flex-start" }}>
-                                    <Avatar variant="rounded" sx={{ bgcolor: m.bg, width: 40, height: 40, borderRadius: 2 }}>
+                                <Stack
+                                    direction="row"
+                                    spacing={1.5}
+                                    sx={{ mb: 1, alignItems: "flex-start" }}
+                                >
+                                    <Avatar
+                                        variant="rounded"
+                                        sx={{
+                                            bgcolor: m.bg,
+                                            width: 40,
+                                            height: 40,
+                                            borderRadius: 2,
+                                        }}
+                                    >
                                         {m.icon}
                                     </Avatar>
-                                    <Typography color="text.secondary" variant="body2" sx={{ fontWeight: 500 }}>
+                                    <Typography
+                                        color="text.secondary"
+                                        variant="body2"
+                                        sx={{ fontWeight: 500 }}
+                                    >
                                         {m.label}
                                     </Typography>
                                 </Stack>
-                                <Typography variant="h4" fontWeight={700} sx={{ color: "#1E293B", ml: 0.5 }}>
+                                <Typography
+                                    variant="h4"
+                                    fontWeight={700}
+                                    sx={{ color: "#1E293B", ml: 0.5 }}
+                                >
                                     {flatStats[m.key] ?? "--"}
                                 </Typography>
                             </CardContent>
@@ -154,152 +190,7 @@ export default function DashboardPage() {
                 ))}
             </Grid>
 
-            {/* Area Chart */}
-            <Card
-                sx={{
-                    borderRadius: 3,
-                    boxShadow: "0px 4px 12px rgba(0,0,0,0.03)",
-                    overflow: "visible",
-                }}
-            >
-                <CardContent sx={{ p: "24px !important" }}>
-                    <Stack
-                        direction="row"
-                        sx={{
-                            mb: 4,
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                        }}
-                    >
-                        <Typography
-                            variant="h6"
-                            fontWeight={700}
-                            sx={{ color: "#1E293B" }}
-                        >
-                            Xu hướng bệnh tật & sức khỏe bộ đội
-                        </Typography>
-                        <Stack direction="row" spacing={2}>
-                            <Button
-                                variant="text"
-                                color="inherit"
-                                sx={{
-                                    color: "text.secondary",
-                                    fontWeight: 500,
-                                }}
-                            >
-                                Xu hướng bệnh tật đội
-                            </Button>
-                            <Button
-                                variant="outlined"
-                                color="inherit"
-                                endIcon={<ArrowDownIcon />}
-                                sx={{
-                                    borderColor: "rgba(0,0,0,0.1)",
-                                    color: "text.primary",
-                                    borderRadius: 2,
-                                    textTransform: "none",
-                                    fontWeight: 500,
-                                }}
-                            >
-                                01 Th01 - 31 Th12
-                            </Button>
-                        </Stack>
-                    </Stack>
-                    <Box sx={{ height: 320, width: "100%", minWidth: 0 }}>
-                        <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart
-                                data={chartData}
-                                margin={{
-                                    top: 10,
-                                    right: 0,
-                                    left: -20,
-                                    bottom: 0,
-                                }}
-                            >
-                                <defs>
-                                    <linearGradient
-                                        id="colorTeal"
-                                        x1="0"
-                                        y1="0"
-                                        x2="0"
-                                        y2="1"
-                                    >
-                                        <stop
-                                            offset="5%"
-                                            stopColor="#00B4D8"
-                                            stopOpacity={0.3}
-                                        />
-                                        <stop
-                                            offset="95%"
-                                            stopColor="#00B4D8"
-                                            stopOpacity={0}
-                                        />
-                                    </linearGradient>
-                                    <linearGradient
-                                        id="colorBlue"
-                                        x1="0"
-                                        y1="0"
-                                        x2="0"
-                                        y2="1"
-                                    >
-                                        <stop
-                                            offset="5%"
-                                            stopColor="#0B3B60"
-                                            stopOpacity={0.1}
-                                        />
-                                        <stop
-                                            offset="95%"
-                                            stopColor="#0B3B60"
-                                            stopOpacity={0}
-                                        />
-                                    </linearGradient>
-                                </defs>
-                                <CartesianGrid
-                                    strokeDasharray="3 3"
-                                    vertical={false}
-                                    stroke="#F1F5F9"
-                                />
-                                <XAxis
-                                    dataKey="name"
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fill: "#64748B", fontSize: 12 }}
-                                    dy={10}
-                                />
-                                <YAxis
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fill: "#64748B", fontSize: 12 }}
-                                />
-                                <RechartsTooltip
-                                    contentStyle={{
-                                        borderRadius: 8,
-                                        border: "none",
-                                        boxShadow:
-                                            "0 4px 12px rgba(0, 0, 0, 0.1)",
-                                    }}
-                                />
-                                <Area
-                                    type="monotone"
-                                    dataKey="teal"
-                                    stroke="#00B4D8"
-                                    strokeWidth={3}
-                                    fillOpacity={1}
-                                    fill="url(#colorTeal)"
-                                />
-                                <Area
-                                    type="monotone"
-                                    dataKey="blue"
-                                    stroke="#0B3B60"
-                                    strokeWidth={3}
-                                    fillOpacity={1}
-                                    fill="url(#colorBlue)"
-                                />
-                            </AreaChart>
-                        </ResponsiveContainer>
-                    </Box>
-                </CardContent>
-            </Card>
+            <ChartQuanSoKhamChuaBenh />
 
             {/* Bottom Row */}
             <Grid container spacing={2.5}>

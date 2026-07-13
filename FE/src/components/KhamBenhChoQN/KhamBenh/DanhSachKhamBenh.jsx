@@ -145,7 +145,7 @@ export default function DanhSachKhamBenh() {
         loadData,
         selectedDate,
         setSelectedDate,
-        filterMode,
+        isLeft,
         handleFilterModeChange,
         page,
         setPage,
@@ -213,12 +213,12 @@ export default function DanhSachKhamBenh() {
                             sx={{ alignItems: "center" }}
                         >
                             <FilterModeToggle
-                                filterMode={filterMode}
+                                isLeft={isLeft}
                                 onChange={handleFilterModeChange}
                                 selectedDate={selectedDate}
                                 onDateChange={setSelectedDate}
                             />
-                            {filterMode === "tat_ca" && (
+                            {isLeft && (
                                 <YearMonthFilter
                                     nam={nam}
                                     onNamChange={(v) => {
@@ -244,7 +244,7 @@ export default function DanhSachKhamBenh() {
                         rows={filtered}
                         loading={initialLoading || refreshing}
                         emptyMessage={
-                            filterMode === "tat_ca"
+                            isLeft
                                 ? "Không có ca khám nào."
                                 : selectedDate.isSame(dayjs(), "day")
                                   ? "Chưa có ca khám nào hôm nay."
@@ -256,7 +256,7 @@ export default function DanhSachKhamBenh() {
                             offset,
                         }}
                     />
-                    {filterMode === "tat_ca" && totalRecords > 0 && (
+                    {isLeft && totalRecords > 0 && (
                         <PaginationWidget
                             page={page}
                             totalRecords={totalRecords}

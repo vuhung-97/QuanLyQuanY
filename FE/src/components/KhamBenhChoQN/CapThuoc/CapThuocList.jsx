@@ -98,7 +98,7 @@ export default function CapThuocList() {
         handleDispense,
         dispensing,
         loadData,
-        filterMode,
+        isLeft,
         handleFilterModeChange,
         page,
         setPage,
@@ -152,12 +152,12 @@ export default function CapThuocList() {
                             sx={{ alignItems: "center" }}
                         >
                             <FilterModeToggle
-                                filterMode={filterMode}
+                                isLeft={isLeft}
                                 onChange={handleFilterModeChange}
                                 selectedDate={selectedDate}
                                 onDateChange={setSelectedDate}
                             />
-                            {filterMode === "tat_ca" && (
+                            {isLeft && (
                                 <YearMonthFilter
                                     nam={nam}
                                     onNamChange={(v) => {
@@ -192,7 +192,7 @@ export default function CapThuocList() {
                         rows={filtered}
                         loading={initialLoading || refreshing}
                         emptyMessage={
-                            filterMode === "tat_ca"
+                            isLeft
                                 ? "Không có quân nhân cấp thuốc."
                                 : selectedDate.isSame(dayjs(), "day")
                                   ? "Không có quân nhân chờ cấp thuốc."
@@ -200,7 +200,7 @@ export default function CapThuocList() {
                         }
                         rowExtra={{ onDispense: handleOpenForm, offset }}
                     />
-                    {filterMode === "tat_ca" && totalRecords > 0 && (
+                    {isLeft && totalRecords > 0 && (
                         <PaginationWidget
                             page={page}
                             totalRecords={totalRecords}

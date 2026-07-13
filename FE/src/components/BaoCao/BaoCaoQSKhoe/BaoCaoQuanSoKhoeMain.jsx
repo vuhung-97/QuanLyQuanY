@@ -22,7 +22,7 @@ import BaoCaoToolbar from "../BaoCaoToolbar.jsx";
 import BaoCaoQuanSoKhoePrintDialog from "./BaoCaoQuanSoKhoePrintDialog.jsx";
 import { QUAN_SO_KHOE_COLUMNS, CHART_COLORS } from "@/constants/bao_cao.js";
 
-export default function BaoCaoQuanSoKhoeMain() {
+export default function BaoCaoQuanSoKhoeMain({ hidePrint = false }) {
     const {
         thang, setThang, nam, setNam,
         data, loading, error,
@@ -41,6 +41,7 @@ export default function BaoCaoQuanSoKhoeMain() {
                 onRefresh={fetchData}
                 loading={loading}
                 dataAvailable={!!data}
+                hidePrint={hidePrint}
             />
 
             <Typography variant="h3" sx={{ color: "text.primary" }}>

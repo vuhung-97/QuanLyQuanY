@@ -1,6 +1,6 @@
 from datetime import date, datetime, timedelta
 
-from sqlalchemy import func, extract
+from sqlalchemy import distinct, func, extract
 from sqlalchemy.orm import Session
 
 from app.database.benh_an import BenhAn
@@ -12,6 +12,7 @@ from app.database.di_tuyen_sau_dieu_tri import DiTuyenSauDieuTri
 from app.database.dm_nhom_benh import DmNhomBenh
 from app.database.don_thuoc import DonThuoc
 from app.database.don_vi import DonVi
+from app.database.giay_gioi_thieu import GiayGioiThieu
 from app.database.giuong import Giuong
 from app.database.kham_benh import KhamBenh
 from app.database.phieu_cham_soc import PhieuChamSoc
@@ -392,14 +393,20 @@ class ReportService:
 
         noi_tru = (
             self.db.query(func.count(BenhAn.ma_benh_an))
-            .filter(BenhAn.trang_thai == None)
+            .filter(BenhAn.trang_thai == "đang_điều_trị")
             .scalar()
             or 0
         )
 
         chuyen_tuyen = (
-            self.db.query(func.count(KhamBenh.ma_kham_benh))
-            .filter(KhamBenh.trang_thai == "chuyển_tuyến", KhamBenh.ngay_kham >= hom_nay, KhamBenh.ngay_kham < ngay_sau)
+            self.db.query(func.count(distinct(KhamBenh.ma_quan_nhan)))
+            .outerjoin(GiayGioiThieu, KhamBenh.ma_kham_benh == GiayGioiThieu.ma_kham_benh)
+            .outerjoin(DiTuyenSauDieuTri, GiayGioiThieu.ma_giay_gt == DiTuyenSauDieuTri.ma_giay_gt)
+            .filter(
+                KhamBenh.trang_thai == "chuyển_tuyến",
+                GiayGioiThieu.ma_giay_gt.isnot(None),
+                DiTuyenSauDieuTri.ngay_ve.is_(None),
+            )
             .scalar()
             or 0
         )
@@ -415,19 +422,14 @@ class ReportService:
         tong_giuong = self.db.query(func.count(Giuong.ma_giuong)).scalar() or 0
         giuong_trong = (
             self.db.query(func.count(Giuong.ma_giuong))
-            .outerjoin(BenhAn, Giuong.ma_giuong == BenhAn.ma_giuong)
-            .filter(BenhAn.ma_benh_an.is_(None))
+            .filter(Giuong.trang_thai == "trống")
             .scalar()
             or 0
         )
 
         tong_thuoc = self.db.query(func.count(ThuocVtyt.ma_thuoc_vtyt)).scalar() or 0
 
-        han_30 = hom_nay + timedelta(days=30)
-        sap_het_han = self.db.query(func.count(ThuocVtyt.ma_thuoc_vtyt)).filter(
-            ThuocVtyt.han_su_dung.isnot(None),
-            ThuocVtyt.han_su_dung <= han_30,
-        ).scalar() or 0
+        tong_quan_so = self.db.query(func.count(QuanNhan.ma_quan_nhan)).scalar() or 0
 
         return {
             "hom_nay": {
@@ -440,7 +442,7 @@ class ReportService:
                 "tong_giuong": tong_giuong,
                 "giuong_trong": giuong_trong,
                 "tong_thuoc_vtyt": tong_thuoc,
-                "sap_het_han": sap_het_han,
+                "tong_quan_so": tong_quan_so,
             },
         }
 
@@ -543,3 +545,89 @@ class ReportService:
                 "ty_le_khoe": round(tong_qk / tong_quan_so * 100, 1) if tong_quan_so > 0 else 100.0,
             },
         }
+
+    def daily_visit_stats(self, end_date: date, days: int = 14) -> list[dict]:
+        result = []
+        for i in range(days - 1, -1, -1):
+            ngay = end_date - timedelta(days=i)
+            ngay_sau = ngay + timedelta(days=1)
+
+            so_luot_kham = (
+                self.db.query(func.count(KhamBenh.ma_kham_benh))
+                .filter(KhamBenh.ngay_kham >= ngay, KhamBenh.ngay_kham < ngay_sau)
+                .scalar()
+                or 0
+            )
+
+            so_noi_tru = (
+                self.db.query(func.count(BenhAn.ma_benh_an))
+                .filter(
+                    BenhAn.ngay_nhap_vien >= ngay,
+                    BenhAn.ngay_nhap_vien < ngay_sau,
+                    BenhAn.trang_thai == "đang_điều_trị",
+                )
+                .scalar()
+                or 0
+            )
+
+            so_chuyen_tuyen = (
+                self.db.query(func.count(KhamBenh.ma_kham_benh))
+                .filter(
+                    KhamBenh.trang_thai == "chuyển_tuyến",
+                    KhamBenh.ngay_kham >= ngay,
+                    KhamBenh.ngay_kham < ngay_sau,
+                )
+                .scalar()
+                or 0
+            )
+
+            result.append({
+                "label": ngay.strftime("%d/%m"),
+                "so_luot_kham": so_luot_kham,
+                "so_noi_tru": so_noi_tru,
+                "so_chuyen_tuyen": so_chuyen_tuyen,
+            })
+        return result
+
+    def monthly_visit_stats(self, nam: int) -> list[dict]:
+        result = []
+        for thang in range(1, 13):
+            so_luot_kham = (
+                self.db.query(func.count(KhamBenh.ma_kham_benh))
+                .filter(
+                    extract("year", KhamBenh.ngay_kham) == nam,
+                    extract("month", KhamBenh.ngay_kham) == thang,
+                )
+                .scalar()
+                or 0
+            )
+
+            so_noi_tru = (
+                self.db.query(func.count(BenhAn.ma_benh_an))
+                .filter(
+                    extract("year", BenhAn.ngay_nhap_vien) == nam,
+                    extract("month", BenhAn.ngay_nhap_vien) == thang,
+                    BenhAn.trang_thai == "đang_điều_trị",
+                )
+                .scalar()
+                or 0
+            )
+
+            so_chuyen_tuyen = (
+                self.db.query(func.count(KhamBenh.ma_kham_benh))
+                .filter(
+                    KhamBenh.trang_thai == "chuyển_tuyến",
+                    extract("year", KhamBenh.ngay_kham) == nam,
+                    extract("month", KhamBenh.ngay_kham) == thang,
+                )
+                .scalar()
+                or 0
+            )
+
+            result.append({
+                "label": f"Tháng {thang}",
+                "so_luot_kham": so_luot_kham,
+                "so_noi_tru": so_noi_tru,
+                "so_chuyen_tuyen": so_chuyen_tuyen,
+            })
+        return result

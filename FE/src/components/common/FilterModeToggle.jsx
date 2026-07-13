@@ -2,12 +2,13 @@ import { Button, Stack } from "@mui/material";
 import DatePicker from "@/components/common/DatePicker.jsx";
 
 export default function FilterModeToggle({
-    filterMode,
+    isLeft,
     onChange,
     selectedDate,
     onDateChange,
     labelLeft = "Tất cả",
     labelRight = "Theo ngày",
+    showDatePicker = true,
 }) {
     return (
         <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
@@ -22,9 +23,9 @@ export default function FilterModeToggle({
                     color: "text.primary",
                 }}
             >
-                {filterMode === "tat_ca" ? labelLeft : labelRight}
+                {isLeft ? labelLeft : labelRight}
             </Button>
-            {filterMode === "theo_ngay" && (
+            {showDatePicker && !isLeft && selectedDate && (
                 <DatePicker value={selectedDate} onChange={onDateChange} />
             )}
         </Stack>

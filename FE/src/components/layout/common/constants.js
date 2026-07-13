@@ -26,6 +26,7 @@ export const ROLE_NAME_MAP = {
     ROLE_CNQY: "Chủ nhiệm Quân y",
     ROLE_BACSI: "Bác sĩ",
     ROLE_YSI: "Y sĩ",
+    ROLE_QN: "Quân nhân",
 };
 
 export const STORAGE_KEYS = {

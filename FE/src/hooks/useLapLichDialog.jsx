@@ -27,7 +27,8 @@ export default function useLapLichDialog({
             khamSucKhoeService.getNguoiDungList()
                 .then((res) => {
                     const list = Array.isArray(res.data) ? res.data : [];
-                    setUsers(list.filter((u) => u.id_vai_tro !== "ROLE_ADMIN"));
+                    const EXCLUDED_ROLES = new Set(["ROLE_ADMIN", "ROLE_QN"]);
+                    setUsers(list.filter((u) => u.id_vai_tro && !EXCLUDED_ROLES.has(u.id_vai_tro)));
                 })
                 .catch(() => {});
             khamSucKhoeService.getVaiTroList()

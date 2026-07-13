@@ -44,3 +44,4 @@ class QuanNhanRead(QuanNhanBase):
     ma_quan_nhan: str = Field(max_length=10)
     is_dang_dieu_tri: bool = False
     is_da_chuyen_tuyen: bool = False
+    ten_don_vi: str | None = None

@@ -309,6 +309,26 @@ def get_danh_sach_chuyen_tuyen(
     return {"data": result, "total": total}
 
 
+@pre_router.get(
+    "/{ma_kham_benh}/chuyen-tuyen/chi-tiet",
+    dependencies=[Depends(require_permissions("kham_benh:read"))],
+)
+def get_chi_tiet_chuyen_tuyen(
+    ma_kham_benh: str,
+    db: Session = Depends(get_db),
+):
+    kb = db.query(KhamBenh).filter(KhamBenh.ma_kham_benh == ma_kham_benh).first()
+    if not kb:
+        raise HTTPException(status_code=404, detail="Không tìm thấy ca khám")
+
+    ggt = db.query(GiayGioiThieu).filter(GiayGioiThieu.ma_kham_benh == ma_kham_benh).first()
+    di_tuyen = None
+    if ggt:
+        di_tuyen = db.query(DiTuyenSauDieuTri).filter(DiTuyenSauDieuTri.ma_giay_gt == ggt.ma_giay_gt).first()
+
+    return {"giay_chuyen_tuyen": ggt, "di_tuyen": di_tuyen}
+
+
 router = create_crud_router(
     resource="kham_benh",
     crud=kham_benh_crud,

@@ -7,12 +7,16 @@ import {
     DialogContent,
     DialogTitle,
     FormControlLabel,
+    IconButton,
+    InputAdornment,
     MenuItem,
     Stack,
     Switch,
     TextField,
 } from "@mui/material";
+import { PersonSearch as PersonSearchIcon } from "@mui/icons-material";
 import { adminService } from "@/services/adminService.js";
+import ChonQuanNhanDialog from "@/components/common/ChonQuanNhanDialog.jsx";
 
 const emptyForm = {
     ten_dang_nhap: "",
@@ -27,6 +31,7 @@ export default function UserFormDialog({ open, onClose, editingUser, roles, onSa
     const [form, setForm] = useState(emptyForm);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
+    const [openChonQn, setOpenChonQn] = useState(false);
 
     useEffect(() => {
         if (open) {
@@ -105,14 +110,6 @@ export default function UserFormDialog({ open, onClose, editingUser, roles, onSa
                             slotProps={{ htmlInput: { minLength: 8 } }}
                         />
                         <TextField
-                            name="ho_ten"
-                            label="Họ tên"
-                            value={form.ho_ten}
-                            onChange={handleChange}
-                            required
-                            slotProps={{ htmlInput: { maxLength: 100 } }}
-                        />
-                        <TextField
                             select
                             name="id_vai_tro"
                             label="Vai trò"
@@ -131,7 +128,29 @@ export default function UserFormDialog({ open, onClose, editingUser, roles, onSa
                             label="Mã quân nhân"
                             value={form.id_quan_nhan || ""}
                             onChange={handleChange}
-                            slotProps={{ htmlInput: { maxLength: 20 } }}
+                            slotProps={{
+                                htmlInput: { maxLength: 20 },
+                                input: {
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                onClick={() => setOpenChonQn(true)}
+                                                size="small"
+                                            >
+                                                <PersonSearchIcon />
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                },
+                            }}
+                        />
+                        <TextField
+                            name="ho_ten"
+                            label="Họ tên"
+                            value={form.ho_ten}
+                            onChange={handleChange}
+                            required
+                            slotProps={{ htmlInput: { maxLength: 100 } }}
                         />
                         <FormControlLabel
                             control={
@@ -152,6 +171,19 @@ export default function UserFormDialog({ open, onClose, editingUser, roles, onSa
                     </Button>
                 </DialogActions>
             </Box>
+
+            <ChonQuanNhanDialog
+                open={openChonQn}
+                onClose={() => setOpenChonQn(false)}
+                onSelected={(qn) => {
+                    setOpenChonQn(false);
+                    setForm((prev) => ({
+                        ...prev,
+                        id_quan_nhan: qn.ma_quan_nhan,
+                        ho_ten: qn.ho_ten,
+                    }));
+                }}
+            />
         </Dialog>
     );
 }

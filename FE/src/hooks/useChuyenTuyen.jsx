@@ -12,7 +12,7 @@ export default function useChuyenTuyen() {
     const [nam, setNam] = useState(null);
     const [thang, setThang] = useState(null);
 
-    const [filterMode, setFilterMode] = useState("tat_ca");
+    const [isLeft, setIsLeft] = useState(true);
     const [page, setPage] = useState(1);
     const [totalRecords, setTotalRecords] = useState(0);
 
@@ -33,12 +33,12 @@ export default function useChuyenTuyen() {
     const [saving, setSaving] = useState(false);
 
     const offset = useMemo(
-        () => (filterMode === "tat_ca" ? (page - 1) * ROWS_PER_PAGE : 0),
-        [filterMode, page],
+        () => (isLeft ? (page - 1) * ROWS_PER_PAGE : 0),
+        [isLeft, page],
     );
 
     const handleFilterModeChange = useCallback(() => {
-        setFilterMode(prev => prev === "tat_ca" ? "chuyen_tuyen" : "tat_ca");
+        setIsLeft(prev => !prev);
         setPage(1);
     }, []);
 
@@ -69,13 +69,13 @@ export default function useChuyenTuyen() {
     }, [loadData]);
 
     const patients = useMemo(() => {
-        if (filterMode === "chuyen_tuyen") {
+        if (!isLeft) {
             return examinations.filter(
                 (e) => e.chuyen_tuyen_status === "đề_nghị_chuyển_tuyến",
             );
         }
         return examinations;
-    }, [examinations, filterMode]);
+    }, [examinations, isLeft]);
 
     const stats = useMemo(() => {
         const deNghi = examinations.filter(
@@ -111,30 +111,14 @@ export default function useChuyenTuyen() {
             setDetailLoading(true);
             setOpenForm(true);
             try {
-                const res = await khamBenhService.getDetail(id);
-                setExamDetail(res.data);
-
-                const gtRes =
-                    await khamBenhService.getGiayGioiThieuByKhamBenh(
-                        id,
-                    );
-                const gtList = gtRes.data || [];
-                const gt = gtList.length > 0 ? gtList[0] : null;
-                setSelectedGiayGt(gt);
-
-                if (gt?.ma_giay_gt) {
-                    const dtRes =
-                        await khamBenhService.getDiTuyenSauDieuTri({
-                            limit: 100,
-                        });
-                    const dtList = dtRes.data || [];
-                    const dt = dtList.find(
-                        (d) => d.ma_giay_gt === gt.ma_giay_gt,
-                    );
-                    setSelectedDiTuyen(dt || null);
-                } else {
-                    setSelectedDiTuyen(null);
-                }
+                const [detailRes, ctRes] = await Promise.all([
+                    khamBenhService.getDetail(id),
+                    khamBenhService.getChiTietChuyenTuyen(id),
+                ]);
+                setExamDetail(detailRes.data);
+                const ct = ctRes.data;
+                setSelectedGiayGt(ct?.giay_chuyen_tuyen || null);
+                setSelectedDiTuyen(ct?.di_tuyen || null);
             } catch (err) {
                 setSnackbar({
                     open: true,
@@ -164,41 +148,40 @@ export default function useChuyenTuyen() {
             if (!selectedExam) return;
             setSaving(true);
             try {
-                if (selectedGiayGt?.ma_giay_gt) {
+                let maGiayGt = selectedGiayGt?.ma_giay_gt;
+
+                if (maGiayGt) {
                     await khamBenhService.updateGiayGioiThieu(
-                        selectedGiayGt.ma_giay_gt,
+                        maGiayGt,
                         giayData,
                     );
                 } else {
-                    const createData = {
+                    const res = await khamBenhService.createGiayGioiThieu({
                         ...giayData,
                         ma_quan_nhan: selectedExam.ma_quan_nhan,
                         ma_kham_benh: selectedExam.ma_kham_benh,
-                    };
-                    await khamBenhService.createGiayGioiThieu(
-                        createData,
-                    );
+                    });
+                    maGiayGt = res.data?.ma_giay_gt;
                 }
 
-                if (
-                    selectedDiTuyen?.ma_chuyen_tuyen &&
-                    Object.keys(diTuyenData).length > 0
-                ) {
-                    await khamBenhService.updateDiTuyenSauDieuTri(
-                        selectedDiTuyen.ma_chuyen_tuyen,
-                        diTuyenData,
-                    );
-                } else if (
-                    !selectedDiTuyen &&
-                    Object.keys(diTuyenData).length > 0
-                ) {
-                    const createDtData = {
+                if (Object.keys(diTuyenData).length > 0) {
+                    const diTuyenPayload = {
                         ...diTuyenData,
-                        ma_quan_nhan: selectedExam.ma_quan_nhan,
+                        noi_dieu_tri: giayData.ten_benh_vien,
+                        chan_doan_luc_di: examDetail?.chan_doan || giayData.chanDoan,
                     };
-                    await khamBenhService.createDiTuyenSauDieuTri(
-                        createDtData,
-                    );
+                    if (selectedDiTuyen?.ma_chuyen_tuyen) {
+                        await khamBenhService.updateDiTuyenSauDieuTri(
+                            selectedDiTuyen.ma_chuyen_tuyen,
+                            diTuyenPayload,
+                        );
+                    } else if (maGiayGt) {
+                        await khamBenhService.createDiTuyenSauDieuTri({
+                            ...diTuyenPayload,
+                            ma_quan_nhan: selectedExam.ma_quan_nhan,
+                            ma_giay_gt: maGiayGt,
+                        });
+                    }
                 }
 
                 setSnackbar({
@@ -243,7 +226,7 @@ export default function useChuyenTuyen() {
         handleCloseForm,
         handleSave,
         loadData,
-        filterMode,
+        isLeft,
         handleFilterModeChange,
         page,
         setPage,

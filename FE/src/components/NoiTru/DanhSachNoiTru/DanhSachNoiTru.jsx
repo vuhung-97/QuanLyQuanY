@@ -132,7 +132,7 @@ export default function DanhSachNoiTru() {
         openChiTiet,
         selectedBenhAnId,
         loadData,
-        filterMode,
+        isLeft,
         handleFilterModeChange,
         filterNam,
         handleFilterNamChange,
@@ -162,7 +162,7 @@ export default function DanhSachNoiTru() {
                 bg: "#DBEAFE",
             },
         ];
-        if (filterMode === "tat_ca") {
+        if (isLeft) {
             items.push({
                 label: "Đã ra viện",
                 value: stats.daRaVien,
@@ -172,7 +172,7 @@ export default function DanhSachNoiTru() {
             });
         }
         return items;
-    }, [stats, filterMode]);
+    }, [stats, isLeft]);
 
     return (
         <>
@@ -195,7 +195,7 @@ export default function DanhSachNoiTru() {
                             sx={{ alignItems: "center" }}
                         >
                             <FilterModeToggle
-                                filterMode={filterMode}
+                                isLeft={isLeft}
                                 onChange={handleFilterModeChange}
                                 selectedDate={null}
                                 onDateChange={() => {}}
@@ -233,7 +233,7 @@ export default function DanhSachNoiTru() {
                             offset,
                         }}
                     />
-                    {filterMode === "tat_ca" && totalRecords > 0 && (
+                    {isLeft && totalRecords > 0 && (
                         <PaginationWidget
                             page={page}
                             totalRecords={totalRecords}

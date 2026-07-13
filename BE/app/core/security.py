@@ -4,6 +4,7 @@ class Role:
     CNQY = "chu_nhiem_quan_y"
     BAC_SI = "bac_si"
     Y_SI = "y_si"
+    QN = "quan_nhan"
 
 class Action:
     READ = "read"

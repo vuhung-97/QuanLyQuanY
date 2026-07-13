@@ -8,7 +8,7 @@ export default function useDanhSachNoiTru() {
     const [initialLoading, setInitialLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [searchText, setSearchText] = useState("");
-    const [filterMode, setFilterMode] = useState("dang_dieu_tri");
+    const [isLeft, setIsLeft] = useState(false);
     const currentYear = new Date().getFullYear();
     const [filterNam, setFilterNam] = useState(null);
     const [filterThang, setFilterThang] = useState(null);
@@ -22,12 +22,12 @@ export default function useDanhSachNoiTru() {
     const [choNhapVienCount, setChoNhapVienCount] = useState(0);
 
     const offset = useMemo(
-        () => (filterMode === "tat_ca" ? (page - 1) * ROWS_PER_PAGE : 0),
-        [filterMode, page],
+        () => (isLeft ? (page - 1) * ROWS_PER_PAGE : 0),
+        [isLeft, page],
     );
 
     const handleFilterModeChange = useCallback(() => {
-        setFilterMode(prev => prev === "tat_ca" ? "dang_dieu_tri" : "tat_ca");
+        setIsLeft(prev => !prev);
         setPage(1);
     }, []);
 
@@ -44,7 +44,7 @@ export default function useDanhSachNoiTru() {
     const loadData = useCallback(async () => {
         setRefreshing(true);
         try {
-            const trang_thai = filterMode === "dang_dieu_tri" ? "đang_điều_trị" : undefined;
+            const trang_thai = isLeft ? undefined : "đang_điều_trị";
             const [resNoiTru, resChoNhapVien] = await Promise.all([
                 noiTruService.getDanhSachNoiTru({
                     trang_thai, limit: ROWS_PER_PAGE, offset,
@@ -66,15 +66,19 @@ export default function useDanhSachNoiTru() {
             setRefreshing(false);
             setInitialLoading(false);
         }
-    }, [filterMode, offset, filterNam, filterThang]);
+    }, [isLeft, offset, filterNam, filterThang]);
 
     useEffect(() => { loadData(); }, [loadData]);
 
     const stats = useMemo(() => {
         const all = examinations;
-        const dangDieuTri = all.filter((e) => e.trang_thai === "đang_điều_trị").length;
-        const daRaVien = all.filter((e) => e.trang_thai === "đã_ra_viện").length;
-        return { dangDieuTri, daRaVien, choNhapVien: choNhapVienCount };
+        const dangDieuTri = all.filter(
+            (e) => e.trang_thai === "đang_điều_trị",
+        ).length;
+        const daRaVien = all.filter(
+            (e) => e.trang_thai === "đã_ra_viện",
+        ).length;
+        return { tongSo: all.length, choNhapVien: choNhapVienCount, dangDieuTri, daRaVien };
     }, [examinations, choNhapVienCount]);
 
     const filtered = useMemo(() => {
@@ -84,23 +88,12 @@ export default function useDanhSachNoiTru() {
             (e) =>
                 (e.ma_benh_an || "").toLowerCase().includes(q) ||
                 (e.ho_ten || "").toLowerCase().includes(q) ||
-                (e.ten_buong || "").toLowerCase().includes(q),
+                (e.ten_don_vi || "").toLowerCase().includes(q),
         );
     }, [examinations, searchText]);
 
-    const handleOpenChiTiet = useCallback((id) => {
-        setSelectedBenhAnId(id);
-        setOpenChiTiet(true);
-    }, []);
-
-    const handleCloseChiTiet = useCallback(() => {
-        setOpenChiTiet(false);
-        setSelectedBenhAnId(null);
-        loadData();
-    }, [loadData]);
-
-    const handleRaVienClick = useCallback((id) => {
-        setConfirmRaVien({ open: true, benhAnId: id });
+    const handleRaVienClick = useCallback((benhAnId) => {
+        setConfirmRaVien({ open: true, benhAnId });
     }, []);
 
     const handleRaVienCancel = useCallback(() => {
@@ -122,13 +115,23 @@ export default function useDanhSachNoiTru() {
         }
     }, [confirmRaVien.benhAnId, loadData]);
 
+    const handleOpenChiTiet = useCallback((benhAnId) => {
+        setSelectedBenhAnId(benhAnId);
+        setOpenChiTiet(true);
+    }, []);
+
+    const handleCloseChiTiet = useCallback(() => {
+        setOpenChiTiet(false);
+        setSelectedBenhAnId(null);
+    }, []);
+
     return {
         initialLoading,
         refreshing,
-        searchText,
-        setSearchText,
         filtered,
         stats,
+        searchText,
+        setSearchText,
         snackbar,
         setSnackbar,
         confirmRaVien,
@@ -140,7 +143,7 @@ export default function useDanhSachNoiTru() {
         handleOpenChiTiet,
         handleCloseChiTiet,
         loadData,
-        filterMode,
+        isLeft,
         handleFilterModeChange,
         filterNam,
         setFilterNam,

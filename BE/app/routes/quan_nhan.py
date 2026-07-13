@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
@@ -182,6 +182,23 @@ def get_lich_su_kham(ma_quan_nhan: str, db: Session = Depends(get_db)):
         .filter(GiayGioiThieu.ma_quan_nhan == ma_quan_nhan)
         .all(),
     )
+
+
+@pre_router.get(
+    "/{ma_quan_nhan}",
+    dependencies=[Depends(require_permissions("quan_nhan:read"))],
+    response_model=QuanNhanRead,
+)
+def get_quan_nhan_detail(ma_quan_nhan: str, db: Session = Depends(get_db)):
+    qn = db.query(QuanNhan).filter(QuanNhan.ma_quan_nhan == ma_quan_nhan).first()
+    if not qn:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Quân nhân không tồn tại")
+    don_vi = db.query(DonVi).filter(DonVi.ma_don_vi == qn.ma_don_vi).first()
+    data = {c.name: getattr(qn, c.name) for c in qn.__table__.columns}
+    data["ten_don_vi"] = don_vi.ten_don_vi if don_vi else None
+    data["is_dang_dieu_tri"] = False
+    data["is_da_chuyen_tuyen"] = False
+    return data
 
 
 router = create_crud_router(
