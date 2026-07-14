@@ -25,6 +25,8 @@ import {
 import DataTable from "@/components/common/DataTable.jsx";
 import { findNearestDetail } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
 import { formatDateTime } from "@/utils/date.js";
+import IfRole from "@/components/common/IfRole.jsx";
+import { ADMIN_CNQY } from "@/constants/roleConstants.js";
 
 const columns = [
     { key: "expand", label: "", sx: { width: 40 } },
@@ -69,26 +71,28 @@ function DetailSubTable({
                     </TableCell>
                     <TableCell>{ct.dia_diem || "--"}</TableCell>
                     <TableCell>
-                        <Stack direction="row" spacing={0.5}>
-                            <Tooltip title="Sửa">
-                                <IconButton
-                                    size="small"
-                                    color="primary"
-                                    onClick={() => onEditDetail(schedule, ct)}
-                                >
-                                    <EditIcon fontSize="small" />
-                                </IconButton>
-                            </Tooltip>
-                            <Tooltip title="Xóa">
-                                <IconButton
-                                    size="small"
-                                    color="error"
-                                    onClick={() => onDeleteDetail(schedule, ct)}
-                                >
-                                    <DeleteIcon fontSize="small" />
-                                </IconButton>
-                            </Tooltip>
-                        </Stack>
+                        <IfRole roles={ADMIN_CNQY}>
+                            <Stack direction="row" spacing={0.5}>
+                                <Tooltip title="Sửa">
+                                    <IconButton
+                                        size="small"
+                                        color="primary"
+                                        onClick={() => onEditDetail(schedule, ct)}
+                                    >
+                                        <EditIcon fontSize="small" />
+                                    </IconButton>
+                                </Tooltip>
+                                <Tooltip title="Xóa">
+                                    <IconButton
+                                        size="small"
+                                        color="error"
+                                        onClick={() => onDeleteDetail(schedule, ct)}
+                                    >
+                                        <DeleteIcon fontSize="small" />
+                                    </IconButton>
+                                </Tooltip>
+                            </Stack>
+                        </IfRole>
                     </TableCell>
                 </TableRow>
             ))}
@@ -136,26 +140,28 @@ function ScheduleTableRow({
                     />
                 </TableCell>
                 <TableCell>
-                    <Stack direction="row" spacing={0.5}>
-                        <Tooltip title="Sửa">
-                            <IconButton
-                                size="small"
-                                color="primary"
-                                onClick={() => onEdit(row)}
-                            >
-                                <EditIcon fontSize="small" />
-                            </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Xóa">
-                            <IconButton
-                                size="small"
-                                color="error"
-                                onClick={() => onDelete(row)}
-                            >
-                                <DeleteIcon fontSize="small" />
-                            </IconButton>
-                        </Tooltip>
-                    </Stack>
+                    <IfRole roles={ADMIN_CNQY}>
+                        <Stack direction="row" spacing={0.5}>
+                            <Tooltip title="Sửa">
+                                <IconButton
+                                    size="small"
+                                    color="primary"
+                                    onClick={() => onEdit(row)}
+                                >
+                                    <EditIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Xóa">
+                                <IconButton
+                                    size="small"
+                                    color="error"
+                                    onClick={() => onDelete(row)}
+                                >
+                                    <DeleteIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                        </Stack>
+                    </IfRole>
                 </TableCell>
             </TableRow>
             <TableRow>

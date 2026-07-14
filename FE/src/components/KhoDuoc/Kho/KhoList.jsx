@@ -27,6 +27,8 @@ import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
 import KhoDialog from "./KhoDialog.jsx";
 import useKhoList from "@/hooks/useKhoList.js";
 import { ROWS_PER_PAGE } from "@/constants/khoConstant.js";
+import IfRole from "@/components/common/IfRole.jsx";
+import { ADMIN_CNQY } from "@/constants/roleConstants.js";
 
 const STAT_ICONS = {
     inventory: <Inventory2Icon />,
@@ -93,24 +95,26 @@ const columns = [
                             <VisibilityIcon fontSize="small" />
                         </IconButton>
                     </Tooltip>
-                    <Tooltip title="Sửa">
-                        <IconButton
-                            size="small"
-                            color="primary"
-                            onClick={() => onEdit(row.ma_thuoc_vtyt)}
-                        >
-                            <EditIcon fontSize="small" />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Xoá">
-                        <IconButton
-                            size="small"
-                            color="error"
-                            onClick={() => onDelete(row.ma_thuoc_vtyt)}
-                        >
-                            <DeleteIcon fontSize="small" />
-                        </IconButton>
-                    </Tooltip>
+                    <IfRole roles={ADMIN_CNQY}>
+                        <Tooltip title="Sửa">
+                            <IconButton
+                                size="small"
+                                color="primary"
+                                onClick={() => onEdit(row.ma_thuoc_vtyt)}
+                            >
+                                <EditIcon fontSize="small" />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Xoá">
+                            <IconButton
+                                size="small"
+                                color="error"
+                                onClick={() => onDelete(row.ma_thuoc_vtyt)}
+                            >
+                                <DeleteIcon fontSize="small" />
+                            </IconButton>
+                        </Tooltip>
+                    </IfRole>
                 </Stack>
             );
         },
@@ -166,19 +170,21 @@ export default function KhoList() {
                                     ))}
                                 </TextField>
                             </Stack>
-                            <Button
-                                variant="contained"
-                                startIcon={<AddIcon />}
-                                onClick={() =>
-                                    hook.setDialog({
-                                        open: true,
-                                        id: null,
-                                        mode: "create",
-                                    })
-                                }
-                            >
-                                Thêm thuốc / VTYT
-                            </Button>
+                            <IfRole roles={ADMIN_CNQY}>
+                                <Button
+                                    variant="contained"
+                                    startIcon={<AddIcon />}
+                                    onClick={() =>
+                                        hook.setDialog({
+                                            open: true,
+                                            id: null,
+                                            mode: "create",
+                                        })
+                                    }
+                                >
+                                    Thêm thuốc / VTYT
+                                </Button>
+                            </IfRole>
                         </Stack>
 
                         <DataTable

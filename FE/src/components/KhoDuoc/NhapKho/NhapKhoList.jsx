@@ -23,6 +23,8 @@ import PaginationWidget from "@/components/common/PaginationWidget.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import { khoDuocService } from "@/services/khoDuocService.js";
 import NhapKhoDialog from "./NhapKhoDialog.jsx";
+import IfRole from "@/components/common/IfRole.jsx";
+import { ADMIN_CNQY } from "@/constants/roleConstants.js";
 
 const ROWS_PER_PAGE = 20;
 const EMPTY_STATS = { tong: 0, choNhap: 0, daNhap: 0 };
@@ -178,15 +180,17 @@ export default function NhapKhoList() {
                 label: "Thao tác",
                 render: (row) =>
                     row.trang_thai === "da_duyet" ? (
-                        <Button
-                            size="small"
-                            variant="contained"
-                            onClick={() =>
-                                openNhapKho(row.ma_phieu_du_tru, "create")
-                            }
-                        >
-                            Nhập kho
-                        </Button>
+                        <IfRole roles={ADMIN_CNQY}>
+                            <Button
+                                size="small"
+                                variant="contained"
+                                onClick={() =>
+                                    openNhapKho(row.ma_phieu_du_tru, "create")
+                                }
+                            >
+                                Nhập kho
+                            </Button>
+                        </IfRole>
                     ) : (
                         <Tooltip title="Xem">
                             <IconButton

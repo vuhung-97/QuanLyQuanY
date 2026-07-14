@@ -30,6 +30,8 @@ import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import PhieuDuTruDialog from "./PhieuDuTruDialog.jsx";
 import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
 import YearMonthFilter from "@/components/common/YearMonthFilter.jsx";
+import IfRole from "@/components/common/IfRole.jsx";
+import { ADMIN_CNQY } from "@/constants/roleConstants.js";
 import useDuTruList, {
     STATUS_CHIP,
     TRANG_THAI_OPTIONS,
@@ -320,19 +322,21 @@ export default function DuTruList() {
                                     setPage(1);
                                 }}
                             />
-                            <Button
-                                variant="contained"
-                                startIcon={<AddIcon />}
-                                onClick={() =>
-                                    setOpenPhieu({
-                                        open: true,
-                                        id: null,
-                                        mode: "create",
-                                    })
-                                }
-                            >
-                                Tạo phiếu dự trù
-                            </Button>
+                            <IfRole roles={ADMIN_CNQY}>
+                                <Button
+                                    variant="contained"
+                                    startIcon={<AddIcon />}
+                                    onClick={() =>
+                                        setOpenPhieu({
+                                            open: true,
+                                            id: null,
+                                            mode: "create",
+                                        })
+                                    }
+                                >
+                                    Tạo phiếu dự trù
+                                </Button>
+                            </IfRole>
                         </Stack>
 
                         <DataTable

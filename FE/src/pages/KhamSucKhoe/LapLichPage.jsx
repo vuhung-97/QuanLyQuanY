@@ -13,6 +13,8 @@ import TongQuanDonVi from "@/components/KhamSucKhoe/LapLich/TongQuanDonVi.jsx";
 import PhanCongNhiemVu from "@/components/KhamSucKhoe/LapLich/PhanCongNhiemVu.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
+import IfRole from "@/components/common/IfRole.jsx";
+import { ROLES } from "@/constants/roleConstants.js";
 
 export default function LapLichPage() {
     const {
@@ -133,20 +135,22 @@ export default function LapLichPage() {
                         và phân bổ lịch khám.
                     </Typography>
                 </Box>
-                <Button
-                    variant="contained"
-                    startIcon={<AddIcon />}
-                    onClick={() => {
-                        setDialog({
-                            open: true,
-                            schedule: null,
-                            chiTietList: [],
-                        });
-                    }}
-                    sx={{ px: 2.5, py: 1.1, borderRadius: 2.5 }}
-                >
-                    Tạo lịch khám
-                </Button>
+                <IfRole roles={[ROLES.ADMIN, ROLES.CNQY]}>
+                    <Button
+                        variant="contained"
+                        startIcon={<AddIcon />}
+                        onClick={() => {
+                            setDialog({
+                                open: true,
+                                schedule: null,
+                                chiTietList: [],
+                            });
+                        }}
+                        sx={{ px: 2.5, py: 1.1, borderRadius: 2.5 }}
+                    >
+                        Tạo lịch khám
+                    </Button>
+                </IfRole>
             </Stack>
 
             {error && (

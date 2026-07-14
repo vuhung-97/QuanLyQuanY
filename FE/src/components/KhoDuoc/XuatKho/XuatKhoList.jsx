@@ -31,6 +31,8 @@ import { khoDuocService } from "@/services/khoDuocService.js";
 import { decodeJWT } from "@/services/api.js";
 import PhieuXuatDialog from "./PhieuXuatDialog.jsx";
 import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
+import IfRole from "@/components/common/IfRole.jsx";
+import { ADMIN_CNQY } from "@/constants/roleConstants.js";
 
 const TRANG_THAI_OPTIONS = [
     { value: "", label: "Tất cả" },
@@ -404,19 +406,21 @@ export default function XuatKhoList() {
                                 />
                             </Stack>
 
-                            <Button
-                                variant="contained"
-                                startIcon={<AddIcon />}
-                                onClick={() =>
-                                    setOpenPhieu({
-                                        open: true,
-                                        id: null,
-                                        mode: "create",
-                                    })
-                                }
-                            >
-                                Tạo phiếu xuất
-                            </Button>
+                            <IfRole roles={ADMIN_CNQY}>
+                                <Button
+                                    variant="contained"
+                                    startIcon={<AddIcon />}
+                                    onClick={() =>
+                                        setOpenPhieu({
+                                            open: true,
+                                            id: null,
+                                            mode: "create",
+                                        })
+                                    }
+                                >
+                                    Tạo phiếu xuất
+                                </Button>
+                            </IfRole>
                         </Stack>
 
                         <DataTable

@@ -1,14 +1,13 @@
 import { Navigate } from "react-router-dom";
 import { decodeJWT } from "@/services/api.js";
 import { STORAGE_KEYS } from "@/components/layout/common/constants.js";
-import { ADMIN_ONLY } from "@/constants/roleConstants.js";
 
-export default function AdminRoute({ children }) {
+export default function RoleRoute({ roles, children }) {
     const token = localStorage.getItem(STORAGE_KEYS.token);
     if (!token) return <Navigate to="/login" replace />;
 
     const payload = decodeJWT(token);
-    if (!payload || !ADMIN_ONLY.includes(payload.role)) {
+    if (!payload || !roles.includes(payload.role)) {
         return <Navigate to="/" replace />;
     }
 

@@ -14,6 +14,7 @@ import {
     APP_NAME,
     ROLE_NAME_MAP,
 } from "./common/constants.js";
+import { ROLES, ADMIN_CNQY } from "@/constants/roleConstants.js";
 
 export default function MainLayout({
     menuItems = defaultMenuItems,
@@ -45,10 +46,10 @@ export default function MainLayout({
         return token ? decodeJWT(token) : null;
     }, []);
 
-    const role = jwtPayload?.role || "";
+    const role = jwtPayload?.role || ROLES.QN;
 
     const filteredMenuItems = useMemo(() => {
-        const items = (role === "ROLE_ADMIN" || role === "ROLE_CNQY") ? adminItems : menuItems;
+        const items = ADMIN_CNQY.includes(role) ? adminItems : menuItems;
         return filterMenuByRole(items, role);
     }, [role]);
 

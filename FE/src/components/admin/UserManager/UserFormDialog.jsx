@@ -22,7 +22,7 @@ const emptyForm = {
     ten_dang_nhap: "",
     mat_khau: "",
     ho_ten: "",
-    id_vai_tro: "",
+    id_vai_tro: "ROLE_QN",
     id_quan_nhan: "",
     trang_thai: true,
 };
@@ -55,6 +55,11 @@ export default function UserFormDialog({ open, onClose, editingUser, roles, onSa
         setError("");
         try {
             const payload = { ...form };
+            if (!payload.id_vai_tro) {
+                setError("Vai trò không được để trống.");
+                setSaving(false);
+                return;
+            }
             if (!editingUser) delete payload.id;
             if (editingUser && !payload.mat_khau) delete payload.mat_khau;
 
@@ -113,10 +118,10 @@ export default function UserFormDialog({ open, onClose, editingUser, roles, onSa
                             select
                             name="id_vai_tro"
                             label="Vai trò"
-                            value={form.id_vai_tro || ""}
+                            value={form.id_vai_tro}
                             onChange={handleChange}
+                            required
                         >
-                            <MenuItem value="">Chưa gán</MenuItem>
                             {roles.map((role) => (
                                 <MenuItem key={role.id} value={role.id}>
                                     {role.ten_vai_tro || role.id}
