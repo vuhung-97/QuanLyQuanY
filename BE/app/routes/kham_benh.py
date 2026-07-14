@@ -329,6 +329,50 @@ def get_chi_tiet_chuyen_tuyen(
     return {"giay_chuyen_tuyen": ggt, "di_tuyen": di_tuyen}
 
 
+@pre_router.post(
+    "/{ma_kham_benh}/duyet-chuyen-tuyen",
+    dependencies=[Depends(require_permissions("kham_benh:update"))],
+)
+def duyet_chuyen_tuyen(
+    ma_kham_benh: str,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user),
+):
+    kb = db.query(KhamBenh).filter(KhamBenh.ma_kham_benh == ma_kham_benh).first()
+    if not kb:
+        raise HTTPException(status_code=404, detail="Không tìm thấy ca khám")
+    if current_user.id_vai_tro not in ("ROLE_ADMIN", "ROLE_CNQY"):
+        raise HTTPException(status_code=403, detail="Chỉ CNQY/ADMIN mới được duyệt")
+    if kb.da_duyet:
+        raise HTTPException(status_code=400, detail="Chuyển tuyến đã được duyệt trước đó")
+    kb.da_duyet = True
+    db.commit()
+    return {"ok": True, "ma_kham_benh": ma_kham_benh}
+
+
+@pre_router.post(
+    "/{ma_kham_benh}/khong-duyet-chuyen-tuyen",
+    dependencies=[Depends(require_permissions("kham_benh:update"))],
+)
+def khong_duyet_chuyen_tuyen(
+    ma_kham_benh: str,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user),
+):
+    kb = db.query(KhamBenh).filter(KhamBenh.ma_kham_benh == ma_kham_benh).first()
+    if not kb:
+        raise HTTPException(status_code=404, detail="Không tìm thấy ca khám")
+    if current_user.id_vai_tro not in ("ROLE_ADMIN", "ROLE_CNQY"):
+        raise HTTPException(status_code=403, detail="Chỉ CNQY/ADMIN mới được thực hiện")
+    if kb.da_duyet:
+        raise HTTPException(status_code=400, detail="Chuyển tuyến đã được duyệt, không thể từ chối")
+    if kb.trang_thai != "chuyển_tuyến":
+        raise HTTPException(status_code=400, detail="Chỉ từ chối được với ca đang chuyển tuyến")
+    kb.trang_thai = "chờ"
+    db.commit()
+    return {"ok": True, "ma_kham_benh": ma_kham_benh}
+
+
 router = create_crud_router(
     resource="kham_benh",
     crud=kham_benh_crud,

@@ -5,7 +5,9 @@ import {
     Card,
     CardContent,
     Chip,
+    IconButton,
     Stack,
+    Tooltip,
     Typography,
 } from "@mui/material";
 import {
@@ -72,18 +74,28 @@ const columns = [
         label: "Thao tác",
         render: (row, _idx, { onExam, onDelete }) => (
             <Stack direction="row" spacing={0.5}>
-                <Button
-                    size="small"
-                    variant="outlined"
-                    sx={{ textTransform: "none" }}
-                    onClick={() => onExam(row.ma_kham_benh)}
-                >
-                    {["đã_khám", "chờ_nhận_thuốc", "đã_nhận_thuốc"].includes(
-                        row.trang_thai,
-                    )
-                        ? "Xem"
-                        : "Khám"}
-                </Button>
+                {["đã_khám", "chờ_nhận_thuốc", "đã_nhận_thuốc"].includes(
+                    row.trang_thai,
+                ) ? (
+                    <Button
+                        size="small"
+                        variant="outlined"
+                        sx={{ textTransform: "none" }}
+                        onClick={() => onExam(row.ma_kham_benh)}
+                    >
+                        Xem
+                    </Button>
+                ) : (
+                    <Tooltip title="Khám">
+                        <IconButton
+                            size="small"
+                            color="primary"
+                            onClick={() => onExam(row.ma_kham_benh)}
+                        >
+                            <MedicalServicesIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+                )}
                 {!["đã_khám", "đã_nhận_thuốc"].includes(row.trang_thai) && (
                     <Button
                         size="small"

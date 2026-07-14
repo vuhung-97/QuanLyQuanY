@@ -4,24 +4,30 @@ import {
     Card,
     CardContent,
     Chip,
+    IconButton,
     Stack,
+    Tooltip,
     Typography,
 } from "@mui/material";
 import FilterModeToggle from "@/components/common/FilterModeToggle.jsx";
 import PaginationWidget from "@/components/common/PaginationWidget.jsx";
 import YearMonthFilter from "@/components/common/YearMonthFilter.jsx";
 import {
+    Block as BlockIcon,
+    CheckCircle as CheckCircleIcon,
     MedicalServices as MedicalServicesIcon,
     Refresh as RefreshIcon,
     Send as SendIcon,
-    CheckCircle as CheckCircleIcon,
+    Visibility as VisibilityIcon,
 } from "@mui/icons-material";
 import useChuyenTuyen from "@/hooks/useChuyenTuyen.jsx";
 import ChuyenTuyenForm from "./ChuyenTuyenForm.jsx";
 import DataTable from "@/components/common/DataTable.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
+import IfRole from "@/components/common/IfRole.jsx";
 import SearchBarDebounced from "@/components/common/SearchBarDebounced.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
+import { ROLES } from "@/constants/roleConstants.js";
 import { CHUYEN_TUYEN_STATUS_MAP } from "@/constants/khamBenhConstants.js";
 import { formatDate } from "@/utils/date.js";
 
@@ -31,13 +37,10 @@ const columns = [
         label: "STT",
         render: (row, idx, extra) => (extra?.offset || 0) + idx + 1,
     },
-    {
-        key: "ma_kham_benh",
-        label: "Mã KB",
-        sx: { color: "primary.main" },
-    },
     { key: "ho_ten", label: "Họ tên QN" },
     { key: "don_vi", label: "Đơn vị", render: (row) => row.ten_don_vi || "--" },
+    { key: "trieu_chung", label: "Triệu chứng" },
+    { key: "chan_doan", label: "Chẩn đoán" },
     {
         key: "chuyen_tuyen_status",
         label: "Trạng thái",
@@ -64,17 +67,41 @@ const columns = [
     {
         key: "thao_tac",
         label: "Thao tác",
-        render: (row, _idx, { onView }) => (
-            <Button
-                size="small"
-                variant="contained"
-                color="primary"
-                onClick={() => onView(row.ma_kham_benh)}
-                sx={{ textTransform: "none" }}
-            >
-                Xem
-            </Button>
-        ),
+        render: (row, _idx, { onView, onApprove, onReject }) =>
+            row.da_duyet ? (
+                <Tooltip title="Xem">
+                    <IconButton
+                        size="small"
+                        color="info"
+                        onClick={() => onView(row.ma_kham_benh)}
+                    >
+                        <VisibilityIcon fontSize="small" />
+                    </IconButton>
+                </Tooltip>
+            ) : (
+                <IfRole roles={[ROLES.ADMIN, ROLES.CNQY]}>
+                    <Stack direction="row" spacing={0.5}>
+                        <Tooltip title="Duyệt">
+                            <IconButton
+                                size="small"
+                                color="success"
+                                onClick={() => onApprove(row.ma_kham_benh)}
+                            >
+                                <CheckCircleIcon fontSize="small" />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Không duyệt">
+                            <IconButton
+                                size="small"
+                                color="error"
+                                onClick={() => onReject(row.ma_kham_benh)}
+                            >
+                                <BlockIcon fontSize="small" />
+                            </IconButton>
+                        </Tooltip>
+                    </Stack>
+                </IfRole>
+            ),
     },
 ];
 
@@ -97,6 +124,8 @@ export default function ChuyenTuyenList() {
         handleViewDetail,
         handleCloseForm,
         handleSave,
+        handleApproveChuyenTuyen,
+        handleRejectChuyenTuyen,
         loadData,
         isLeft,
         handleFilterModeChange,
@@ -203,7 +232,7 @@ export default function ChuyenTuyenList() {
                                 ? "Không có quân nhân chuyển tuyến."
                                 : "Không có quân nhân đề nghị chuyển tuyến."
                         }
-                        rowExtra={{ onView: handleViewDetail, offset }}
+                        rowExtra={{ onView: handleViewDetail, onApprove: handleApproveChuyenTuyen, onReject: handleRejectChuyenTuyen, offset }}
                     />
                     {isLeft && totalRecords > 0 && (
                         <PaginationWidget

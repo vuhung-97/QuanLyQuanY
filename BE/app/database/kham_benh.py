@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, Integer, String, Text, func
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database.base import Base
@@ -20,3 +20,4 @@ class KhamBenh(Base):
     chan_doan: Mapped[str | None] = mapped_column(Text, nullable=True)
     ma_nhom_benh: Mapped[str | None] = mapped_column(String(10), ForeignKey("dm_nhom_benh.ma_nhom"), nullable=True)
     id_nguoi_dung: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    da_duyet: Mapped[bool] = mapped_column(Boolean, default=False)

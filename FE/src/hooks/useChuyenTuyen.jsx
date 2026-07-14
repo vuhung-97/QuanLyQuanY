@@ -135,6 +135,38 @@ export default function useChuyenTuyen() {
         [patients],
     );
 
+    const handleApproveChuyenTuyen = useCallback(
+        async (maKhamBenh) => {
+            try {
+                await khamBenhService.approveChuyenTuyen(maKhamBenh);
+                loadData();
+            } catch (err) {
+                setSnackbar({
+                    open: true,
+                    message: err.response?.data?.detail || "Lỗi duyệt chuyển tuyến.",
+                    severity: "error",
+                });
+            }
+        },
+        [loadData],
+    );
+
+    const handleRejectChuyenTuyen = useCallback(
+        async (maKhamBenh) => {
+            try {
+                await khamBenhService.rejectChuyenTuyen(maKhamBenh);
+                loadData();
+            } catch (err) {
+                setSnackbar({
+                    open: true,
+                    message: err.response?.data?.detail || "Lỗi từ chối chuyển tuyến.",
+                    severity: "error",
+                });
+            }
+        },
+        [loadData],
+    );
+
     const handleCloseForm = useCallback(() => {
         setOpenForm(false);
         setSelectedExam(null);
@@ -225,6 +257,8 @@ export default function useChuyenTuyen() {
         handleViewDetail,
         handleCloseForm,
         handleSave,
+        handleApproveChuyenTuyen,
+        handleRejectChuyenTuyen,
         loadData,
         isLeft,
         handleFilterModeChange,

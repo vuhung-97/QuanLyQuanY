@@ -29,6 +29,10 @@ export const khamBenhService = {
     getChuyenTuyenList: (params) => api.get("/kham_benh/chuyen-tuyen", { params }),
     getChiTietChuyenTuyen: (maKhamBenh) =>
         api.get(`/kham_benh/${maKhamBenh}/chuyen-tuyen/chi-tiet`),
+    approveChuyenTuyen: (maKhamBenh) =>
+        api.post(`/kham_benh/${maKhamBenh}/duyet-chuyen-tuyen`),
+    rejectChuyenTuyen: (maKhamBenh) =>
+        api.post(`/kham_benh/${maKhamBenh}/khong-duyet-chuyen-tuyen`),
 
     getGiayGioiThieu: (params) => api.get("/giay_gioi_thieu", { params }),
     getGiayGioiThieuByKhamBenh: (maKhamBenh) =>
