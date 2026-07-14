@@ -13,8 +13,11 @@ export default function useTonKhoCanhBao() {
         api.get("/bao-cao/ton-kho", { params: { thang, nam } })
             .then((res) => {
                 const sorted = [...(res.data?.danh_sach || [])]
-                    .sort((a, b) => a.ton_cuoi_ky - b.ton_cuoi_ky)
-                    .slice(0, 7);
+                    .filter((item) => {
+                        if (item.loai === "vat_tu") return item.ton_cuoi_ky < 100;
+                        return item.ton_cuoi_ky < 400;
+                    })
+                    .sort((a, b) => a.ton_cuoi_ky - b.ton_cuoi_ky);
                 setItems(sorted);
             })
             .catch(() => setItems([]))

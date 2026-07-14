@@ -363,6 +363,7 @@ class ReportService:
                 "ma_thuoc": t.ma_thuoc_vtyt,
                 "ten_thuoc": t.ten_thuoc_vtyt,
                 "don_vi": t.don_vi_tinh or "",
+                "loai": t.loai,
                 "ton_dau_ky": ton_dau,
                 "nhap_trong_ky": nhap,
                 "xuat_trong_ky": xuat,

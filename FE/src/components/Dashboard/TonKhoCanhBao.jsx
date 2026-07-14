@@ -18,21 +18,21 @@ import {
 import useTonKhoCanhBao from "@/hooks/useTonKhoCanhBao.js";
 
 function getAlertIcon(ton) {
-    if (ton < 50)
-        return <ErrorIcon sx={{ color: "#EF4444", fontSize: 16 }} />;
-    if (ton < 100)
+    if (ton < 100) return <ErrorIcon sx={{ color: "#EF4444", fontSize: 16 }} />;
+    if (ton < 200)
         return <WarningIcon sx={{ color: "#F59E0B", fontSize: 16 }} />;
     return <CheckCircleIcon sx={{ color: "#94A3B8", fontSize: 16 }} />;
 }
 
 function getAlertColor(ton) {
-    if (ton < 50) return "#EF4444";
-    if (ton < 100) return "#F59E0B";
+    if (ton < 100) return "#EF4444";
+    if (ton < 200) return "#F59E0B";
     return "#64748B";
 }
 
 const columns = [
     { key: "ten_thuoc", label: "Tên thuốc" },
+    { key: "loai", label: "Loại" },
     { key: "ton_cuoi_ky", label: "Tồn kho" },
     { key: "don_vi", label: "Đơn vị" },
 ];
@@ -74,7 +74,10 @@ export default function TonKhoCanhBao() {
                                                     fontWeight: 600,
                                                     borderBottom:
                                                         "1px solid #F1F5F9",
-                                                    pl: col.key === "ten_thuoc" ? 0 : undefined,
+                                                    pl:
+                                                        col.key === "ten_thuoc"
+                                                            ? 0
+                                                            : undefined,
                                                 }}
                                             >
                                                 {col.label}
@@ -96,7 +99,9 @@ export default function TonKhoCanhBao() {
                                                 <Stack
                                                     direction="row"
                                                     spacing={1}
-                                                    sx={{ alignItems: "center" }}
+                                                    sx={{
+                                                        alignItems: "center",
+                                                    }}
                                                 >
                                                     {getAlertIcon(
                                                         item.ton_cuoi_ky,
@@ -111,6 +116,17 @@ export default function TonKhoCanhBao() {
                                                         {item.ten_thuoc}
                                                     </Typography>
                                                 </Stack>
+                                            </TableCell>
+                                            <TableCell
+                                                sx={{
+                                                    borderBottom:
+                                                        "1px solid #F1F5F9",
+                                                    color: "#64748B",
+                                                }}
+                                            >
+                                                {item.loai === "vat_tu"
+                                                    ? "VTYT"
+                                                    : "Thuốc"}
                                             </TableCell>
                                             <TableCell
                                                 sx={{
@@ -140,7 +156,7 @@ export default function TonKhoCanhBao() {
                         </TableContainer>
                     ) : (
                         <Typography color="text.secondary">
-                            Đang tải...
+                            Tất cả thuốc và vật tư y tế đều đủ tồn kho
                         </Typography>
                     )}
                 </Stack>
