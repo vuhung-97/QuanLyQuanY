@@ -178,13 +178,13 @@ export const adminMenuItems = [
                 icon: <CircleIcon sx={{ fontSize: 12 }} />,
                 allowedRoles: MENU_ROLE_MAP["tai-khoan"],
             },
-            // {
-            //     id: "admin-permissions",
-            //     title: "Vai trò & phân quyền",
-            //     path: "/admin/phan-quyen",
-            //     icon: <CircleIcon sx={{ fontSize: 12 }} />,
-            //     allowedRoles: MENU_ROLE_MAP["phan-quyen"],
-            // },
+            {
+                id: "admin-permissions",
+                title: "Vai trò & phân quyền",
+                path: "/admin/phan-quyen",
+                icon: <CircleIcon sx={{ fontSize: 12 }} />,
+                allowedRoles: MENU_ROLE_MAP["phan-quyen"],
+            },
             {
                 id: "admin-audit",
                 title: "Nhật ký hệ thống",

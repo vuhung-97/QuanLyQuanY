@@ -31,6 +31,7 @@ import LapBenhAnPage from "./pages/NoiTru/LapBenhAnPage.jsx";
 import QuanLyPhongGiuongPage from "./pages/NoiTru/QuanLyPhongGiuongPage.jsx";
 import KhoPage from "./pages/KhoDuoc/KhoPage.jsx";
 import UserManagementPage from "./pages/Admin/UserManagementPage.jsx";
+import RolePermissionPage from "./pages/Admin/RolePermissionPage.jsx";
 import AuditLogPage from "./pages/Admin/AuditLogPage.jsx";
 
 export default function App() {
@@ -156,6 +157,10 @@ export default function App() {
                                 <Route
                                     path="nguoi-dung"
                                     element={<UserManagementPage />}
+                                />
+                                <Route
+                                    path="phan-quyen"
+                                    element={<RolePermissionPage />}
                                 />
                                 <Route
                                     path="nhat-ky"
