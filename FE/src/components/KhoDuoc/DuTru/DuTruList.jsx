@@ -17,6 +17,7 @@ import {
     CheckCircle as CheckCircleIcon,
     HourglassEmpty as HourglassEmptyIcon,
     Inventory as InventoryIcon,
+    Send as SendIcon,
 } from "@mui/icons-material";
 import dayjs from "dayjs";
 import DataTable from "@/components/common/DataTable.jsx";
@@ -35,24 +36,27 @@ import { getCurrentUser } from "@/services/api.js";
 import DuTruRowActions from "./DuTruRowActions.jsx";
 
 const STAT_ICONS = {
+    cho_gui: <SendIcon />,
     chua_duyet: <HourglassEmptyIcon />,
     da_duyet: <CheckCircleIcon />,
     da_nhap: <InventoryIcon />,
     tu_choi: <CancelIcon />,
 };
 const STAT_COLORS = {
+    cho_gui: { color: "#6B7280", bg: "#F3F4F6" },
     chua_duyet: { color: "#F59E0B", bg: "#FEF3C7" },
     da_duyet: { color: "#10B981", bg: "#D1FAE5" },
     da_nhap: { color: "#00B4D8", bg: "#E0F7FA" },
     tu_choi: { color: "#EF4444", bg: "#FEE2E2" },
 };
 const STAT_LABELS = {
+    cho_gui: "Chờ gửi",
     chua_duyet: "Chờ duyệt",
     da_duyet: "Đã duyệt",
     da_nhap: "Đã nhập kho",
     tu_choi: "Từ chối",
 };
-const STAT_KEYS = ["chua_duyet", "da_duyet", "da_nhap", "tu_choi"];
+const STAT_KEYS = ["cho_gui", "chua_duyet", "da_duyet", "da_nhap", "tu_choi"];
 
 const columns = [
     { key: "ma_phieu_du_tru", label: "Mã phiếu" },
@@ -175,6 +179,8 @@ export default function DuTruList() {
             onView: handleView,
             onEdit: handleEdit,
             onDuyet: (id) => openConfirm(id, "duyet"),
+            onGui: (id) => openConfirm(id, "gui"),
+            onTuChoi: (id) => openConfirm(id, "tu_choi"),
             onXoa: (id) => openConfirm(id, "xoa"),
             onNhapKho: (id) =>
                 navigate("/kho-duoc/nhap", {

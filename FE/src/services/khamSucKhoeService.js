@@ -73,4 +73,6 @@ export const khamSucKhoeService = {
     getNguoiDungList: () => api.get("/nguoi_dung", { params: { limit: 500 } }),
 
     approveSchedule: (id) => api.post(`/lich_kham_sk_nam/${id}/duyet`),
+    submitSchedule: (id) => api.post(`/lich_kham_sk_nam/${id}/gui`),
+    rejectSchedule: (id) => api.post(`/lich_kham_sk_nam/${id}/tu-choi`),
 };

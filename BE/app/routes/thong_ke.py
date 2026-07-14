@@ -161,6 +161,7 @@ def thong_ke_phieu_du_tru(
         query = query.filter(func.extract("month", PhieuDuTru.ngay_lap_phieu) == thang)
 
     tong = query.count()
+    cho_gui = query.filter(PhieuDuTru.trang_thai == "cho_gui").count()
     chua_duyet = query.filter(PhieuDuTru.trang_thai == "chua_duyet").count()
     da_duyet = query.filter(PhieuDuTru.trang_thai == "da_duyet").count()
     tu_choi = query.filter(PhieuDuTru.trang_thai == "tu_choi").count()
@@ -168,6 +169,7 @@ def thong_ke_phieu_du_tru(
 
     return {
         "tong": tong,
+        "cho_gui": cho_gui,
         "chua_duyet": chua_duyet,
         "da_duyet": da_duyet,
         "tu_choi": tu_choi,
@@ -188,6 +190,7 @@ def thong_ke_phieu_xuat(
         query = query.filter(func.extract("month", PhieuXuatKho.ngay_thang_nam) == thang)
 
     tong = query.count()
+    cho_gui = query.filter(PhieuXuatKho.trang_thai == "cho_gui").count()
     cho_duyet = query.filter(PhieuXuatKho.trang_thai == "cho_duyet").count()
     da_duyet = query.filter(PhieuXuatKho.trang_thai == "da_duyet").count()
     tu_choi = query.filter(PhieuXuatKho.trang_thai == "tu_choi").count()
@@ -195,6 +198,7 @@ def thong_ke_phieu_xuat(
 
     return {
         "tong": tong,
+        "cho_gui": cho_gui,
         "cho_duyet": cho_duyet,
         "da_duyet": da_duyet,
         "tu_choi": tu_choi,

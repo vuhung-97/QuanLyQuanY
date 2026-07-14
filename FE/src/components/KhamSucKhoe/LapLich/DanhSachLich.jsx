@@ -13,15 +13,17 @@ import {
     Stack,
     TableCell,
     TableRow,
-    Tooltip,
     Typography,
 } from "@mui/material";
+import ActionIcon from "@/components/common/ActionIcon.jsx";
 import {
+    DoDisturb as DoDisturbIcon,
     CheckCircle as CheckCircleIcon,
     Delete as DeleteIcon,
     Edit as EditIcon,
     KeyboardArrowDown as ArrowDownIcon,
     KeyboardArrowUp as ArrowUpIcon,
+    Send as SendIcon,
     Visibility as VisibilityIcon,
 } from "@mui/icons-material";
 import DataTable from "@/components/common/DataTable.jsx";
@@ -47,16 +49,22 @@ function DetailSubTable({
     onEditDetail,
     onDeleteDetail,
 }) {
-    const isApproved = schedule.da_duyet;
+    const showDetailActions = schedule.trang_thai === "cho_gui";
     return (
         <DataTable
             columns={[
                 { key: "don_vi", label: "Đơn vị" },
                 { key: "thoi_gian", label: "Thời gian" },
                 { key: "dia_diem", label: "Địa điểm" },
-                ...(isApproved
-                    ? []
-                    : [{ key: "thao_tac", label: "Thao tác", sx: { width: 120 } }]),
+                ...(showDetailActions
+                    ? [
+                          {
+                              key: "thao_tac",
+                              label: "Thao tác",
+                              sx: { width: 120 },
+                          },
+                      ]
+                    : []),
             ]}
             emptyMessage=""
             minWidth={500}
@@ -76,28 +84,32 @@ function DetailSubTable({
                         {formatDateTime(ct.thoi_gian_ket_thuc)}
                     </TableCell>
                     <TableCell>{ct.dia_diem || "--"}</TableCell>
-                    {!isApproved && (
+                    {showDetailActions && (
                         <TableCell>
-                            <IfRole roles={[ROLES.ADMIN, ROLES.CNQY, ROLES.BACSI, ROLES.YSI]}>
+                            <IfRole
+                                roles={[
+                                    ROLES.ADMIN,
+                                    ROLES.CNQY,
+                                    ROLES.BACSI,
+                                    ROLES.YSI,
+                                ]}
+                            >
                                 <Stack direction="row" spacing={0.5}>
-                                    <Tooltip title="Sửa">
-                                        <IconButton
-                                            size="small"
-                                            color="primary"
-                                            onClick={() => onEditDetail(schedule, ct)}
-                                        >
-                                            <EditIcon fontSize="small" />
-                                        </IconButton>
-                                    </Tooltip>
-                                    <Tooltip title="Xóa">
-                                        <IconButton
-                                            size="small"
-                                            color="error"
-                                            onClick={() => onDeleteDetail(schedule, ct)}
-                                        >
-                                            <DeleteIcon fontSize="small" />
-                                        </IconButton>
-                                    </Tooltip>
+                                    <ActionIcon
+                                        title="Sửa"
+                                        icon={<EditIcon />}
+                                        onClick={() =>
+                                            onEditDetail(schedule, ct)
+                                        }
+                                    />
+                                    <ActionIcon
+                                        title="Xóa"
+                                        icon={<DeleteIcon />}
+                                        color="error"
+                                        onClick={() =>
+                                            onDeleteDetail(schedule, ct)
+                                        }
+                                    />
                                 </Stack>
                             </IfRole>
                         </TableCell>
@@ -118,6 +130,8 @@ function ScheduleTableRow({
     onEditDetail,
     onDeleteDetail,
     onApprove,
+    onSubmit,
+    onReject,
     onView,
     donViLookup,
     getScheduleStatus,
@@ -143,69 +157,95 @@ function ScheduleTableRow({
                 </TableCell>
                 <TableCell>{nearest?.dia_diem || "--"}</TableCell>
                 <TableCell>
-                    <Stack direction="row" spacing={0.5} alignItems="center">
+                    <Stack
+                        direction="row"
+                        spacing={0.5}
+                        sx={{ alignItems: "center" }}
+                    >
                         <Chip
                             size="small"
                             label={currentStatus}
-                            sx={{ ...statusColor(currentStatus), fontWeight: 700 }}
+                            sx={{
+                                ...statusColor(currentStatus),
+                                fontWeight: 700,
+                            }}
                         />
                         <Chip
                             size="small"
-                            label={row.da_duyet ? "Đã duyệt" : "Chưa duyệt"}
-                            color={row.da_duyet ? "success" : "default"}
-                            variant="outlined"
+                            label={
+                                row.trang_thai === "da_duyet"
+                                    ? "Đã duyệt"
+                                    : row.trang_thai === "cho_duyet"
+                                      ? "Chờ duyệt"
+                                      : row.trang_thai === "cho_gui"
+                                        ? "Chờ gửi"
+                                        : row.trang_thai === "tu_choi"
+                                          ? "Từ chối"
+                                          : row.trang_thai || "—"
+                            }
+                            color={
+                                row.trang_thai === "da_duyet"
+                                    ? "success"
+                                    : row.trang_thai === "cho_duyet"
+                                      ? "warning"
+                                      : row.trang_thai === "tu_choi"
+                                        ? "error"
+                                        : "default"
+                            }
+                            variant={row.trang_thai === "cho_gui" ? "outlined" : "filled"}
                             sx={{ fontWeight: 600 }}
                         />
                     </Stack>
                 </TableCell>
                 <TableCell>
-                    {row.da_duyet ? (
-                        <IfRole roles={[ROLES.ADMIN, ROLES.CNQY, ROLES.BACSI, ROLES.YSI]}>
-                            <Tooltip title="Xem">
-                                <IconButton
-                                    size="small"
-                                    color="info"
-                                    onClick={() => onView(row)}
-                                >
-                                    <VisibilityIcon fontSize="small" />
-                                </IconButton>
-                            </Tooltip>
+                    {row.trang_thai === "da_duyet" ? (
+                        <IfRole
+                            roles={[
+                                ROLES.ADMIN,
+                                ROLES.CNQY,
+                                ROLES.BACSI,
+                                ROLES.YSI,
+                            ]}
+                        >
+                            <ActionIcon
+                                title="Xem"
+                                icon={<VisibilityIcon />}
+                                color="info"
+                                onClick={() => onView(row)}
+                            />
                         </IfRole>
-                    ) : (
-                        <IfRole roles={[ROLES.ADMIN, ROLES.CNQY, ROLES.BACSI, ROLES.YSI]}>
+                    ) : row.trang_thai === "cho_gui" ? (
+                        <IfRole
+                            roles={[
+                                ROLES.ADMIN,
+                                ROLES.CNQY,
+                                ROLES.BACSI,
+                                ROLES.YSI,
+                            ]}
+                        >
                             <Stack direction="row" spacing={0.5}>
-                                <Tooltip title="Sửa">
-                                    <IconButton
-                                        size="small"
-                                        color="primary"
-                                        onClick={() => onEdit(row)}
-                                    >
-                                        <EditIcon fontSize="small" />
-                                    </IconButton>
-                                </Tooltip>
-                                <Tooltip title="Xóa">
-                                    <IconButton
-                                        size="small"
-                                        color="error"
-                                        onClick={() => onDelete(row)}
-                                    >
-                                        <DeleteIcon fontSize="small" />
-                                    </IconButton>
-                                </Tooltip>
-                                <IfRole roles={[ROLES.ADMIN, ROLES.CNQY]}>
-                                    <Tooltip title="Duyệt">
-                                        <IconButton
-                                            size="small"
-                                            color="success"
-                                            onClick={() => onApprove(row)}
-                                        >
-                                            <CheckCircleIcon fontSize="small" />
-                                        </IconButton>
-                                    </Tooltip>
-                                </IfRole>
+                                <ActionIcon title="Sửa" icon={<EditIcon />} onClick={() => onEdit(row)} />
+                                <ActionIcon title="Gửi duyệt" icon={<SendIcon />} onClick={() => onSubmit(row)} />
+                                <ActionIcon title="Xóa" icon={<DeleteIcon />} color="error" onClick={() => onDelete(row)} />
                             </Stack>
                         </IfRole>
-                    )}
+                    ) : row.trang_thai === "cho_duyet" ? (
+                        <Stack direction="row" spacing={0.5}>
+                            <ActionIcon title="Xem" icon={<VisibilityIcon />} color="info" onClick={() => onView(row)} />
+                            <IfRole roles={[ROLES.ADMIN, ROLES.CNQY]}>
+                                <ActionIcon title="Duyệt" icon={<CheckCircleIcon />} color="success" onClick={() => onApprove(row)} />
+                                <ActionIcon title="Không duyệt" icon={<DoDisturbIcon />} color="error" onClick={() => onReject(row)} />
+                                <ActionIcon title="Xóa" icon={<DeleteIcon />} color="error" onClick={() => onDelete(row)} />
+                            </IfRole>
+                        </Stack>
+                    ) : row.trang_thai === "tu_choi" ? (
+                        <ActionIcon
+                            title="Xem"
+                            icon={<VisibilityIcon />}
+                            color="info"
+                            onClick={() => onView(row)}
+                        />
+                    ) : null}
                 </TableCell>
             </TableRow>
             <TableRow>
@@ -246,6 +286,8 @@ export default function DanhSachLich({
     onEditDetail,
     onDeleteDetail,
     onApprove,
+    onSubmit,
+    onReject,
     onView,
     getScheduleStatus,
     statusColor,
@@ -286,7 +328,11 @@ export default function DanhSachLich({
     useEffect(() => setPage(1), [year]);
 
     const paginatedSchedules = useMemo(
-        () => filteredSchedules.slice((page - 1) * rowsPerPage, page * rowsPerPage),
+        () =>
+            filteredSchedules.slice(
+                (page - 1) * rowsPerPage,
+                page * rowsPerPage,
+            ),
         [filteredSchedules, page, rowsPerPage],
     );
 
@@ -311,7 +357,10 @@ export default function DanhSachLich({
                         >
                             Tổng số: {filteredSchedules.length} lịch
                             {filteredSchedules.length > 0 && (
-                                <span> — Trang {page}/{totalPages}</span>
+                                <span>
+                                    {" "}
+                                    — Trang {page}/{totalPages}
+                                </span>
                             )}
                         </Typography>
                     </Box>
@@ -322,7 +371,9 @@ export default function DanhSachLich({
                             sx={{ textTransform: "none" }}
                         >
                             {availableYears.map((y) => (
-                                <MenuItem key={y} value={y}>{y}</MenuItem>
+                                <MenuItem key={y} value={y}>
+                                    {y}
+                                </MenuItem>
                             ))}
                         </Select>
                     </FormControl>
@@ -346,6 +397,8 @@ export default function DanhSachLich({
                                 onEditDetail={onEditDetail}
                                 onDeleteDetail={onDeleteDetail}
                                 onApprove={onApprove}
+                                onSubmit={onSubmit}
+                                onReject={onReject}
                                 onView={onView}
                                 donViLookup={donViLookup}
                                 getScheduleStatus={getScheduleStatus}

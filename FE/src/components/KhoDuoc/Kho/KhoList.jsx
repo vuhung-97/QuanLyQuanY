@@ -2,13 +2,12 @@ import {
     Button,
     Card,
     CardContent,
-    IconButton,
     MenuItem,
     Stack,
     TextField,
-    Tooltip,
     Typography,
 } from "@mui/material";
+import ActionIcon from "@/components/common/ActionIcon.jsx";
 import {
     Add as AddIcon,
     Delete as DeleteIcon,
@@ -86,34 +85,10 @@ const columns = [
             const { onView, onEdit, onDelete } = extra || {};
             return (
                 <Stack direction="row" spacing={0.5}>
-                    <Tooltip title="Xem">
-                        <IconButton
-                            size="small"
-                            color="primary"
-                            onClick={() => onView(row.ma_thuoc_vtyt)}
-                        >
-                            <VisibilityIcon fontSize="small" />
-                        </IconButton>
-                    </Tooltip>
+                    <ActionIcon title="Xem" icon={<VisibilityIcon />} onClick={() => onView(row.ma_thuoc_vtyt)} />
                     <IfRole roles={[ROLES.ADMIN, ROLES.CNQY]}>
-                        <Tooltip title="Sửa">
-                            <IconButton
-                                size="small"
-                                color="primary"
-                                onClick={() => onEdit(row.ma_thuoc_vtyt)}
-                            >
-                                <EditIcon fontSize="small" />
-                            </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Xoá">
-                            <IconButton
-                                size="small"
-                                color="error"
-                                onClick={() => onDelete(row.ma_thuoc_vtyt)}
-                            >
-                                <DeleteIcon fontSize="small" />
-                            </IconButton>
-                        </Tooltip>
+                        <ActionIcon title="Sửa" icon={<EditIcon />} onClick={() => onEdit(row.ma_thuoc_vtyt)} />
+                        <ActionIcon title="Xoá" icon={<DeleteIcon />} color="error" onClick={() => onDelete(row.ma_thuoc_vtyt)} />
                     </IfRole>
                 </Stack>
             );

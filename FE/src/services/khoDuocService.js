@@ -49,6 +49,7 @@ export const khoDuocService = {
     updatePhieuDuTru: (id, data) => api.patch(`/phieu_du_tru/${id}`, data),
     deletePhieuDuTru: (id) => api.delete(`/phieu_du_tru/${id}`),
     duyetPhieuDuTru: (id) => api.post(`/phieu_du_tru/${id}/duyet`),
+    guiPhieuDuTru: (id) => api.post(`/phieu_du_tru/${id}/gui`),
     tuChoiPhieuDuTru: (id) => api.post(`/phieu_du_tru/${id}/tu-choi`),
     nhapKhoTuPhieuDuTru: (id, data) => api.post(`/phieu_du_tru/${id}/nhap-kho`, data),
 
@@ -83,6 +84,7 @@ export const khoDuocService = {
     deletePhieuXuatKho: (id) => api.delete(`/phieu_xuat_kho/${id}`),
     duyetPhieuXuat: (id) => api.post(`/phieu_xuat_kho/${id}/duyet`),
     tuChoiPhieuXuat: (id) => api.post(`/phieu_xuat_kho/${id}/tu-choi`),
+    guiPhieuXuat: (id) => api.post(`/phieu_xuat_kho/${id}/gui`),
     xuatKho: (id) => api.post(`/phieu_xuat_kho/${id}/xuat-kho`),
 
     getChiTietByPhieuXuat: (maPhieuXuat) =>

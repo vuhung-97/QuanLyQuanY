@@ -96,6 +96,25 @@ def duyet_phieu_du_tru(
 
 
 @pre_router.post(
+    "/{item_id}/gui",
+    dependencies=[Depends(require_permissions("phieu_du_tru:update"))],
+)
+def gui_phieu_du_tru(
+    item_id: str,
+    db: Session = Depends(get_db),
+):
+    phieu = db.get(PhieuDuTru, item_id)
+    if not phieu:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Phiếu dự trù không tồn tại")
+    if phieu.trang_thai != "cho_gui":
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Không thể gửi phiếu ở trạng thái {phieu.trang_thai}")
+    phieu.trang_thai = "chua_duyet"
+    db.commit()
+    db.refresh(phieu)
+    return phieu
+
+
+@pre_router.post(
     "/{item_id}/tu-choi",
     dependencies=[Depends(require_permissions("phieu_du_tru:update"))],
 )

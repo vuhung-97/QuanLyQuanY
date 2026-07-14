@@ -23,6 +23,7 @@ export default function useDashboardStats() {
             tong_giuong: stats.tong_quan.tong_giuong,
             giuong_trong: stats.tong_quan.giuong_trong,
             tong_quan_so: stats.tong_quan.tong_quan_so,
+            ...stats.cho_xu_ly,
         };
     }, [stats]);
 

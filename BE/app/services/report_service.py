@@ -15,7 +15,9 @@ from app.database.don_vi import DonVi
 from app.database.giay_gioi_thieu import GiayGioiThieu
 from app.database.giuong import Giuong
 from app.database.kham_benh import KhamBenh
+from app.database.lich_kham_sk_nam import LichKhamSkNam
 from app.database.phieu_cham_soc import PhieuChamSoc
+from app.database.phieu_du_tru import PhieuDuTru
 from app.database.phieu_nhap_kho import PhieuNhapKho
 from app.database.phieu_xuat_kho import PhieuXuatKho
 from app.database.quan_nhan import QuanNhan
@@ -432,6 +434,47 @@ class ReportService:
 
         tong_quan_so = self.db.query(func.count(QuanNhan.ma_quan_nhan)).scalar() or 0
 
+        lich_kham_sk_chua_duyet = (
+            self.db.query(func.count(LichKhamSkNam.ma_lich_kham))
+            .filter(LichKhamSkNam.da_duyet == False)
+            .scalar()
+            or 0
+        )
+
+        nhap_vien_chua_duyet = (
+            self.db.query(func.count(KhamBenh.ma_kham_benh))
+            .filter(
+                KhamBenh.trang_thai == "nhập_viện",
+                KhamBenh.da_duyet == False,
+            )
+            .scalar()
+            or 0
+        )
+
+        chuyen_tuyen_chua_duyet = (
+            self.db.query(func.count(KhamBenh.ma_kham_benh))
+            .filter(
+                KhamBenh.trang_thai == "chuyển_tuyến",
+                KhamBenh.da_duyet == False,
+            )
+            .scalar()
+            or 0
+        )
+
+        phieu_du_tru_chua_duyet = (
+            self.db.query(func.count(PhieuDuTru.ma_phieu_du_tru))
+            .filter(PhieuDuTru.trang_thai == "chua_duyet")
+            .scalar()
+            or 0
+        )
+
+        phieu_xuat_chua_duyet = (
+            self.db.query(func.count(PhieuXuatKho.ma_phieu_xuat))
+            .filter(PhieuXuatKho.trang_thai == "cho_duyet")
+            .scalar()
+            or 0
+        )
+
         return {
             "hom_nay": {
                 "luot_kham": luot_kham,
@@ -444,6 +487,13 @@ class ReportService:
                 "giuong_trong": giuong_trong,
                 "tong_thuoc_vtyt": tong_thuoc,
                 "tong_quan_so": tong_quan_so,
+            },
+            "cho_xu_ly": {
+                "lich_kham_sk_chua_duyet": lich_kham_sk_chua_duyet,
+                "nhap_vien_chua_duyet": nhap_vien_chua_duyet,
+                "chuyen_tuyen_chua_duyet": chuyen_tuyen_chua_duyet,
+                "phieu_du_tru_chua_duyet": phieu_du_tru_chua_duyet,
+                "phieu_xuat_chua_duyet": phieu_xuat_chua_duyet,
             },
         }
 

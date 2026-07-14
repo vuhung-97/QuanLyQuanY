@@ -5,9 +5,9 @@ import {
     DialogActions,
     DialogContent,
     Stack,
-    TextField,
     Typography,
 } from "@mui/material";
+import FormTextField from "@/components/common/FormTextField.jsx";
 import { Person as PersonIcon, Print as PrintIcon } from "@mui/icons-material";
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
@@ -26,7 +26,7 @@ export default function PhieuDuTruDialog({
 }) {
     const {
         ghiChu,
-        setGhiChu,
+        updateField,
         keys,
         getItem,
         saving,
@@ -103,10 +103,11 @@ export default function PhieuDuTruDialog({
                 </Stack>
             </Box>
 
-            <TextField
+            <FormTextField
+                name="ghiChu"
+                initialValue={ghiChu}
+                onUpdateRef={updateField}
                 label="Ghi chú"
-                value={ghiChu}
-                onChange={(e) => setGhiChu(e.target.value)}
                 multiline
                 rows={2}
                 fullWidth

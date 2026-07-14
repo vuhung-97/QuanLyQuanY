@@ -14,6 +14,7 @@ import {
     Typography,
 } from "@mui/material";
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
+import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import useLapLichDialog from "@/hooks/useLapLichDialog";
 import DataTable from "@/components/common/DataTable.jsx";
 import ChonNgayGio from "./ChonNgayGio.jsx";
@@ -52,7 +53,8 @@ export default function LapLichDialog({
         thoiGianKetThuc,
         setThoiGianKetThuc,
         saving,
-        error,
+        snackbar,
+        handleCloseSnackbar,
         isEdit,
         handleSubmit,
         users,
@@ -202,6 +204,7 @@ export default function LapLichDialog({
     );
 
     return (
+        <>
         <Dialog
             open={open}
             onClose={onClose}
@@ -218,15 +221,6 @@ export default function LapLichDialog({
                           : "Tạo lịch khám sức khỏe định kỳ"}
                 </DialogTitleWrapper>
                 <DialogContent dividers sx={{ overflow: "auto" }}>
-                    {error && (
-                        <Typography
-                            color="error"
-                            variant="body2"
-                            sx={{ mb: 2 }}
-                        >
-                            {error}
-                        </Typography>
-                    )}
                     <Stack spacing={1.5} sx={{ pt: 1 }}>
                         <Typography variant="h4">Thông tin chung</Typography>
                         <Stack
@@ -290,5 +284,13 @@ export default function LapLichDialog({
                 </DialogActions>
             </Box>
         </Dialog>
+
+            <FeedbackSnackbar
+                open={snackbar.open}
+                message={snackbar.message}
+                severity={snackbar.severity}
+                onClose={handleCloseSnackbar}
+            />
+        </>
     );
 }

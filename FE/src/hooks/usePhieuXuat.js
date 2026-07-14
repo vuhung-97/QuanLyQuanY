@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import dayjs from "dayjs";
 import { khoDuocService } from "@/services/khoDuocService.js";
 import { khamBenhService } from "@/services/khamBenhService.js";
@@ -13,6 +13,12 @@ export default function usePhieuXuat({ open, phieuId, mode, onClose, onSaved }) 
     const [ngayXuat, setNgayXuat] = useState(dayjs());
     const [lyDoXuat, setLyDoXuat] = useState("");
     const [ghiChu, setGhiChu] = useState("");
+    const lyDoXuatRef = useRef("");
+    const ghiChuRef = useRef("");
+    const updateField = useCallback((name, value) => {
+        if (name === "lyDoXuat") lyDoXuatRef.current = value;
+        else if (name === "ghiChu") ghiChuRef.current = value;
+    }, []);
     const [donViFlat, setDonViFlat] = useState([]);
     const [selectedItems, setSelectedItems] = useState([]);
     const [creatorName, setCreatorName] = useState("");
@@ -55,6 +61,8 @@ export default function usePhieuXuat({ open, phieuId, mode, onClose, onSaved }) 
             setMaQuanNhanNhan(null);
             setHoTenNguoiNhan("");
             setNgayXuat(dayjs());
+            lyDoXuatRef.current = "";
+            ghiChuRef.current = "";
             setLyDoXuat("");
             setGhiChu("");
             setSelectedItems([]);
@@ -73,6 +81,8 @@ export default function usePhieuXuat({ open, phieuId, mode, onClose, onSaved }) 
                 setMaQuanNhanNhan(p.ma_quan_nhan_nhan || null);
                 setHoTenNguoiNhan(p.ho_ten_nguoi_nhan || "");
                 setNgayXuat(p.ngay_thang_nam ? dayjs(p.ngay_thang_nam) : dayjs());
+                lyDoXuatRef.current = p.ly_do_xuat || "";
+                ghiChuRef.current = p.ghi_chu || "";
                 setLyDoXuat(p.ly_do_xuat || "");
                 setGhiChu(p.ghi_chu || "");
                 setCreatorName(p.nguoi_xuat_ho_ten || p.nguoi_xuat || "");
@@ -158,8 +168,8 @@ export default function usePhieuXuat({ open, phieuId, mode, onClose, onSaved }) 
                     ma_quan_nhan_nhan: maQuanNhanNhan,
                     ho_ten_nguoi_nhan: hoTenNguoiNhan || null,
                     ngay_thang_nam: ngayXuat.toISOString(),
-                    ly_do_xuat: lyDoXuat || null,
-                    ghi_chu: ghiChu || null,
+                    ly_do_xuat: lyDoXuatRef.current || null,
+                    ghi_chu: ghiChuRef.current || null,
                 });
                 const existing = await khoDuocService.listChiTietXuatKho({ ma_phieu_xuat: phieuId, limit: 500 });
                 const oldItems = Array.isArray(existing.data) ? existing.data : existing.data?.items || existing.data?.data || [];
@@ -176,9 +186,8 @@ export default function usePhieuXuat({ open, phieuId, mode, onClose, onSaved }) 
                     ma_quan_nhan_nhan: maQuanNhanNhan,
                     ho_ten_nguoi_nhan: hoTenNguoiNhan || null,
                     ngay_thang_nam: ngayXuat.toISOString(),
-                    ly_do_xuat: lyDoXuat || null,
-                    ghi_chu: ghiChu || null,
-                    trang_thai: "cho_duyet",
+                    ly_do_xuat: lyDoXuatRef.current || null,
+                    ghi_chu: ghiChuRef.current || null,
                     nguoi_xuat: nguoiLap,
                 });
                 const maPhieu = phieuRes.data.ma_phieu_xuat;
@@ -217,8 +226,7 @@ export default function usePhieuXuat({ open, phieuId, mode, onClose, onSaved }) 
         maQuanNhanNhan, setMaQuanNhanNhan,
         hoTenNguoiNhan, setHoTenNguoiNhan,
         ngayXuat, setNgayXuat,
-        lyDoXuat, setLyDoXuat,
-        ghiChu, setGhiChu,
+        lyDoXuat, ghiChu, updateField,
         donViFlat,
         selectedItems,
         creatorName,

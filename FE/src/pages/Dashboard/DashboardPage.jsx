@@ -1,4 +1,4 @@
-import { Stack, Grid } from "@mui/material";
+import { Box, Stack, Typography, Grid } from "@mui/material";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import ChartQuanSoKhamChuaBenh from "@/components/Dashboard/ChartQuanSoKhamChuaBenh.jsx";
 import SoSanhThangTruoc from "@/components/Dashboard/SoSanhThangTruoc.jsx";
@@ -7,7 +7,7 @@ import PhanBoBenhCard from "@/components/Dashboard/PhanBoBenhCard.jsx";
 import SucKhoeDonViWidget from "@/components/Dashboard/SucKhoeDonViWidget.jsx";
 import useDashboardStats from "@/hooks/useDashboardStats.js";
 import useBaoCaoThang from "@/hooks/useBaoCaoThang.js";
-import { STAT_META, ICON_MAP } from "@/constants/dashboard.jsx";
+import { STAT_META, STAT_META_2, ICON_MAP } from "@/constants/dashboard.jsx";
 
 export default function DashboardPage() {
     const { flatStats, loading: statsLoading } = useDashboardStats();
@@ -28,9 +28,29 @@ export default function DashboardPage() {
         bg: m.bg,
     }));
 
+    const pendingItems = STAT_META_2.map((m) => ({
+        label: m.label,
+        value: flatStats[m.key] ?? "--",
+        icon: ICON_MAP[m.iconName],
+        color: m.color,
+        bg: m.bg,
+    }));
+
     return (
         <Stack spacing={3}>
-            <StatCardGrid items={statItems} loading={statsLoading} />
+            <Box>
+                <Typography variant="h4" sx={{ mb: 2, fontWeight: 600, color: "text.primary" }}>
+                    Tổng quan
+                </Typography>
+                <StatCardGrid items={statItems} loading={statsLoading} />
+            </Box>
+
+            <Box>
+                <Typography variant="h4" sx={{ mb: 2, fontWeight: 600, color: "text.primary" }}>
+                    Chờ xử lý
+                </Typography>
+                <StatCardGrid items={pendingItems} loading={statsLoading} />
+            </Box>
 
             <ChartQuanSoKhamChuaBenh />
 

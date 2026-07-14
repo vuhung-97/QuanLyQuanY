@@ -17,7 +17,7 @@ class PhieuXuatKho(Base):
     ho_ten_nguoi_nhan: Mapped[str | None] = mapped_column(String(255), nullable=True)
     ly_do_xuat: Mapped[str | None] = mapped_column(Text, nullable=True)
     ghi_chu: Mapped[str | None] = mapped_column(Text, nullable=True)
-    trang_thai: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    trang_thai: Mapped[str] = mapped_column(String(50), default="cho_gui")
     nguoi_xuat: Mapped[str | None] = mapped_column(String(50), nullable=True)
 
     nguoi_duyet: Mapped[str | None] = mapped_column(String(50), nullable=True)

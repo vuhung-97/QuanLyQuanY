@@ -2,12 +2,12 @@ import { forwardRef, memo, useImperativeHandle } from "react";
 import {
     Autocomplete,
     Box,
-    IconButton,
     Stack,
     TextField,
     Typography,
 } from "@mui/material";
 import { Delete as DeleteIcon } from "@mui/icons-material";
+import ActionIcon from "@/components/common/ActionIcon.jsx";
 import {
     THOI_DIEM_OPTIONS,
     CACH_SU_DUNG_OPTIONS,
@@ -89,9 +89,7 @@ const PrescriptionRow = memo(
                             ({donViTinh})
                         </Typography>
                     )}
-                    <IconButton size="small" color="error" onClick={onRemove}>
-                        <DeleteIcon fontSize="small" />
-                    </IconButton>
+                    <ActionIcon title="Xoá" icon={<DeleteIcon />} color="error" onClick={onRemove} />
                 </Stack>
                 <Stack
                     direction="row"

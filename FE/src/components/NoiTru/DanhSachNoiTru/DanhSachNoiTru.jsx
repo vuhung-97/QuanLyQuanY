@@ -5,9 +5,7 @@ import {
     Card,
     CardContent,
     Chip,
-    IconButton,
     Stack,
-    Tooltip,
     Typography,
 } from "@mui/material";
 import {
@@ -18,6 +16,7 @@ import {
     Visibility as VisibilityIcon,
     ExitToApp as ExitToAppIcon,
 } from "@mui/icons-material";
+import ActionIcon from "@/components/common/ActionIcon.jsx";
 import FilterModeToggle from "@/components/common/FilterModeToggle.jsx";
 import YearMonthFilter from "@/components/common/YearMonthFilter.jsx";
 import useDanhSachNoiTru from "@/hooks/useDanhSachNoiTru.jsx";
@@ -90,25 +89,9 @@ const columns = [
         label: "Thao tác",
         render: (row, _idx, { onChiTiet, onRaVien }) => (
             <Stack direction="row" spacing={0.5}>
-                <Tooltip title="Chi tiết">
-                    <IconButton
-                        size="small"
-                        color="info"
-                        onClick={() => onChiTiet(row.ma_benh_an)}
-                    >
-                        <VisibilityIcon fontSize="small" />
-                    </IconButton>
-                </Tooltip>
+                <ActionIcon title="Chi tiết" icon={<VisibilityIcon />} color="info" onClick={() => onChiTiet(row.ma_benh_an)} />
                 {row.trang_thai === "đang_điều_trị" && (
-                    <Tooltip title="Ra viện">
-                        <IconButton
-                            size="small"
-                            color="error"
-                            onClick={() => onRaVien(row.ma_benh_an)}
-                        >
-                            <ExitToAppIcon fontSize="small" />
-                        </IconButton>
-                    </Tooltip>
+                    <ActionIcon title="Ra viện" icon={<ExitToAppIcon />} color="error" onClick={() => onRaVien(row.ma_benh_an)} />
                 )}
             </Stack>
         ),

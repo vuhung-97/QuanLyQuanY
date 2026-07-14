@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import { Close as CloseIcon, Person as PersonIcon } from "@mui/icons-material";
 import DatePicker from "@/components/common/DatePicker.jsx";
+import FormTextField from "@/components/common/FormTextField.jsx";
 
 const PhieuXuatForm = memo(function PhieuXuatForm({
     donViFlat,
@@ -23,10 +24,9 @@ const PhieuXuatForm = memo(function PhieuXuatForm({
     currentUser,
     ngayXuat,
     onNgayXuatChange,
-    lyDoXuat,
-    onLyDoXuatChange,
-    ghiChu,
-    onGhiChuChange,
+    initialLyDoXuat,
+    initialGhiChu,
+    updateField,
 }) {
     return (
         <Stack spacing={2.5} sx={{ pt: 1 }}>
@@ -133,20 +133,22 @@ const PhieuXuatForm = memo(function PhieuXuatForm({
                 />
             </Stack>
 
-            <TextField
+            <FormTextField
+                name="lyDoXuat"
+                initialValue={initialLyDoXuat}
+                onUpdateRef={updateField}
                 label="Lý do xuất"
-                value={lyDoXuat}
-                onChange={(e) => onLyDoXuatChange(e.target.value)}
                 multiline
                 rows={2}
                 fullWidth
                 slotProps={{ input: { readOnly: isView } }}
             />
 
-            <TextField
+            <FormTextField
+                name="ghiChu"
+                initialValue={initialGhiChu}
+                onUpdateRef={updateField}
                 label="Ghi chú"
-                value={ghiChu}
-                onChange={(e) => onGhiChuChange(e.target.value)}
                 multiline
                 rows={2}
                 fullWidth

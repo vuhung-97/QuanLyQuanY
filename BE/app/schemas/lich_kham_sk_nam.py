@@ -7,7 +7,7 @@ from pydantic import Field, field_validator, model_validator
 class LichKhamSkNamBase(SchemaBase):
     thoi_gian_bat_dau: datetime | None = None
     thoi_gian_ket_thuc: datetime | None = None
-    da_duyet: bool = False
+    trang_thai: str = "cho_gui"
 
     @field_validator("thoi_gian_bat_dau", "thoi_gian_ket_thuc", mode="before")
     @classmethod
@@ -31,7 +31,7 @@ class LichKhamSkNamCreate(LichKhamSkNamBase):
 class LichKhamSkNamUpdate(SchemaBase):
     thoi_gian_bat_dau: datetime | None = None
     thoi_gian_ket_thuc: datetime | None = None
-    da_duyet: bool | None = None
+    trang_thai: str | None = None
 
     @field_validator("thoi_gian_bat_dau", "thoi_gian_ket_thuc", mode="before")
     @classmethod
@@ -40,7 +40,7 @@ class LichKhamSkNamUpdate(SchemaBase):
             return None
         return v
 
-    @model_validator(mode='after')  
+    @model_validator(mode='after')
     def validate_thoi_gian(self):
         if self.thoi_gian_bat_dau and self.thoi_gian_ket_thuc:
             if self.thoi_gian_ket_thuc <= self.thoi_gian_bat_dau:

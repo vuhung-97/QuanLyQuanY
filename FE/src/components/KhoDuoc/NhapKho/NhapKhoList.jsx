@@ -5,10 +5,9 @@ import {
     Card,
     CardContent,
     Chip,
-    IconButton,
     Stack,
-    Tooltip,
 } from "@mui/material";
+import ActionIcon from "@/components/common/ActionIcon.jsx";
 import {
     CheckCircle as CheckCircleIcon,
     HourglassEmpty as HourglassEmptyIcon,
@@ -181,28 +180,10 @@ export default function NhapKhoList() {
                 render: (row) =>
                     row.trang_thai === "da_duyet" ? (
                         <IfRole roles={[ROLES.ADMIN, ROLES.CNQY]}>
-                            <Button
-                                size="small"
-                                variant="contained"
-                                onClick={() =>
-                                    openNhapKho(row.ma_phieu_du_tru, "create")
-                                }
-                            >
-                                Nhập kho
-                            </Button>
+                            <ActionIcon title="Nhập kho" icon={<InventoryIcon />} color="info" onClick={() => openNhapKho(row.ma_phieu_du_tru, "create")} />
                         </IfRole>
                     ) : (
-                        <Tooltip title="Xem">
-                            <IconButton
-                                size="small"
-                                color="primary"
-                                onClick={() =>
-                                    openNhapKho(row.ma_phieu_du_tru, "view")
-                                }
-                            >
-                                <VisibilityIcon fontSize="small" />
-                            </IconButton>
-                        </Tooltip>
+                        <ActionIcon title="Xem" icon={<VisibilityIcon />} onClick={() => openNhapKho(row.ma_phieu_du_tru, "view")} />
                     ),
             },
         ],

@@ -1,10 +1,11 @@
-import { Box, Button, Card, CardContent, Chip, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { Box, Button, Card, CardContent, Chip, Stack, Typography } from "@mui/material";
 import {
-    Block as BlockIcon,
     CheckCircle as CheckCircleIcon,
+    DoDisturb as DoDisturbIcon,
     NoteAdd as NoteAddIcon,
     Refresh as RefreshIcon,
 } from "@mui/icons-material";
+import ActionIcon from "@/components/common/ActionIcon.jsx";
 import useLapBenhAn from "@/hooks/useLapBenhAn.jsx";
 import DataTable from "@/components/common/DataTable.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
@@ -58,36 +59,12 @@ const columns = [
         label: "Thao tác",
         render: (row, _idx, { onLapBenhAn, onApprove, onReject }) =>
             row.da_duyet ? (
-                <Tooltip title="Lập bệnh án">
-                    <IconButton
-                        size="small"
-                        color="primary"
-                        onClick={() => onLapBenhAn(row)}
-                    >
-                        <NoteAddIcon fontSize="small" />
-                    </IconButton>
-                </Tooltip>
+                <ActionIcon title="Lập bệnh án" icon={<NoteAddIcon />} color="primary" onClick={() => onLapBenhAn(row)} />
             ) : (
                 <IfRole roles={[ROLES.ADMIN, ROLES.CNQY]}>
                     <Stack direction="row" spacing={0.5}>
-                        <Tooltip title="Duyệt">
-                            <IconButton
-                                size="small"
-                                color="success"
-                                onClick={() => onApprove(row.ma_kham_benh)}
-                            >
-                                <CheckCircleIcon fontSize="small" />
-                            </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Không duyệt">
-                            <IconButton
-                                size="small"
-                                color="error"
-                                onClick={() => onReject(row.ma_kham_benh)}
-                            >
-                                <BlockIcon fontSize="small" />
-                            </IconButton>
-                        </Tooltip>
+                        <ActionIcon title="Duyệt" icon={<CheckCircleIcon />} color="success" onClick={() => onApprove(row.ma_kham_benh)} />
+                        <ActionIcon title="Không duyệt" icon={<DoDisturbIcon />} color="error" onClick={() => onReject(row.ma_kham_benh)} />
                     </Stack>
                 </IfRole>
             ),

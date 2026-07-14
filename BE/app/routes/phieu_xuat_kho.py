@@ -11,6 +11,7 @@ from app.database.session import get_db
 from app.routes.base import _run_crud, create_crud_router
 from app.schemas.phieu_xuat_kho import PhieuXuatKhoRead
 from app.services.inventory_service import InventoryService
+from app.database.nhat_ky_thao_tac import NhatKyThaoTac
 
 
 pre_router = APIRouter()
@@ -64,6 +65,26 @@ def get_danh_sach_phieu_xuat(
 
 
 @pre_router.post(
+    "/{item_id}/gui",
+    dependencies=[Depends(require_permissions("phieu_xuat_kho:update"))],
+)
+def gui_phieu_xuat(
+    item_id: str,
+    db: Session = Depends(get_db),
+    current_user: NguoiDung = Depends(get_current_user),
+):
+    phieu = db.get(PhieuXuatKho, item_id)
+    if not phieu:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Phiếu xuất không tồn tại")
+    if phieu.trang_thai != "cho_gui":
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Không thể gửi duyệt phiếu ở trạng thái {phieu.trang_thai}")
+    phieu.trang_thai = "cho_duyet"
+    db.commit()
+    db.refresh(phieu)
+    return phieu
+
+
+@pre_router.post(
     "/{item_id}/duyet",
     dependencies=[Depends(require_permissions("phieu_xuat_kho:update"))],
 )
@@ -75,7 +96,7 @@ def duyet_phieu_xuat(
     phieu = db.get(PhieuXuatKho, item_id)
     if not phieu:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Phiếu xuất không tồn tại")
-    if phieu.trang_thai and phieu.trang_thai != "cho_duyet":
+    if phieu.trang_thai != "cho_duyet":
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Không thể duyệt phiếu ở trạng thái {phieu.trang_thai}")
     phieu.trang_thai = "da_duyet"
     phieu.nguoi_duyet = current_user.id if hasattr(current_user, "id") else None
@@ -96,7 +117,7 @@ def tu_choi_phieu_xuat(
     phieu = db.get(PhieuXuatKho, item_id)
     if not phieu:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Phiếu xuất không tồn tại")
-    if phieu.trang_thai and phieu.trang_thai != "cho_duyet":
+    if phieu.trang_thai != "cho_duyet":
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Không thể từ chối phiếu ở trạng thái {phieu.trang_thai}")
     phieu.trang_thai = "tu_choi"
     db.commit()

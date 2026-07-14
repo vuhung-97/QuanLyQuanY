@@ -11,7 +11,7 @@ class PhieuXuatKhoBase(SchemaBase):
     ho_ten_nguoi_nhan: str | None = Field(default=None, max_length=255)
     ly_do_xuat: str | None = None
     ghi_chu: str | None = None
-    trang_thai: str | None = Field(default=None, max_length=50)
+    trang_thai: str = Field(default="cho_gui", max_length=50)
     nguoi_xuat: str | None = Field(default=None, max_length=50)
     nguoi_duyet: str | None = Field(default=None, max_length=50)
 

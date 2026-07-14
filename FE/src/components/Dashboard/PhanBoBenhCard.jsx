@@ -31,8 +31,7 @@ export default function PhanBoBenhCard({
                 <Stack spacing={2} sx={{ flex: 1 }}>
                     <Stack
                         direction="row"
-                        justifyContent="space-between"
-                        alignItems="center"
+                        sx={{ justifyContent: "space-between", alignItems: "center" }}
                     >
                         <Typography
                             variant="h6"

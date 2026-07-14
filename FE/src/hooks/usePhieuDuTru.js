@@ -9,6 +9,10 @@ const nextKey = () => ++_rowKey;
 
 export default function usePhieuDuTru({ open, phieuId = null, mode = "create", onClose, onSaved }) {
     const [ghiChu, setGhiChu] = useState("");
+    const ghiChuRef = useRef("");
+    const updateField = useCallback((name, value) => {
+        if (name === "ghiChu") ghiChuRef.current = value;
+    }, []);
     const [saving, setSaving] = useState(false);
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "info" });
     const [openKhoThuoc, setOpenKhoThuoc] = useState(false);
@@ -32,6 +36,7 @@ export default function usePhieuDuTru({ open, phieuId = null, mode = "create", o
         if (!open) return;
 
         if (mode === "create" || !phieuId) {
+            ghiChuRef.current = "";
             setGhiChu("");
             setSavedPhieu(null);
             setNgayLap(dayjs());
@@ -46,6 +51,7 @@ export default function usePhieuDuTru({ open, phieuId = null, mode = "create", o
             try {
                 const phieuRes = await khoDuocService.getPhieuDuTru(phieuId);
                 const p = phieuRes.data;
+                ghiChuRef.current = p.ghi_chu || "";
                 setGhiChu(p.ghi_chu || "");
 
                 const ctRes = await khoDuocService.getChiTietByPhieuDuTru(phieuId, { limit: 500 });
@@ -147,7 +153,7 @@ export default function usePhieuDuTru({ open, phieuId = null, mode = "create", o
 
             if (phieuId && mode === "edit") {
                 await khoDuocService.updatePhieuDuTru(phieuId, {
-                    ghi_chu: ghiChu || null,
+                    ghi_chu: ghiChuRef.current || null,
                     nguoi_lap: nguoiLap,
                     ngay_lap_phieu: ngayLap.format("YYYY-MM-DD"),
                 });
@@ -187,8 +193,8 @@ export default function usePhieuDuTru({ open, phieuId = null, mode = "create", o
             }
 
             const phieuRes = await khoDuocService.createPhieuDuTru({
-                ghi_chu: ghiChu || null,
-                trang_thai: "chua_duyet",
+                ghi_chu: ghiChuRef.current || null,
+                trang_thai: "cho_gui",
                 nguoi_lap: nguoiLap,
                 ngay_lap_phieu: ngayLap.format("YYYY-MM-DD"),
             });
@@ -228,7 +234,7 @@ export default function usePhieuDuTru({ open, phieuId = null, mode = "create", o
         } finally {
             setSaving(false);
         }
-    }, [phieuId, mode, ghiChu, ngayLap, currentUser, onSaved, onClose]);
+    }, [phieuId, mode, ngayLap, currentUser, onSaved, onClose]);
 
     const handleClose = useCallback(() => {
         onClose();
@@ -236,7 +242,7 @@ export default function usePhieuDuTru({ open, phieuId = null, mode = "create", o
 
     return {
         ghiChu,
-        setGhiChu,
+        updateField,
         keys,
         getItem,
         saving,

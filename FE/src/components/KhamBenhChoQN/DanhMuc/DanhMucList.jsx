@@ -3,10 +3,9 @@ import {
     Button,
     Card,
     CardContent,
-    IconButton,
     Stack,
-    Tooltip,
 } from "@mui/material";
+import ActionIcon from "@/components/common/ActionIcon.jsx";
 import {
     Add as AddIcon,
     Delete as DeleteIcon,
@@ -120,24 +119,8 @@ export default function DanhMucList({ config }) {
                 const { onEdit, onDelete } = extra || {};
                 return (
                     <Stack direction="row" spacing={0.5}>
-                        <Tooltip title="Sửa">
-                            <IconButton
-                                size="small"
-                                color="primary"
-                                onClick={() => onEdit(row[config.idField])}
-                            >
-                                <EditIcon fontSize="small" />
-                            </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Xoá">
-                            <IconButton
-                                size="small"
-                                color="error"
-                                onClick={() => onDelete(row[config.idField])}
-                            >
-                                <DeleteIcon fontSize="small" />
-                            </IconButton>
-                        </Tooltip>
+                        <ActionIcon title="Sửa" icon={<EditIcon />} color="primary" onClick={() => onEdit(row[config.idField])} />
+                        <ActionIcon title="Xoá" icon={<DeleteIcon />} color="error" onClick={() => onDelete(row[config.idField])} />
                     </Stack>
                 );
             },

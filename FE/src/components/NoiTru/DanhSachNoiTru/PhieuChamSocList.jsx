@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { Button } from "@mui/material";
-import { Edit as EditIcon } from "@mui/icons-material";
+import { Edit as EditIcon, Visibility as VisibilityIcon } from "@mui/icons-material";
+import ActionIcon from "@/components/common/ActionIcon.jsx";
 import DataTable from "@/components/common/DataTable.jsx";
 
 export default function PhieuChamSocList({ records, readOnly = false, onEdit }) {
@@ -71,14 +71,11 @@ export default function PhieuChamSocList({ records, readOnly = false, onEdit }) 
             key: "sua",
             label: readOnly ? "Xem" : "Sửa",
             render: (row) => (
-                <Button
-                    size="small"
-                    variant="outlined"
+                <ActionIcon
+                    title={readOnly ? "Xem" : "Sửa"}
+                    icon={readOnly ? <VisibilityIcon /> : <EditIcon />}
                     onClick={() => onEdit?.(row)}
-                    sx={{ textTransform: "none", minWidth: 36 }}
-                >
-                    <EditIcon fontSize="small" />
-                </Button>
+                />
             ),
             sx: { width: 60 },
         });

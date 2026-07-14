@@ -7,9 +7,9 @@ import {
     Chip,
     Stack,
     TextField,
-    IconButton,
     Typography,
 } from "@mui/material";
+import ActionIcon from "@/components/common/ActionIcon.jsx";
 import {
     Add as AddIcon,
     Delete as DeleteIcon,
@@ -36,20 +36,8 @@ const buongColumns = (onEdit, onDelete) => [
         label: "Thao tác",
         render: (row) => (
             <Stack direction="row" spacing={0.5}>
-                <IconButton
-                    size="small"
-                    color="primary"
-                    onClick={() => onEdit(row)}
-                >
-                    <EditIcon fontSize="small" />
-                </IconButton>
-                <IconButton
-                    size="small"
-                    color="error"
-                    onClick={() => onDelete("buong", row.ma_buong)}
-                >
-                    <DeleteIcon fontSize="small" />
-                </IconButton>
+                <ActionIcon title="Sửa" icon={<EditIcon />} color="primary" onClick={() => onEdit(row)} />
+                <ActionIcon title="Xoá" icon={<DeleteIcon />} color="error" onClick={() => onDelete("buong", row.ma_buong)} />
             </Stack>
         ),
     },

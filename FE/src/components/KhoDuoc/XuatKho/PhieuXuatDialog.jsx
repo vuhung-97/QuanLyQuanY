@@ -33,9 +33,8 @@ export default function PhieuXuatDialog({
         ngayXuat,
         setNgayXuat,
         lyDoXuat,
-        setLyDoXuat,
         ghiChu,
-        setGhiChu,
+        updateField,
         donViFlat,
         selectedItems,
         creatorName,
@@ -113,10 +112,9 @@ export default function PhieuXuatDialog({
                             currentUser={currentUser}
                             ngayXuat={ngayXuat}
                             onNgayXuatChange={setNgayXuat}
-                            lyDoXuat={lyDoXuat}
-                            onLyDoXuatChange={setLyDoXuat}
-                            ghiChu={ghiChu}
-                            onGhiChuChange={setGhiChu}
+                            initialLyDoXuat={lyDoXuat}
+                            initialGhiChu={ghiChu}
+                            updateField={updateField}
                         />
                         <Stack spacing={2.5} sx={{ mt: 2.5 }}>
                             <ChiTietXuatTable

@@ -4,12 +4,11 @@ import {
     Card,
     CardContent,
     Chip,
-    IconButton,
     MenuItem,
     Stack,
     TextField,
-    Tooltip,
 } from "@mui/material";
+import ActionIcon from "@/components/common/ActionIcon.jsx";
 import {
     Add as AddIcon,
     Cancel as CancelIcon,
@@ -18,6 +17,7 @@ import {
     Edit as EditIcon,
     HourglassEmpty as HourglassEmptyIcon,
     Inventory as InventoryIcon,
+    Send as SendIcon,
     ReceiptLong as ReceiptLongIcon,
     Visibility as VisibilityIcon,
 } from "@mui/icons-material";
@@ -36,6 +36,7 @@ import { ROLES } from "@/constants/roleConstants.js";
 
 const TRANG_THAI_OPTIONS = [
     { value: "", label: "Tất cả" },
+    { value: "cho_gui", label: "Chờ gửi" },
     { value: "cho_duyet", label: "Chờ duyệt" },
     { value: "da_duyet", label: "Đã duyệt" },
     { value: "tu_choi", label: "Từ chối" },
@@ -43,6 +44,7 @@ const TRANG_THAI_OPTIONS = [
 ];
 
 const STATUS_CHIP = {
+    cho_gui: { label: "Chờ gửi", color: "default" },
     cho_duyet: { label: "Chờ duyệt", color: "warning" },
     da_duyet: { label: "Đã duyệt", color: "success" },
     tu_choi: { label: "Từ chối", color: "error" },
@@ -52,6 +54,7 @@ const STATUS_CHIP = {
 const ROWS_PER_PAGE = 20;
 const EMPTY_STATS = {
     tong: 0,
+    cho_gui: 0,
     cho_duyet: 0,
     da_duyet: 0,
     tu_choi: 0,
@@ -141,12 +144,14 @@ export default function XuatKhoList() {
     const handleAction = async (id, action) => {
         setConfirm({ open: false, action: null, id: null });
         try {
-            const labelMap = { duyet: "Duyệt", tu_choi: "Từ chối", xoa: "Xoá" };
+            const labelMap = { duyet: "Duyệt", tu_choi: "Từ chối", xoa: "Xoá", gui: "Gửi duyệt" };
             if (action === "duyet") await khoDuocService.duyetPhieuXuat(id);
             else if (action === "tu_choi")
                 await khoDuocService.tuChoiPhieuXuat(id);
             else if (action === "xoa")
                 await khoDuocService.deletePhieuXuatKho(id);
+            else if (action === "gui")
+                await khoDuocService.guiPhieuXuat(id);
             setSnackbar({
                 open: true,
                 message: `${labelMap[action] || "Thao tác"} thành công.`,
@@ -168,6 +173,13 @@ export default function XuatKhoList() {
 
     const statItems = useMemo(
         () => [
+            {
+                label: "Chờ gửi",
+                value: stats.cho_gui,
+                icon: <SendIcon />,
+                color: "#6B7280",
+                bg: "#F3F4F6",
+            },
             {
                 label: "Chờ duyệt",
                 value: stats.cho_duyet,
@@ -233,123 +245,48 @@ export default function XuatKhoList() {
 
                 return (
                     <Stack direction="row" spacing={0.5}>
-                        {(row.trang_thai === "da_duyet" ||
-                            row.trang_thai === "da_xuat" ||
-                            (!isCreator && !isCNQYorAdmin)) && (
-                            <Tooltip title="Xem">
-                                <IconButton
-                                    size="small"
-                                    color="primary"
-                                    onClick={() =>
-                                        setOpenPhieu({
-                                            open: true,
-                                            id: row.ma_phieu_xuat,
-                                            mode: "view",
-                                        })
-                                    }
-                                >
-                                    <VisibilityIcon fontSize="small" />
-                                </IconButton>
-                            </Tooltip>
-                        )}
-
-                        {row.trang_thai === "cho_duyet" && isCNQYorAdmin && (
+                        {row.trang_thai === "cho_gui" && isCreator && (
                             <>
-                                <Tooltip title="Duyệt">
-                                    <IconButton
-                                        size="small"
-                                        color="success"
-                                        onClick={() =>
-                                            setConfirm({
-                                                open: true,
-                                                action: "duyet",
-                                                id: row.ma_phieu_xuat,
-                                            })
-                                        }
-                                    >
-                                        <CheckCircleIcon fontSize="small" />
-                                    </IconButton>
-                                </Tooltip>
-                                <Tooltip title="Từ chối">
-                                    <IconButton
-                                        size="small"
-                                        color="error"
-                                        onClick={() =>
-                                            setConfirm({
-                                                open: true,
-                                                action: "tu_choi",
-                                                id: row.ma_phieu_xuat,
-                                            })
-                                        }
-                                    >
-                                        <CancelIcon fontSize="small" />
-                                    </IconButton>
-                                </Tooltip>
+                                <ActionIcon title="Sửa" icon={<EditIcon />} onClick={() => setOpenPhieu({ open: true, id: row.ma_phieu_xuat, mode: "edit" })} />
+                                <ActionIcon title="Gửi duyệt" icon={<SendIcon />} onClick={() => handleAction(row.ma_phieu_xuat, "gui")} />
+                                <ActionIcon title="Xoá" icon={<DeleteIcon />} color="error" onClick={() => setConfirm({ open: true, action: "xoa", id: row.ma_phieu_xuat })} />
                             </>
                         )}
 
-                        {row.trang_thai === "cho_duyet" &&
-                            (isCreator || isCNQYorAdmin) && (
-                                <Tooltip title="Sửa">
-                                    <IconButton
-                                        size="small"
-                                        color="primary"
-                                        onClick={() =>
-                                            setOpenPhieu({
-                                                open: true,
-                                                id: row.ma_phieu_xuat,
-                                                mode: "edit",
-                                            })
-                                        }
-                                    >
-                                        <EditIcon fontSize="small" />
-                                    </IconButton>
-                                </Tooltip>
-                            )}
-
-                        {row.trang_thai === "tu_choi" && isCreator && (
-                            <Tooltip title="Sửa">
-                                <IconButton
-                                    size="small"
-                                    color="primary"
-                                    onClick={() =>
-                                        setOpenPhieu({
-                                            open: true,
-                                            id: row.ma_phieu_xuat,
-                                            mode: "edit",
-                                        })
-                                    }
-                                >
-                                    <EditIcon fontSize="small" />
-                                </IconButton>
-                            </Tooltip>
+                        {row.trang_thai === "cho_duyet" && (
+                            <>
+                                <ActionIcon title="Xem" icon={<VisibilityIcon />} onClick={() => setOpenPhieu({ open: true, id: row.ma_phieu_xuat, mode: "view" })} />
+                                {isCNQYorAdmin && (
+                                    <>
+                                        <ActionIcon title="Duyệt" icon={<CheckCircleIcon />} color="success" onClick={() => setConfirm({ open: true, action: "duyet", id: row.ma_phieu_xuat })} />
+                                        <ActionIcon title="Không duyệt" icon={<CancelIcon />} color="error" onClick={() => setConfirm({ open: true, action: "tu_choi", id: row.ma_phieu_xuat })} />
+                                    </>
+                                )}
+                                {(isCreator || isCNQYorAdmin) && (
+                                    <ActionIcon title="Xoá" icon={<DeleteIcon />} color="error" onClick={() => setConfirm({ open: true, action: "xoa", id: row.ma_phieu_xuat })} />
+                                )}
+                            </>
                         )}
 
-                        {["cho_duyet", "tu_choi"].includes(row.trang_thai) &&
-                            (isCreator || isCNQYorAdmin) && (
-                                <Tooltip title="Xoá">
-                                    <IconButton
-                                        size="small"
-                                        color="error"
-                                        onClick={() =>
-                                            setConfirm({
-                                                open: true,
-                                                action: "xoa",
-                                                id: row.ma_phieu_xuat,
-                                            })
-                                        }
-                                    >
-                                        <DeleteIcon fontSize="small" />
-                                    </IconButton>
-                                </Tooltip>
-                            )}
+                        {(row.trang_thai === "da_duyet" || row.trang_thai === "da_xuat") && (
+                            <ActionIcon title="Xem" icon={<VisibilityIcon />} onClick={() => setOpenPhieu({ open: true, id: row.ma_phieu_xuat, mode: "view" })} />
+                        )}
+
+                        {row.trang_thai === "tu_choi" && (
+                            <>
+                                <ActionIcon title="Xem" icon={<VisibilityIcon />} onClick={() => setOpenPhieu({ open: true, id: row.ma_phieu_xuat, mode: "view" })} />
+                                {(isCreator || isCNQYorAdmin) && (
+                                    <ActionIcon title="Xoá" icon={<DeleteIcon />} color="error" onClick={() => setConfirm({ open: true, action: "xoa", id: row.ma_phieu_xuat })} />
+                                )}
+                            </>
+                        )}
                     </Stack>
                 );
             },
         },
     ];
 
-    const confirmLabel = { duyet: "Duyệt", tu_choi: "Từ chối", xoa: "Xoá" };
+    const confirmLabel = { duyet: "Duyệt", tu_choi: "Từ chối", xoa: "Xoá", gui: "Gửi duyệt" };
 
     return (
         <>

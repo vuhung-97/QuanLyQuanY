@@ -5,11 +5,10 @@ import {
     Card,
     CardContent,
     Chip,
-    IconButton,
     Stack,
-    Tooltip,
     Typography,
 } from "@mui/material";
+import ActionIcon from "@/components/common/ActionIcon.jsx";
 import {
     Delete as DeleteIcon,
     Download as DownloadIcon,
@@ -78,35 +77,12 @@ const columns = [
                 {["đã_khám", "chờ_nhận_thuốc", "đã_nhận_thuốc"].includes(
                     row.trang_thai,
                 ) ? (
-                    <Tooltip title="Xem">
-                        <IconButton
-                            size="small"
-                            color="info"
-                            onClick={() => onExam(row.ma_kham_benh)}
-                        >
-                            <VisibilityIcon fontSize="small" />
-                        </IconButton>
-                    </Tooltip>
+                    <ActionIcon title="Xem" icon={<VisibilityIcon />} color="info" onClick={() => onExam(row.ma_kham_benh)} />
                 ) : (
-                    <Tooltip title="Khám">
-                        <IconButton
-                            size="small"
-                            color="primary"
-                            onClick={() => onExam(row.ma_kham_benh)}
-                        >
-                            <MedicalServicesIcon fontSize="small" />
-                        </IconButton>
-                    </Tooltip>
+                    <ActionIcon title="Khám" icon={<MedicalServicesIcon />} color="primary" onClick={() => onExam(row.ma_kham_benh)} />
                 )}
                 {!["đã_khám", "đã_nhận_thuốc"].includes(row.trang_thai) && (
-                    <Button
-                        size="small"
-                        color="error"
-                        sx={{ textTransform: "none", minWidth: 36 }}
-                        onClick={() => onDelete(row.ma_kham_benh)}
-                    >
-                        <DeleteIcon fontSize="small" />
-                    </Button>
+                    <ActionIcon title="Xoá" icon={<DeleteIcon />} color="error" onClick={() => onDelete(row.ma_kham_benh)} />
                 )}
             </Stack>
         ),

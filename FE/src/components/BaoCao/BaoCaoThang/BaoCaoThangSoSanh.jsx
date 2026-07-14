@@ -32,7 +32,11 @@ export default function BaoCaoThangSoSanh({ mode = "month" }) {
         mode === "month" ? (currentMonth === 1 ? 12 : currentMonth - 1) : 1,
     );
     const [yearA, setYearA] = useState(
-        mode === "month" ? (currentMonth === 1 ? currentYear - 1 : currentYear) : currentYear - 1,
+        mode === "month"
+            ? currentMonth === 1
+                ? currentYear - 1
+                : currentYear
+            : currentYear - 1,
     );
     const [monthB, setMonthB] = useState(currentMonth);
     const [yearB, setYearB] = useState(currentYear);
@@ -43,12 +47,14 @@ export default function BaoCaoThangSoSanh({ mode = "month" }) {
     const handleCompare = useCallback(async () => {
         setLoading(true);
         try {
-            const fetchA = mode === "month"
-                ? baoCaoService.getQuanYThang(monthA, yearA)
-                : baoCaoService.getQuanYNam(yearA);
-            const fetchB = mode === "month"
-                ? baoCaoService.getQuanYThang(monthB, yearB)
-                : baoCaoService.getQuanYNam(yearB);
+            const fetchA =
+                mode === "month"
+                    ? baoCaoService.getQuanYThang(monthA, yearA)
+                    : baoCaoService.getQuanYNam(yearA);
+            const fetchB =
+                mode === "month"
+                    ? baoCaoService.getQuanYThang(monthB, yearB)
+                    : baoCaoService.getQuanYNam(yearB);
             const [resA, resB] = await Promise.all([fetchA, fetchB]);
             setDataA(resA.data);
             setDataB(resB.data);
@@ -66,12 +72,14 @@ export default function BaoCaoThangSoSanh({ mode = "month" }) {
 
     const soSanhData = [];
     if (dataA && dataB) {
-        const labelA = mode === "month"
-            ? `Tháng ${dataA.thang}/${dataA.nam}`
-            : `Năm ${dataA.nam}`;
-        const labelB = mode === "month"
-            ? `Tháng ${dataB.thang}/${dataB.nam}`
-            : `Năm ${dataB.nam}`;
+        const labelA =
+            mode === "month"
+                ? `Tháng ${dataA.thang}/${dataA.nam}`
+                : `Năm ${dataA.nam}`;
+        const labelB =
+            mode === "month"
+                ? `Tháng ${dataB.thang}/${dataB.nam}`
+                : `Năm ${dataB.nam}`;
         soSanhData.push(
             {
                 name: labelA,
@@ -130,7 +138,7 @@ export default function BaoCaoThangSoSanh({ mode = "month" }) {
 
                 {soSanhData.length > 0 && (
                     <Box sx={{ height: 350 }}>
-                        <ResponsiveContainer width="100%" height="100%">
+                        <ResponsiveContainer width="100%" height="350">
                             <BarChart
                                 data={soSanhData}
                                 margin={{

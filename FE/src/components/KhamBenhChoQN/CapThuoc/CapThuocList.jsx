@@ -5,11 +5,10 @@ import {
     Card,
     CardContent,
     Chip,
-    IconButton,
     Stack,
-    Tooltip,
     Typography,
 } from "@mui/material";
+import ActionIcon from "@/components/common/ActionIcon.jsx";
 import FilterModeToggle from "@/components/common/FilterModeToggle.jsx";
 import PaginationWidget from "@/components/common/PaginationWidget.jsx";
 import YearMonthFilter from "@/components/common/YearMonthFilter.jsx";
@@ -64,21 +63,9 @@ const columns = [
         label: "Thao tác",
         render: (row, _idx, { onDispense }) => (
             row.trang_thai === "chờ_nhận_thuốc" ? (
-                <Tooltip title="Cấp thuốc">
-                    <IconButton
-                        size="small"
-                        color="primary"
-                        onClick={() => onDispense(row.ma_kham_benh)}
-                    >
-                        <LocalPharmacyIcon fontSize="small" />
-                    </IconButton>
-                </Tooltip>
+                <ActionIcon title="Cấp thuốc" icon={<LocalPharmacyIcon />} color="primary" onClick={() => onDispense(row.ma_kham_benh)} />
             ) : (
-                <Tooltip title="Đã nhận">
-                    <IconButton size="small" color="default" disabled>
-                        <CheckCircleIcon fontSize="small" />
-                    </IconButton>
-                </Tooltip>
+                <ActionIcon title="Đã nhận" icon={<CheckCircleIcon />} color="default" disabled />
             )
         ),
     },

@@ -13,7 +13,7 @@ export default function useLapLichDialog({
     const [thoiGianBatDau, setThoiGianBatDau] = useState("");
     const [thoiGianKetThuc, setThoiGianKetThuc] = useState("");
     const [saving, setSaving] = useState(false);
-    const [error, setError] = useState("");
+    const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
     const [detailData, setDetailData] = useState({});
 
     // Phân công nhiệm vụ
@@ -30,12 +30,12 @@ export default function useLapLichDialog({
                     const EXCLUDED_ROLES = new Set(["ROLE_ADMIN", "ROLE_QN"]);
                     setUsers(list.filter((u) => u.id_vai_tro && !EXCLUDED_ROLES.has(u.id_vai_tro)));
                 })
-                .catch(() => {});
+                .catch(() => setSnackbar({ open: true, message: "Lỗi tải danh sách người dùng.", severity: "error" }));
             khamSucKhoeService.getVaiTroList()
                 .then((res) => {
                     setVaiTroList(Array.isArray(res.data) ? res.data : []);
                 })
-                .catch(() => {});
+                .catch(() => setSnackbar({ open: true, message: "Lỗi tải danh sách vai trò.", severity: "error" }));
         }
     }, [open]);
 
@@ -64,7 +64,7 @@ export default function useLapLichDialog({
                         }
                         setAssignments(map);
                     })
-                    .catch(() => {});
+                    .catch(() => setSnackbar({ open: true, message: "Lỗi tải phân công nhiệm vụ.", severity: "error" }));
             } else {
                 setThoiGianBatDau("");
                 setThoiGianKetThuc("");
@@ -72,7 +72,7 @@ export default function useLapLichDialog({
                 setAssignments({});
                 setExistingAssignments([]);
             }
-            setError("");
+            setSnackbar({ open: false, message: "", severity: "success" });
         }
     }, [open, schedule, chiTietList]);
 
@@ -86,6 +86,10 @@ export default function useLapLichDialog({
             }
             return next;
         });
+    }, []);
+
+    const handleCloseSnackbar = useCallback(() => {
+        setSnackbar((s) => ({ ...s, open: false }));
     }, []);
 
     const handleDetailChange = useCallback((maDonVi, field, value) => {
@@ -108,11 +112,11 @@ export default function useLapLichDialog({
             .filter(([_, d]) => d.thoi_gian_bat_dau && d.thoi_gian_ket_thuc)
             .map(([ma_don_vi, d]) => ({ ma_don_vi, ...d }));
         if (details.length === 0) {
-            setError("Vui lòng nhập ít nhất một đơn vị có thời gian.");
+            setSnackbar({ open: true, message: "Vui lòng nhập ít nhất một đơn vị có thời gian.", severity: "warning" });
             return;
         }
         setSaving(true);
-        setError("");
+        setSnackbar({ open: false, message: "", severity: "success" });
         try {
             const master = {
                 thoi_gian_bat_dau: thoiGianBatDau,
@@ -153,7 +157,7 @@ export default function useLapLichDialog({
                 const res = await khamSucKhoeService.createSchedule(master);
                 ma_lich_kham = res.data?.ma_lich_kham;
                 if (!ma_lich_kham) {
-                    setError("Không nhận được mã lịch khám từ server.");
+                    setSnackbar({ open: true, message: "Không nhận được mã lịch khám từ server.", severity: "error" });
                     setSaving(false);
                     return;
                 }
@@ -192,14 +196,14 @@ export default function useLapLichDialog({
                 }
             }
 
-            onSaved();
-            onClose();
+            setSnackbar({ open: true, message: "Đã lưu lịch khám.", severity: "success" });
+            setTimeout(() => { onSaved(); onClose(); }, 400);
         } catch (err) {
-            setError(
-                err.response?.data?.detail ||
-                    `Lỗi ${err.response?.status}: ${err.message}` ||
-                    "Không thể lưu lịch khám.",
-            );
+            setSnackbar({
+                open: true,
+                message: err.response?.data?.detail || "Không thể lưu lịch khám.",
+                severity: "error",
+            });
         } finally {
             setSaving(false);
         }
@@ -211,7 +215,8 @@ export default function useLapLichDialog({
         thoiGianKetThuc,
         setThoiGianKetThuc,
         saving,
-        error,
+        snackbar,
+        handleCloseSnackbar,
         isEdit,
         handleSubmit,
         users,

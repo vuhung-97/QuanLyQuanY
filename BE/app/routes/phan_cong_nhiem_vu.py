@@ -67,7 +67,7 @@ def create_assignment(
     current_user = Depends(get_current_user),
 ):
     master = db.get(LichKhamSkNam, ma_lich_kham)
-    if master and master.da_duyet:
+    if master and master.trang_thai == "da_duyet":
         raise HTTPException(status_code=400, detail="Lịch khám đã duyệt, không thể thêm phân công.")
     row = PhanCongNhiemVu(ma_lich_kham=ma_lich_kham, **payload.model_dump())
     db.add(row)
@@ -94,7 +94,7 @@ def update_assignment(
     current_user = Depends(get_current_user),
 ):
     master = db.get(LichKhamSkNam, ma_lich_kham)
-    if master and master.da_duyet:
+    if master and master.trang_thai == "da_duyet":
         raise HTTPException(status_code=400, detail="Lịch khám đã duyệt, không thể sửa phân công.")
     p = _run_crud(lambda: phan_cong_nhiem_vu_crud.update(db, id_phan_cong, payload, nguoi_dung_id=current_user.id))
     return _enrich_one(p, db)
@@ -108,6 +108,6 @@ def delete_assignment(
     current_user = Depends(get_current_user),
 ):
     master = db.get(LichKhamSkNam, ma_lich_kham)
-    if master and master.da_duyet:
+    if master and master.trang_thai == "da_duyet":
         raise HTTPException(status_code=400, detail="Lịch khám đã duyệt, không thể xóa phân công.")
     _run_crud(lambda: phan_cong_nhiem_vu_crud.delete(db, id_phan_cong, nguoi_dung_id=current_user.id))

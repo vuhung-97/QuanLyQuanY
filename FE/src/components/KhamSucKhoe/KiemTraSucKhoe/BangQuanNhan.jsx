@@ -1,6 +1,5 @@
 import { memo } from "react";
 import {
-    Button,
     Card,
     CardContent,
     Chip,
@@ -12,7 +11,13 @@ import {
     Tabs,
     Typography,
 } from "@mui/material";
-import { Visibility as VisibilityIcon } from "@mui/icons-material";
+import {
+    Edit as EditIcon,
+    MedicalServices as MedicalServicesIcon,
+    QrCode as QrCodeIcon,
+    Visibility as VisibilityIcon,
+} from "@mui/icons-material";
+import ActionIcon from "@/components/common/ActionIcon.jsx";
 import SearchBarDebounced from "@/components/common/SearchBarDebounced.jsx";
 import DataTable from "@/components/common/DataTable.jsx";
 import { STATUS_CHIP } from "@/constants/khamSucKhoeConstants.js";
@@ -83,52 +88,25 @@ const SoldierRows = memo(function SoldierRows({
                 </TableCell>
                 <TableCell>
                     {maCode ? (
-                        <Button
-                            size="small"
-                            variant="outlined"
-                            disabled
-                            sx={{ fontWeight: 700, minWidth: 90 }}
-                        >
-                            {maCode}
-                        </Button>
+                        <Chip label={maCode} color="primary" size="small" sx={{ fontWeight: 700, minWidth: 90 }} />
+                    ) : isGenerating ? (
+                        <CircularProgress size={24} />
                     ) : (
-                        <Button
-                            size="small"
-                            variant="outlined"
-                            color="secondary"
-                            disabled={isGenerating}
-                            onClick={() => onGenerateBloodCode(qn)}
-                        >
-                            {isGenerating ? "Đang tạo" : "Tạo mã"}
-                        </Button>
+                        <ActionIcon title="Tạo mã lấy máu" icon={<QrCodeIcon />} color="secondary" onClick={() => onGenerateBloodCode(qn)} />
                     )}
                 </TableCell>
                 <TableCell>
-                    {tt === "Chưa khám" && maCode && (
-                        <Button
-                            size="small"
-                            variant="contained"
-                            onClick={() => {
-                                document.activeElement?.blur();
-                                onEdit(qn);
-                            }}
-                        >
-                            Khám
-                        </Button>
-                    )}
-                    {(tt === "Đang khám" || tt === "Đã khám") && (
-                        <Button
-                            size="small"
-                            variant="outlined"
-                            startIcon={<VisibilityIcon />}
-                            onClick={() => {
-                                document.activeElement?.blur();
-                                onEdit(qn);
-                            }}
-                        >
-                            {tt === "Đã khám" ? "Xem" : "Tiếp tục"}
-                        </Button>
-                    )}
+                    <Stack direction="row" spacing={0.5}>
+                        {tt === "Chưa khám" && maCode && (
+                            <ActionIcon title="Khám" icon={<MedicalServicesIcon />} onClick={() => { document.activeElement?.blur(); onEdit(qn); }} />
+                        )}
+                        {tt === "Đang khám" && (
+                            <ActionIcon title="Tiếp tục" icon={<EditIcon />} onClick={() => { document.activeElement?.blur(); onEdit(qn); }} />
+                        )}
+                        {tt === "Đã khám" && (
+                            <ActionIcon title="Xem" icon={<VisibilityIcon />} color="info" onClick={() => { document.activeElement?.blur(); onEdit(qn); }} />
+                        )}
+                    </Stack>
                 </TableCell>
             </TableRow>
         );

@@ -3,14 +3,16 @@ import { khoDuocService } from "@/services/khoDuocService.js";
 
 export const TRANG_THAI_OPTIONS = [
     { value: "", label: "Tất cả" },
-    { value: "chua_duyet", label: "Chưa duyệt" },
+    { value: "cho_gui", label: "Chờ gửi" },
+    { value: "chua_duyet", label: "Chờ duyệt" },
     { value: "da_duyet", label: "Đã duyệt" },
     { value: "tu_choi", label: "Từ chối" },
     { value: "da_nhap", label: "Đã nhập kho" },
 ];
 
 export const STATUS_CHIP = {
-    chua_duyet: { label: "Chưa duyệt", color: "warning" },
+    cho_gui: { label: "Chờ gửi", color: "default" },
+    chua_duyet: { label: "Chờ duyệt", color: "warning" },
     da_duyet: { label: "Đã duyệt", color: "success" },
     tu_choi: { label: "Từ chối", color: "error" },
     da_nhap: { label: "Đã nhập kho", color: "info" },
@@ -20,10 +22,12 @@ export const ROWS_PER_PAGE = 20;
 
 const ACTION_LABEL = {
     duyet: "Duyệt",
+    gui: "Gửi duyệt",
+    tu_choi: "Không duyệt",
     xoa: "Xoá",
 };
 
-export const EMPTY_STATS = { tong: 0, chua_duyet: 0, da_duyet: 0, tu_choi: 0, da_nhap: 0 };
+export const EMPTY_STATS = { tong: 0, cho_gui: 0, chua_duyet: 0, da_duyet: 0, tu_choi: 0, da_nhap: 0 };
 
 export default function useDuTruList() {
     const [rows, setRows] = useState([]);
@@ -87,6 +91,7 @@ export default function useDuTruList() {
         setConfirm({ open: false, action: null, id: null });
         try {
             if (action === "duyet") await khoDuocService.duyetPhieuDuTru(id);
+            else if (action === "gui") await khoDuocService.guiPhieuDuTru(id);
             else if (action === "tu_choi") await khoDuocService.tuChoiPhieuDuTru(id);
             else if (action === "xoa") await khoDuocService.deletePhieuDuTru(id);
             setSnackbar({

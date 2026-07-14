@@ -1,8 +1,12 @@
-import { Button, IconButton, Stack, Tooltip } from "@mui/material";
+import { Stack } from "@mui/material";
+import ActionIcon from "@/components/common/ActionIcon.jsx";
 import {
     CheckCircle as CheckCircleIcon,
     Delete as DeleteIcon,
+    DoDisturb as DoDisturbIcon,
     Edit as EditIcon,
+    Inventory as InventoryIcon,
+    Send as SendIcon,
     Visibility as VisibilityIcon,
 } from "@mui/icons-material";
 
@@ -13,6 +17,8 @@ export default function DuTruRowActions({ row, extra }) {
         onView,
         onEdit,
         onDuyet,
+        onGui,
+        onTuChoi,
         onXoa,
         onNhapKho,
     } = extra || {};
@@ -20,79 +26,34 @@ export default function DuTruRowActions({ row, extra }) {
 
     return (
         <Stack direction="row" spacing={0.5}>
-            {(row.trang_thai === "da_duyet" ||
-                row.trang_thai === "da_nhap" ||
-                (!isCreator && !isCNQYorAdmin)) && (
-                <Tooltip title="Xem">
-                    <IconButton
-                        size="small"
-                        color="primary"
-                        onClick={() => onView(row.ma_phieu_du_tru)}
-                    >
-                        <VisibilityIcon fontSize="small" />
-                    </IconButton>
-                </Tooltip>
+            {row.trang_thai !== "cho_gui" && (
+                <ActionIcon title="Xem" icon={<VisibilityIcon />} onClick={() => onView(row.ma_phieu_du_tru)} />
+            )}
+
+            {row.trang_thai === "cho_gui" && isCreator && (
+                <ActionIcon title="Sửa" icon={<EditIcon />} onClick={() => onEdit(row.ma_phieu_du_tru)} />
+            )}
+
+            {row.trang_thai === "cho_gui" && isCreator && (
+                <ActionIcon title="Gửi duyệt" icon={<SendIcon />} onClick={() => onGui(row.ma_phieu_du_tru)} />
             )}
 
             {row.trang_thai === "chua_duyet" && isCNQYorAdmin && (
-                <Tooltip title="Duyệt">
-                    <IconButton
-                        size="small"
-                        color="success"
-                        onClick={() => onDuyet(row.ma_phieu_du_tru)}
-                    >
-                        <CheckCircleIcon fontSize="small" />
-                    </IconButton>
-                </Tooltip>
+                <ActionIcon title="Duyệt" icon={<CheckCircleIcon />} color="success" onClick={() => onDuyet(row.ma_phieu_du_tru)} />
             )}
 
-            {row.trang_thai === "chua_duyet" &&
-                (isCreator || isCNQYorAdmin) && (
-                    <Tooltip title="Sửa">
-                        <IconButton
-                            size="small"
-                            color="primary"
-                            onClick={() => onEdit(row.ma_phieu_du_tru)}
-                        >
-                            <EditIcon fontSize="small" />
-                        </IconButton>
-                    </Tooltip>
-                )}
-
-            {row.trang_thai === "tu_choi" && isCreator && (
-                <Tooltip title="Sửa">
-                    <IconButton
-                        size="small"
-                        color="primary"
-                        onClick={() => onEdit(row.ma_phieu_du_tru)}
-                    >
-                        <EditIcon fontSize="small" />
-                    </IconButton>
-                </Tooltip>
+            {row.trang_thai === "chua_duyet" && isCNQYorAdmin && (
+                <ActionIcon title="Không duyệt" icon={<DoDisturbIcon />} color="error" onClick={() => onTuChoi(row.ma_phieu_du_tru)} />
             )}
-
-            {["chua_duyet", "tu_choi"].includes(row.trang_thai) &&
-                (isCreator || isCNQYorAdmin) && (
-                    <Tooltip title="Xoá">
-                        <IconButton
-                            size="small"
-                            color="error"
-                            onClick={() => onXoa(row.ma_phieu_du_tru)}
-                        >
-                            <DeleteIcon fontSize="small" />
-                        </IconButton>
-                    </Tooltip>
-                )}
 
             {row.trang_thai === "da_duyet" && (
-                <Button
-                    size="small"
-                    variant="contained"
-                    onClick={() => onNhapKho(row.ma_phieu_du_tru)}
-                >
-                    Nhập kho
-                </Button>
+                <ActionIcon title="Nhập kho" icon={<InventoryIcon />} color="info" onClick={() => onNhapKho(row.ma_phieu_du_tru)} />
             )}
+
+            {["cho_gui", "chua_duyet", "tu_choi"].includes(row.trang_thai) &&
+                (isCreator || isCNQYorAdmin) && (
+                    <ActionIcon title="Xoá" icon={<DeleteIcon />} color="error" onClick={() => onXoa(row.ma_phieu_du_tru)} />
+                )}
         </Stack>
     );
 }

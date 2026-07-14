@@ -31,7 +31,7 @@ export default function LapLichPage() {
     } = useLichKhamData();
 
     const latestApprovedId = useMemo(() => {
-        const approved = schedules.filter((s) => s.da_duyet);
+        const approved = schedules.filter((s) => s.trang_thai === "da_duyet");
         return approved.length > 0
             ? approved[approved.length - 1].ma_lich_kham
             : null;
@@ -136,6 +136,24 @@ export default function LapLichPage() {
         }
     };
 
+    const handleSubmit = async (schedule) => {
+        try {
+            await khamSucKhoeService.submitSchedule(schedule.ma_lich_kham);
+            loadSchedules();
+        } catch (err) {
+            setError(err.response?.data?.detail || "Không thể gửi duyệt lịch khám.");
+        }
+    };
+
+    const handleReject = async (schedule) => {
+        try {
+            await khamSucKhoeService.rejectSchedule(schedule.ma_lich_kham);
+            loadSchedules();
+        } catch (err) {
+            setError(err.response?.data?.detail || "Không thể từ chối lịch khám.");
+        }
+    };
+
     return (
         <Stack spacing={3}>
             <Stack
@@ -206,6 +224,8 @@ export default function LapLichPage() {
                 onEditDetail={handleEditDetail}
                 onDeleteDetail={handleDeleteDetail}
                 onApprove={handleApprove}
+                onSubmit={handleSubmit}
+                onReject={handleReject}
                 onView={handleView}
                 getScheduleStatus={getScheduleStatus}
                 statusColor={statusColor}

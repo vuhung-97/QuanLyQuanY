@@ -5,13 +5,13 @@ import {
     DialogActions,
     DialogContent,
     Divider,
-    IconButton,
     Stack,
     TextField,
     Typography,
 } from "@mui/material";
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
 import { Delete as DeleteIcon } from "@mui/icons-material";
+import ActionIcon from "@/components/common/ActionIcon.jsx";
 
 export default function BuongDialog({
     buong,
@@ -85,15 +85,7 @@ export default function BuongDialog({
                                 }
                                 sx={{ fontWeight: 600 }}
                             />
-                            <IconButton
-                                size="small"
-                                color="error"
-                                onClick={() =>
-                                    onDeleteGiuong(g.ma_giuong)
-                                }
-                            >
-                                <DeleteIcon fontSize="small" />
-                            </IconButton>
+                            <ActionIcon title="Xoá" icon={<DeleteIcon />} color="error" onClick={() => onDeleteGiuong(g.ma_giuong)} />
                         </Stack>
                     ))}
 

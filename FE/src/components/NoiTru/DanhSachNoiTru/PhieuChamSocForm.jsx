@@ -5,11 +5,11 @@ import {
     DialogActions,
     DialogContent,
     Grid,
-    IconButton,
     Stack,
     TextField,
     Typography,
 } from "@mui/material";
+import ActionIcon from "@/components/common/ActionIcon.jsx";
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
 import FormTextField from "@/components/common/FormTextField.jsx";
 import { Delete as DeleteIcon, Add as AddIcon } from "@mui/icons-material";
@@ -72,13 +72,7 @@ const ThuocItemRow = memo(function ThuocItemRow({
                 ({item.don_vi_tinh || "?"})
             </Typography>
             {!readOnly && (
-                <IconButton
-                    size="small"
-                    color="error"
-                    onClick={() => onRemove(index)}
-                >
-                    <DeleteIcon fontSize="small" />
-                </IconButton>
+                <ActionIcon title="Xoá" icon={<DeleteIcon />} color="error" onClick={() => onRemove(index)} />
             )}
         </Stack>
     );
