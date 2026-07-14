@@ -19,9 +19,9 @@ export default function useBaoCaoQuanNhan() {
         try {
             const [kskRes, kbRes, baRes, ctRes] = await Promise.all([
                 khamSucKhoeService.getPhieuByMaQuanNhan(qn.ma_quan_nhan),
-                khamBenhService.getAll({ ma_quan_nhan: qn.ma_quan_nhan }),
-                noiTruService.getDanhSachNoiTru({ ma_quan_nhan: qn.ma_quan_nhan }),
-                khamBenhService.getChuyenTuyenList({ ma_quan_nhan: qn.ma_quan_nhan }),
+                khamBenhService.getAll({ ma_quan_nhan: qn.ma_quan_nhan, limit: 500 }),
+                noiTruService.getDanhSachNoiTru({ ma_quan_nhan: qn.ma_quan_nhan, limit: 500 }),
+                khamBenhService.getChuyenTuyenList({ ma_quan_nhan: qn.ma_quan_nhan, limit: 500 }),
             ]);
 
             setKskList(Array.isArray(kskRes.data) ? kskRes.data : []);

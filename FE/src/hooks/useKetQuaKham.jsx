@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
+import { fetchAllPages } from "@/utils/fetchAll.js";
 
 const PHAN_LOAI_LABELS = ["Loại 1", "Loại 2", "Loại 3", "Loại 4", "Loại 5"];
 
@@ -82,13 +83,11 @@ export default function useKetQuaKham() {
         setLoading(true);
         setError(null);
         try {
-            const [soldiersRes, phieuRes, statsRes] = await Promise.all([
-                khamSucKhoeService.getSoldiersBySchedule(id),
-                khamSucKhoeService.getPhieuBySchedule(id),
+            const [soldiersData, phieuData, statsRes] = await Promise.all([
+                fetchAllPages(`/quan_nhan/lich-kham/${id}`),
+                fetchAllPages(`/phieu_kham_suc_khoe/lich-kham/${id}`),
                 khamSucKhoeService.getScheduleStats(id),
             ]);
-            const soldiersData = soldiersRes.data || soldiersRes || [];
-            const phieuData = phieuRes.data || phieuRes || [];
             const statsData = statsRes.data || statsRes;
 
             const phieuMapData = {};

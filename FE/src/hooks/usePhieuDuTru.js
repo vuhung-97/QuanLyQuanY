@@ -48,7 +48,7 @@ export default function usePhieuDuTru({ open, phieuId = null, mode = "create", o
                 const p = phieuRes.data;
                 setGhiChu(p.ghi_chu || "");
 
-                const ctRes = await khoDuocService.getChiTietByPhieuDuTru(phieuId);
+                const ctRes = await khoDuocService.getChiTietByPhieuDuTru(phieuId, { limit: 500 });
                 const ctData = ctRes.data || [];
                 const ctItems = Array.isArray(ctData) ? ctData : [];
 
@@ -152,7 +152,7 @@ export default function usePhieuDuTru({ open, phieuId = null, mode = "create", o
                     ngay_lap_phieu: ngayLap.format("YYYY-MM-DD"),
                 });
 
-                const existing = await khoDuocService.getChiTietByPhieuDuTru(phieuId);
+                const existing = await khoDuocService.getChiTietByPhieuDuTru(phieuId, { limit: 500 });
                 const oldItems = Array.isArray(existing.data) ? existing.data : [];
                 for (const old of oldItems) {
                     await khoDuocService.deleteChiTietDuTru(

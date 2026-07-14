@@ -13,7 +13,7 @@ export default function usePhieuChamSoc(maBenhAn) {
         if (!maBenhAn) return;
         setLoading(true);
         try {
-            const res = await noiTruService.getPhieuChamSoc(maBenhAn);
+            const res = await noiTruService.getPhieuChamSoc(maBenhAn, { limit: 500 });
             setRecords(res.data.data || []);
         } catch (err) {
             setSnackbar({

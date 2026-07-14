@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
+import { fetchAllPages } from "@/utils/fetchAll.js";
 import { getNamOptions } from "@/utils/yearOptions.js";
 
 export default function useKhamSucKhoeData() {
@@ -16,7 +17,7 @@ export default function useKhamSucKhoeData() {
 
     function getDescendantCodes(maDonVi) {
         const codes = [maDonVi];
-        for (const child of (unitChildrenMap.get(maDonVi) || [])) {
+        for (const child of unitChildrenMap.get(maDonVi) || []) {
             codes.push(...getDescendantCodes(child));
         }
         return codes;
@@ -28,10 +29,15 @@ export default function useKhamSucKhoeData() {
         year: String(new Date().getFullYear()),
     });
 
-    const { schedule: selectedSchedule, unit: selectedUnit, year: selectedYear } = filters;
+    const {
+        schedule: selectedSchedule,
+        unit: selectedUnit,
+        year: selectedYear,
+    } = filters;
 
     const selectedScheduleObj = useMemo(
-        () => schedules.find((s) => s.ma_lich_kham === selectedSchedule) || null,
+        () =>
+            schedules.find((s) => s.ma_lich_kham === selectedSchedule) || null,
         [schedules, selectedSchedule],
     );
 
@@ -48,10 +54,13 @@ export default function useKhamSucKhoeData() {
     }, []);
 
     useEffect(() => {
-        khamSucKhoeService.getDonViList()
+        khamSucKhoeService
+            .getDonViList()
             .then((res) => {
                 const list = Array.isArray(res.data) ? res.data : [];
-                setAllUnitLookup(new Map(list.map((u) => [u.ma_don_vi, u.ten_don_vi])));
+                setAllUnitLookup(
+                    new Map(list.map((u) => [u.ma_don_vi, u.ten_don_vi])),
+                );
                 const cm = new Map();
                 for (const u of list) {
                     if (u.ma_don_vi_truc_thuoc) {
@@ -91,7 +100,8 @@ export default function useKhamSucKhoeData() {
         let ignore = false;
         async function load() {
             try {
-                const res = await khamSucKhoeService.getScheduleStats(selectedSchedule);
+                const res =
+                    await khamSucKhoeService.getScheduleStats(selectedSchedule);
                 if (!ignore) {
                     setStats(res.data);
                     setUnits(res.data.danh_sach_don_vi || []);
@@ -109,7 +119,8 @@ export default function useKhamSucKhoeData() {
     const refreshStats = useCallback(async () => {
         if (!selectedSchedule) return;
         try {
-            const res = await khamSucKhoeService.getScheduleStats(selectedSchedule);
+            const res =
+                await khamSucKhoeService.getScheduleStats(selectedSchedule);
             setStats(res.data);
             setUnits(res.data.danh_sach_don_vi || []);
         } catch {}
@@ -128,23 +139,29 @@ export default function useKhamSucKhoeData() {
         async function load() {
             setLoading(true);
             try {
-                const [qnRes, pRes] = await Promise.all([
-                    khamSucKhoeService.getSoldiersBySchedule(selectedSchedule),
-                    khamSucKhoeService.getPhieuBySchedule(selectedSchedule),
+                const [qnList, pList] = await Promise.all([
+                    fetchAllPages(`/quan_nhan/lich-kham/${selectedSchedule}`),
+                    fetchAllPages(
+                        `/phieu_kham_suc_khoe/lich-kham/${selectedSchedule}`,
+                    ),
                 ]);
                 if (!ignore) {
-                    const qnList = Array.isArray(qnRes.data) ? qnRes.data : [];
-                    const pList = Array.isArray(pRes.data) ? pRes.data : [];
-                    const pm = pList.reduce((acc, p) => { acc[p.ma_quan_nhan] = p; return acc; }, {});
+                    const pm = pList.reduce((acc, p) => {
+                        acc[p.ma_quan_nhan] = p;
+                        return acc;
+                    }, {});
                     setAllSoldiers(qnList);
                     setAllPhieuMap(pm);
                 }
-            } catch {} finally {
+            } catch {
+            } finally {
                 if (!ignore) setLoading(false);
             }
         }
         load();
-        return () => { ignore = true; };
+        return () => {
+            ignore = true;
+        };
     }, [selectedSchedule]);
 
     useEffect(() => {
@@ -160,7 +177,9 @@ export default function useKhamSucKhoeData() {
             setPhieuMap(allPhieuMap);
         } else {
             const codes = getDescendantCodes(selectedUnit);
-            const filtered = allSoldiers.filter((s) => codes.includes(s.ma_don_vi));
+            const filtered = allSoldiers.filter((s) =>
+                codes.includes(s.ma_don_vi),
+            );
             const pm = {};
             for (const s of filtered) {
                 const p = allPhieuMap[s.ma_quan_nhan];

@@ -2,12 +2,12 @@ import api from "./api.js";
 
 export const khamSucKhoeService = {
     getDonViList: (params) =>
-        api.get("/thong-ke/don-vi", { params: { limit: 100, ...params } }),
+        api.get("/thong-ke/don-vi", { params: { limit: 500, ...params } }),
 
     getScheduleList: (params) =>
         api.get("/lich_kham_sk_nam", {
             params: {
-                limit: 100,
+                limit: 500,
                 offset: 0,
                 sort_by: "thoi_gian_bat_dau",
                 ...params,
@@ -68,7 +68,7 @@ export const khamSucKhoeService = {
 
     // Vai trò tạm thời
     getVaiTroList: () =>
-        api.get("/vai_tro_tam_thoi", { params: { limit: 50 } }),
+        api.get("/vai_tro_tam_thoi", { params: { limit: 500 } }),
 
     getNguoiDungList: () => api.get("/nguoi_dung", { params: { limit: 500 } }),
 };

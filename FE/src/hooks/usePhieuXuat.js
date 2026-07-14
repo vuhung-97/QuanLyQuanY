@@ -41,7 +41,7 @@ export default function usePhieuXuat({ open, phieuId, mode, onClose, onSaved }) 
         if (!open) return;
 
         const loadDonVi = () =>
-            khoDuocService.listDonVi({ limit: 200 })
+            khoDuocService.listDonVi({ limit: 500 })
                 .then((res) => {
                     const data = res.data || [];
                     const units = Array.isArray(data) ? data : data.items || data.data || [];

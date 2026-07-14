@@ -16,8 +16,8 @@ export const noiTruService = {
 
     raVien: (id, data) => api.post(`/benh_an/${id}/ra-vien`, data),
 
-    getPhieuChamSoc: (maBenhAn) =>
-        api.get(`/benh_an/${maBenhAn}/phieu-cham-soc`),
+    getPhieuChamSoc: (maBenhAn, params) =>
+        api.get(`/benh_an/${maBenhAn}/phieu-cham-soc`, { params }),
     createPhieuChamSoc: (data) => api.post("/phieu_cham_soc", data),
     updatePhieuChamSoc: (id, data) =>
         api.patch(`/phieu_cham_soc/${id}`, data),

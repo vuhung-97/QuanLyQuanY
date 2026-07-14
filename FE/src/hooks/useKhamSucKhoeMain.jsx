@@ -7,6 +7,7 @@ import {
 } from "@mui/icons-material";
 import useKhamSucKhoeData from "@/hooks/useKhamSucKhoeData";
 import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
+import { fetchAllPages } from "@/utils/fetchAll.js";
 import { filterSoldiers } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
 import { filterTabs } from "@/constants/khamSucKhoeConstants.js";
 import { ALL_TABS, ROLE_TAB_ACCESS } from "@/constants/khamSucKhoeConstants.js";
@@ -146,13 +147,12 @@ export default function useKhamSucKhoeMain() {
     const handlePrint = useCallback(async (type = "chua_hoan_thanh") => {
         if (!selectedSchedule) return;
         try {
-            const [qnRes, pRes] = await Promise.all([
-                khamSucKhoeService.getSoldiersBySchedule(selectedSchedule),
-                khamSucKhoeService.getPhieuBySchedule(selectedSchedule),
+            const [allSoldiers, pList] = await Promise.all([
+                fetchAllPages(`/quan_nhan/lich-kham/${selectedSchedule}`),
+                fetchAllPages(`/phieu_kham_suc_khoe/lich-kham/${selectedSchedule}`),
             ]);
-            const allSoldiers = Array.isArray(qnRes.data) ? qnRes.data : [];
             const allPhieuMap = (
-                Array.isArray(pRes.data) ? pRes.data : []
+                Array.isArray(pList) ? pList : []
             ).reduce((acc, p) => {
                 acc[p.ma_quan_nhan] = p;
                 return acc;

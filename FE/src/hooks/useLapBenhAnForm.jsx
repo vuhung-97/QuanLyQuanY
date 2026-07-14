@@ -68,13 +68,13 @@ export default function useLapBenhAnForm({ open, onSave: externalSave, benhAn })
         if (open) {
             setLoadingBuong(true);
             const fetch = isEdit
-                ? noiTruService.getBuong({ limit: 100 })
+                ? noiTruService.getBuong({ limit: 500 })
                 : noiTruService.getBuongCoGiuongTrong();
             fetch
                 .then((res) => setBuongList(Array.isArray(res.data) ? res.data : res.data?.data || []))
                 .finally(() => setLoadingBuong(false));
 
-            api.get("/dm_nhom_benh", { params: { limit: 200 } })
+            api.get("/dm_nhom_benh", { params: { limit: 500 } })
                 .then((res) => setNhomBenhList(Array.isArray(res.data) ? res.data : res.data?.data || []))
                 .catch(() => {});
         }

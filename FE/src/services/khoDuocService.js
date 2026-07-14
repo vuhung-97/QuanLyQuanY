@@ -53,7 +53,7 @@ export const khoDuocService = {
     nhapKhoTuPhieuDuTru: (id, data) => api.post(`/phieu_du_tru/${id}/nhap-kho`, data),
 
     listChiTietDuTru: (params) => api.get("/chi_tiet_du_tru", { params }),
-    getChiTietByPhieuDuTru: (maPhieu) => api.get(`/chi_tiet_du_tru/by-phieu/${maPhieu}`),
+    getChiTietByPhieuDuTru: (maPhieu, params) => api.get(`/chi_tiet_du_tru/by-phieu/${maPhieu}`, { params }),
     createChiTietDuTru: (data) => api.post("/chi_tiet_du_tru", data),
     updateChiTietDuTru: (id, data) => api.patch(`/chi_tiet_du_tru/${id}`, data),
     deleteChiTietDuTru: (id) => api.delete(`/chi_tiet_du_tru/${id}`),

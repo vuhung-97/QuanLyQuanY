@@ -10,7 +10,7 @@ export default function useTonKhoCanhBao() {
         const thang = now.getMonth() + 1;
         const nam = now.getFullYear();
         setLoading(true);
-        api.get("/bao-cao/ton-kho", { params: { thang, nam } })
+        api.get("/bao-cao/ton-kho", { params: { thang, nam, limit: 500 } })
             .then((res) => {
                 const sorted = [...(res.data?.danh_sach || [])]
                     .filter((item) => {

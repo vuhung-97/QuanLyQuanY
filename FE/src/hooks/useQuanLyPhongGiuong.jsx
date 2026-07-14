@@ -28,7 +28,7 @@ export default function useQuanLyPhongGiuong() {
     const loadData = useCallback(async () => {
         setLoading(true);
         try {
-            const buongRes = await noiTruService.getBuong({ limit: 100 });
+            const buongRes = await noiTruService.getBuong({ limit: 500 });
             setBuongList(buongRes.data?.data || buongRes.data || []);
         } catch {
             setSnackbar({ open: true, message: "Lỗi tải danh sách buồng.", severity: "error" });
