@@ -1,4 +1,10 @@
-import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
+import {
+    BrowserRouter,
+    Routes,
+    Route,
+    Navigate,
+    Outlet,
+} from "react-router-dom";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import "dayjs/locale/vi";
@@ -25,7 +31,6 @@ import LapBenhAnPage from "./pages/NoiTru/LapBenhAnPage.jsx";
 import QuanLyPhongGiuongPage from "./pages/NoiTru/QuanLyPhongGiuongPage.jsx";
 import KhoPage from "./pages/KhoDuoc/KhoPage.jsx";
 import UserManagementPage from "./pages/Admin/UserManagementPage.jsx";
-import RolePermissionPage from "./pages/Admin/RolePermissionPage.jsx";
 import AuditLogPage from "./pages/Admin/AuditLogPage.jsx";
 
 export default function App() {
@@ -46,28 +51,85 @@ export default function App() {
                     >
                         <Route index element={<DashboardPage />} />
 
-                        <Route element={<RoleRoute roles={MENU_ROLE_MAP["kham-dinh-ky"]}><Outlet /></RoleRoute>}>
+                        <Route
+                            element={
+                                <RoleRoute
+                                    roles={MENU_ROLE_MAP["kham-dinh-ky"]}
+                                >
+                                    <Outlet />
+                                </RoleRoute>
+                            }
+                        >
                             <Route path="kham-dinh-ky">
-                                <Route index element={<Navigate to="lap-lich" replace />} />
-                                <Route path="lap-lich" element={<LapLichPage />} />
-                                <Route path="kham-suc-khoe" element={<KhamSucKhoePage />} />
-                                <Route path="ket-qua-kham" element={<KetQuaKhamPage />} />
+                                <Route
+                                    index
+                                    element={<Navigate to="lap-lich" replace />}
+                                />
+                                <Route
+                                    path="lap-lich"
+                                    element={<LapLichPage />}
+                                />
+                                <Route
+                                    path="kham-suc-khoe"
+                                    element={<KhamSucKhoePage />}
+                                />
+                                <Route
+                                    path="ket-qua-kham"
+                                    element={<KetQuaKhamPage />}
+                                />
                             </Route>
                             <Route path="noi-tru">
-                                <Route index element={<Navigate to="danh-sach" replace />} />
-                                <Route path="danh-sach" element={<DanhSachNoiTruPage />} />
-                                <Route path="lap-benh-an" element={<LapBenhAnPage />} />
-                                <Route path="quan-ly-phong-giuong" element={<QuanLyPhongGiuongPage />} />
+                                <Route
+                                    index
+                                    element={
+                                        <Navigate to="danh-sach" replace />
+                                    }
+                                />
+                                <Route
+                                    path="danh-sach"
+                                    element={<DanhSachNoiTruPage />}
+                                />
+                                <Route
+                                    path="lap-benh-an"
+                                    element={<LapBenhAnPage />}
+                                />
+                                <Route
+                                    path="quan-ly-phong-giuong"
+                                    element={<QuanLyPhongGiuongPage />}
+                                />
                             </Route>
                             <Route path="kham-benh">
-                                <Route index element={<Navigate to="Kham-benh-cho-quan-nhan" replace />} />
-                                <Route path="Kham-benh-cho-quan-nhan" element={<KhamBenhPage />} />
-                                <Route path="Cap-thuoc" element={<CapThuocPage />} />
-                                <Route path="Chuyen-tuyen" element={<ChuyenTuyenPage />} />
-                                <Route path="danh-muc" element={<DanhMucPage />} />
+                                <Route
+                                    index
+                                    element={
+                                        <Navigate
+                                            to="Kham-benh-cho-quan-nhan"
+                                            replace
+                                        />
+                                    }
+                                />
+                                <Route
+                                    path="Kham-benh-cho-quan-nhan"
+                                    element={<KhamBenhPage />}
+                                />
+                                <Route
+                                    path="Cap-thuoc"
+                                    element={<CapThuocPage />}
+                                />
+                                <Route
+                                    path="Chuyen-tuyen"
+                                    element={<ChuyenTuyenPage />}
+                                />
+                                <Route
+                                    path="danh-muc"
+                                    element={<DanhMucPage />}
+                                />
                             </Route>
                             <Route path="kho-duoc">
-                                <Route index element={<Navigate to="kho" replace />} />
+                                <Route
+                                    index
+                                    element={<Navigate to="kho" replace />}
+                                />
                                 <Route path="kho" element={<KhoPage />} />
                                 <Route path="du-tru" element={<DuTruPage />} />
                                 <Route path="nhap" element={<NhapKhoPage />} />
@@ -77,12 +139,28 @@ export default function App() {
 
                         <Route path="bao-cao" element={<BaoCaoPage />} />
 
-                        <Route element={<AdminRoute><Outlet /></AdminRoute>}>
+                        <Route
+                            element={
+                                <AdminRoute>
+                                    <Outlet />
+                                </AdminRoute>
+                            }
+                        >
                             <Route path="admin">
-                                <Route index element={<Navigate to="nguoi-dung" replace />} />
-                                <Route path="nguoi-dung" element={<UserManagementPage />} />
-                                <Route path="phan-quyen" element={<RolePermissionPage />} />
-                                <Route path="nhat-ky" element={<AuditLogPage />} />
+                                <Route
+                                    index
+                                    element={
+                                        <Navigate to="nguoi-dung" replace />
+                                    }
+                                />
+                                <Route
+                                    path="nguoi-dung"
+                                    element={<UserManagementPage />}
+                                />
+                                <Route
+                                    path="nhat-ky"
+                                    element={<AuditLogPage />}
+                                />
                             </Route>
                         </Route>
                     </Route>

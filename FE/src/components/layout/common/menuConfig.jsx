@@ -25,7 +25,7 @@ export const defaultMenuItems = [
         path: "/kham-dinh-ky",
         icon: <HealthAndSafetyIcon />,
         allowedRoles: MENU_ROLE_MAP["kham-dinh-ky"],
-            children: [
+        children: [
             {
                 id: "periodic-schedule",
                 title: "Lập lịch khám",
@@ -55,7 +55,7 @@ export const defaultMenuItems = [
         path: "/noi-tru",
         icon: <BedIcon />,
         allowedRoles: MENU_ROLE_MAP["noi-tru"],
-            children: [
+        children: [
             {
                 id: "inpatient-list",
                 title: "Danh sách nội trú",
@@ -85,7 +85,7 @@ export const defaultMenuItems = [
         path: "/kham-benh",
         icon: <MedicalServicesIcon />,
         allowedRoles: MENU_ROLE_MAP["kham-benh"],
-            children: [
+        children: [
             {
                 id: "examination-list",
                 title: "Khám bệnh",
@@ -117,42 +117,42 @@ export const defaultMenuItems = [
         ],
     },
     {
-                id: "pharmacy",
-                title: "Thuốc và vật tư y tế",
-                path: "/kho-duoc",
-                icon: <InventoryIcon />,
-                allowedRoles: MENU_ROLE_MAP["kho-duoc"],
-                    children: [
-                    {
-                        id: "pharmacy-inventory",
-                        title: "Kho",
-                        path: "/kho-duoc/kho",
-                        icon: <CircleIcon sx={{ fontSize: 12 }} />,
-                        allowedRoles: MENU_ROLE_MAP["kho"],
-                    },
-                    {
-                        id: "pharmacy-request",
-                        title: "Dự trù",
-                        path: "/kho-duoc/du-tru",
-                        icon: <CircleIcon sx={{ fontSize: 12 }} />,
-                        allowedRoles: MENU_ROLE_MAP["du-tru"],
-                    },
-                    {
-                        id: "pharmacy-import",
-                        title: "Nhập",
-                        path: "/kho-duoc/nhap",
-                        icon: <CircleIcon sx={{ fontSize: 12 }} />,
-                        allowedRoles: MENU_ROLE_MAP["nhap-kho"],
-                    },
-                    {
-                        id: "pharmacy-export",
-                        title: "Xuất",
-                        path: "/kho-duoc/xuat",
-                        icon: <CircleIcon sx={{ fontSize: 12 }} />,
-                        allowedRoles: MENU_ROLE_MAP["xuat-kho"],
-                    },
-                ],
+        id: "pharmacy",
+        title: "Thuốc và vật tư y tế",
+        path: "/kho-duoc",
+        icon: <InventoryIcon />,
+        allowedRoles: MENU_ROLE_MAP["kho-duoc"],
+        children: [
+            {
+                id: "pharmacy-inventory",
+                title: "Kho",
+                path: "/kho-duoc/kho",
+                icon: <CircleIcon sx={{ fontSize: 12 }} />,
+                allowedRoles: MENU_ROLE_MAP["kho"],
             },
+            {
+                id: "pharmacy-request",
+                title: "Dự trù",
+                path: "/kho-duoc/du-tru",
+                icon: <CircleIcon sx={{ fontSize: 12 }} />,
+                allowedRoles: MENU_ROLE_MAP["du-tru"],
+            },
+            {
+                id: "pharmacy-import",
+                title: "Nhập",
+                path: "/kho-duoc/nhap",
+                icon: <CircleIcon sx={{ fontSize: 12 }} />,
+                allowedRoles: MENU_ROLE_MAP["nhap-kho"],
+            },
+            {
+                id: "pharmacy-export",
+                title: "Xuất",
+                path: "/kho-duoc/xuat",
+                icon: <CircleIcon sx={{ fontSize: 12 }} />,
+                allowedRoles: MENU_ROLE_MAP["xuat-kho"],
+            },
+        ],
+    },
     {
         id: "reports",
         title: "Báo cáo",
@@ -170,7 +170,7 @@ export const adminMenuItems = [
         path: "/admin",
         icon: <AdminPanelSettingsIcon />,
         allowedRoles: MENU_ROLE_MAP["quan-tri"],
-            children: [
+        children: [
             {
                 id: "admin-users",
                 title: "Tài khoản người dùng",
@@ -178,13 +178,13 @@ export const adminMenuItems = [
                 icon: <CircleIcon sx={{ fontSize: 12 }} />,
                 allowedRoles: MENU_ROLE_MAP["tai-khoan"],
             },
-            {
-                id: "admin-permissions",
-                title: "Vai trò & phân quyền",
-                path: "/admin/phan-quyen",
-                icon: <CircleIcon sx={{ fontSize: 12 }} />,
-                allowedRoles: MENU_ROLE_MAP["phan-quyen"],
-            },
+            // {
+            //     id: "admin-permissions",
+            //     title: "Vai trò & phân quyền",
+            //     path: "/admin/phan-quyen",
+            //     icon: <CircleIcon sx={{ fontSize: 12 }} />,
+            //     allowedRoles: MENU_ROLE_MAP["phan-quyen"],
+            // },
             {
                 id: "admin-audit",
                 title: "Nhật ký hệ thống",
@@ -202,7 +202,9 @@ export function filterMenuByRole(items, role) {
         .filter((item) => {
             const allowed = item.allowedRoles;
             if (!allowed) {
-                console.warn(`[Phân quyền] Thiếu mapping role cho menu: ${item.id}`);
+                console.warn(
+                    `[Phân quyền] Thiếu mapping role cho menu: ${item.id}`,
+                );
                 return false;
             }
             return allowed.includes(role);
@@ -212,7 +214,9 @@ export function filterMenuByRole(items, role) {
             const visibleChildren = item.children.filter((child) => {
                 const allowed = child.allowedRoles;
                 if (!allowed) {
-                    console.warn(`[Phân quyền] Thiếu mapping role cho menu con: ${child.id}`);
+                    console.warn(
+                        `[Phân quyền] Thiếu mapping role cho menu con: ${child.id}`,
+                    );
                     return false;
                 }
                 return allowed.includes(role);
