@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import React from "react";
 import {
     Box,
@@ -17,12 +17,15 @@ import {
     Typography,
 } from "@mui/material";
 import {
+    CheckCircle as CheckCircleIcon,
     Delete as DeleteIcon,
     Edit as EditIcon,
     KeyboardArrowDown as ArrowDownIcon,
     KeyboardArrowUp as ArrowUpIcon,
+    Visibility as VisibilityIcon,
 } from "@mui/icons-material";
 import DataTable from "@/components/common/DataTable.jsx";
+import PaginationWidget from "@/components/common/PaginationWidget.jsx";
 import { findNearestDetail } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
 import { formatDateTime } from "@/utils/date.js";
 import IfRole from "@/components/common/IfRole.jsx";
@@ -44,13 +47,16 @@ function DetailSubTable({
     onEditDetail,
     onDeleteDetail,
 }) {
+    const isApproved = schedule.da_duyet;
     return (
         <DataTable
             columns={[
                 { key: "don_vi", label: "Đơn vị" },
                 { key: "thoi_gian", label: "Thời gian" },
                 { key: "dia_diem", label: "Địa điểm" },
-                { key: "thao_tac", label: "Thao tác", sx: { width: 120 } },
+                ...(isApproved
+                    ? []
+                    : [{ key: "thao_tac", label: "Thao tác", sx: { width: 120 } }]),
             ]}
             emptyMessage=""
             minWidth={500}
@@ -70,30 +76,32 @@ function DetailSubTable({
                         {formatDateTime(ct.thoi_gian_ket_thuc)}
                     </TableCell>
                     <TableCell>{ct.dia_diem || "--"}</TableCell>
-                    <TableCell>
-                        <IfRole roles={[ROLES.ADMIN, ROLES.CNQY]}>
-                            <Stack direction="row" spacing={0.5}>
-                                <Tooltip title="Sửa">
-                                    <IconButton
-                                        size="small"
-                                        color="primary"
-                                        onClick={() => onEditDetail(schedule, ct)}
-                                    >
-                                        <EditIcon fontSize="small" />
-                                    </IconButton>
-                                </Tooltip>
-                                <Tooltip title="Xóa">
-                                    <IconButton
-                                        size="small"
-                                        color="error"
-                                        onClick={() => onDeleteDetail(schedule, ct)}
-                                    >
-                                        <DeleteIcon fontSize="small" />
-                                    </IconButton>
-                                </Tooltip>
-                            </Stack>
-                        </IfRole>
-                    </TableCell>
+                    {!isApproved && (
+                        <TableCell>
+                            <IfRole roles={[ROLES.ADMIN, ROLES.CNQY, ROLES.BACSI, ROLES.YSI]}>
+                                <Stack direction="row" spacing={0.5}>
+                                    <Tooltip title="Sửa">
+                                        <IconButton
+                                            size="small"
+                                            color="primary"
+                                            onClick={() => onEditDetail(schedule, ct)}
+                                        >
+                                            <EditIcon fontSize="small" />
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Tooltip title="Xóa">
+                                        <IconButton
+                                            size="small"
+                                            color="error"
+                                            onClick={() => onDeleteDetail(schedule, ct)}
+                                        >
+                                            <DeleteIcon fontSize="small" />
+                                        </IconButton>
+                                    </Tooltip>
+                                </Stack>
+                            </IfRole>
+                        </TableCell>
+                    )}
                 </TableRow>
             ))}
         </DataTable>
@@ -109,6 +117,8 @@ function ScheduleTableRow({
     onDelete,
     onEditDetail,
     onDeleteDetail,
+    onApprove,
+    onView,
     donViLookup,
     getScheduleStatus,
     statusColor,
@@ -133,35 +143,69 @@ function ScheduleTableRow({
                 </TableCell>
                 <TableCell>{nearest?.dia_diem || "--"}</TableCell>
                 <TableCell>
-                    <Chip
-                        size="small"
-                        label={currentStatus}
-                        sx={{ ...statusColor(currentStatus), fontWeight: 700 }}
-                    />
+                    <Stack direction="row" spacing={0.5} alignItems="center">
+                        <Chip
+                            size="small"
+                            label={currentStatus}
+                            sx={{ ...statusColor(currentStatus), fontWeight: 700 }}
+                        />
+                        <Chip
+                            size="small"
+                            label={row.da_duyet ? "Đã duyệt" : "Chưa duyệt"}
+                            color={row.da_duyet ? "success" : "default"}
+                            variant="outlined"
+                            sx={{ fontWeight: 600 }}
+                        />
+                    </Stack>
                 </TableCell>
                 <TableCell>
-                    <IfRole roles={[ROLES.ADMIN, ROLES.CNQY]}>
-                        <Stack direction="row" spacing={0.5}>
-                            <Tooltip title="Sửa">
+                    {row.da_duyet ? (
+                        <IfRole roles={[ROLES.ADMIN, ROLES.CNQY, ROLES.BACSI, ROLES.YSI]}>
+                            <Tooltip title="Xem">
                                 <IconButton
                                     size="small"
-                                    color="primary"
-                                    onClick={() => onEdit(row)}
+                                    color="info"
+                                    onClick={() => onView(row)}
                                 >
-                                    <EditIcon fontSize="small" />
+                                    <VisibilityIcon fontSize="small" />
                                 </IconButton>
                             </Tooltip>
-                            <Tooltip title="Xóa">
-                                <IconButton
-                                    size="small"
-                                    color="error"
-                                    onClick={() => onDelete(row)}
-                                >
-                                    <DeleteIcon fontSize="small" />
-                                </IconButton>
-                            </Tooltip>
-                        </Stack>
-                    </IfRole>
+                        </IfRole>
+                    ) : (
+                        <IfRole roles={[ROLES.ADMIN, ROLES.CNQY, ROLES.BACSI, ROLES.YSI]}>
+                            <Stack direction="row" spacing={0.5}>
+                                <Tooltip title="Sửa">
+                                    <IconButton
+                                        size="small"
+                                        color="primary"
+                                        onClick={() => onEdit(row)}
+                                    >
+                                        <EditIcon fontSize="small" />
+                                    </IconButton>
+                                </Tooltip>
+                                <Tooltip title="Xóa">
+                                    <IconButton
+                                        size="small"
+                                        color="error"
+                                        onClick={() => onDelete(row)}
+                                    >
+                                        <DeleteIcon fontSize="small" />
+                                    </IconButton>
+                                </Tooltip>
+                                <IfRole roles={[ROLES.ADMIN, ROLES.CNQY]}>
+                                    <Tooltip title="Duyệt">
+                                        <IconButton
+                                            size="small"
+                                            color="success"
+                                            onClick={() => onApprove(row)}
+                                        >
+                                            <CheckCircleIcon fontSize="small" />
+                                        </IconButton>
+                                    </Tooltip>
+                                </IfRole>
+                            </Stack>
+                        </IfRole>
+                    )}
                 </TableCell>
             </TableRow>
             <TableRow>
@@ -201,6 +245,8 @@ export default function DanhSachLich({
     onDelete,
     onEditDetail,
     onDeleteDetail,
+    onApprove,
+    onView,
     getScheduleStatus,
     statusColor,
 }) {
@@ -234,6 +280,18 @@ export default function DanhSachLich({
         );
     }, [schedules, year]);
 
+    const [page, setPage] = useState(1);
+    const rowsPerPage = 10;
+
+    useEffect(() => setPage(1), [year]);
+
+    const paginatedSchedules = useMemo(
+        () => filteredSchedules.slice((page - 1) * rowsPerPage, page * rowsPerPage),
+        [filteredSchedules, page, rowsPerPage],
+    );
+
+    const totalPages = Math.ceil(filteredSchedules.length / rowsPerPage);
+
     return (
         <Card sx={{ borderRadius: 3 }}>
             <CardContent>
@@ -252,6 +310,9 @@ export default function DanhSachLich({
                             sx={{ mt: 0.5 }}
                         >
                             Tổng số: {filteredSchedules.length} lịch
+                            {filteredSchedules.length > 0 && (
+                                <span> — Trang {page}/{totalPages}</span>
+                            )}
                         </Typography>
                     </Box>
                     <FormControl size="small" sx={{ minWidth: 100 }}>
@@ -266,29 +327,42 @@ export default function DanhSachLich({
                         </Select>
                     </FormControl>
                 </Stack>
-                <DataTable
-                    columns={columns}
-                    loading={loading}
-                    emptyMessage="Không có lịch khám phù hợp."
-                    minWidth={760}
-                >
-                    {filteredSchedules.map((row) => (
-                        <ScheduleTableRow
-                            key={row.ma_lich_kham}
-                            row={row}
-                            details={chiTietMap[row.ma_lich_kham] || []}
-                            isExpanded={Boolean(expanded[row.ma_lich_kham])}
-                            onToggle={() => toggleExpand(row.ma_lich_kham)}
-                            onEdit={onEdit}
-                            onDelete={onDelete}
-                            onEditDetail={onEditDetail}
-                            onDeleteDetail={onDeleteDetail}
-                            donViLookup={donViLookup}
-                            getScheduleStatus={getScheduleStatus}
-                            statusColor={statusColor}
-                        />
-                    ))}
-                </DataTable>
+                <Box sx={{ maxHeight: 560, overflow: "auto" }}>
+                    <DataTable
+                        columns={columns}
+                        loading={loading}
+                        emptyMessage="Không có lịch khám phù hợp."
+                        minWidth={760}
+                    >
+                        {paginatedSchedules.map((row) => (
+                            <ScheduleTableRow
+                                key={row.ma_lich_kham}
+                                row={row}
+                                details={chiTietMap[row.ma_lich_kham] || []}
+                                isExpanded={Boolean(expanded[row.ma_lich_kham])}
+                                onToggle={() => toggleExpand(row.ma_lich_kham)}
+                                onEdit={onEdit}
+                                onDelete={onDelete}
+                                onEditDetail={onEditDetail}
+                                onDeleteDetail={onDeleteDetail}
+                                onApprove={onApprove}
+                                onView={onView}
+                                donViLookup={donViLookup}
+                                getScheduleStatus={getScheduleStatus}
+                                statusColor={statusColor}
+                            />
+                        ))}
+                    </DataTable>
+                </Box>
+                {filteredSchedules.length > rowsPerPage && (
+                    <PaginationWidget
+                        page={page}
+                        totalRecords={filteredSchedules.length}
+                        rowsPerPage={rowsPerPage}
+                        onChange={setPage}
+                        sx={{ mt: 2 }}
+                    />
+                )}
             </CardContent>
         </Card>
     );

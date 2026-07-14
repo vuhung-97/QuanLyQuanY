@@ -32,7 +32,7 @@ export const MENU_ROLE_MAP = {
     ],
 
     "kham-dinh-ky": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
-    "lap-lich": ["ROLE_ADMIN", "ROLE_CNQY"],
+    "lap-lich": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
     "kham-suc-khoe": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
     "ket-qua-kham": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
 

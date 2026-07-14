@@ -95,6 +95,8 @@ def create_chi_tiet(
     master = db.get(LichKhamSkNam, ma_lich_kham)
     if not master:
         raise HTTPException(status_code=404, detail="Không tìm thấy lịch khám năm.")
+    if master.da_duyet:
+        raise HTTPException(status_code=400, detail="Lịch khám đã duyệt, không thể thêm chi tiết.")
     _validate_detail_dates(master, payload.thoi_gian_bat_dau, payload.thoi_gian_ket_thuc)
     data = payload.model_dump()
     data["ma_lich_kham"] = ma_lich_kham
@@ -124,6 +126,8 @@ def update_chi_tiet(
     if not row:
         raise HTTPException(status_code=404, detail="Không tìm thấy chi tiết lịch khám.")
     master = db.get(LichKhamSkNam, ma_lich_kham)
+    if master and master.da_duyet:
+        raise HTTPException(status_code=400, detail="Lịch khám đã duyệt, không thể sửa chi tiết.")
     if master:
         payload_data = payload.model_dump(exclude_unset=True)
         _validate_detail_dates(
@@ -153,6 +157,9 @@ def delete_chi_tiet(
     row = db.get(LichKhamSkNamChiTiet, (ma_lich_kham, ma_don_vi))
     if not row:
         raise HTTPException(status_code=404, detail="Không tìm thấy chi tiết lịch khám.")
+    master = db.get(LichKhamSkNam, ma_lich_kham)
+    if master and master.da_duyet:
+        raise HTTPException(status_code=400, detail="Lịch khám đã duyệt, không thể xóa chi tiết.")
     old = _row_to_dict(row)
     db.delete(row)
     db.commit()

@@ -11,6 +11,7 @@ const ChonNgayGio = memo(function ChonNgayGio({
     minDate,
     helperText,
     column,
+    disabled = false,
 }) {
     const dv = value ? dayjs(value) : null;
     const minDv = minDate ? dayjs(minDate.split("T")[0]) : null;
@@ -18,6 +19,7 @@ const ChonNgayGio = memo(function ChonNgayGio({
     const slotStyles = {
         textField: {
             size: "small",
+            disabled,
             sx: {
                 minWidth: 0,
                 "& .MuiInputBase-root": {

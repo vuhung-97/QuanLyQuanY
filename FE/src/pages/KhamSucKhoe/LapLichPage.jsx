@@ -30,13 +30,12 @@ export default function LapLichPage() {
         refreshCounter,
     } = useLichKhamData();
 
-    const latestScheduleId = useMemo(
-        () =>
-            schedules.length > 0
-                ? schedules[schedules.length - 1].ma_lich_kham
-                : null,
-        [schedules],
-    );
+    const latestApprovedId = useMemo(() => {
+        const approved = schedules.filter((s) => s.da_duyet);
+        return approved.length > 0
+            ? approved[approved.length - 1].ma_lich_kham
+            : null;
+    }, [schedules]);
 
     const [query, setQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState("Tất cả");
@@ -44,6 +43,7 @@ export default function LapLichPage() {
         open: false,
         schedule: null,
         chiTietList: [],
+        readOnly: false,
     });
     const [deleteDialog, setDeleteDialog] = useState({
         open: false,
@@ -74,6 +74,7 @@ export default function LapLichPage() {
             open: true,
             schedule,
             chiTietList: chiTietMap[schedule.ma_lich_kham] || [],
+            readOnly: false,
         });
     };
 
@@ -82,6 +83,16 @@ export default function LapLichPage() {
             open: true,
             schedule,
             chiTietList: chiTietMap[schedule.ma_lich_kham] || [],
+            readOnly: false,
+        });
+    };
+
+    const handleView = (schedule) => {
+        setDialog({
+            open: true,
+            schedule,
+            chiTietList: chiTietMap[schedule.ma_lich_kham] || [],
+            readOnly: true,
         });
     };
 
@@ -116,6 +127,15 @@ export default function LapLichPage() {
         loadSchedules();
     };
 
+    const handleApprove = async (schedule) => {
+        try {
+            await khamSucKhoeService.approveSchedule(schedule.ma_lich_kham);
+            loadSchedules();
+        } catch (err) {
+            setError(err.response?.data?.detail || "Không thể duyệt lịch khám.");
+        }
+    };
+
     return (
         <Stack spacing={3}>
             <Stack
@@ -135,7 +155,7 @@ export default function LapLichPage() {
                         và phân bổ lịch khám.
                     </Typography>
                 </Box>
-                <IfRole roles={[ROLES.ADMIN, ROLES.CNQY]}>
+                <IfRole roles={[ROLES.ADMIN, ROLES.CNQY, ROLES.BACSI, ROLES.YSI]}>
                     <Button
                         variant="contained"
                         startIcon={<AddIcon />}
@@ -144,6 +164,7 @@ export default function LapLichPage() {
                                 open: true,
                                 schedule: null,
                                 chiTietList: [],
+                                readOnly: false,
                             });
                         }}
                         sx={{ px: 2.5, py: 1.1, borderRadius: 2.5 }}
@@ -167,11 +188,11 @@ export default function LapLichPage() {
             <TongQuanDonVi
                 chiTietMap={chiTietMap}
                 unitStats={unitStats}
-                latestScheduleId={latestScheduleId}
+                latestScheduleId={latestApprovedId}
             />
 
             <PhanCongNhiemVu
-                latestScheduleId={latestScheduleId}
+                latestScheduleId={latestApprovedId}
                 refreshCounter={refreshCounter}
             />
 
@@ -184,6 +205,8 @@ export default function LapLichPage() {
                 onDelete={handleDeleteClick}
                 onEditDetail={handleEditDetail}
                 onDeleteDetail={handleDeleteDetail}
+                onApprove={handleApprove}
+                onView={handleView}
                 getScheduleStatus={getScheduleStatus}
                 statusColor={statusColor}
             />
@@ -191,12 +214,13 @@ export default function LapLichPage() {
             <LapLichDialog
                 open={dialog.open}
                 onClose={() =>
-                    setDialog({ open: false, schedule: null, chiTietList: [] })
+                    setDialog({ open: false, schedule: null, chiTietList: [], readOnly: false })
                 }
                 onSaved={handleDialogSaved}
                 schedule={dialog.schedule}
                 chiTietList={dialog.chiTietList}
                 unitOptions={unitOptions}
+                readOnly={dialog.readOnly}
             />
 
             <ConfirmDialog

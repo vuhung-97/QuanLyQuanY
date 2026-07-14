@@ -71,4 +71,6 @@ export const khamSucKhoeService = {
         api.get("/vai_tro_tam_thoi", { params: { limit: 500 } }),
 
     getNguoiDungList: () => api.get("/nguoi_dung", { params: { limit: 500 } }),
+
+    approveSchedule: (id) => api.post(`/lich_kham_sk_nam/${id}/duyet`),
 };

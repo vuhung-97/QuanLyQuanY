@@ -7,6 +7,7 @@ from pydantic import Field, field_validator, model_validator
 class LichKhamSkNamBase(SchemaBase):
     thoi_gian_bat_dau: datetime | None = None
     thoi_gian_ket_thuc: datetime | None = None
+    da_duyet: bool = False
 
     @field_validator("thoi_gian_bat_dau", "thoi_gian_ket_thuc", mode="before")
     @classmethod
@@ -30,6 +31,7 @@ class LichKhamSkNamCreate(LichKhamSkNamBase):
 class LichKhamSkNamUpdate(SchemaBase):
     thoi_gian_bat_dau: datetime | None = None
     thoi_gian_ket_thuc: datetime | None = None
+    da_duyet: bool | None = None
 
     @field_validator("thoi_gian_bat_dau", "thoi_gian_ket_thuc", mode="before")
     @classmethod

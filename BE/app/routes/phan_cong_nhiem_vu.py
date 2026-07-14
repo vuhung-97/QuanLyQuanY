@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from app.crud.phan_cong_nhiem_vu import phan_cong_nhiem_vu_crud
+from app.database.lich_kham_sk_nam import LichKhamSkNam
 from app.database.nguoi_dung import NguoiDung
 from app.database.phan_cong_nhiem_vu import PhanCongNhiemVu
 from app.database.nhat_ky_thao_tac import NhatKyThaoTac
@@ -65,6 +66,9 @@ def create_assignment(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user),
 ):
+    master = db.get(LichKhamSkNam, ma_lich_kham)
+    if master and master.da_duyet:
+        raise HTTPException(status_code=400, detail="Lịch khám đã duyệt, không thể thêm phân công.")
     row = PhanCongNhiemVu(ma_lich_kham=ma_lich_kham, **payload.model_dump())
     db.add(row)
     db.commit()
@@ -89,6 +93,9 @@ def update_assignment(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user),
 ):
+    master = db.get(LichKhamSkNam, ma_lich_kham)
+    if master and master.da_duyet:
+        raise HTTPException(status_code=400, detail="Lịch khám đã duyệt, không thể sửa phân công.")
     p = _run_crud(lambda: phan_cong_nhiem_vu_crud.update(db, id_phan_cong, payload, nguoi_dung_id=current_user.id))
     return _enrich_one(p, db)
 
@@ -100,4 +107,7 @@ def delete_assignment(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user),
 ):
+    master = db.get(LichKhamSkNam, ma_lich_kham)
+    if master and master.da_duyet:
+        raise HTTPException(status_code=400, detail="Lịch khám đã duyệt, không thể xóa phân công.")
     _run_crud(lambda: phan_cong_nhiem_vu_crud.delete(db, id_phan_cong, nguoi_dung_id=current_user.id))

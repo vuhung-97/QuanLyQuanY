@@ -19,7 +19,7 @@ import DataTable from "@/components/common/DataTable.jsx";
 import ChonNgayGio from "./ChonNgayGio.jsx";
 import { ROLE_LABELS, roleOrder } from "@/constants/khamSucKhoeConstants.js";
 
-function DiaDiemCell({ maDonVi, value, onChange }) {
+function DiaDiemCell({ maDonVi, value, onChange, disabled }) {
     const [local, setLocal] = useState(value || "");
     useEffect(() => {
         setLocal(value || "");
@@ -31,6 +31,7 @@ function DiaDiemCell({ maDonVi, value, onChange }) {
             onChange={(e) => setLocal(e.target.value)}
             onBlur={() => onChange(maDonVi, "dia_diem", local)}
             fullWidth
+            disabled={disabled}
             sx={{ "& .MuiInputBase-root": { fontSize: "0.8rem" } }}
         />
     );
@@ -43,6 +44,7 @@ export default function LapLichDialog({
     schedule,
     chiTietList,
     unitOptions,
+    readOnly = false,
 }) {
     const {
         thoiGianBatDau,
@@ -104,6 +106,7 @@ export default function LapLichDialog({
                             onChange={(e) =>
                                 handleAssignmentChange(r.id, e.target.value)
                             }
+                            disabled={readOnly}
                             displayEmpty
                             renderValue={(v) => (v ? ROLE_LABELS[v] || v : "")}
                         >
@@ -151,6 +154,7 @@ export default function LapLichDialog({
                                     v,
                                 )
                             }
+                            disabled={readOnly}
                         />
                     );
                 },
@@ -172,6 +176,7 @@ export default function LapLichDialog({
                                     v,
                                 )
                             }
+                            disabled={readOnly}
                         />
                     );
                 },
@@ -187,6 +192,7 @@ export default function LapLichDialog({
                             maDonVi={r.ma_don_vi}
                             value={d.dia_diem || ""}
                             onChange={handleDetailChange}
+                            disabled={readOnly}
                         />
                     );
                 },
@@ -205,9 +211,11 @@ export default function LapLichDialog({
         >
             <Box component="form" onSubmit={handleSubmit}>
                 <DialogTitleWrapper wrap={false}>
-                    {isEdit
-                        ? "Sửa lịch khám sức khỏe định kỳ"
-                        : "Tạo lịch khám sức khỏe định kỳ"}
+                    {readOnly
+                        ? "Xem lịch khám sức khỏe định kỳ"
+                        : isEdit
+                          ? "Sửa lịch khám sức khỏe định kỳ"
+                          : "Tạo lịch khám sức khỏe định kỳ"}
                 </DialogTitleWrapper>
                 <DialogContent dividers sx={{ overflow: "auto" }}>
                     {error && (
@@ -230,6 +238,7 @@ export default function LapLichDialog({
                                     label="Thời gian bắt đầu"
                                     value={thoiGianBatDau}
                                     onChange={setThoiGianBatDau}
+                                    disabled={readOnly}
                                 />
                             </Box>
                             <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -237,6 +246,7 @@ export default function LapLichDialog({
                                     label="Thời gian kết thúc"
                                     value={thoiGianKetThuc}
                                     onChange={setThoiGianKetThuc}
+                                    disabled={readOnly}
                                 />
                             </Box>
                         </Stack>
@@ -267,14 +277,16 @@ export default function LapLichDialog({
                     </Stack>
                 </DialogContent>
                 <DialogActions sx={{ p: 2 }}>
-                    <Button onClick={onClose}>Hủy</Button>
-                    <Button type="submit" variant="contained" disabled={saving}>
-                        {saving
-                            ? "Đang lưu..."
-                            : isEdit
-                              ? "Cập nhật"
-                              : "Lưu lịch khám"}
-                    </Button>
+                    <Button onClick={onClose}>{readOnly ? "Đóng" : "Hủy"}</Button>
+                    {!readOnly && (
+                        <Button type="submit" variant="contained" disabled={saving}>
+                            {saving
+                                ? "Đang lưu..."
+                                : isEdit
+                                  ? "Cập nhật"
+                                  : "Lưu lịch khám"}
+                        </Button>
+                    )}
                 </DialogActions>
             </Box>
         </Dialog>

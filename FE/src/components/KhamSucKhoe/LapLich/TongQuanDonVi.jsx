@@ -40,7 +40,7 @@ export default function TongQuanDonVi({
         [scheduleUnits],
     );
 
-    const loading = !latestScheduleId || unitStats.length === 0;
+    const loading = Boolean(latestScheduleId) && unitStats.length === 0;
 
     return (
         <Card sx={{ borderRadius: 3 }}>
