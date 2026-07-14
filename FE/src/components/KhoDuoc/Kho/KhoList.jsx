@@ -28,7 +28,7 @@ import KhoDialog from "./KhoDialog.jsx";
 import useKhoList from "@/hooks/useKhoList.js";
 import { ROWS_PER_PAGE } from "@/constants/khoConstant.js";
 import IfRole from "@/components/common/IfRole.jsx";
-import { ADMIN_CNQY } from "@/constants/roleConstants.js";
+import { ROLES } from "@/constants/roleConstants.js";
 
 const STAT_ICONS = {
     inventory: <Inventory2Icon />,
@@ -95,7 +95,7 @@ const columns = [
                             <VisibilityIcon fontSize="small" />
                         </IconButton>
                     </Tooltip>
-                    <IfRole roles={ADMIN_CNQY}>
+                    <IfRole roles={[ROLES.ADMIN, ROLES.CNQY]}>
                         <Tooltip title="Sửa">
                             <IconButton
                                 size="small"
@@ -170,7 +170,7 @@ export default function KhoList() {
                                     ))}
                                 </TextField>
                             </Stack>
-                            <IfRole roles={ADMIN_CNQY}>
+                            <IfRole roles={[ROLES.ADMIN, ROLES.CNQY]}>
                                 <Button
                                     variant="contained"
                                     startIcon={<AddIcon />}

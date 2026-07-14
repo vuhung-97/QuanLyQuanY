@@ -15,12 +15,8 @@ import {
     Add as AddIcon,
     Cancel as CancelIcon,
     CheckCircle as CheckCircleIcon,
-    Delete as DeleteIcon,
-    Edit as EditIcon,
     HourglassEmpty as HourglassEmptyIcon,
     Inventory as InventoryIcon,
-    ReceiptLong as ReceiptLongIcon,
-    Visibility as VisibilityIcon,
 } from "@mui/icons-material";
 import dayjs from "dayjs";
 import DataTable from "@/components/common/DataTable.jsx";
@@ -30,14 +26,33 @@ import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import PhieuDuTruDialog from "./PhieuDuTruDialog.jsx";
 import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
 import YearMonthFilter from "@/components/common/YearMonthFilter.jsx";
-import IfRole from "@/components/common/IfRole.jsx";
-import { ADMIN_CNQY } from "@/constants/roleConstants.js";
 import useDuTruList, {
     STATUS_CHIP,
     TRANG_THAI_OPTIONS,
     ROWS_PER_PAGE,
 } from "@/hooks/useDuTruList.js";
-import { decodeJWT } from "@/services/api.js";
+import { getCurrentUser } from "@/services/api.js";
+import DuTruRowActions from "./DuTruRowActions.jsx";
+
+const STAT_ICONS = {
+    chua_duyet: <HourglassEmptyIcon />,
+    da_duyet: <CheckCircleIcon />,
+    da_nhap: <InventoryIcon />,
+    tu_choi: <CancelIcon />,
+};
+const STAT_COLORS = {
+    chua_duyet: { color: "#F59E0B", bg: "#FEF3C7" },
+    da_duyet: { color: "#10B981", bg: "#D1FAE5" },
+    da_nhap: { color: "#00B4D8", bg: "#E0F7FA" },
+    tu_choi: { color: "#EF4444", bg: "#FEE2E2" },
+};
+const STAT_LABELS = {
+    chua_duyet: "Chờ duyệt",
+    da_duyet: "Đã duyệt",
+    da_nhap: "Đã nhập kho",
+    tu_choi: "Từ chối",
+};
+const STAT_KEYS = ["chua_duyet", "da_duyet", "da_nhap", "tu_choi"];
 
 const columns = [
     { key: "ma_phieu_du_tru", label: "Mã phiếu" },
@@ -64,96 +79,9 @@ const columns = [
     {
         key: "actions",
         label: "Thao tác",
-        render: (row, _idx, extra) => {
-            const {
-                currentUser,
-                isCNQYorAdmin,
-                onView,
-                onEdit,
-                onDuyet,
-                onXoa,
-                onNhapKho,
-            } = extra || {};
-            const isCreator = row.nguoi_lap === currentUser?.id;
-
-            return (
-                <Stack direction="row" spacing={0.5}>
-                    {(row.trang_thai === "da_duyet" ||
-                        row.trang_thai === "da_nhap" ||
-                        (!isCreator && !isCNQYorAdmin)) && (
-                        <Tooltip title="Xem">
-                            <IconButton
-                                size="small"
-                                color="primary"
-                                onClick={() => onView(row.ma_phieu_du_tru)}
-                            >
-                                <VisibilityIcon fontSize="small" />
-                            </IconButton>
-                        </Tooltip>
-                    )}
-
-                    {row.trang_thai === "chua_duyet" && isCNQYorAdmin && (
-                        <Tooltip title="Duyệt">
-                            <IconButton
-                                size="small"
-                                color="success"
-                                onClick={() => onDuyet(row.ma_phieu_du_tru)}
-                            >
-                                <CheckCircleIcon fontSize="small" />
-                            </IconButton>
-                        </Tooltip>
-                    )}
-
-                    {row.trang_thai === "chua_duyet" &&
-                        (isCreator || isCNQYorAdmin) && (
-                            <Tooltip title="Sửa">
-                                <IconButton
-                                    size="small"
-                                    color="primary"
-                                    onClick={() => onEdit(row.ma_phieu_du_tru)}
-                                >
-                                    <EditIcon fontSize="small" />
-                                </IconButton>
-                            </Tooltip>
-                        )}
-
-                    {row.trang_thai === "tu_choi" && isCreator && (
-                        <Tooltip title="Sửa">
-                            <IconButton
-                                size="small"
-                                color="primary"
-                                onClick={() => onEdit(row.ma_phieu_du_tru)}
-                            >
-                                <EditIcon fontSize="small" />
-                            </IconButton>
-                        </Tooltip>
-                    )}
-
-                    {["chua_duyet", "tu_choi"].includes(row.trang_thai) &&
-                        (isCreator || isCNQYorAdmin) && (
-                            <Tooltip title="Xoá">
-                                <IconButton
-                                    size="small"
-                                    color="error"
-                                    onClick={() => onXoa(row.ma_phieu_du_tru)}
-                                >
-                                    <DeleteIcon fontSize="small" />
-                                </IconButton>
-                            </Tooltip>
-                        )}
-
-                    {row.trang_thai === "da_duyet" && (
-                        <Button
-                            size="small"
-                            variant="contained"
-                            onClick={() => onNhapKho(row.ma_phieu_du_tru)}
-                        >
-                            Nhập kho
-                        </Button>
-                    )}
-                </Stack>
-            );
-        },
+        render: (row, _idx, extra) => (
+            <DuTruRowActions row={row} extra={extra} />
+        ),
     },
 ];
 
@@ -224,45 +152,19 @@ export default function DuTruList() {
         ACTION_LABEL,
     } = useDuTruList();
 
-    const currentUser = useMemo(() => {
-        const token = localStorage.getItem("datamed_access_token");
-        return token ? decodeJWT(token) : null;
-    }, []);
+    const currentUser = useMemo(() => getCurrentUser(), []);
 
     const role = currentUser?.role;
     const isCNQYorAdmin = role === "ROLE_ADMIN" || role === "ROLE_CNQY";
 
     const statItems = useMemo(
-        () => [
-            {
-                label: "Chờ duyệt",
-                value: stats.chua_duyet,
-                icon: <HourglassEmptyIcon />,
-                color: "#F59E0B",
-                bg: "#FEF3C7",
-            },
-            {
-                label: "Đã duyệt",
-                value: stats.da_duyet,
-                icon: <CheckCircleIcon />,
-                color: "#10B981",
-                bg: "#D1FAE5",
-            },
-            {
-                label: "Đã nhập kho",
-                value: stats.da_nhap,
-                icon: <InventoryIcon />,
-                color: "#00B4D8",
-                bg: "#E0F7FA",
-            },
-            {
-                label: "Từ chối",
-                value: stats.tu_choi,
-                icon: <CancelIcon />,
-                color: "#EF4444",
-                bg: "#FEE2E2",
-            },
-        ],
+        () =>
+            STAT_KEYS.map((key) => ({
+                label: STAT_LABELS[key],
+                value: stats[key],
+                icon: STAT_ICONS[key],
+                ...STAT_COLORS[key],
+            })),
         [stats],
     );
 
@@ -322,21 +224,19 @@ export default function DuTruList() {
                                     setPage(1);
                                 }}
                             />
-                            <IfRole roles={ADMIN_CNQY}>
-                                <Button
-                                    variant="contained"
-                                    startIcon={<AddIcon />}
-                                    onClick={() =>
-                                        setOpenPhieu({
-                                            open: true,
-                                            id: null,
-                                            mode: "create",
-                                        })
-                                    }
-                                >
-                                    Tạo phiếu dự trù
-                                </Button>
-                            </IfRole>
+                            <Button
+                                variant="contained"
+                                startIcon={<AddIcon />}
+                                onClick={() =>
+                                    setOpenPhieu({
+                                        open: true,
+                                        id: null,
+                                        mode: "create",
+                                    })
+                                }
+                            >
+                                Tạo phiếu dự trù
+                            </Button>
                         </Stack>
 
                         <DataTable

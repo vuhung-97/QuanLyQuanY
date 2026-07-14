@@ -24,7 +24,7 @@ import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import { khoDuocService } from "@/services/khoDuocService.js";
 import NhapKhoDialog from "./NhapKhoDialog.jsx";
 import IfRole from "@/components/common/IfRole.jsx";
-import { ADMIN_CNQY } from "@/constants/roleConstants.js";
+import { ROLES } from "@/constants/roleConstants.js";
 
 const ROWS_PER_PAGE = 20;
 const EMPTY_STATS = { tong: 0, choNhap: 0, daNhap: 0 };
@@ -180,7 +180,7 @@ export default function NhapKhoList() {
                 label: "Thao tác",
                 render: (row) =>
                     row.trang_thai === "da_duyet" ? (
-                        <IfRole roles={ADMIN_CNQY}>
+                        <IfRole roles={[ROLES.ADMIN, ROLES.CNQY]}>
                             <Button
                                 size="small"
                                 variant="contained"

@@ -22,7 +22,7 @@ import DialogTitleWrapper from "@/components/common/DialogTitleWrapper.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import DatePicker from "@/components/common/DatePicker.jsx";
 import NhapKhoPrint from "./NhapKhoPrint.jsx";
-import { decodeJWT } from "@/services/api.js";
+import { getCurrentUser } from "@/services/api.js";
 import { khoDuocService } from "@/services/khoDuocService.js";
 import { PRINT_STYLES, PRINT_DIALOG_CONTENT_SX, triggerPrint } from "@/utils/printUtils.js";
 
@@ -36,10 +36,7 @@ export default function NhapKhoDialog({ open, onClose, phieuId, mode = "create",
     const [saving, setSaving] = useState(false);
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "info" });
 
-    const currentUser = useMemo(() => {
-        const token = localStorage.getItem("datamed_access_token");
-        return token ? decodeJWT(token) : null;
-    }, []);
+    const currentUser = useMemo(() => getCurrentUser(), []);
 
     useEffect(() => {
         if (!open || !phieuId) return;

@@ -6,7 +6,7 @@ import Sidebar from "./sidebar/Sidebar.jsx";
 import Footer from "./footer/Footer.jsx";
 import { useSidebarState } from "./common/hooks.js";
 import AccountSettingsDialog from "./accountSetting/AccountSettingsDialog.jsx";
-import { decodeJWT } from "@/services/api.js";
+import { getCurrentUser } from "@/services/api.js";
 import { defaultMenuItems, adminMenuItems, filterMenuByRole } from "./common/menuConfig.jsx";
 import {
     DEFAULT_USER,
@@ -14,7 +14,7 @@ import {
     APP_NAME,
     ROLE_NAME_MAP,
 } from "./common/constants.js";
-import { ROLES, ADMIN_CNQY } from "@/constants/roleConstants.js";
+import { ROLES, MENU_ROLE_MAP } from "@/constants/roleConstants.js";
 
 export default function MainLayout({
     menuItems = defaultMenuItems,
@@ -41,15 +41,12 @@ export default function MainLayout({
 
     const handleSettings = onSettings || (() => setOpenAccountSettings(true));
 
-    const jwtPayload = useMemo(() => {
-        const token = localStorage.getItem(STORAGE_KEYS.token);
-        return token ? decodeJWT(token) : null;
-    }, []);
+    const jwtPayload = useMemo(() => getCurrentUser(), []);
 
     const role = jwtPayload?.role || ROLES.QN;
 
     const filteredMenuItems = useMemo(() => {
-        const items = ADMIN_CNQY.includes(role) ? adminItems : menuItems;
+        const items = MENU_ROLE_MAP["quan-tri"].includes(role) ? adminItems : menuItems;
         return filterMenuByRole(items, role);
     }, [role]);
 

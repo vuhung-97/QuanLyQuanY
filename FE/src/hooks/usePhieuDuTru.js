@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import dayjs from "dayjs";
 import { khoDuocService } from "@/services/khoDuocService.js";
-import { decodeJWT } from "@/services/api.js";
+import { getCurrentUser } from "@/services/api.js";
 
 const EMPTY_ITEM = { tenThuoc: "", donViTinh: "", soLuong: 1, maThuocVtyt: null };
 let _rowKey = 0;
@@ -24,10 +24,7 @@ export default function usePhieuDuTru({ open, phieuId = null, mode = "create", o
 
     const isView = mode === "view";
 
-    const currentUser = useMemo(() => {
-        const token = localStorage.getItem("datamed_access_token");
-        return token ? decodeJWT(token) : null;
-    }, []);
+    const currentUser = useMemo(() => getCurrentUser(), []);
 
     const getItem = useCallback((idx) => itemsRef.current[idx] || {}, []);
 

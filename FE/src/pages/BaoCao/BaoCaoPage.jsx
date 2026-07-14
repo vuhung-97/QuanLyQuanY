@@ -3,16 +3,12 @@ import { Tabs, Tab, Box } from "@mui/material";
 import BaoCaoThangMain from "../../components/BaoCao/BaoCaoThang/BaoCaoThangMain.jsx";
 import BaoCaoQuanSoKhoeMain from "../../components/BaoCao/BaoCaoQSKhoe/BaoCaoQuanSoKhoeMain.jsx";
 import BaoCaoQuanNhanMain from "../../components/BaoCao/BaoCaoQuanNhan/BaoCaoQuanNhanMain.jsx";
-import { decodeJWT } from "../../services/api.js";
-import { STORAGE_KEYS } from "../../components/layout/common/constants.js";
+import { getCurrentUser } from "../../services/api.js";
 
 export default function BaoCaoPage() {
     const [tab, setTab] = useState(0);
 
-    const jwtPayload = useMemo(() => {
-        const token = localStorage.getItem(STORAGE_KEYS.token);
-        return token ? decodeJWT(token) : null;
-    }, []);
+    const jwtPayload = useMemo(() => getCurrentUser(), []);
 
     const role = jwtPayload?.role || "";
     const id_quan_nhan = jwtPayload?.id_quan_nhan || "";

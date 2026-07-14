@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import dayjs from "dayjs";
 import { khoDuocService } from "@/services/khoDuocService.js";
 import { khamBenhService } from "@/services/khamBenhService.js";
-import { decodeJWT } from "@/services/api.js";
+import { getCurrentUser } from "@/services/api.js";
 import { buildTree, flattenTree } from "@/utils/treeUtils.js";
 import { clearThuocCache } from "./useThuocList.jsx";
 
@@ -29,10 +29,7 @@ export default function usePhieuXuat({ open, phieuId, mode, onClose, onSaved }) 
 
     const isView = mode === "view";
 
-    const currentUser = useMemo(() => {
-        const token = localStorage.getItem("datamed_access_token");
-        return token ? decodeJWT(token) : null;
-    }, []);
+    const currentUser = useMemo(() => getCurrentUser(), []);
 
     const isCreatorOrAuthorized = useMemo(() => {
         if (!currentUser) return false;
@@ -152,8 +149,7 @@ export default function usePhieuXuat({ open, phieuId, mode, onClose, onSaved }) 
         if (selectedItems.length === 0) return;
         setSaving(true);
         try {
-            const token = localStorage.getItem("datamed_access_token");
-            const payload = token ? decodeJWT(token) : null;
+            const payload = getCurrentUser();
             const nguoiLap = payload?.id || null;
 
             if (phieuId && mode === "edit") {

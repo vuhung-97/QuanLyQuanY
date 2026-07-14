@@ -1,14 +1,12 @@
 import { Navigate } from "react-router-dom";
-import { decodeJWT } from "@/services/api.js";
-import { STORAGE_KEYS } from "@/components/layout/common/constants.js";
-import { ADMIN_ONLY } from "@/constants/roleConstants.js";
+import { getCurrentUser } from "@/services/api.js";
+import { MENU_ROLE_MAP } from "@/constants/roleConstants.js";
 
 export default function AdminRoute({ children }) {
-    const token = localStorage.getItem(STORAGE_KEYS.token);
-    if (!token) return <Navigate to="/login" replace />;
+    const payload = getCurrentUser();
+    if (!payload) return <Navigate to="/login" replace />;
 
-    const payload = decodeJWT(token);
-    if (!payload || !ADMIN_ONLY.includes(payload.role)) {
+    if (!MENU_ROLE_MAP["quan-tri"].includes(payload.role)) {
         return <Navigate to="/" replace />;
     }
 

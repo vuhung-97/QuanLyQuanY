@@ -26,7 +26,7 @@ import DataTable from "@/components/common/DataTable.jsx";
 import { findNearestDetail } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
 import { formatDateTime } from "@/utils/date.js";
 import IfRole from "@/components/common/IfRole.jsx";
-import { ADMIN_CNQY } from "@/constants/roleConstants.js";
+import { ROLES } from "@/constants/roleConstants.js";
 
 const columns = [
     { key: "expand", label: "", sx: { width: 40 } },
@@ -71,7 +71,7 @@ function DetailSubTable({
                     </TableCell>
                     <TableCell>{ct.dia_diem || "--"}</TableCell>
                     <TableCell>
-                        <IfRole roles={ADMIN_CNQY}>
+                        <IfRole roles={[ROLES.ADMIN, ROLES.CNQY]}>
                             <Stack direction="row" spacing={0.5}>
                                 <Tooltip title="Sửa">
                                     <IconButton
@@ -140,7 +140,7 @@ function ScheduleTableRow({
                     />
                 </TableCell>
                 <TableCell>
-                    <IfRole roles={ADMIN_CNQY}>
+                    <IfRole roles={[ROLES.ADMIN, ROLES.CNQY]}>
                         <Stack direction="row" spacing={0.5}>
                             <Tooltip title="Sửa">
                                 <IconButton

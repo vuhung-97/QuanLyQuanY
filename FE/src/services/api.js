@@ -11,6 +11,12 @@ export function decodeJWT(token) {
     }
 }
 
+export function getCurrentUser() {
+    const token = localStorage.getItem(STORAGE_KEYS.token);
+    if (!token) return null;
+    return decodeJWT(token);
+}
+
 export function clearAuth() {
     localStorage.removeItem(STORAGE_KEYS.token);
     localStorage.removeItem(STORAGE_KEYS.tokenExp);

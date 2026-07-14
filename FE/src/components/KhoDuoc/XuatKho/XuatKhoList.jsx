@@ -28,11 +28,11 @@ import PaginationWidget from "@/components/common/PaginationWidget.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import YearMonthFilter from "@/components/common/YearMonthFilter.jsx";
 import { khoDuocService } from "@/services/khoDuocService.js";
-import { decodeJWT } from "@/services/api.js";
+import { getCurrentUser } from "@/services/api.js";
 import PhieuXuatDialog from "./PhieuXuatDialog.jsx";
 import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
 import IfRole from "@/components/common/IfRole.jsx";
-import { ADMIN_CNQY } from "@/constants/roleConstants.js";
+import { ROLES } from "@/constants/roleConstants.js";
 
 const TRANG_THAI_OPTIONS = [
     { value: "", label: "Tất cả" },
@@ -89,10 +89,7 @@ export default function XuatKhoList() {
         setPage(1);
     }, []);
 
-    const currentUser = useMemo(() => {
-        const token = localStorage.getItem("datamed_access_token");
-        return token ? decodeJWT(token) : null;
-    }, []);
+    const currentUser = useMemo(() => getCurrentUser(), []);
 
     const fetchData = useCallback(async () => {
         setLoading(true);
@@ -406,7 +403,7 @@ export default function XuatKhoList() {
                                 />
                             </Stack>
 
-                            <IfRole roles={ADMIN_CNQY}>
+                            <IfRole roles={[ROLES.ADMIN, ROLES.CNQY]}>
                                 <Button
                                     variant="contained"
                                     startIcon={<AddIcon />}
