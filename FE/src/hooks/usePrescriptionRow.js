@@ -41,8 +41,8 @@ export default function usePrescriptionRow(initialData) {
                 cach_su_dung: cachSuDung,
                 ghi_chu: ghiChu,
             }),
-            cach_dung: CACH_DUNG_LABEL_MAP[cachSuDung] || "Uống",
-            thoi_diem: THOI_DIEM_LABEL_MAP[thoiDiemDung] || "Sau ăn",
+            cach_dung: CACH_DUNG_LABEL_MAP[cachSuDung] || "",
+            thoi_diem: THOI_DIEM_LABEL_MAP[thoiDiemDung] || "",
             lieu: `Sáng: ${sang} - Trưa: ${trua} - Tối: ${toi}`,
         }),
         [

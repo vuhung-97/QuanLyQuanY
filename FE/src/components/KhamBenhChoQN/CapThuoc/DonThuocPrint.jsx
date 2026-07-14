@@ -95,8 +95,8 @@ export default function DonThuocPrint({ data, paperSize = "A5" }) {
                             </td>
                             <td>
                                 <div>
-                                    {row.lieu} | {row.cach_dung || "Uống"} |{" "}
-                                    {row.thoi_diem || "Sau ăn"}
+                                    {row.lieu} | {row.cach_dung || "--"} |{" "}
+                                    {row.thoi_diem || "--"}
                                 </div>
 
                                 {row.ghi_chu && (

@@ -22,7 +22,7 @@ export const CACH_DUNG_LABEL_TO_VALUE = {
     Khác: "khac",
 };
 
-export function parseHuongDieuTri(str) {
+export function parseHuongDieuTriParts(str) {
     if (!str)
         return {
             sang: 0,
@@ -30,20 +30,45 @@ export function parseHuongDieuTri(str) {
             toi: 0,
             thoi_diem_dung: "sau_an",
             cach_su_dung: "uong",
+            lieu: "",
+            thoi_diem: "",
+            cach_dung: "",
             ghi_chu: "",
         };
     const parts = str.split(" | ");
-    const lieu = parts[0] || "";
+    const lieuStr = parts[0] || "";
     const thoiDiemLabel = parts[1] || "";
     const cachDungLabel = parts[2] || "";
     const ghi_chu = parts.slice(3).join(" | ") || "";
-    const lieuParts = lieu.split(" - ");
+    const lieuParts = lieuStr.split(" - ");
     const sang = parseInt(lieuParts[0]?.replace("Sáng: ", "")) || 0;
     const trua = parseInt(lieuParts[1]?.replace("Trưa: ", "")) || 0;
     const toi = parseInt(lieuParts[2]?.replace("Tối: ", "")) || 0;
     const thoi_diem_dung = THOI_DIEM_LABEL_TO_VALUE[thoiDiemLabel] || "sau_an";
     const cach_su_dung = CACH_DUNG_LABEL_TO_VALUE[cachDungLabel] || "uong";
-    return { sang, trua, toi, thoi_diem_dung, cach_su_dung, ghi_chu };
+    return {
+        sang,
+        trua,
+        toi,
+        thoi_diem_dung,
+        cach_su_dung,
+        lieu: lieuStr,
+        thoi_diem: thoiDiemLabel,
+        cach_dung: cachDungLabel,
+        ghi_chu,
+    };
+}
+
+export function parseHuongDieuTri(str) {
+    const p = parseHuongDieuTriParts(str);
+    return {
+        sang: p.sang,
+        trua: p.trua,
+        toi: p.toi,
+        thoi_diem_dung: p.thoi_diem_dung,
+        cach_su_dung: p.cach_su_dung,
+        ghi_chu: p.ghi_chu,
+    };
 }
 
 export function parseDonThuocToRows(examDetail) {
@@ -51,16 +76,15 @@ export function parseDonThuocToRows(examDetail) {
     const rows = [];
     for (const dt of examDetail.don_thuoc) {
         for (const ct of dt.chi_tiet_don_thuoc || []) {
-            const hdt = ct.huong_dieu_tri || "";
-            const parts = hdt.split(" | ");
+            const p = parseHuongDieuTriParts(ct.huong_dieu_tri);
             rows.push({
                 ten_thuoc: ct.ten_thuoc_vtyt || ct.ma_thuoc_vtyt,
                 so_luong: ct.so_luong,
                 don_vi_tinh: ct.don_vi_tinh || "",
-                lieu: parts[0] || "",
-                thoi_diem: parts[1] || "",
-                cach_dung: parts[2] || "",
-                ghi_chu: parts.slice(3).join(" | "),
+                lieu: p.lieu,
+                thoi_diem: p.thoi_diem,
+                cach_dung: p.cach_dung,
+                ghi_chu: p.ghi_chu,
             });
         }
     }

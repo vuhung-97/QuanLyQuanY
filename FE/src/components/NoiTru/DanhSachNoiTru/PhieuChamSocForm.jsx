@@ -11,35 +11,13 @@ import {
     Typography,
 } from "@mui/material";
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
+import FormTextField from "@/components/common/FormTextField.jsx";
 import { Delete as DeleteIcon, Add as AddIcon } from "@mui/icons-material";
 import KhoThuocDialog from "@/components/KhamBenhChoQN/KhamBenh/KhoThuocDialog.jsx";
 import useThuocList from "@/hooks/useThuocList.jsx";
 
 let _itemKey = 0;
 const nextKey = () => ++_itemKey;
-
-const FormTextField = memo(function FormTextField({
-    name,
-    initialValue,
-    onUpdateRef,
-    ...props
-}) {
-    const [value, setValue] = useState(initialValue ?? "");
-    useEffect(() => {
-        setValue(initialValue ?? "");
-    }, [initialValue]);
-
-    const handleChange = useCallback(
-        (e) => {
-            const v = e.target.value;
-            setValue(v);
-            onUpdateRef(name, v);
-        },
-        [name, onUpdateRef],
-    );
-
-    return <TextField value={value} onChange={handleChange} {...props} />;
-});
 
 const ThuocItemRow = memo(function ThuocItemRow({
     item,

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { khamBenhService } from "@/services/khamBenhService.js";
 import useStaticList from "@/hooks/useStaticList.js";
-import { parseHuongDieuTri } from "@/utils/khamBenhUtils.js";
+import { parseHuongDieuTriParts } from "@/utils/khamBenhUtils.js";
 export default function useKhamBenhForm({
     open,
     examinationId,
@@ -54,18 +54,21 @@ export default function useKhamBenhForm({
                 if (data.don_thuoc) {
                     for (const dt of data.don_thuoc) {
                         for (const ct of dt.chi_tiet_don_thuoc || []) {
-                            const parsed = parseHuongDieuTri(ct.huong_dieu_tri);
+                            const p = parseHuongDieuTriParts(ct.huong_dieu_tri);
                             items.push({
                                 ma_thuoc_vtyt: ct.ma_thuoc_vtyt,
                                 ten_thuoc_vtyt: ct.ten_thuoc_vtyt,
                                 don_vi_tinh: ct.don_vi_tinh || "",
                                 so_luong: ct.so_luong,
-                                sang: parsed.sang,
-                                trua: parsed.trua,
-                                toi: parsed.toi,
-                                thoi_diem_dung: parsed.thoi_diem_dung,
-                                cach_su_dung: parsed.cach_su_dung,
-                                ghi_chu: parsed.ghi_chu,
+                                sang: p.sang,
+                                trua: p.trua,
+                                toi: p.toi,
+                                thoi_diem_dung: p.thoi_diem_dung,
+                                cach_su_dung: p.cach_su_dung,
+                                cach_dung: p.cach_dung,
+                                thoi_diem: p.thoi_diem,
+                                lieu: p.lieu,
+                                ghi_chu: p.ghi_chu,
                                 huong_dieu_tri: ct.huong_dieu_tri || "",
                             });
                         }

@@ -68,10 +68,10 @@ const DonThuocTable = memo(function DonThuocTable({
                                         )}
                                         <Typography variant="body2">
                                             <strong>Cách dùng:</strong>{" "}
-                                            {row.cach_dung || "Uống"}
+                                            {row.cach_dung || "--"}
                                             {" | "}
                                             <strong>Thời điểm:</strong>{" "}
-                                            {row.thoi_diem || "Sau ăn"}
+                                            {row.thoi_diem || "--"}
                                         </Typography>
                                         {row.ghi_chu && (
                                             <Typography variant="body2">
