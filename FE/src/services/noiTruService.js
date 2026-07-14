@@ -7,6 +7,9 @@ export const noiTruService = {
     getDanhSachNhapVien: (params) =>
         api.get("/kham_benh/nhap-vien", { params }),
 
+    approveNhapVien: (maKhamBenh) => api.post(`/kham_benh/${maKhamBenh}/duyet-nhap-vien`),
+    rejectNhapVien: (maKhamBenh) => api.post(`/kham_benh/${maKhamBenh}/khong-duyet-nhap-vien`),
+
     getBenhAn: (id) => api.get(`/benh_an/${id}`),
     getBenhAnChiTiet: (id) => api.get(`/benh_an/${id}/chi-tiet`),
     getBenhAnByKhamBenh: (maKhamBenh) =>

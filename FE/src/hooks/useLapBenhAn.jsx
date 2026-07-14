@@ -81,6 +81,32 @@ export default function useLapBenhAn() {
         }
     }, [selectedExam, loadData]);
 
+    const handleApprove = useCallback(async (maKhamBenh) => {
+        try {
+            await noiTruService.approveNhapVien(maKhamBenh);
+            loadData();
+        } catch (err) {
+            setSnackbar({
+                open: true,
+                message: err.response?.data?.detail || "Lỗi duyệt nhập viện.",
+                severity: "error",
+            });
+        }
+    }, [loadData]);
+
+    const handleReject = useCallback(async (maKhamBenh) => {
+        try {
+            await noiTruService.rejectNhapVien(maKhamBenh);
+            loadData();
+        } catch (err) {
+            setSnackbar({
+                open: true,
+                message: err.response?.data?.detail || "Lỗi từ chối nhập viện.",
+                severity: "error",
+            });
+        }
+    }, [loadData]);
+
     return {
         initialLoading,
         refreshing,
@@ -94,6 +120,8 @@ export default function useLapBenhAn() {
         handleOpenForm,
         handleCloseForm,
         handleLapBenhAn,
+        handleApprove,
+        handleReject,
         saving,
         loadData,
 

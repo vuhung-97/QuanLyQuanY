@@ -17,6 +17,7 @@ import {
     PendingActions as PendingActionsIcon,
     PersonAddAlt as PersonAddAltIcon,
     Refresh as RefreshIcon,
+    Visibility as VisibilityIcon,
 } from "@mui/icons-material";
 import FilterModeToggle from "@/components/common/FilterModeToggle.jsx";
 import YearMonthFilter from "@/components/common/YearMonthFilter.jsx";
@@ -77,14 +78,15 @@ const columns = [
                 {["đã_khám", "chờ_nhận_thuốc", "đã_nhận_thuốc"].includes(
                     row.trang_thai,
                 ) ? (
-                    <Button
-                        size="small"
-                        variant="outlined"
-                        sx={{ textTransform: "none" }}
-                        onClick={() => onExam(row.ma_kham_benh)}
-                    >
-                        Xem
-                    </Button>
+                    <Tooltip title="Xem">
+                        <IconButton
+                            size="small"
+                            color="info"
+                            onClick={() => onExam(row.ma_kham_benh)}
+                        >
+                            <VisibilityIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
                 ) : (
                     <Tooltip title="Khám">
                         <IconButton

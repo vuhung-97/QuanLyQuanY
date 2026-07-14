@@ -5,7 +5,9 @@ import {
     Card,
     CardContent,
     Chip,
+    IconButton,
     Stack,
+    Tooltip,
     Typography,
 } from "@mui/material";
 import {
@@ -88,26 +90,25 @@ const columns = [
         label: "Thao tác",
         render: (row, _idx, { onChiTiet, onRaVien }) => (
             <Stack direction="row" spacing={0.5}>
-                <Button
-                    size="small"
-                    variant="outlined"
-                    startIcon={<VisibilityIcon />}
-                    sx={{ textTransform: "none" }}
-                    onClick={() => onChiTiet(row.ma_benh_an)}
-                >
-                    Chi tiết
-                </Button>
-                {row.trang_thai === "đang_điều_trị" && (
-                    <Button
+                <Tooltip title="Chi tiết">
+                    <IconButton
                         size="small"
-                        variant="outlined"
-                        color="error"
-                        startIcon={<ExitToAppIcon />}
-                        sx={{ textTransform: "none" }}
-                        onClick={() => onRaVien(row.ma_benh_an)}
+                        color="info"
+                        onClick={() => onChiTiet(row.ma_benh_an)}
                     >
-                        Ra viện
-                    </Button>
+                        <VisibilityIcon fontSize="small" />
+                    </IconButton>
+                </Tooltip>
+                {row.trang_thai === "đang_điều_trị" && (
+                    <Tooltip title="Ra viện">
+                        <IconButton
+                            size="small"
+                            color="error"
+                            onClick={() => onRaVien(row.ma_benh_an)}
+                        >
+                            <ExitToAppIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
                 )}
             </Stack>
         ),

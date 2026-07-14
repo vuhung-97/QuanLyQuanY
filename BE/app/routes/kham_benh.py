@@ -368,7 +368,53 @@ def khong_duyet_chuyen_tuyen(
         raise HTTPException(status_code=400, detail="Chuyển tuyến đã được duyệt, không thể từ chối")
     if kb.trang_thai != "chuyển_tuyến":
         raise HTTPException(status_code=400, detail="Chỉ từ chối được với ca đang chuyển tuyến")
-    kb.trang_thai = "chờ"
+    kb.trang_thai = "không_duyệt_chuyển_tuyến"
+    db.commit()
+    return {"ok": True, "ma_kham_benh": ma_kham_benh}
+
+
+@pre_router.post(
+    "/{ma_kham_benh}/duyet-nhap-vien",
+    dependencies=[Depends(require_permissions("kham_benh:update"))],
+)
+def duyet_nhap_vien(
+    ma_kham_benh: str,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user),
+):
+    kb = db.query(KhamBenh).filter(KhamBenh.ma_kham_benh == ma_kham_benh).first()
+    if not kb:
+        raise HTTPException(status_code=404, detail="Không tìm thấy ca khám")
+    if current_user.id_vai_tro not in ("ROLE_ADMIN", "ROLE_CNQY"):
+        raise HTTPException(status_code=403, detail="Chỉ CNQY/ADMIN mới được duyệt")
+    if kb.da_duyet:
+        raise HTTPException(status_code=400, detail="Đã duyệt trước đó")
+    if kb.trang_thai != "nhập_viện":
+        raise HTTPException(status_code=400, detail="Chỉ duyệt được với ca nhập viện")
+    kb.da_duyet = True
+    db.commit()
+    return {"ok": True, "ma_kham_benh": ma_kham_benh}
+
+
+@pre_router.post(
+    "/{ma_kham_benh}/khong-duyet-nhap-vien",
+    dependencies=[Depends(require_permissions("kham_benh:update"))],
+)
+def khong_duyet_nhap_vien(
+    ma_kham_benh: str,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user),
+):
+    kb = db.query(KhamBenh).filter(KhamBenh.ma_kham_benh == ma_kham_benh).first()
+    if not kb:
+        raise HTTPException(status_code=404, detail="Không tìm thấy ca khám")
+    if current_user.id_vai_tro not in ("ROLE_ADMIN", "ROLE_CNQY"):
+        raise HTTPException(status_code=403, detail="Chỉ CNQY/ADMIN mới được thực hiện")
+    if kb.da_duyet:
+        raise HTTPException(status_code=400, detail="Đã duyệt, không thể từ chối")
+    if kb.trang_thai != "nhập_viện":
+        raise HTTPException(status_code=400, detail="Chỉ từ chối được với ca nhập viện")
+    kb.trang_thai = "không_duyệt_nhập_viện"
     db.commit()
     return {"ok": True, "ma_kham_benh": ma_kham_benh}
 

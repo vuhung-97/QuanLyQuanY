@@ -5,14 +5,18 @@ import {
     Card,
     CardContent,
     Chip,
+    IconButton,
     Stack,
+    Tooltip,
     Typography,
 } from "@mui/material";
 import FilterModeToggle from "@/components/common/FilterModeToggle.jsx";
 import PaginationWidget from "@/components/common/PaginationWidget.jsx";
 import YearMonthFilter from "@/components/common/YearMonthFilter.jsx";
 import {
+    CheckCircle as CheckCircleIcon,
     Download as DownloadIcon,
+    LocalPharmacy as LocalPharmacyIcon,
     MedicalServices as MedicalServicesIcon,
     Refresh as RefreshIcon,
 } from "@mui/icons-material";
@@ -59,21 +63,23 @@ const columns = [
         key: "thao_tac",
         label: "Thao tác",
         render: (row, _idx, { onDispense }) => (
-            <Button
-                size="small"
-                variant={
-                    row.trang_thai === "chờ_nhận_thuốc"
-                        ? "contained"
-                        : "outlined"
-                }
-                color={
-                    row.trang_thai === "chờ_nhận_thuốc" ? "primary" : "inherit"
-                }
-                onClick={() => onDispense(row.ma_kham_benh)}
-                sx={{ textTransform: "none" }}
-            >
-                {row.trang_thai === "chờ_nhận_thuốc" ? "Cấp thuốc" : "Đã nhận"}
-            </Button>
+            row.trang_thai === "chờ_nhận_thuốc" ? (
+                <Tooltip title="Cấp thuốc">
+                    <IconButton
+                        size="small"
+                        color="primary"
+                        onClick={() => onDispense(row.ma_kham_benh)}
+                    >
+                        <LocalPharmacyIcon fontSize="small" />
+                    </IconButton>
+                </Tooltip>
+            ) : (
+                <Tooltip title="Đã nhận">
+                    <IconButton size="small" color="default" disabled>
+                        <CheckCircleIcon fontSize="small" />
+                    </IconButton>
+                </Tooltip>
+            )
         ),
     },
 ];

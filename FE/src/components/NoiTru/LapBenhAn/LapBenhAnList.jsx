@@ -1,13 +1,17 @@
-import { Button, Card, CardContent, Stack, Typography } from "@mui/material";
+import { Box, Button, Card, CardContent, Chip, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import {
+    Block as BlockIcon,
+    CheckCircle as CheckCircleIcon,
     NoteAdd as NoteAddIcon,
     Refresh as RefreshIcon,
 } from "@mui/icons-material";
 import useLapBenhAn from "@/hooks/useLapBenhAn.jsx";
 import DataTable from "@/components/common/DataTable.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
+import IfRole from "@/components/common/IfRole.jsx";
 import SearchBarDebounced from "@/components/common/SearchBarDebounced.jsx";
 import LapBenhAnForm from "./LapBenhAnForm.jsx";
+import { ROLES } from "@/constants/roleConstants.js";
 import { formatDate } from "@/utils/date.js";
 
 const columns = [
@@ -16,18 +20,21 @@ const columns = [
         label: "STT",
         render: (row, idx) => idx + 1,
     },
-    {
-        key: "ma_kham_benh",
-        label: "Mã KB",
-        sx: { color: "primary.main" },
-    },
     { key: "ho_ten", label: "Họ tên QN" },
-    { key: "cap_bac", label: "Cấp bậc", render: (row) => row.cap_bac || "--" },
-    { key: "chuc_vu", label: "Chức vụ", render: (row) => row.chuc_vu || "--" },
     {
         key: "ten_don_vi",
         label: "Đơn vị",
         render: (row) => row.ten_don_vi || "--",
+    },
+    { key: "trieu_chung", label: "Triệu chứng", render: (row) => row.trieu_chung || "--" },
+    {
+        key: "chan_doan",
+        label: "Chẩn đoán",
+        render: (row) => (
+            <Box sx={{ maxHeight: 100, overflow: "auto", whiteSpace: "normal", wordBreak: "break-word" }}>
+                {row.chan_doan || "--"}
+            </Box>
+        ),
     },
     {
         key: "ngay_kham",
@@ -35,19 +42,55 @@ const columns = [
         render: (row) => formatDate(row.ngay_kham),
     },
     {
+        key: "trang_thai",
+        label: "Trạng thái",
+        render: (row) => (
+            <Chip
+                label={row.da_duyet ? "Đã duyệt" : "Chờ duyệt"}
+                color={row.da_duyet ? "success" : "warning"}
+                size="small"
+                sx={{ fontWeight: 600 }}
+            />
+        ),
+    },
+    {
         key: "thao_tac",
         label: "Thao tác",
-        render: (row, _idx, { onLapBenhAn }) => (
-            <Button
-                size="small"
-                variant="contained"
-                startIcon={<NoteAddIcon />}
-                sx={{ textTransform: "none" }}
-                onClick={() => onLapBenhAn(row)}
-            >
-                Lập bệnh án
-            </Button>
-        ),
+        render: (row, _idx, { onLapBenhAn, onApprove, onReject }) =>
+            row.da_duyet ? (
+                <Tooltip title="Lập bệnh án">
+                    <IconButton
+                        size="small"
+                        color="primary"
+                        onClick={() => onLapBenhAn(row)}
+                    >
+                        <NoteAddIcon fontSize="small" />
+                    </IconButton>
+                </Tooltip>
+            ) : (
+                <IfRole roles={[ROLES.ADMIN, ROLES.CNQY]}>
+                    <Stack direction="row" spacing={0.5}>
+                        <Tooltip title="Duyệt">
+                            <IconButton
+                                size="small"
+                                color="success"
+                                onClick={() => onApprove(row.ma_kham_benh)}
+                            >
+                                <CheckCircleIcon fontSize="small" />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Không duyệt">
+                            <IconButton
+                                size="small"
+                                color="error"
+                                onClick={() => onReject(row.ma_kham_benh)}
+                            >
+                                <BlockIcon fontSize="small" />
+                            </IconButton>
+                        </Tooltip>
+                    </Stack>
+                </IfRole>
+            ),
     },
 ];
 
@@ -64,6 +107,8 @@ export default function LapBenhAnList() {
         handleOpenForm,
         handleCloseForm,
         handleLapBenhAn,
+        handleApprove,
+        handleReject,
         saving,
         loadData,
     } = useLapBenhAn();
@@ -104,6 +149,8 @@ export default function LapBenhAnList() {
                         emptyMessage="Không có quân nhân nào chờ nhập viện."
                         rowExtra={{
                             onLapBenhAn: handleOpenForm,
+                            onApprove: handleApprove,
+                            onReject: handleReject,
                         }}
                     />
                 </CardContent>
