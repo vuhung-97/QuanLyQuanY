@@ -8,7 +8,7 @@ export default function BackupTab({ backupFiles, loading, onDownload }) {
     return (
         <DataTable
             columns={[
-                { key: "file_name", label: "File name" },
+                { key: "file_name", label: "Tên tệp" },
                 { key: "kich_thuoc", label: "Kích thước" },
                 { key: "ngay_tao", label: "Ngày tạo" },
                 { key: "hanh_dong", label: "Hành động" },

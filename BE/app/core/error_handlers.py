@@ -41,7 +41,7 @@ def register_error_handlers(app: FastAPI):
         """
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content={"detail": "Database error"},
+            content={"detail": "Lỗi hệ thống, vui lòng thử lại sau"},
         )
 
     # Xử lý tất cả lỗi chưa được catch ở trên (lỗi hệ thống, bug, ...)
@@ -53,5 +53,5 @@ def register_error_handlers(app: FastAPI):
         """
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content={"detail": "Internal server error"},
+            content={"detail": "Lỗi hệ thống, vui lòng thử lại sau"},
         )

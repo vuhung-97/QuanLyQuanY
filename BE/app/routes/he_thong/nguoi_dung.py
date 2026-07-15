@@ -23,10 +23,10 @@ def _commit_or_raise(db: Session) -> None:
         db.commit()
     except IntegrityError as exc:
         db.rollback()
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Database constraint violation") from exc
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Dữ liệu không hợp lệ") from exc
     except SQLAlchemyError as exc:
         db.rollback()
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Database error") from exc
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Lỗi hệ thống") from exc
 
 
 pre_router = APIRouter()

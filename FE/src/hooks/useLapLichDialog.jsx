@@ -118,84 +118,20 @@ export default function useLapLichDialog({
         setSaving(true);
         setSnackbar({ open: false, message: "", severity: "success" });
         try {
-            const master = {
+            const assignmentsList = Object.entries(assignments).map(
+                ([id_nguoi_dung, ma_vai_tro]) => ({ id_nguoi_dung, ma_vai_tro }),
+            );
+            const payload = {
                 thoi_gian_bat_dau: thoiGianBatDau,
                 thoi_gian_ket_thuc: thoiGianKetThuc,
+                details,
+                assignments: assignmentsList,
             };
-            let ma_lich_kham;
             if (isEdit) {
-                ma_lich_kham = schedule.ma_lich_kham;
-                await khamSucKhoeService.updateSchedule(ma_lich_kham, master);
-                const existing = chiTietList || [];
-                const existingKeys = new Set(
-                    existing.map((ct) => ct.ma_don_vi),
-                );
-                const newKeys = new Set(details.map((d) => d.ma_don_vi));
-
-                for (const d of details) {
-                    if (existingKeys.has(d.ma_don_vi)) {
-                        await khamSucKhoeService.updateScheduleDetail(
-                            ma_lich_kham,
-                            d.ma_don_vi,
-                            {
-                                thoi_gian_bat_dau: d.thoi_gian_bat_dau || null,
-                                thoi_gian_ket_thuc:
-                                    d.thoi_gian_ket_thuc || null,
-                                dia_diem: d.dia_diem || null,
-                            },
-                        );
-                    } else {
-                        await khamSucKhoeService.createScheduleDetail(ma_lich_kham, d);
-                    }
-                }
-                for (const ct of existing) {
-                    if (!newKeys.has(ct.ma_don_vi)) {
-                        await khamSucKhoeService.deleteScheduleDetail(ma_lich_kham, ct.ma_don_vi);
-                    }
-                }
+                await khamSucKhoeService.replaceSchedule(schedule.ma_lich_kham, payload);
             } else {
-                const res = await khamSucKhoeService.createSchedule(master);
-                ma_lich_kham = res.data?.ma_lich_kham;
-                if (!ma_lich_kham) {
-                    setSnackbar({ open: true, message: "Không nhận được mã lịch khám từ server.", severity: "error" });
-                    setSaving(false);
-                    return;
-                }
-                for (const d of details) {
-                    await khamSucKhoeService.createScheduleDetail(ma_lich_kham, d);
-                }
+                await khamSucKhoeService.createSchedule(payload);
             }
-
-            // Batch save assignments
-            const existingMap = {};
-            for (const a of existingAssignments) {
-                existingMap[a.id_nguoi_dung] = a;
-            }
-            const newUserIds = Object.keys(assignments);
-
-            for (const userId of newUserIds) {
-                const vaiTro = assignments[userId];
-                if (existingMap[userId]) {
-                    if (existingMap[userId].ma_vai_tro !== vaiTro) {
-                        await khamSucKhoeService.updateAssignment(
-                            ma_lich_kham,
-                            existingMap[userId].id,
-                            { ma_vai_tro: vaiTro },
-                        );
-                    }
-                } else {
-                    await khamSucKhoeService.createAssignment(
-                        ma_lich_kham,
-                        { id_nguoi_dung: userId, ma_vai_tro: vaiTro },
-                    );
-                }
-            }
-            for (const a of existingAssignments) {
-                if (!assignments[a.id_nguoi_dung]) {
-                    await khamSucKhoeService.deleteAssignment(ma_lich_kham, a.id);
-                }
-            }
-
             setSnackbar({ open: true, message: "Đã lưu lịch khám.", severity: "success" });
             setTimeout(() => { onSaved(); onClose(); }, 400);
         } catch (err) {

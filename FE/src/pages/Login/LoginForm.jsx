@@ -109,8 +109,8 @@ export default function LoginForm({
                                                 <IconButton
                                                     aria-label={
                                                         showPassword
-                                                            ? "An mat khau"
-                                                            : "Hien mat khau"
+                                                            ? "Ẩn mật khẩu"
+                                                            : "Hiện mật khẩu"
                                                     }
                                                     onClick={onTogglePassword}
                                                     edge="end"

@@ -66,7 +66,7 @@ def require_permissions(*required_permissions: str):
             if perm not in user_perms_set:
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
-                    detail=f"Thiếu quyền: {perm}",
+                    detail="Bạn không có quyền thực hiện thao tác này",
                 )
         return current_user
 

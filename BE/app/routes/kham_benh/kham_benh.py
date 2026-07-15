@@ -114,7 +114,7 @@ def get_kham_benh_hom_nay(
 def get_kham_benh_detail(id: str, db: Session = Depends(get_db)):
     kb = db.query(KhamBenh).filter(KhamBenh.ma_kham_benh == id).first()
     if not kb:
-        raise HTTPException(status_code=404, detail="KhamBenh not found")
+        raise HTTPException(status_code=404, detail="Không tìm thấy ca khám")
 
     don_thuoc_list = (
         db.query(DonThuoc)
