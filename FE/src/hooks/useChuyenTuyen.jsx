@@ -12,7 +12,7 @@ export default function useChuyenTuyen() {
     const [nam, setNam] = useState(null);
     const [thang, setThang] = useState(null);
 
-    const [isLeft, setIsLeft] = useState(true);
+    const [isLeft, setIsLeft] = useState(false);
     const [page, setPage] = useState(1);
     const [totalRecords, setTotalRecords] = useState(0);
 
@@ -32,10 +32,7 @@ export default function useChuyenTuyen() {
     const [openForm, setOpenForm] = useState(false);
     const [saving, setSaving] = useState(false);
 
-    const offset = useMemo(
-        () => (page - 1) * ROWS_PER_PAGE,
-        [page],
-    );
+    const offset = useMemo(() => (page - 1) * ROWS_PER_PAGE, [page]);
 
     const handleFilterModeChange = useCallback(() => {
         setIsLeft((prev) => !prev);
