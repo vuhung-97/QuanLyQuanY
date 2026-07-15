@@ -1,5 +1,5 @@
-from importlib import import_module
 from collections.abc import Callable
+from importlib import import_module
 from typing import Any, TypeVar
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -58,6 +58,12 @@ def _resolve_schema(resource: str, suffix: str) -> type[BaseModel]:
     return schema
 
 
+PostGetHook = Callable[[Any, Session], None]
+PostListHook = Callable[[list[Any], Session], None]
+AfterCreateHook = Callable[[Any, Session, Any], None]
+AfterUpdateHook = Callable[[Any, Session, Any], None]
+
+
 def create_crud_router(
     *,
     resource: str,
@@ -74,6 +80,10 @@ def create_crud_router(
     enable_update: bool = True,
     enable_delete: bool = True,
     enable_read: bool = True,
+    post_get_hook: PostGetHook | None = None,
+    post_list_hook: PostListHook | None = None,
+    after_create_hook: AfterCreateHook | None = None,
+    after_update_hook: AfterUpdateHook | None = None,
 ) -> APIRouter:
     create_schema = create_schema or _resolve_schema(resource, "Create")
     update_schema = update_schema or _resolve_schema(resource, "Update")
@@ -92,20 +102,30 @@ def create_crud_router(
                 r.path = f"/{resource}{r.path}"
             router.routes.insert(0, r)
 
-    @router.get("", dependencies=read_deps, response_model=list[read_schema])
+    @router.get("", dependencies=read_deps, response_model=None)
     def list_items(
         db: Session = Depends(get_db),
         limit: int = Query(default=100, ge=1, le=500),
         offset: int = Query(default=0, ge=0),
         sort_by: str | None = Query(default=None),
         sort_desc: bool = Query(default=False),
-    ) -> list[Any]:
-        return _run_crud(lambda: crud.get_multi(db, limit=limit, offset=offset, sort_by=sort_by, sort_desc=sort_desc))
+        include_total: bool = Query(default=False),
+    ) -> Any:
+        records = _run_crud(lambda: crud.get_multi(db, limit=limit, offset=offset, sort_by=sort_by, sort_desc=sort_desc))
+        if post_list_hook:
+            post_list_hook(records, db)
+        if include_total:
+            total = _run_crud(lambda: crud.count(db))
+            return {"items": records, "total": total, "limit": limit, "offset": offset}
+        return records
 
     if enable_read:
         @router.get("/{item_id}", dependencies=read_deps, response_model=read_schema)
         def get_item(item_id: str, db: Session = Depends(get_db)) -> Any:
-            return _run_crud(lambda: crud.get(db, item_id))
+            record = _run_crud(lambda: crud.get(db, item_id))
+            if post_get_hook:
+                post_get_hook(record, db)
+            return record
 
     if enable_create:
         @router.post("", dependencies=create_deps, status_code=status.HTTP_201_CREATED, response_model=read_schema)
@@ -114,7 +134,12 @@ def create_crud_router(
             db: Session = Depends(get_db),
             current_user = Depends(get_current_user),
         ) -> Any:
-            return _run_crud(lambda: crud.create(db, payload, nguoi_dung_id=current_user.id))
+            record = _run_crud(lambda: crud.create(db, payload, nguoi_dung_id=current_user.id))
+            if post_get_hook:
+                post_get_hook(record, db)
+            if after_create_hook:
+                after_create_hook(record, db, current_user)
+            return record
 
     if enable_update:
         @router.patch("/{item_id}", dependencies=update_deps, response_model=read_schema)
@@ -124,7 +149,12 @@ def create_crud_router(
             db: Session = Depends(get_db),
             current_user = Depends(get_current_user),
         ) -> Any:
-            return _run_crud(lambda: crud.update(db, item_id, payload, nguoi_dung_id=current_user.id))
+            record = _run_crud(lambda: crud.update(db, item_id, payload, nguoi_dung_id=current_user.id))
+            if post_get_hook:
+                post_get_hook(record, db)
+            if after_update_hook:
+                after_update_hook(record, db, current_user)
+            return record
 
     if enable_delete:
         @router.delete("/{item_id}", dependencies=delete_deps, status_code=status.HTTP_204_NO_CONTENT)

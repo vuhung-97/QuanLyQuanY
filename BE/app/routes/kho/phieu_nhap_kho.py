@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core.dependencies import require_permissions
@@ -11,17 +11,10 @@ from app.crud.phieu_nhap_kho import phieu_nhap_kho_crud
 from app.routes.base import create_crud_router
 
 
-router = create_crud_router(
-    resource="phieu_nhap_kho",
-    crud=phieu_nhap_kho_crud,
-    read_permission="phieu_nhap_kho:read",
-    create_permission="phieu_nhap_kho:create",
-    update_permission="phieu_nhap_kho:update",
-    delete_permission="phieu_nhap_kho:delete",
-)
+pre_router = APIRouter()
 
 
-@router.get(
+@pre_router.get(
     "/by-phieu-du-tru/{ma_phieu_du_tru}",
     dependencies=[Depends(require_permissions("phieu_nhap_kho:read"))],
 )
@@ -62,3 +55,14 @@ def get_phieu_nhap_by_phieu_du_tru(ma_phieu_du_tru: str, db: Session = Depends(g
             for ct, ten_thuoc, don_vi in chi_tiets
         ],
     }
+
+
+router = create_crud_router(
+    resource="phieu_nhap_kho",
+    crud=phieu_nhap_kho_crud,
+    pre_router=pre_router,
+    read_permission="phieu_nhap_kho:read",
+    create_permission="phieu_nhap_kho:create",
+    update_permission="phieu_nhap_kho:update",
+    delete_permission="phieu_nhap_kho:delete",
+)

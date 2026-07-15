@@ -1,6 +1,6 @@
 import csv
 from datetime import date, datetime, timezone
-from typing import Generic, TypeVar
+from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel, ValidationError
 from sqlalchemy import func, inspect, select
@@ -74,8 +74,8 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             raise CRUDNotFoundError("Item not found")
         return row
 
-    def create(self, db: Session, payload: CreateSchemaType, nguoi_dung_id: str | None = None) -> ModelType:
-        row = self.model(**self._payload_values(payload))
+    def create(self, db: Session, payload: CreateSchemaType, nguoi_dung_id: str | None = None, **extra_values: Any) -> ModelType:
+        row = self.model(**self._payload_values(payload), **extra_values)
         if nguoi_dung_id and hasattr(self.model, "id_nguoi_dung"):
             row.id_nguoi_dung = nguoi_dung_id
         db.add(row)
@@ -84,12 +84,14 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         self._log(db, "CREATE", nguoi_dung_id, du_lieu_moi=self._row_to_dict(row))
         return row
 
-    def update(self, db: Session, item_id: str, payload: UpdateSchemaType, nguoi_dung_id: str | None = None) -> ModelType:
+    def update(self, db: Session, item_id: str, payload: UpdateSchemaType, nguoi_dung_id: str | None = None, **extra_values: Any) -> ModelType:
         row = self.get(db, item_id)
         old = self._row_to_dict(row)
         for field, value in self._payload_values(payload, exclude_unset=True).items():
             if field in self._primary_key_columns():
                 continue
+            setattr(row, field, value)
+        for field, value in extra_values.items():
             setattr(row, field, value)
         self._validate_updated_row(db, row, type(payload))
         self._commit(db)
