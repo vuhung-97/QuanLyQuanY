@@ -38,7 +38,8 @@ export const CACH_DUNG_LABEL_MAP = Object.fromEntries(
 
 export const CHUYEN_TUYEN_STATUS_MAP = {
     đề_nghị_chuyển_tuyến: { label: "Đề nghị chuyển tuyến", color: "warning" },
-    đã_chuyển_tuyến: { label: "Đã chuyển tuyến", color: "info" },
+    chờ_chuyển_tuyến: { label: "Chờ chuyển tuyến", color: "info" },
+    đã_chuyển_tuyến: { label: "Đã chuyển tuyến", color: "primary" },
     đã_về: { label: "Đã về", color: "success" },
 };
 

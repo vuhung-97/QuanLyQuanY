@@ -262,7 +262,7 @@ def get_danh_sach_chuyen_tuyen(
             KhamBenh, QuanNhan.ho_ten, QuanNhan.cap_bac, QuanNhan.chuc_vu,
             QuanNhan.ngay_sinh, QuanNhan.ma_don_vi, DonVi.ten_don_vi,
             GiayGioiThieu.ten_benh_vien, GiayGioiThieu.y_kien_de_nghi,
-            DiTuyenSauDieuTri.ngay_ve,
+            DiTuyenSauDieuTri.ngay_di, DiTuyenSauDieuTri.ngay_ve,
         )
         .join(QuanNhan, KhamBenh.ma_quan_nhan == QuanNhan.ma_quan_nhan)
         .join(DonVi, QuanNhan.ma_don_vi == DonVi.ma_don_vi, isouter=True)
@@ -287,7 +287,7 @@ def get_danh_sach_chuyen_tuyen(
     result = []
     for (
         kb, ho_ten, cap_bac, chuc_vu, ngay_sinh, ma_don_vi, ten_don_vi,
-        gt_ten_benh_vien, gt_y_kien_de_nghi, dt_ngay_ve,
+        gt_ten_benh_vien, gt_y_kien_de_nghi, dt_ngay_di, dt_ngay_ve,
     ) in records:
         d = {c.key: getattr(kb, c.key) for c in inspect(KhamBenh).columns}
         d["ho_ten"] = ho_ten
@@ -298,12 +298,16 @@ def get_danh_sach_chuyen_tuyen(
         d["ten_don_vi"] = ten_don_vi
         d["trang_thai"] = d["trang_thai"] or "chờ"
 
-        if not gt_ten_benh_vien:
+        hom_nay = date.today()
+
+        if not d.get("da_duyet"):
             d["chuyen_tuyen_status"] = "đề_nghị_chuyển_tuyến"
-        elif not dt_ngay_ve:
+        elif dt_ngay_ve and dt_ngay_ve <= hom_nay:
+            d["chuyen_tuyen_status"] = "đã_về"
+        elif dt_ngay_di and dt_ngay_di <= hom_nay:
             d["chuyen_tuyen_status"] = "đã_chuyển_tuyến"
         else:
-            d["chuyen_tuyen_status"] = "đã_về"
+            d["chuyen_tuyen_status"] = "chờ_chuyển_tuyến"
 
         result.append(d)
     return {"data": result, "total": total}

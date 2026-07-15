@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { khamBenhService } from "@/services/khamBenhService.js";
 
-const ROWS_PER_PAGE = 100;
+const ROWS_PER_PAGE = 50;
 
 export default function useChuyenTuyen() {
     const [examinations, setExaminations] = useState([]);
@@ -33,12 +33,12 @@ export default function useChuyenTuyen() {
     const [saving, setSaving] = useState(false);
 
     const offset = useMemo(
-        () => (isLeft ? (page - 1) * ROWS_PER_PAGE : 0),
-        [isLeft, page],
+        () => (page - 1) * ROWS_PER_PAGE,
+        [page],
     );
 
     const handleFilterModeChange = useCallback(() => {
-        setIsLeft(prev => !prev);
+        setIsLeft((prev) => !prev);
         setPage(1);
     }, []);
 
@@ -71,7 +71,9 @@ export default function useChuyenTuyen() {
     const patients = useMemo(() => {
         if (!isLeft) {
             return examinations.filter(
-                (e) => e.chuyen_tuyen_status === "đề_nghị_chuyển_tuyến",
+                (e) =>
+                    e.chuyen_tuyen_status === "đề_nghị_chuyển_tuyến" ||
+                    e.chuyen_tuyen_status === "chờ_chuyển_tuyến",
             );
         }
         return examinations;
@@ -81,13 +83,22 @@ export default function useChuyenTuyen() {
         const deNghi = examinations.filter(
             (e) => e.chuyen_tuyen_status === "đề_nghị_chuyển_tuyến",
         ).length;
+        const choChuyenTuyen = examinations.filter(
+            (e) => e.chuyen_tuyen_status === "chờ_chuyển_tuyến",
+        ).length;
         const daChuyenTuyen = examinations.filter(
             (e) => e.chuyen_tuyen_status === "đã_chuyển_tuyến",
         ).length;
         const daVe = examinations.filter(
             (e) => e.chuyen_tuyen_status === "đã_về",
         ).length;
-        return { tongSo: examinations.length, deNghi, daChuyenTuyen, daVe };
+        return {
+            tongSo: examinations.length,
+            deNghi,
+            choChuyenTuyen,
+            daChuyenTuyen,
+            daVe,
+        };
     }, [examinations]);
 
     const filtered = useMemo(() => {
@@ -103,9 +114,7 @@ export default function useChuyenTuyen() {
 
     const handleViewDetail = useCallback(
         async (id) => {
-            const exam = patients.find(
-                (e) => e.ma_kham_benh === id,
-            );
+            const exam = patients.find((e) => e.ma_kham_benh === id);
             if (!exam) return;
             setSelectedExam(exam);
             setDetailLoading(true);
@@ -122,9 +131,7 @@ export default function useChuyenTuyen() {
             } catch (err) {
                 setSnackbar({
                     open: true,
-                    message:
-                        err.response?.data?.detail ||
-                        "Lỗi tải chi tiết.",
+                    message: err.response?.data?.detail || "Lỗi tải chi tiết.",
                     severity: "error",
                 });
                 setOpenForm(false);
@@ -143,7 +150,8 @@ export default function useChuyenTuyen() {
             } catch (err) {
                 setSnackbar({
                     open: true,
-                    message: err.response?.data?.detail || "Lỗi duyệt chuyển tuyến.",
+                    message:
+                        err.response?.data?.detail || "Lỗi duyệt chuyển tuyến.",
                     severity: "error",
                 });
             }
@@ -159,7 +167,9 @@ export default function useChuyenTuyen() {
             } catch (err) {
                 setSnackbar({
                     open: true,
-                    message: err.response?.data?.detail || "Lỗi từ chối chuyển tuyến.",
+                    message:
+                        err.response?.data?.detail ||
+                        "Lỗi từ chối chuyển tuyến.",
                     severity: "error",
                 });
             }
@@ -200,7 +210,8 @@ export default function useChuyenTuyen() {
                     const diTuyenPayload = {
                         ...diTuyenData,
                         noi_dieu_tri: giayData.ten_benh_vien,
-                        chan_doan_luc_di: examDetail?.chan_doan || giayData.chanDoan,
+                        chan_doan_luc_di:
+                            examDetail?.chan_doan || giayData.chanDoan,
                     };
                     if (selectedDiTuyen?.ma_chuyen_tuyen) {
                         await khamBenhService.updateDiTuyenSauDieuTri(
@@ -226,16 +237,20 @@ export default function useChuyenTuyen() {
             } catch (err) {
                 setSnackbar({
                     open: true,
-                    message:
-                        err.response?.data?.detail ||
-                        "Lỗi lưu thông tin.",
+                    message: err.response?.data?.detail || "Lỗi lưu thông tin.",
                     severity: "error",
                 });
             } finally {
                 setSaving(false);
             }
         },
-        [selectedExam, selectedGiayGt, selectedDiTuyen, handleCloseForm, loadData],
+        [
+            selectedExam,
+            selectedGiayGt,
+            selectedDiTuyen,
+            handleCloseForm,
+            loadData,
+        ],
     );
 
     return {

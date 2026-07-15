@@ -34,9 +34,15 @@ export default function ChuyenTuyenForm({
     readOnly = false,
 }) {
     const {
-        formRef,
         tenBenhVien,
         yKienDeNghi,
+        ngayDi,
+        thoiGianDen,
+        chanDoan,
+        quyetDinhYSinh,
+        ngayVe,
+        chanDoanLucVe,
+        ketQuaDieuTri,
         updateField,
         blurSync,
         handleSave,
@@ -155,9 +161,7 @@ export default function ChuyenTuyenForm({
                                         </Typography>
                                         <FormDatePicker
                                             name="ngayDi"
-                                            initialValue={
-                                                formRef.current.ngayDi
-                                            }
+                                            initialValue={ngayDi}
                                             onUpdateRef={updateField}
                                             onBlurSync={blurSync}
                                             size="small"
@@ -184,9 +188,7 @@ export default function ChuyenTuyenForm({
                                         </Typography>
                                         <FormDatePicker
                                             name="thoiGianDen"
-                                            initialValue={
-                                                formRef.current.thoiGianDen
-                                            }
+                                            initialValue={thoiGianDen}
                                             onUpdateRef={updateField}
                                             onBlurSync={blurSync}
                                             size="small"
@@ -194,7 +196,7 @@ export default function ChuyenTuyenForm({
                                     </Stack>
                                     <FormTextField
                                         name="chanDoan"
-                                        initialValue={formRef.current.chanDoan}
+                                        initialValue={chanDoan}
                                         onUpdateRef={updateField}
                                         onBlurSync={blurSync}
                                         label="Chẩn đoán"
@@ -205,9 +207,7 @@ export default function ChuyenTuyenForm({
                                     />
                                     <FormTextField
                                         name="quyetDinhYSinh"
-                                        initialValue={
-                                            formRef.current.quyetDinhYSinh
-                                        }
+                                        initialValue={quyetDinhYSinh}
                                         onUpdateRef={updateField}
                                         onBlurSync={blurSync}
                                         label="Quyết định của y sinh"
@@ -229,9 +229,7 @@ export default function ChuyenTuyenForm({
                                         </Typography>
                                         <FormDatePicker
                                             name="ngayVe"
-                                            initialValue={
-                                                formRef.current.ngayVe
-                                            }
+                                            initialValue={ngayVe}
                                             onUpdateRef={updateField}
                                             onBlurSync={blurSync}
                                             size="small"
@@ -239,9 +237,7 @@ export default function ChuyenTuyenForm({
                                     </Stack>
                                     <FormTextField
                                         name="chanDoanLucVe"
-                                        initialValue={
-                                            formRef.current.chanDoanLucVe
-                                        }
+                                        initialValue={chanDoanLucVe}
                                         onUpdateRef={updateField}
                                         onBlurSync={blurSync}
                                         label="Chẩn đoán lúc về"
@@ -252,9 +248,7 @@ export default function ChuyenTuyenForm({
                                     />
                                     <FormTextField
                                         name="ketQuaDieuTri"
-                                        initialValue={
-                                            formRef.current.ketQuaDieuTri
-                                        }
+                                        initialValue={ketQuaDieuTri}
                                         onUpdateRef={updateField}
                                         onBlurSync={blurSync}
                                         label="Kết quả hướng điều trị"
@@ -293,7 +287,7 @@ export default function ChuyenTuyenForm({
                         variant="contained"
                         color="primary"
                         onClick={handleSave}
-                        disabled={saving || !selectedExam}
+                        disabled={saving || !selectedExam || !tenBenhVien?.trim()}
                         sx={{ textTransform: "none" }}
                     >
                         {saving ? "Đang xử lý..." : "Lưu"}

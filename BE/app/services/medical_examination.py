@@ -218,7 +218,7 @@ class MedicalExaminationService:
         dtsdt = DiTuyenSauDieuTri(
             ma_quan_nhan=kb.ma_quan_nhan,
             ma_giay_gt=ggt.ma_giay_gt,
-            ngay_di=datetime.now().date(),
+            ngay_di=data.get("ngay_di"),
             chan_doan_luc_di=data.get("chan_doan"),
         )
         self.db.add(dtsdt)

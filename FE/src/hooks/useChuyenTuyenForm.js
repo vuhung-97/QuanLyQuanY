@@ -3,8 +3,29 @@ import dayjs from "dayjs";
 
 export default function useChuyenTuyenForm({ open, giayGt, diTuyen, onSave }) {
     const formRef = useRef({});
+    const settersRef = useRef({});
     const [tenBenhVien, setTenBenhVien] = useState("");
     const [yKienDeNghi, setYKienDeNghi] = useState("");
+    const [ngayDi, setNgayDi] = useState(null);
+    const [thoiGianDen, setThoiGianDen] = useState(null);
+    const [chanDoan, setChanDoan] = useState("");
+    const [quyetDinhYSinh, setQuyetDinhYSinh] = useState("");
+    const [ngayVe, setNgayVe] = useState(null);
+    const [chanDoanLucVe, setChanDoanLucVe] = useState("");
+    const [ketQuaDieuTri, setKetQuaDieuTri] = useState("");
+
+    useEffect(() => {
+        const s = settersRef.current;
+        s.tenBenhVien = setTenBenhVien;
+        s.yKienDeNghi = setYKienDeNghi;
+        s.ngayDi = setNgayDi;
+        s.thoiGianDen = setThoiGianDen;
+        s.chanDoan = setChanDoan;
+        s.quyetDinhYSinh = setQuyetDinhYSinh;
+        s.ngayVe = setNgayVe;
+        s.chanDoanLucVe = setChanDoanLucVe;
+        s.ketQuaDieuTri = setKetQuaDieuTri;
+    }, []);
 
     useEffect(() => {
         if (!open) return;
@@ -24,16 +45,23 @@ export default function useChuyenTuyenForm({ open, giayGt, diTuyen, onSave }) {
         formRef.current = data;
         setTenBenhVien(data.tenBenhVien);
         setYKienDeNghi(data.yKienDeNghi);
+        setNgayDi(data.ngayDi);
+        setThoiGianDen(data.thoiGianDen);
+        setChanDoan(data.chanDoan);
+        setQuyetDinhYSinh(data.quyetDinhYSinh);
+        setNgayVe(data.ngayVe);
+        setChanDoanLucVe(data.chanDoanLucVe);
+        setKetQuaDieuTri(data.ketQuaDieuTri);
     }, [open, giayGt, diTuyen]);
 
     const updateField = useCallback((name, value) => {
         formRef.current[name] = value;
+        settersRef.current[name]?.(value);
     }, []);
 
     const blurSync = useCallback((name, value) => {
         formRef.current[name] = value;
-        if (name === "tenBenhVien") setTenBenhVien(value);
-        if (name === "yKienDeNghi") setYKienDeNghi(value);
+        settersRef.current[name]?.(value);
     }, []);
 
     const isNew = !giayGt?.ma_giay_gt;
@@ -59,6 +87,13 @@ export default function useChuyenTuyenForm({ open, giayGt, diTuyen, onSave }) {
         formRef,
         tenBenhVien,
         yKienDeNghi,
+        ngayDi,
+        thoiGianDen,
+        chanDoan,
+        quyetDinhYSinh,
+        ngayVe,
+        chanDoanLucVe,
+        ketQuaDieuTri,
         updateField,
         blurSync,
         handleSave,

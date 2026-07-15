@@ -125,6 +125,13 @@ export default function ChuyenTuyenList() {
                 bg: "#FEE2E2",
             },
             {
+                label: "Chờ chuyển tuyến",
+                value: stats.choChuyenTuyen,
+                icon: <SendIcon />,
+                color: "#F59E0B",
+                bg: "#FEF3C7",
+            },
+            {
                 label: "Đã chuyển tuyến",
                 value: stats.daChuyenTuyen,
                 icon: <MedicalServicesIcon />,
@@ -209,7 +216,7 @@ export default function ChuyenTuyenList() {
                         }
                         rowExtra={{ onView: handleViewDetail, onApprove: handleApproveChuyenTuyen, onReject: handleRejectChuyenTuyen, offset }}
                     />
-                    {isLeft && totalRecords > 0 && (
+                    {totalRecords > ROWS_PER_PAGE && (
                         <PaginationWidget
                             page={page}
                             totalRecords={totalRecords}
