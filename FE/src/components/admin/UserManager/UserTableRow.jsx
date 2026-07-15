@@ -1,8 +1,9 @@
-import { Button, Chip, IconButton, TableCell, TableRow } from "@mui/material";
+import { Chip, Stack, TableCell, TableRow } from "@mui/material";
 import {
     Delete as DeleteIcon,
     ManageAccounts as ManageAccountsIcon,
 } from "@mui/icons-material";
+import ActionIcon from "@/components/common/ActionIcon.jsx";
 
 export default function UserTableRow({ user, onEdit, onDelete }) {
     return (
@@ -32,23 +33,20 @@ export default function UserTableRow({ user, onEdit, onDelete }) {
                 />
             </TableCell>
             <TableCell>
-                <Button
-                    size="small"
-                    startIcon={<ManageAccountsIcon />}
-                    onClick={() => onEdit(user)}
-                    sx={{ fontSize: "1rem" }}
-                >
-                    Sửa
-                </Button>
-                <Button
-                    color="error"
-                    size="small"
-                    startIcon={<DeleteIcon />}
-                    onClick={() => onDelete(user)}
-                    sx={{ fontSize: "1rem" }}
-                >
-                    Xóa
-                </Button>
+                <Stack direction="row" spacing={0.5}>
+                    <ActionIcon
+                        title="Sửa"
+                        icon={<ManageAccountsIcon />}
+                        color="primary"
+                        onClick={() => onEdit(user)}
+                    />
+                    <ActionIcon
+                        title="Xóa"
+                        icon={<DeleteIcon />}
+                        color="error"
+                        onClick={() => onDelete(user)}
+                    />
+                </Stack>
             </TableCell>
         </TableRow>
     );

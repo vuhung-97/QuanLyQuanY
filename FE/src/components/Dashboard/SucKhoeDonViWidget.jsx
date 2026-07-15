@@ -50,8 +50,10 @@ export default function SucKhoeDonViWidget({ sx }) {
                 <Stack spacing={2} sx={{ flex: 1 }}>
                     <Stack
                         direction="row"
-                        justifyContent="space-between"
-                        alignItems="center"
+                        sx={{
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                        }}
                     >
                         <Typography
                             variant="h6"
@@ -80,7 +82,9 @@ export default function SucKhoeDonViWidget({ sx }) {
                                 divider={
                                     <Divider orientation="vertical" flexItem />
                                 }
-                                justifyContent="center"
+                                sx={{
+                                    justifyContent: "center",
+                                }}
                             >
                                 <Box sx={{ textAlign: "center", flex: 1 }}>
                                     <Typography

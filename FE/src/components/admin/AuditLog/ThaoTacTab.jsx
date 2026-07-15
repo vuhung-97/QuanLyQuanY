@@ -1,4 +1,6 @@
-import { Chip, TableCell, TableRow } from "@mui/material";
+import { Chip, Stack, TableCell, TableRow } from "@mui/material";
+import { Visibility as VisibilityIcon } from "@mui/icons-material";
+import ActionIcon from "@/components/common/ActionIcon.jsx";
 import DataTable from "@/components/common/DataTable.jsx";
 import { formatDateTime } from "@/utils/date.js";
 
@@ -49,12 +51,14 @@ export default function ThaoTacTab({ rows, loading, onViewDetail }) {
                     <TableCell>{row.ten_bang || "--"}</TableCell>
                     <TableCell>{row.dia_chi_ip || "--"}</TableCell>
                     <TableCell>
-                        <Chip
-                            label="Xem"
-                            size="small"
-                            onClick={() => onViewDetail(row)}
-                            clickable
-                        />
+                        <Stack direction="row" spacing={0.5}>
+                            <ActionIcon
+                                title="Xem chi tiết"
+                                icon={<VisibilityIcon />}
+                                color="info"
+                                onClick={() => onViewDetail(row)}
+                            />
+                        </Stack>
                     </TableCell>
                 </TableRow>
             ))}

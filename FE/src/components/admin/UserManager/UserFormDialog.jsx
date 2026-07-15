@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import {
     Box,
     Button,
@@ -15,68 +14,23 @@ import {
     TextField,
 } from "@mui/material";
 import { PersonSearch as PersonSearchIcon } from "@mui/icons-material";
-import { adminService } from "@/services/adminService.js";
+import FormTextField from "@/components/common/FormTextField.jsx";
 import ChonQuanNhanDialog from "@/components/common/ChonQuanNhanDialog.jsx";
-
-const emptyForm = {
-    ten_dang_nhap: "",
-    mat_khau: "",
-    ho_ten: "",
-    id_vai_tro: "ROLE_QN",
-    id_quan_nhan: "",
-    trang_thai: true,
-};
+import useUserForm from "@/hooks/useUserForm.js";
 
 export default function UserFormDialog({ open, onClose, editingUser, roles, onSaved }) {
-    const [form, setForm] = useState(emptyForm);
-    const [saving, setSaving] = useState(false);
-    const [error, setError] = useState("");
-    const [openChonQn, setOpenChonQn] = useState(false);
-
-    useEffect(() => {
-        if (open) {
-            setForm(editingUser ? { ...emptyForm, ...editingUser, mat_khau: "" } : emptyForm);
-            setError("");
-            setSaving(false);
-        }
-    }, [open, editingUser]);
-
-    const handleChange = (event) => {
-        const { name, value, checked, type } = event.target;
-        setForm((current) => ({
-            ...current,
-            [name]: type === "checkbox" ? checked : value,
-        }));
-    };
-
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        setSaving(true);
-        setError("");
-        try {
-            const payload = { ...form };
-            if (!payload.id_vai_tro) {
-                setError("Vai trò không được để trống.");
-                setSaving(false);
-                return;
-            }
-            if (!editingUser) delete payload.id;
-            if (editingUser && !payload.mat_khau) delete payload.mat_khau;
-
-            let res;
-            if (editingUser) {
-                res = await adminService.updateUser(editingUser.id, payload);
-            } else {
-                res = await adminService.createUser(payload);
-            }
-            onSaved(res.data, !!editingUser);
-            onClose();
-        } catch (err) {
-            setError(err.response?.data?.detail || "Không thể lưu tài khoản người dùng.");
-        } finally {
-            setSaving(false);
-        }
-    };
+    const {
+        formSnapshot,
+        updateField,
+        saving,
+        error,
+        openChonQn,
+        setOpenChonQn,
+        handleTrangThaiChange,
+        handleChonQuanNhan,
+        handleSubmit,
+        handleClose,
+    } = useUserForm({ open, editingUser, onClose, onSaved });
 
     return (
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
@@ -96,30 +50,30 @@ export default function UserFormDialog({ open, onClose, editingUser, roles, onSa
                         />
                     )}
                     <Stack spacing={2} sx={{ pt: 1 }}>
-                        <TextField
+                        <FormTextField
                             name="ten_dang_nhap"
+                            initialValue={formSnapshot.ten_dang_nhap}
+                            onUpdateRef={updateField}
                             label="Tên đăng nhập"
-                            value={form.ten_dang_nhap}
-                            onChange={handleChange}
                             required
                             slotProps={{ htmlInput: { maxLength: 50 } }}
                         />
-                        <TextField
+                        <FormTextField
                             name="mat_khau"
+                            initialValue={formSnapshot.mat_khau}
+                            onUpdateRef={updateField}
                             label={editingUser ? "Mật khẩu mới (nếu đổi)" : "Mật khẩu"}
                             type="password"
-                            value={form.mat_khau}
-                            onChange={handleChange}
                             required={!editingUser}
                             helperText="Tối thiểu 8 ký tự"
                             slotProps={{ htmlInput: { minLength: 8 } }}
                         />
-                        <TextField
+                        <FormTextField
                             select
                             name="id_vai_tro"
+                            initialValue={formSnapshot.id_vai_tro}
+                            onUpdateRef={updateField}
                             label="Vai trò"
-                            value={form.id_vai_tro}
-                            onChange={handleChange}
                             required
                         >
                             {roles.map((role) => (
@@ -127,12 +81,12 @@ export default function UserFormDialog({ open, onClose, editingUser, roles, onSa
                                     {role.ten_vai_tro || role.id}
                                 </MenuItem>
                             ))}
-                        </TextField>
-                        <TextField
+                        </FormTextField>
+                        <FormTextField
                             name="id_quan_nhan"
+                            initialValue={formSnapshot.id_quan_nhan || ""}
+                            onUpdateRef={updateField}
                             label="Mã quân nhân"
-                            value={form.id_quan_nhan || ""}
-                            onChange={handleChange}
                             slotProps={{
                                 htmlInput: { maxLength: 20 },
                                 input: {
@@ -149,11 +103,11 @@ export default function UserFormDialog({ open, onClose, editingUser, roles, onSa
                                 },
                             }}
                         />
-                        <TextField
+                        <FormTextField
                             name="ho_ten"
+                            initialValue={formSnapshot.ho_ten}
+                            onUpdateRef={updateField}
                             label="Họ tên"
-                            value={form.ho_ten}
-                            onChange={handleChange}
                             required
                             slotProps={{ htmlInput: { maxLength: 100 } }}
                         />
@@ -161,8 +115,8 @@ export default function UserFormDialog({ open, onClose, editingUser, roles, onSa
                             control={
                                 <Switch
                                     name="trang_thai"
-                                    checked={Boolean(form.trang_thai)}
-                                    onChange={handleChange}
+                                    checked={Boolean(formSnapshot.trang_thai)}
+                                    onChange={handleTrangThaiChange}
                                 />
                             }
                             label="Tài khoản đang hoạt động"
@@ -180,14 +134,7 @@ export default function UserFormDialog({ open, onClose, editingUser, roles, onSa
             <ChonQuanNhanDialog
                 open={openChonQn}
                 onClose={() => setOpenChonQn(false)}
-                onSelected={(qn) => {
-                    setOpenChonQn(false);
-                    setForm((prev) => ({
-                        ...prev,
-                        id_quan_nhan: qn.ma_quan_nhan,
-                        ho_ten: qn.ho_ten,
-                    }));
-                }}
+                onSelected={handleChonQuanNhan}
             />
         </Dialog>
     );

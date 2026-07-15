@@ -1,5 +1,6 @@
-import { Button, TableCell, TableRow } from "@mui/material";
+import { TableCell, TableRow } from "@mui/material";
 import { Download as DownloadIcon } from "@mui/icons-material";
+import ActionIcon from "@/components/common/ActionIcon.jsx";
 import DataTable from "@/components/common/DataTable.jsx";
 import { formatDateTime } from "@/utils/date.js";
 
@@ -28,13 +29,12 @@ export default function BackupTab({ backupFiles, loading, onDownload }) {
                         {formatDateTime(file.modified)}
                     </TableCell>
                     <TableCell>
-                        <Button
-                            size="small"
-                            startIcon={<DownloadIcon />}
+                        <ActionIcon
+                            title="Tải về"
+                            icon={<DownloadIcon />}
+                            color="primary"
                             onClick={() => onDownload(file.filename)}
-                        >
-                            Tải về
-                        </Button>
+                        />
                     </TableCell>
                 </TableRow>
             ))}

@@ -39,14 +39,20 @@ export default function DashboardPage() {
     return (
         <Stack spacing={3}>
             <Box>
-                <Typography variant="h4" sx={{ mb: 2, fontWeight: 600, color: "text.primary" }}>
+                <Typography
+                    variant="h4"
+                    sx={{ mb: 2, fontWeight: 600, color: "text.primary" }}
+                >
                     Tổng quan
                 </Typography>
                 <StatCardGrid items={statItems} loading={statsLoading} />
             </Box>
 
             <Box>
-                <Typography variant="h4" sx={{ mb: 2, fontWeight: 600, color: "text.primary" }}>
+                <Typography
+                    variant="h4"
+                    sx={{ mb: 2, fontWeight: 600, color: "text.primary" }}
+                >
                     Chờ xử lý
                 </Typography>
                 <StatCardGrid items={pendingItems} loading={statsLoading} />
@@ -54,15 +60,11 @@ export default function DashboardPage() {
 
             <ChartQuanSoKhamChuaBenh />
 
-            <SoSanhThangTruoc
-                thang={thang}
-                nam={nam}
-                currentData={thangData}
-            />
+            <SoSanhThangTruoc thang={thang} nam={nam} currentData={thangData} />
 
             <TonKhoCanhBao />
 
-            <Grid container spacing={2.5} alignItems="stretch">
+            <Grid container spacing={2.5} sx={{ alignItems: "stretch" }}>
                 <Grid size={{ xs: 12, md: 6 }} sx={{ display: "flex" }}>
                     <PhanBoBenhCard
                         thang={thang}
