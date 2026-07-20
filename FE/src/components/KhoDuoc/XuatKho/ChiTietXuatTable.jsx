@@ -9,11 +9,12 @@ import {
     TableContainer,
     TableHead,
     TableRow,
+    TextField,
     Typography,
 } from "@mui/material";
 import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
 
-const ChiTietXuatTable = memo(function ChiTietXuatTable({ items, isView, onAdd, onRemove }) {
+const ChiTietXuatTable = memo(function ChiTietXuatTable({ items, isView, onAdd, onRemove, onQuantityChange }) {
     return (
         <>
             <Stack
@@ -64,7 +65,33 @@ const ChiTietXuatTable = memo(function ChiTietXuatTable({ items, isView, onAdd, 
                                         {item.don_vi_tinh || "—"}
                                     </TableCell>
                                     <TableCell align="right">
-                                        {item.so_luong}
+                                        {isView ? (
+                                            item.so_luong
+                                        ) : (
+                                            <TextField
+                                                type="number"
+                                                size="small"
+                                                value={item.so_luong}
+                                                onChange={(e) =>
+                                                    onQuantityChange(
+                                                        item.ma_thuoc_vtyt,
+                                                        e.target.value,
+                                                    )
+                                                }
+                                                slotProps={{
+                                                    htmlInput: {
+                                                        min: 1,
+                                                        max:
+                                                            item.so_luong_max ??
+                                                            999999,
+                                                        style: {
+                                                            textAlign: "right",
+                                                        },
+                                                    },
+                                                }}
+                                                sx={{ width: 80 }}
+                                            />
+                                        )}
                                     </TableCell>
                                     <TableCell>
                                         {!isView && (

@@ -155,6 +155,17 @@ export default function usePhieuXuat({ open, phieuId, mode, onClose, onSaved }) 
         [],
     );
 
+    const handleUpdateQuantity = useCallback((maThuoc, newQty) => {
+        setSelectedItems((prev) =>
+            prev.map((item) => {
+                if (item.ma_thuoc_vtyt !== maThuoc) return item;
+                const max = item.so_luong_max ?? Infinity;
+                const qty = Math.max(1, Math.min(max, parseInt(newQty, 10) || 1));
+                return { ...item, so_luong: qty };
+            }),
+        );
+    }, []);
+
     const handleSave = async () => {
         if (selectedItems.length === 0) return;
         setSaving(true);
@@ -171,10 +182,11 @@ export default function usePhieuXuat({ open, phieuId, mode, onClose, onSaved }) 
                     ly_do_xuat: lyDoXuatRef.current || null,
                     ghi_chu: ghiChuRef.current || null,
                 });
-                const existing = await khoDuocService.listChiTietXuatKho({ ma_phieu_xuat: phieuId, limit: 500 });
-                const oldItems = Array.isArray(existing.data) ? existing.data : existing.data?.items || existing.data?.data || [];
+                const ctRes = await khoDuocService.getChiTietByPhieuXuat(phieuId);
+                const ctData = ctRes.data || [];
+                const oldItems = Array.isArray(ctData) ? ctData : ctData.items || ctData.data || [];
                 for (const old of oldItems) {
-                    await khoDuocService.deleteChiTietXuatKho(old.ma_chi_tiet);
+                    await khoDuocService.deleteChiTietXuatKho(`${phieuId},${old.ma_thuoc_vtyt}`);
                 }
                 for (const item of selectedItems) {
                     await khoDuocService.createChiTietXuatKho({ ma_phieu_xuat: phieuId, ma_thuoc_vtyt: item.ma_thuoc_vtyt, so_luong: item.so_luong });
@@ -246,6 +258,7 @@ export default function usePhieuXuat({ open, phieuId, mode, onClose, onSaved }) 
         handleAddFromKhoThuoc,
         handleChonQuanNhan,
         removeItem,
+        handleUpdateQuantity,
         handleSave,
         handleXuatKho,
     };

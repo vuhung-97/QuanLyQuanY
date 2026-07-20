@@ -56,6 +56,7 @@ export default function PhieuXuatDialog({
         handleAddFromKhoThuoc,
         handleChonQuanNhan,
         removeItem,
+        handleUpdateQuantity,
         handleSave,
         handleXuatKho,
     } = usePhieuXuat({ open, phieuId, mode, onClose, onSaved });
@@ -122,6 +123,7 @@ export default function PhieuXuatDialog({
                                 isView={isView}
                                 onAdd={handleOpenKhoThuoc}
                                 onRemove={removeItem}
+                                onQuantityChange={handleUpdateQuantity}
                             />
                         </Stack>
                     </Box>
