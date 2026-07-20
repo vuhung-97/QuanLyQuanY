@@ -28,7 +28,13 @@ export default function useKhoList() {
                 khoDuocService.fetchAllThuocVtyt(),
                 khoDuocService.getSapHetHan(90).catch(() => []),
             ]);
-            setAllItems(data || []);
+            setAllItems(
+                (data || []).sort((a, b) =>
+                    (a.ten_thuoc_vtyt || "").localeCompare(
+                        b.ten_thuoc_vtyt || "",
+                    ),
+                ),
+            );
             setSapHetHan(Array.isArray(expiring) ? expiring : []);
         } catch {
             setSnackbar({
