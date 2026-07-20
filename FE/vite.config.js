@@ -12,4 +12,29 @@ export default defineConfig({
             "@": path.resolve(__dirname, "src"),
         },
     },
+    server: {
+        port: 3000,
+        proxy: {
+            "/api": {
+                target: "http://localhost:8000",
+                changeOrigin: true,
+                rewrite: (p) => p.replace(/^\/api/, ""),
+            },
+        },
+    },
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    vendor: ["react", "react-dom"],
+                    mui: [
+                        "@mui/material",
+                        "@mui/icons-material",
+                        "@mui/x-data-grid",
+                        "@mui/x-date-pickers",
+                    ],
+                },
+            },
+        },
+    },
 });
