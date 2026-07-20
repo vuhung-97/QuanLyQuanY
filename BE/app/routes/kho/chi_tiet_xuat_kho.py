@@ -16,6 +16,8 @@ router = create_crud_router(
     create_permission="chi_tiet_xuat_kho:create",
     update_permission="chi_tiet_xuat_kho:update",
     delete_permission="chi_tiet_xuat_kho:delete",
+    enable_read=False,
+    enable_update=False,
 )
 
 

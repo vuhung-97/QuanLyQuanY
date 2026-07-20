@@ -89,10 +89,7 @@ export const khoDuocService = {
 
     getChiTietByPhieuXuat: (maPhieuXuat) =>
         api.get(`/chi_tiet_xuat_kho/by-phieu/${maPhieuXuat}`),
-    listChiTietXuatKho: (params) => api.get("/chi_tiet_xuat_kho", { params }),
     createChiTietXuatKho: (data) => api.post("/chi_tiet_xuat_kho", data),
-    updateChiTietXuatKho: (id, data) =>
-        api.patch(`/chi_tiet_xuat_kho/${id}`, data),
     deleteChiTietXuatKho: (id) => api.delete(`/chi_tiet_xuat_kho/${id}`),
 
     getThongKePhieuDuTru: (params) => api.get("/thong-ke/phieu-du-tru", { params }),
