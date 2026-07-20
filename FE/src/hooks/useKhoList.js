@@ -5,6 +5,7 @@ import { ROWS_PER_PAGE } from "@/constants/khoConstant.js";
 export default function useKhoList() {
     const [allItems, setAllItems] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [sapHetHan, setSapHetHan] = useState([]);
     const [search, setSearch] = useState("");
     const [phanLoaiFilter, setPhanLoaiFilter] = useState("");
     const [page, setPage] = useState(1);
@@ -23,8 +24,12 @@ export default function useKhoList() {
     const fetchData = useCallback(async () => {
         setLoading(true);
         try {
-            const data = await khoDuocService.fetchAllThuocVtyt();
+            const [data, expiring] = await Promise.all([
+                khoDuocService.fetchAllThuocVtyt(),
+                khoDuocService.getSapHetHan(90).catch(() => []),
+            ]);
             setAllItems(data || []);
+            setSapHetHan(Array.isArray(expiring) ? expiring : []);
         } catch {
             setSnackbar({
                 open: true,
@@ -69,12 +74,17 @@ export default function useKhoList() {
         return filteredItems.slice(start, start + ROWS_PER_PAGE);
     }, [filteredItems, page]);
 
+    const sapHetHanMaSet = useMemo(
+        () => new Set(sapHetHan.map((i) => i.ma_thuoc_vtyt)),
+        [sapHetHan],
+    );
+
     const statItems = useMemo(() => {
         const thuocSapHet = allItems.filter(
-            (i) => (i.so_luong ?? 0) < 50 && i.loai !== "vat_tu",
+            (i) => (i.so_luong ?? 0) < 100 && i.loai !== "vat_tu",
         ).length;
         const vtytSapHet = allItems.filter(
-            (i) => (i.so_luong ?? 0) < 20 && i.loai === "vat_tu",
+            (i) => (i.so_luong ?? 0) < 30 && i.loai === "vat_tu",
         ).length;
         return [
             {
@@ -85,21 +95,28 @@ export default function useKhoList() {
                 bg: "#E8F0FE",
             },
             {
-                label: "Thuốc sắp hết (< 50)",
+                label: "Thuốc tồn thấp (< 100)",
                 value: thuocSapHet,
                 icon: "warning",
                 color: "#F59E0B",
                 bg: "#FEF3C7",
             },
             {
-                label: "VTYT sắp hết (< 20)",
+                label: "VTYT tồn thấp (< 30)",
                 value: vtytSapHet,
                 icon: "warning",
                 color: "#EF4444",
                 bg: "#FEE2E2",
             },
+            {
+                label: "Sắp hết hạn (90 ngày)",
+                value: sapHetHan.length,
+                icon: "error",
+                color: "#DC2626",
+                bg: "#FEE2E2",
+            },
         ];
-    }, [allItems]);
+    }, [allItems, sapHetHan]);
 
     const handleSearchChange = useCallback((v) => {
         setSearch(v);
@@ -166,6 +183,7 @@ export default function useKhoList() {
         paginatedItems,
         totalPages,
         statItems,
+        sapHetHanMaSet,
         rowExtra,
         fetchData,
         setPage,

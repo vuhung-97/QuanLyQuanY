@@ -2,22 +2,21 @@ import { useState, useEffect } from "react";
 import api from "@/services/api.js";
 
 export default function useTonKhoCanhBao() {
-    const now = new Date();
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        const thang = now.getMonth() + 1;
-        const nam = now.getFullYear();
         setLoading(true);
-        api.get("/bao-cao/ton-kho", { params: { thang, nam, limit: 500 } })
+        api.get("/thuoc_vtyt/ton-kho")
             .then((res) => {
-                const sorted = [...(res.data?.danh_sach || [])]
+                const list = Array.isArray(res.data) ? res.data : [];
+                const sorted = list
                     .filter((item) => {
-                        if (item.loai === "vat_tu") return item.ton_cuoi_ky < 100;
-                        return item.ton_cuoi_ky < 400;
+                        const ton = item.so_luong ?? 0;
+                        if (item.loai === "vat_tu") return ton < 30;
+                        return ton < 100;
                     })
-                    .sort((a, b) => a.ton_cuoi_ky - b.ton_cuoi_ky);
+                    .sort((a, b) => (a.so_luong ?? 0) - (b.so_luong ?? 0));
                 setItems(sorted);
             })
             .catch(() => setItems([]))

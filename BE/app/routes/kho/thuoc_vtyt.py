@@ -77,6 +77,8 @@ def search_thuoc(search: str, limit: int = 20, db: Session = Depends(get_db)):
 )
 def get_ton_kho(
     search: str = Query(default=None),
+    ton_toi_da: int = Query(default=None),
+    loai: str = Query(default=None),
     db: Session = Depends(get_db),
 ):
     query = db.query(ThuocVtyt)
@@ -87,7 +89,11 @@ def get_ton_kho(
                 ThuocVtyt.phan_loai.ilike(f"%{search}%"),
             )
         )
-    return query.order_by(ThuocVtyt.ten_thuoc_vtyt).all()
+    if ton_toi_da is not None:
+        query = query.filter(ThuocVtyt.so_luong <= ton_toi_da)
+    if loai:
+        query = query.filter(ThuocVtyt.loai == loai)
+    return query.order_by(ThuocVtyt.so_luong).all()
 
 
 @pre_router.get(

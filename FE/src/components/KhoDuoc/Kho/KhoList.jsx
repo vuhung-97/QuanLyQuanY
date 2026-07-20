@@ -12,6 +12,7 @@ import {
     Add as AddIcon,
     Delete as DeleteIcon,
     Edit as EditIcon,
+    Error as ErrorIcon,
     Inventory2 as Inventory2Icon,
     Visibility as VisibilityIcon,
     WarningAmber as WarningAmberIcon,
@@ -32,6 +33,7 @@ import { ROLES } from "@/constants/roleConstants.js";
 const STAT_ICONS = {
     inventory: <Inventory2Icon />,
     warning: <WarningAmberIcon />,
+    error: <ErrorIcon />,
 };
 
 const columns = [
@@ -51,19 +53,20 @@ const columns = [
         key: "so_luong",
         label: "Tồn kho",
         align: "right",
-        render: (row) => {
+        render: (row, _idx, extra) => {
             const qty = row.so_luong ?? 0;
+            const isThuoc = row.loai !== "vat_tu";
+            const lowStock = isThuoc ? qty < 100 : qty < 30;
             return (
                 <Typography
                     variant="body2"
                     sx={{
                         fontWeight: 600,
-                        color:
-                            qty <= 5
-                                ? "error.main"
-                                : qty <= 10
-                                  ? "warning.dark"
-                                  : "text.primary",
+                        color: qty <= 5
+                            ? "error.main"
+                            : lowStock
+                              ? "warning.main"
+                              : "text.primary",
                     }}
                 >
                     {qty}
@@ -75,8 +78,22 @@ const columns = [
     {
         key: "han_su_dung",
         label: "Hạn sử dụng",
-        render: (row) =>
-            row.han_su_dung ? dayjs(row.han_su_dung).format("DD/MM/YYYY") : "—",
+        render: (row, _idx, extra) => {
+            const isExpiring = extra?.sapHetHanMaSet?.has(row.ma_thuoc_vtyt);
+            return row.han_su_dung ? (
+                <Typography
+                    variant="body2"
+                    sx={{
+                        fontWeight: isExpiring ? 600 : 400,
+                        color: isExpiring ? "error.main" : "text.primary",
+                    }}
+                >
+                    {dayjs(row.han_su_dung).format("DD/MM/YYYY")}
+                </Typography>
+            ) : (
+                "—"
+            );
+        },
     },
     {
         key: "actions",
@@ -103,6 +120,8 @@ export default function KhoList() {
         ...s,
         icon: STAT_ICONS[s.icon] || null,
     }));
+
+    const rowExtra = { ...hook.rowExtra, sapHetHanMaSet: hook.sapHetHanMaSet };
 
     return (
         <>
@@ -168,7 +187,7 @@ export default function KhoList() {
                             loading={hook.loading}
                             minWidth={800}
                             emptyMessage="Không có thuốc / vật tư y tế nào."
-                            rowExtra={hook.rowExtra}
+                            rowExtra={rowExtra}
                         />
 
                         {hook.totalPages > 1 && (
