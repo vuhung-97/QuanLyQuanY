@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
     Box,
     Button,
+    Checkbox,
     Dialog,
     DialogActions,
     DialogContent,
@@ -63,6 +64,8 @@ export default function LapLichDialog({
         handleAssignmentChange,
         detailData,
         handleDetailChange,
+        selectedUnits,
+        handleToggleUnit,
     } = useLapLichDialog({
         open,
         schedule,
@@ -131,19 +134,34 @@ export default function LapLichDialog({
         [assignments, vaiTroList, handleAssignmentChange],
     );
 
+    const checked = (maDonVi) => !!selectedUnits[maDonVi];
+
     const lichKhamColumns = useMemo(
         () => [
+            {
+                key: "chon",
+                label: "Chọn",
+                sx: { width: "5%" },
+                render: (r) => (
+                    <Checkbox
+                        checked={checked(r.ma_don_vi)}
+                        onChange={() => handleToggleUnit(r.ma_don_vi)}
+                        disabled={readOnly}
+                    />
+                ),
+            },
             {
                 key: "ten_don_vi",
                 label: "Tên đơn vị",
                 sx: { fontWeight: 600, width: "15%" },
             },
-            { key: "tong_quan_so", label: "Quân số", sx: { width: "10%" } },
+            { key: "tong_quan_so", label: "Quân số", sx: { width: "8%" } },
             {
                 key: "bat_dau",
                 label: "Thời gian bắt đầu",
-                sx: { width: "20%" },
+                sx: { width: "18%" },
                 render: (r) => {
+                    if (!checked(r.ma_don_vi)) return null;
                     const d = detailData[r.ma_don_vi] || {};
                     return (
                         <ChonNgayGio
@@ -164,8 +182,9 @@ export default function LapLichDialog({
             {
                 key: "ket_thuc",
                 label: "Thời gian kết thúc",
-                sx: { width: "20%" },
+                sx: { width: "18%" },
                 render: (r) => {
+                    if (!checked(r.ma_don_vi)) return null;
                     const d = detailData[r.ma_don_vi] || {};
                     return (
                         <ChonNgayGio
@@ -186,8 +205,9 @@ export default function LapLichDialog({
             {
                 key: "dia_diem",
                 label: "Địa điểm",
-                sx: { width: "35%" },
+                sx: { width: "36%" },
                 render: (r) => {
+                    if (!checked(r.ma_don_vi)) return null;
                     const d = detailData[r.ma_don_vi] || {};
                     return (
                         <DiaDiemCell
@@ -200,7 +220,7 @@ export default function LapLichDialog({
                 },
             },
         ],
-        [detailData, handleDetailChange],
+        [detailData, handleDetailChange, selectedUnits, handleToggleUnit, readOnly],
     );
 
     return (

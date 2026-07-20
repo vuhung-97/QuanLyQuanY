@@ -15,6 +15,7 @@ export default function useLapLichDialog({
     const [saving, setSaving] = useState(false);
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
     const [detailData, setDetailData] = useState({});
+    const [selectedUnits, setSelectedUnits] = useState({});
 
     // Phân công nhiệm vụ
     const [users, setUsers] = useState([]);
@@ -45,14 +46,17 @@ export default function useLapLichDialog({
                 setThoiGianBatDau(schedule.thoi_gian_bat_dau || "");
                 setThoiGianKetThuc(schedule.thoi_gian_ket_thuc || "");
                 const init = {};
+                const sel = {};
                 for (const ct of (chiTietList || [])) {
                     init[ct.ma_don_vi] = {
                         thoi_gian_bat_dau: ct.thoi_gian_bat_dau || "",
                         thoi_gian_ket_thuc: ct.thoi_gian_ket_thuc || "",
                         dia_diem: ct.dia_diem || "",
                     };
+                    sel[ct.ma_don_vi] = true;
                 }
                 setDetailData(init);
+                setSelectedUnits(sel);
                 // Load assignments hiện có
                 khamSucKhoeService.getAssignments(schedule.ma_lich_kham)
                     .then((res) => {
@@ -69,6 +73,7 @@ export default function useLapLichDialog({
                 setThoiGianBatDau("");
                 setThoiGianKetThuc("");
                 setDetailData({});
+                setSelectedUnits({});
                 setAssignments({});
                 setExistingAssignments([]);
             }
@@ -92,6 +97,20 @@ export default function useLapLichDialog({
         setSnackbar((s) => ({ ...s, open: false }));
     }, []);
 
+    const handleToggleUnit = useCallback((maDonVi) => {
+        setSelectedUnits((prev) => {
+            const checked = !prev[maDonVi];
+            if (!checked) {
+                setDetailData((dd) => {
+                    const next = { ...dd };
+                    delete next[maDonVi];
+                    return next;
+                });
+            }
+            return { ...prev, [maDonVi]: checked };
+        });
+    }, []);
+
     const handleDetailChange = useCallback((maDonVi, field, value) => {
         setDetailData((prev) => ({
             ...prev,
@@ -109,7 +128,12 @@ export default function useLapLichDialog({
     const handleSubmit = async (e) => {
         e.preventDefault();
         const details = Object.entries(detailData)
-            .filter(([_, d]) => d.thoi_gian_bat_dau && d.thoi_gian_ket_thuc)
+            .filter(
+                ([ma_don_vi, d]) =>
+                    selectedUnits[ma_don_vi] &&
+                    d.thoi_gian_bat_dau &&
+                    d.thoi_gian_ket_thuc,
+            )
             .map(([ma_don_vi, d]) => ({ ma_don_vi, ...d }));
         if (details.length === 0) {
             setSnackbar({ open: true, message: "Vui lòng nhập ít nhất một đơn vị có thời gian.", severity: "warning" });
@@ -161,5 +185,7 @@ export default function useLapLichDialog({
         handleAssignmentChange,
         detailData,
         handleDetailChange,
+        selectedUnits,
+        handleToggleUnit,
     };
 }
