@@ -27,7 +27,7 @@ router = create_crud_router(
 )
 def get_ct_by_phieu_xuat(ma_phieu_xuat: str, db: Session = Depends(get_db)):
     results = (
-        db.query(ChiTietXuatKho, ThuocVtyt.ten_thuoc_vtyt, ThuocVtyt.don_vi_tinh)
+        db.query(ChiTietXuatKho, ThuocVtyt.ten_thuoc_vtyt, ThuocVtyt.don_vi_tinh, ThuocVtyt.so_luong)
         .join(ThuocVtyt, ChiTietXuatKho.ma_thuoc_vtyt == ThuocVtyt.ma_thuoc_vtyt)
         .filter(ChiTietXuatKho.ma_phieu_xuat == ma_phieu_xuat)
         .all()
@@ -39,6 +39,7 @@ def get_ct_by_phieu_xuat(ma_phieu_xuat: str, db: Session = Depends(get_db)):
             "so_luong": ct.so_luong,
             "ten_thuoc_vtyt": ten_thuoc,
             "don_vi_tinh": don_vi,
+            "so_luong_max": ton_kho,
         }
-        for ct, ten_thuoc, don_vi in results
+        for ct, ten_thuoc, don_vi, ton_kho in results
     ]
