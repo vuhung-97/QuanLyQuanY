@@ -25,13 +25,16 @@ export default function useKhamBenhForm({
     const [maNhomBenh, setMaNhomBenh] = useState("");
     const [predictions, setPredictions] = useState([]);
     const [predicting, setPredicting] = useState(false);
-    const [threshold, setThreshold] = useState(20);
+    const [threshold, setThreshold] = useState(5);
 
     const formRef = useRef({ chan_doan: "", phuong_phap_dieu_tri: "" });
     const updateField = useCallback((name, value) => {
         formRef.current[name] = value;
     }, []);
-    const getFieldDefault = useCallback((name) => formRef.current[name] || "", []);
+    const getFieldDefault = useCallback(
+        (name) => formRef.current[name] || "",
+        [],
+    );
     const nhomBenhList = useStaticList("/dm_nhom_benh", {
         pageSize: 200,
     });
@@ -85,7 +88,8 @@ export default function useKhamBenhForm({
 
                 setTrieuChung(data.trieu_chung || "");
                 formRef.current.chan_doan = data.chan_doan || "";
-                formRef.current.phuong_phap_dieu_tri = data.phuong_phap_dieu_tri || "";
+                formRef.current.phuong_phap_dieu_tri =
+                    data.phuong_phap_dieu_tri || "";
                 setMaNhomBenh(data.ma_nhom_benh || "");
                 setPrescriptionItems(items);
                 if (data.ma_quan_nhan) {
@@ -130,25 +134,28 @@ export default function useKhamBenhForm({
         };
     }, [open, examinationId]);
 
-    const persistExamData = useCallback(async (status) => {
-        const f = formRef.current;
-        const hasPrescription = prescriptionItems.length > 0;
-        const payload = {
-            trieu_chung: trieuChung,
-            chan_doan: f.chan_doan,
-            phuong_phap_dieu_tri: f.phuong_phap_dieu_tri,
-            ma_nhom_benh: maNhomBenh || null,
-        };
-        if (hasPrescription) {
-            await khamBenhService.completeExamination(exam.ma_kham_benh, {
-                ...payload,
-                prescription_items: prescriptionItems,
-            });
-        } else {
-            if (status) payload.trang_thai = status;
-            await khamBenhService.update(exam.ma_kham_benh, payload);
-        }
-    }, [exam, trieuChung, maNhomBenh, prescriptionItems]);
+    const persistExamData = useCallback(
+        async (status) => {
+            const f = formRef.current;
+            const hasPrescription = prescriptionItems.length > 0;
+            const payload = {
+                trieu_chung: trieuChung,
+                chan_doan: f.chan_doan,
+                phuong_phap_dieu_tri: f.phuong_phap_dieu_tri,
+                ma_nhom_benh: maNhomBenh || null,
+            };
+            if (hasPrescription) {
+                await khamBenhService.completeExamination(exam.ma_kham_benh, {
+                    ...payload,
+                    prescription_items: prescriptionItems,
+                });
+            } else {
+                if (status) payload.trang_thai = status;
+                await khamBenhService.update(exam.ma_kham_benh, payload);
+            }
+        },
+        [exam, trieuChung, maNhomBenh, prescriptionItems],
+    );
 
     const handleSave = useCallback(async () => {
         if (!exam) return;
@@ -165,7 +172,11 @@ export default function useKhamBenhForm({
             const f = formRef.current;
             const hasPrescription = prescriptionItems.length > 0;
             const isFull = f.chan_doan.trim() && f.phuong_phap_dieu_tri.trim();
-            const status = hasPrescription ? null : (isFull ? "đã_khám" : "đang_khám");
+            const status = hasPrescription
+                ? null
+                : isFull
+                  ? "đã_khám"
+                  : "đang_khám";
             await persistExamData(status);
 
             const message = hasPrescription
@@ -184,7 +195,14 @@ export default function useKhamBenhForm({
         } finally {
             setSaving(false);
         }
-    }, [exam, trieuChung, prescriptionItems, persistExamData, onSaved, onClose]);
+    }, [
+        exam,
+        trieuChung,
+        prescriptionItems,
+        persistExamData,
+        onSaved,
+        onClose,
+    ]);
 
     const handlePrescriptionSave = useCallback((items) => {
         setPrescriptionItems(items);
@@ -215,7 +233,7 @@ export default function useKhamBenhForm({
         if (words.length === 0) return;
         setPredicting(true);
         try {
-            const res = await khamBenhService.predictDisease(words, 0);
+            const res = await khamBenhService.predictDisease(words, 5);
             setPredictions(res.data.predictions || []);
         } catch {
             setSnackbar({
@@ -273,14 +291,22 @@ export default function useKhamBenhForm({
         } catch (err) {
             setSnackbar({
                 open: true,
-                message:
-                    err.response?.data?.detail || "Lỗi chuyển tuyến.",
+                message: err.response?.data?.detail || "Lỗi chuyển tuyến.",
                 severity: "error",
             });
         } finally {
             setReferring(false);
         }
-    }, [exam, qn, trieuChung, maNhomBenh, prescriptionItems, persistExamData, onSaved, onClose]);
+    }, [
+        exam,
+        qn,
+        trieuChung,
+        maNhomBenh,
+        prescriptionItems,
+        persistExamData,
+        onSaved,
+        onClose,
+    ]);
 
     const handleReferSaved = useCallback(() => {
         setOpenReferral(false);
@@ -317,15 +343,24 @@ export default function useKhamBenhForm({
         } catch (err) {
             setSnackbar({
                 open: true,
-                message: typeof err.response?.data?.detail === "string"
-                    ? err.response.data.detail
-                    : "Lỗi nhập viện.",
+                message:
+                    typeof err.response?.data?.detail === "string"
+                        ? err.response.data.detail
+                        : "Lỗi nhập viện.",
                 severity: "error",
             });
         } finally {
             setSaving(false);
         }
-    }, [exam, trieuChung, maNhomBenh, prescriptionItems, persistExamData, onSaved, onClose]);
+    }, [
+        exam,
+        trieuChung,
+        maNhomBenh,
+        prescriptionItems,
+        persistExamData,
+        onSaved,
+        onClose,
+    ]);
 
     return {
         exam,

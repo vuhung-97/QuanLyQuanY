@@ -1,5 +1,12 @@
 import { memo, useCallback, useMemo } from "react";
-import { Box, Button, Grid, LinearProgress, Slider, Typography } from "@mui/material";
+import {
+    Box,
+    Button,
+    Grid,
+    LinearProgress,
+    Slider,
+    Typography,
+} from "@mui/material";
 
 export default memo(function PredictionPanel({
     predictions,
@@ -16,7 +23,10 @@ export default memo(function PredictionPanel({
         [predictions, threshold],
     );
 
-    const handleSliderChange = useCallback((_, v) => onThresholdChange(v), [onThresholdChange]);
+    const handleSliderChange = useCallback(
+        (_, v) => onThresholdChange(v),
+        [onThresholdChange],
+    );
 
     return (
         <Grid size={{ xs: 12, md: 6 }}>
@@ -36,7 +46,15 @@ export default memo(function PredictionPanel({
             </Button>
 
             {predictions.length > 0 && (
-                <Box sx={{ p: 2, border: "1px solid", borderColor: "divider", borderRadius: 1, bgcolor: "grey.50" }}>
+                <Box
+                    sx={{
+                        p: 2,
+                        border: "1px solid",
+                        borderColor: "divider",
+                        borderRadius: 1,
+                        bgcolor: "grey.50",
+                    }}
+                >
                     <Box sx={{ px: 1, mb: 1.5 }}>
                         <Typography variant="caption" color="text.secondary">
                             Tỷ lệ % tối thiểu: {threshold}%
@@ -44,9 +62,9 @@ export default memo(function PredictionPanel({
                         <Slider
                             value={threshold}
                             onChange={handleSliderChange}
-                            min={20}
+                            min={5}
                             max={100}
-                            step={5}
+                            step={1}
                             valueLabelDisplay="auto"
                             valueLabelFormat={(v) => `${v}%`}
                             disabled={readOnly}
@@ -55,7 +73,11 @@ export default memo(function PredictionPanel({
                     </Box>
 
                     {filtered.length === 0 ? (
-                        <Typography variant="body2" color="text.secondary" sx={{ textAlign: "center", py: 1 }}>
+                        <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ textAlign: "center", py: 1 }}
+                        >
                             Không có kết quả nào đạt ngưỡng {threshold}%
                         </Typography>
                     ) : (
@@ -76,16 +98,36 @@ export default memo(function PredictionPanel({
                                 }}
                                 disabled={readOnly}
                             >
-                                <Typography variant="body2" sx={{ fontWeight: 500, mb: 0.5 }}>
+                                <Typography
+                                    variant="body2"
+                                    sx={{ fontWeight: 500, mb: 0.5 }}
+                                >
                                     {p.disease}
                                 </Typography>
-                                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 1,
+                                    }}
+                                >
                                     <LinearProgress
                                         variant="determinate"
                                         value={Math.min(p.probability, 100)}
-                                        sx={{ flex: 1, height: 8, borderRadius: 4 }}
+                                        sx={{
+                                            flex: 1,
+                                            height: 8,
+                                            borderRadius: 4,
+                                        }}
                                     />
-                                    <Typography variant="caption" color="text.secondary" sx={{ minWidth: 40, textAlign: "right" }}>
+                                    <Typography
+                                        variant="caption"
+                                        color="text.secondary"
+                                        sx={{
+                                            minWidth: 40,
+                                            textAlign: "right",
+                                        }}
+                                    >
                                         {p.probability}%
                                     </Typography>
                                 </Box>
@@ -93,7 +135,11 @@ export default memo(function PredictionPanel({
                         ))
                     )}
 
-                    <Typography variant="caption" color="text.secondary" sx={{ display: "block", textAlign: "right", mt: 0.5 }}>
+                    <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        sx={{ display: "block", textAlign: "right", mt: 0.5 }}
+                    >
                         Click vào bệnh để điền vào chẩn đoán
                     </Typography>
                 </Box>
