@@ -21,6 +21,10 @@ export default function usePrescriptionRow(initialData) {
 
     const exceedWarning = soLuong > 0 && sang + trua + toi > soLuong;
 
+    const handleGhiChuChange = useCallback((_, v) => setGhiChu(v), []);
+    const handleCachSuDungChange = useCallback((_, v) => setCachSuDung(v?.value || "uong"), []);
+    const handleThoiDiemDungChange = useCallback((_, v) => setThoiDiemDung(v?.value || "sau_an"), []);
+
     const getData = useCallback(
         () => ({
             ma_thuoc_vtyt: maThuoc,
@@ -98,6 +102,9 @@ export default function usePrescriptionRow(initialData) {
         setThoiDiemDung,
         setCachSuDung,
         setGhiChu,
+        handleGhiChuChange,
+        handleCachSuDungChange,
+        handleThoiDiemDungChange,
         handleSoLuongChange,
         handleSangChange,
         handleTruaChange,

@@ -1,4 +1,4 @@
-import { forwardRef, memo, useImperativeHandle } from "react";
+import { forwardRef, memo, useCallback, useImperativeHandle } from "react";
 import {
     Autocomplete,
     Box,
@@ -8,11 +8,14 @@ import {
 } from "@mui/material";
 import { Delete as DeleteIcon } from "@mui/icons-material";
 import ActionIcon from "@/components/common/ActionIcon.jsx";
+import FormTextField from "@/components/common/FormTextField.jsx";
 import {
     THOI_DIEM_OPTIONS,
     CACH_SU_DUNG_OPTIONS,
 } from "@/constants/khamBenhConstants.js";
 import usePrescriptionRow from "@/hooks/usePrescriptionRow.js";
+
+const getOptionLabel = (o) => o.label;
 
 const PrescriptionRow = memo(
     forwardRef(function PrescriptionRow({ initialData, onRemove }, ref) {
@@ -28,9 +31,9 @@ const PrescriptionRow = memo(
             thoiDiemDung,
             cachSuDung,
             ghiChu,
-            setThoiDiemDung,
-            setCachSuDung,
-            setGhiChu,
+            handleGhiChuChange,
+            handleCachSuDungChange,
+            handleThoiDiemDungChange,
             handleSoLuongChange,
             handleSangChange,
             handleTruaChange,
@@ -40,6 +43,15 @@ const PrescriptionRow = memo(
         } = usePrescriptionRow(initialData);
 
         useImperativeHandle(ref, () => ({ getData }), [getData]);
+
+        const renderCachSuDung = useCallback(
+            (params) => <TextField {...params} label="Cách sử dụng" />,
+            [],
+        );
+        const renderThoiDiemDung = useCallback(
+            (params) => <TextField {...params} label="Thời điểm dùng" />,
+            [],
+        );
 
         return (
             <Stack
@@ -141,13 +153,9 @@ const PrescriptionRow = memo(
                         value={CACH_SU_DUNG_OPTIONS.find(
                             (o) => o.value === cachSuDung,
                         )}
-                        onChange={(_, v) =>
-                            setCachSuDung(v?.value || "uong")
-                        }
-                        getOptionLabel={(o) => o.label}
-                        renderInput={(params) => (
-                            <TextField {...params} label="Cách sử dụng" />
-                        )}
+                        onChange={handleCachSuDungChange}
+                        getOptionLabel={getOptionLabel}
+                        renderInput={renderCachSuDung}
                         sx={{ minWidth: 150 }}
                     />
                     <Autocomplete
@@ -156,20 +164,17 @@ const PrescriptionRow = memo(
                         value={THOI_DIEM_OPTIONS.find(
                             (o) => o.value === thoiDiemDung,
                         )}
-                        onChange={(_, v) =>
-                            setThoiDiemDung(v?.value || "sau_an")
-                        }
-                        getOptionLabel={(o) => o.label}
-                        renderInput={(params) => (
-                            <TextField {...params} label="Thời điểm dùng" />
-                        )}
+                        onChange={handleThoiDiemDungChange}
+                        getOptionLabel={getOptionLabel}
+                        renderInput={renderThoiDiemDung}
                         sx={{ minWidth: 200 }}
                     />
-                    <TextField
+                    <FormTextField
+                        name="ghi_chu"
+                        initialValue={ghiChu}
+                        onUpdateRef={handleGhiChuChange}
                         size="small"
                         label="Ghi chú"
-                        value={ghiChu}
-                        onChange={(e) => setGhiChu(e.target.value)}
                         sx={{ flex: 1, minWidth: 200 }}
                     />
                 </Stack>

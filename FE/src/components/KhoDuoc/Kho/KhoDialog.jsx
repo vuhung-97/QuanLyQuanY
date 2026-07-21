@@ -11,7 +11,8 @@ import {
     Typography,
 } from "@mui/material";
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper.jsx";
-import DatePicker from "@/components/common/DatePicker.jsx";
+import FormTextField from "@/components/common/FormTextField.jsx";
+import FormDatePicker from "@/components/common/FormDatePicker.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import useKhoForm from "@/hooks/useKhoForm.js";
 import {
@@ -19,120 +20,6 @@ import {
     LOAI_OPTIONS,
     MODE_TITLES,
 } from "@/constants/khoConstant.js";
-
-const TextFormField = memo(function TextFormField({
-    label,
-    name,
-    initialValue = "",
-    onChange,
-    error,
-    helperText,
-    disabled,
-    required,
-    multiline,
-    rows,
-}) {
-    const [value, setValue] = useState(initialValue);
-
-    useEffect(() => {
-        setValue(initialValue);
-    }, [initialValue]);
-
-    const handleChange = useCallback(
-        (e) => {
-            setValue(e.target.value);
-            onChange?.(name, e.target.value);
-        },
-        [name, onChange],
-    );
-
-    return (
-        <TextField
-            label={label}
-            name={name}
-            value={value}
-            onChange={handleChange}
-            fullWidth
-            size="small"
-            disabled={disabled}
-            required={required}
-            error={!!error}
-            helperText={helperText}
-            multiline={multiline}
-            rows={rows}
-        />
-    );
-});
-
-const NumberFormField = memo(function NumberFormField({
-    label,
-    name,
-    initialValue = "",
-    onChange,
-    disabled,
-    error,
-    helperText,
-    slotProps,
-}) {
-    const [value, setValue] = useState(initialValue);
-
-    useEffect(() => {
-        setValue(initialValue);
-    }, [initialValue]);
-
-    const handleChange = useCallback(
-        (e) => {
-            setValue(e.target.value);
-            onChange?.(name, e.target.value);
-        },
-        [name, onChange],
-    );
-
-    return (
-        <TextField
-            label={label}
-            name={name}
-            value={value}
-            onChange={handleChange}
-            fullWidth
-            size="small"
-            disabled={disabled}
-            type="number"
-            error={!!error}
-            helperText={helperText}
-            slotProps={slotProps}
-        />
-    );
-});
-
-const DateFormField = memo(function DateFormField({
-    label,
-    initialValue = null,
-    onChange,
-}) {
-    const [value, setValue] = useState(initialValue);
-
-    useEffect(() => {
-        setValue(initialValue);
-    }, [initialValue]);
-
-    const handleChange = useCallback(
-        (newValue) => {
-            setValue(newValue);
-            onChange?.("han_su_dung", newValue);
-        },
-        [onChange],
-    );
-
-    return (
-        <DatePicker
-            label={label}
-            value={value}
-            onChange={handleChange}
-            size="small"
-        />
-    );
-});
 
 const AutocompleteFormField = memo(function AutocompleteFormField({
     label,
@@ -295,48 +182,57 @@ export default function KhoDialog({
                 );
             case "date":
                 return (
-                    <DateFormField
+                    <FormDatePicker
+                        name={field.name}
                         label={field.label}
                         initialValue={hook.getFieldDefault(field.name)}
-                        onChange={hook.updateField}
+                        onUpdateRef={hook.updateField}
+                        size="small"
                     />
                 );
             case "number":
                 return (
-                    <NumberFormField
-                        label={field.label}
+                    <FormTextField
                         name={field.name}
                         initialValue={hook.getFieldDefault(field.name)}
-                        onChange={hook.updateField}
+                        onUpdateRef={hook.updateField}
+                        label={field.label}
                         disabled={isView}
-                        error={error}
+                        type="number"
+                        error={!!error}
                         helperText={helperText}
                         slotProps={field.slotProps}
+                        fullWidth
+                        size="small"
                     />
                 );
             case "textarea":
                 return (
-                    <TextFormField
-                        label={field.label}
+                    <FormTextField
                         name={field.name}
                         initialValue={hook.getFieldDefault(field.name)}
-                        onChange={hook.updateField}
+                        onUpdateRef={hook.updateField}
+                        label={field.label}
                         disabled={isView}
                         multiline
                         rows={3}
+                        fullWidth
+                        size="small"
                     />
                 );
             default:
                 return (
-                    <TextFormField
-                        label={field.label}
+                    <FormTextField
                         name={field.name}
                         initialValue={hook.getFieldDefault(field.name)}
-                        onChange={hook.updateField}
+                        onUpdateRef={hook.updateField}
+                        label={field.label}
                         disabled={isView}
                         required={field.required}
-                        error={error}
+                        error={!!error}
                         helperText={helperText}
+                        fullWidth
+                        size="small"
                     />
                 );
         }

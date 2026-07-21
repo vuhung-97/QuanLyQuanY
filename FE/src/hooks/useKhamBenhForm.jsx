@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { khamBenhService } from "@/services/khamBenhService.js";
 import useStaticList from "@/hooks/useStaticList.js";
 import { parseHuongDieuTriParts } from "@/utils/khamBenhUtils.js";
@@ -21,9 +21,13 @@ export default function useKhamBenhForm({
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
     const [trieuChung, setTrieuChung] = useState("");
-    const [chanDoan, setChanDoan] = useState("");
-    const [phuongPhap, setPhuongPhap] = useState("");
     const [maNhomBenh, setMaNhomBenh] = useState("");
+
+    const formRef = useRef({ chan_doan: "", phuong_phap_dieu_tri: "" });
+    const updateField = useCallback((name, value) => {
+        formRef.current[name] = value;
+    }, []);
+    const getFieldDefault = useCallback((name) => formRef.current[name] || "", []);
     const nhomBenhList = useStaticList("/dm_nhom_benh", {
         pageSize: 200,
     });
@@ -76,8 +80,8 @@ export default function useKhamBenhForm({
                 }
 
                 setTrieuChung(data.trieu_chung || "");
-                setChanDoan(data.chan_doan || "");
-                setPhuongPhap(data.phuong_phap_dieu_tri || "");
+                formRef.current.chan_doan = data.chan_doan || "";
+                formRef.current.phuong_phap_dieu_tri = data.phuong_phap_dieu_tri || "";
                 setMaNhomBenh(data.ma_nhom_benh || "");
                 setPrescriptionItems(items);
                 if (data.ma_quan_nhan) {
@@ -123,11 +127,12 @@ export default function useKhamBenhForm({
     }, [open, examinationId]);
 
     const persistExamData = useCallback(async (status) => {
+        const f = formRef.current;
         const hasPrescription = prescriptionItems.length > 0;
         const payload = {
             trieu_chung: trieuChung,
-            chan_doan: chanDoan,
-            phuong_phap_dieu_tri: phuongPhap,
+            chan_doan: f.chan_doan,
+            phuong_phap_dieu_tri: f.phuong_phap_dieu_tri,
             ma_nhom_benh: maNhomBenh || null,
         };
         if (hasPrescription) {
@@ -139,7 +144,7 @@ export default function useKhamBenhForm({
             if (status) payload.trang_thai = status;
             await khamBenhService.update(exam.ma_kham_benh, payload);
         }
-    }, [exam, trieuChung, chanDoan, phuongPhap, prescriptionItems]);
+    }, [exam, trieuChung, maNhomBenh, prescriptionItems]);
 
     const handleSave = useCallback(async () => {
         if (!exam) return;
@@ -153,8 +158,9 @@ export default function useKhamBenhForm({
         }
         setSaving(true);
         try {
+            const f = formRef.current;
             const hasPrescription = prescriptionItems.length > 0;
-            const isFull = chanDoan.trim() && phuongPhap.trim();
+            const isFull = f.chan_doan.trim() && f.phuong_phap_dieu_tri.trim();
             const status = hasPrescription ? null : (isFull ? "đã_khám" : "đang_khám");
             await persistExamData(status);
 
@@ -174,7 +180,7 @@ export default function useKhamBenhForm({
         } finally {
             setSaving(false);
         }
-    }, [exam, trieuChung, chanDoan, phuongPhap, prescriptionItems, persistExamData, onSaved, onClose]);
+    }, [exam, trieuChung, prescriptionItems, persistExamData, onSaved, onClose]);
 
     const handlePrescriptionSave = useCallback((items) => {
         setPrescriptionItems(items);
@@ -238,7 +244,7 @@ export default function useKhamBenhForm({
         } finally {
             setReferring(false);
         }
-    }, [exam, qn, trieuChung, chanDoan, phuongPhap, prescriptionItems, persistExamData, onSaved, onClose]);
+    }, [exam, qn, trieuChung, maNhomBenh, prescriptionItems, persistExamData, onSaved, onClose]);
 
     const handleReferSaved = useCallback(() => {
         setOpenReferral(false);
@@ -283,7 +289,7 @@ export default function useKhamBenhForm({
         } finally {
             setSaving(false);
         }
-    }, [exam, trieuChung, chanDoan, phuongPhap, prescriptionItems, persistExamData, onSaved, onClose]);
+    }, [exam, trieuChung, maNhomBenh, prescriptionItems, persistExamData, onSaved, onClose]);
 
     return {
         exam,
@@ -293,10 +299,8 @@ export default function useKhamBenhForm({
         isReadOnly,
         trieuChung,
         setTrieuChung,
-        chanDoan,
-        setChanDoan,
-        phuongPhap,
-        setPhuongPhap,
+        updateField,
+        getFieldDefault,
         prescriptionItems,
         setPrescriptionItems,
         handleSave,

@@ -1,60 +1,15 @@
-import { memo, useCallback, useEffect, useState } from "react";
 import {
     Button,
     Dialog,
     DialogActions,
     DialogContent,
     Grid,
-    TextField,
     Typography,
 } from "@mui/material";
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
+import FormTextField from "@/components/common/FormTextField.jsx";
 import useDanhMucForm from "@/hooks/useDanhMucForm.js";
-
-const TextFormField = memo(function TextFormField({
-    label,
-    name,
-    initialValue = "",
-    onChange,
-    error,
-    helperText,
-    disabled,
-    required,
-    multiline,
-    rows,
-}) {
-    const [value, setValue] = useState(initialValue);
-
-    useEffect(() => {
-        setValue(initialValue);
-    }, [initialValue]);
-
-    const handleChange = useCallback(
-        (e) => {
-            setValue(e.target.value);
-            onChange?.(name, e.target.value);
-        },
-        [name, onChange],
-    );
-
-    return (
-        <TextField
-            label={label}
-            name={name}
-            value={value}
-            onChange={handleChange}
-            fullWidth
-            size="small"
-            disabled={disabled}
-            required={required}
-            error={!!error}
-            helperText={helperText}
-            multiline={multiline}
-            rows={rows}
-        />
-    );
-});
 
 export default function DanhMucDialog({
     open,
@@ -83,18 +38,19 @@ export default function DanhMucDialog({
 
     const renderField = (field) => {
         const error = hook.errors[field.name];
-        const helperText = error;
 
         return (
-            <TextFormField
-                label={field.label}
+            <FormTextField
                 name={field.name}
                 initialValue={hook.getFieldDefault(field.name)}
-                onChange={hook.updateField}
+                onUpdateRef={hook.updateField}
+                label={field.label}
                 disabled={isView}
                 required={field.required}
-                error={error}
-                helperText={helperText}
+                error={!!error}
+                helperText={error}
+                fullWidth
+                size="small"
                 multiline={field.multiline}
                 rows={field.rows}
             />

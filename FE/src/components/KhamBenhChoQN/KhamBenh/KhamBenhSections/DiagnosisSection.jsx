@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useCallback } from "react";
 import {
     Autocomplete,
     Grid,
@@ -6,12 +6,11 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
+import FormTextField from "@/components/common/FormTextField.jsx";
 
 export default memo(function DiagnosisSection({
-    chanDoan,
-    onChanDoanChange,
-    phuongPhap,
-    onPhuongPhapChange,
+    updateField,
+    getFieldDefault,
     maNhomBenh,
     nhomBenhList,
     onMaNhomBenhChange,
@@ -19,6 +18,22 @@ export default memo(function DiagnosisSection({
 }) {
     const selectedNhomBenh =
         nhomBenhList?.find((n) => n.ma_nhom === maNhomBenh) || null;
+
+    const handleNhomBenhChange = useCallback(
+        (_, v) => {
+            onMaNhomBenhChange(v ? v.ma_nhom : "");
+        },
+        [onMaNhomBenhChange],
+    );
+
+    const getNhomBenhLabel = useCallback((o) => o.ten_nhom, []);
+
+    const renderNhomBenhInput = useCallback(
+        (params) => (
+            <TextField {...params} label="Nhóm bệnh" fullWidth size="medium" />
+        ),
+        [],
+    );
 
     return (
         <Grid size={{ xs: 12, md: 6 }}>
@@ -32,37 +47,32 @@ export default memo(function DiagnosisSection({
                     disabled
                     placeholder="Kết quả chẩn đoán AI (đang phát triển)"
                 />
-                <TextField
+                <FormTextField
+                    name="chan_doan"
+                    initialValue={getFieldDefault("chan_doan")}
+                    onUpdateRef={updateField}
                     label="Chẩn đoán bệnh"
                     multiline
                     minRows={2}
                     fullWidth
-                    value={chanDoan}
-                    onChange={(e) => onChanDoanChange(e.target.value)}
                     disabled={readOnly}
                 />
                 <Autocomplete
                     options={nhomBenhList || []}
                     value={selectedNhomBenh}
-                    getOptionLabel={(o) => o.ten_nhom}
-                    onChange={(_, v) => onMaNhomBenhChange(v ? v.ma_nhom : "")}
+                    getOptionLabel={getNhomBenhLabel}
+                    onChange={handleNhomBenhChange}
                     disabled={readOnly}
-                    renderInput={(params) => (
-                        <TextField
-                            {...params}
-                            label="Nhóm bệnh"
-                            fullWidth
-                            size="medium"
-                        />
-                    )}
+                    renderInput={renderNhomBenhInput}
                 />
-                <TextField
+                <FormTextField
+                    name="phuong_phap_dieu_tri"
+                    initialValue={getFieldDefault("phuong_phap_dieu_tri")}
+                    onUpdateRef={updateField}
                     label="Phương pháp điều trị"
                     multiline
                     minRows={3}
                     fullWidth
-                    value={phuongPhap}
-                    onChange={(e) => onPhuongPhapChange(e.target.value)}
                     disabled={readOnly}
                 />
             </Stack>

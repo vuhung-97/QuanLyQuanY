@@ -42,10 +42,8 @@ export default function KhamBenhForm({
         isReadOnly,
         trieuChung,
         setTrieuChung,
-        chanDoan,
-        setChanDoan,
-        phuongPhap,
-        setPhuongPhap,
+        updateField,
+        getFieldDefault,
         maNhomBenh,
         setMaNhomBenh,
         nhomBenhList,
@@ -132,10 +130,8 @@ export default function KhamBenhForm({
                                     readOnly={isReadOnly}
                                 />
                                 <DiagnosisSection
-                                    chanDoan={chanDoan}
-                                    onChanDoanChange={setChanDoan}
-                                    phuongPhap={phuongPhap}
-                                    onPhuongPhapChange={setPhuongPhap}
+                                    updateField={updateField}
+                                    getFieldDefault={getFieldDefault}
                                     maNhomBenh={maNhomBenh}
                                     nhomBenhList={nhomBenhList}
                                     onMaNhomBenhChange={setMaNhomBenh}

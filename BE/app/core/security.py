@@ -46,6 +46,7 @@ RESOURCES = [
     "phan_cong_nhiem_vu",
     "buong",
     "giuong",
+    "dm_benh",
 ]
 
 def get_all_permissions():

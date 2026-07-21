@@ -41,7 +41,9 @@ export default function DanhMucList({ config }) {
     });
 
     const filteredItems = useMemo(() => {
-        let items = allItems;
+        let items = [...allItems].sort((a, b) =>
+            (a[config.nameField] || "").localeCompare(b[config.nameField] || "", "vi")
+        );
         if (search.trim()) {
             const q = search.trim().toLowerCase();
             items = items.filter((i) =>
@@ -52,7 +54,7 @@ export default function DanhMucList({ config }) {
             );
         }
         return items;
-    }, [allItems, search, config.searchFields]);
+    }, [allItems, search, config.searchFields, config.nameField]);
 
     const totalPages = Math.ceil(filteredItems.length / ROWS_PER_PAGE);
 
