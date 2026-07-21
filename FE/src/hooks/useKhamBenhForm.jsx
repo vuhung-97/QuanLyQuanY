@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { khamBenhService } from "@/services/khamBenhService.js";
+import { danhMucService } from "@/services/danhMucService.js";
 import useStaticList from "@/hooks/useStaticList.js";
 import { parseHuongDieuTriParts } from "@/utils/khamBenhUtils.js";
 export default function useKhamBenhForm({
@@ -22,6 +23,9 @@ export default function useKhamBenhForm({
     const [saving, setSaving] = useState(false);
     const [trieuChung, setTrieuChung] = useState("");
     const [maNhomBenh, setMaNhomBenh] = useState("");
+    const [predictions, setPredictions] = useState([]);
+    const [predicting, setPredicting] = useState(false);
+    const [threshold, setThreshold] = useState(20);
 
     const formRef = useRef({ chan_doan: "", phuong_phap_dieu_tri: "" });
     const updateField = useCallback((name, value) => {
@@ -205,6 +209,38 @@ export default function useKhamBenhForm({
         });
     }, []);
 
+    const handleDiagnose = useCallback(async () => {
+        if (!trieuChung.trim()) return;
+        const words = trieuChung.split(/[,;]\s*/).filter(Boolean);
+        if (words.length === 0) return;
+        setPredicting(true);
+        try {
+            const res = await khamBenhService.predictDisease(words, 0);
+            setPredictions(res.data.predictions || []);
+        } catch {
+            setSnackbar({
+                open: true,
+                message: "Lỗi dự đoán bệnh. Vui lòng thử lại.",
+                severity: "error",
+            });
+        } finally {
+            setPredicting(false);
+        }
+    }, [trieuChung]);
+
+    const handleSelectPrediction = useCallback(async (diseaseName) => {
+        try {
+            const res = await danhMucService.searchDisease(diseaseName);
+            const disease = res.data;
+            formRef.current.chan_doan = diseaseName;
+            if (disease && disease.ma_nhom_benh) {
+                setMaNhomBenh(disease.ma_nhom_benh);
+            }
+        } catch {
+            formRef.current.chan_doan = diseaseName;
+        }
+    }, []);
+
     const handleReferClick = useCallback(() => {
         setConfirmReferral({ open: true });
     }, []);
@@ -323,6 +359,12 @@ export default function useKhamBenhForm({
         maNhomBenh,
         setMaNhomBenh,
         nhomBenhList,
+        predictions,
+        predicting,
+        threshold,
+        setThreshold,
+        handleDiagnose,
+        handleSelectPrediction,
         snackbar,
         setSnackbar,
     };

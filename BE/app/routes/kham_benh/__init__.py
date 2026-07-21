@@ -10,6 +10,7 @@ from app.routes.kham_benh.lich_kham_sk_nam import router as lich_kham_sk_nam_rou
 from app.routes.kham_benh.phan_cong_nhiem_vu import router as phan_cong_nhiem_vu_router
 from app.routes.kham_benh.phieu_cham_soc import router as phieu_cham_soc_router
 from app.routes.kham_benh.phieu_kham_suc_khoe import router as phieu_kham_suc_khoe_router
+from app.routes.kham_benh.prediction import router as prediction_router
 
 routers = [
     benh_an_router,
@@ -24,4 +25,5 @@ routers = [
     phan_cong_nhiem_vu_router,
     phieu_cham_soc_router,
     phieu_kham_suc_khoe_router,
+    prediction_router,
 ]

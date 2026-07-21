@@ -2,7 +2,6 @@ import { memo, useCallback } from "react";
 import {
     Autocomplete,
     Grid,
-    Stack,
     TextField,
     Typography,
 } from "@mui/material";
@@ -36,46 +35,44 @@ export default memo(function DiagnosisSection({
     );
 
     return (
-        <Grid size={{ xs: 12, md: 6 }}>
+        <Grid size={12}>
             <Typography variant="h4" sx={{ mb: 1.5, color: "text.primary" }}>
                 Chẩn đoán & Phương hướng điều trị
             </Typography>
-            <Stack spacing={2}>
-                <TextField
-                    label="Kết quả chẩn đoán AI"
-                    fullWidth
-                    disabled
-                    placeholder="Kết quả chẩn đoán AI (đang phát triển)"
-                />
-                <FormTextField
-                    name="chan_doan"
-                    initialValue={getFieldDefault("chan_doan")}
-                    onUpdateRef={updateField}
-                    label="Chẩn đoán bệnh"
-                    multiline
-                    minRows={2}
-                    fullWidth
-                    disabled={readOnly}
-                />
-                <Autocomplete
-                    options={nhomBenhList || []}
-                    value={selectedNhomBenh}
-                    getOptionLabel={getNhomBenhLabel}
-                    onChange={handleNhomBenhChange}
-                    disabled={readOnly}
-                    renderInput={renderNhomBenhInput}
-                />
-                <FormTextField
-                    name="phuong_phap_dieu_tri"
-                    initialValue={getFieldDefault("phuong_phap_dieu_tri")}
-                    onUpdateRef={updateField}
-                    label="Phương pháp điều trị"
-                    multiline
-                    minRows={3}
-                    fullWidth
-                    disabled={readOnly}
-                />
-            </Stack>
+            <Grid container spacing={2}>
+                <Grid size={{ xs: 12, md: 8 }}>
+                    <FormTextField
+                        name="chan_doan"
+                        initialValue={getFieldDefault("chan_doan")}
+                        onUpdateRef={updateField}
+                        label="Chẩn đoán bệnh"
+                        fullWidth
+                        disabled={readOnly}
+                    />
+                </Grid>
+                <Grid size={{ xs: 12, md: 4 }}>
+                    <Autocomplete
+                        options={nhomBenhList || []}
+                        value={selectedNhomBenh}
+                        getOptionLabel={getNhomBenhLabel}
+                        onChange={handleNhomBenhChange}
+                        disabled={readOnly}
+                        renderInput={renderNhomBenhInput}
+                    />
+                </Grid>
+                <Grid size={12}>
+                    <FormTextField
+                        name="phuong_phap_dieu_tri"
+                        initialValue={getFieldDefault("phuong_phap_dieu_tri")}
+                        onUpdateRef={updateField}
+                        label="Phương pháp điều trị"
+                        multiline
+                        minRows={3}
+                        fullWidth
+                        disabled={readOnly}
+                    />
+                </Grid>
+            </Grid>
         </Grid>
     );
 });

@@ -46,4 +46,7 @@ export const khamBenhService = {
     createDiTuyenSauDieuTri: (data) => api.post("/di_tuyen_sau_dieu_tri", data),
     updateDiTuyenSauDieuTri: (id, data) =>
         api.patch(`/di_tuyen_sau_dieu_tri/${id}`, data),
+
+    predictDisease: (symptoms, minProbability = 0) =>
+        api.post("/kham_benh/predict", { symptoms, min_probability: minProbability }),
 };

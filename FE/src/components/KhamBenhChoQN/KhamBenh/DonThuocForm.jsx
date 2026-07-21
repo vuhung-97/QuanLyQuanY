@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import {
     Button,
     Dialog,
@@ -25,6 +26,15 @@ export default function DonThuocForm({ open, onClose, onSave, initialItems }) {
         getCache,
     } = useDonThuocForm({ open, onClose, onSave, initialItems });
 
+    const refSetters = useRef({});
+
+    useEffect(() => {
+        const keys = new Set(rows.map((r) => r.key));
+        Object.keys(refSetters.current).forEach((k) => {
+            if (!keys.has(k)) delete refSetters.current[k];
+        });
+    }, [rows]);
+
     const validCount = rows.length;
 
     return (
@@ -49,17 +59,23 @@ export default function DonThuocForm({ open, onClose, onSave, initialItems }) {
             </DialogTitleWrapper>
             <DialogContent dividers>
                 <Stack spacing={2} sx={{ pt: 1 }}>
-                    {rows.map(({ key, initial }) => (
-                        <PrescriptionRow
-                            key={key}
-                            ref={(el) => {
+                    {rows.map(({ key, initial }) => {
+                        if (!refSetters.current[key]) {
+                            refSetters.current[key] = (el) => {
                                 if (el) rowRefs.current.set(key, el);
                                 else rowRefs.current.delete(key);
-                            }}
-                            initialData={initial}
-                            onRemove={() => handleRemove(key)}
-                        />
-                    ))}
+                            };
+                        }
+                        return (
+                            <PrescriptionRow
+                                key={key}
+                                rowKey={key}
+                                ref={refSetters.current[key]}
+                                initialData={initial}
+                                onRemove={handleRemove}
+                            />
+                        );
+                    })}
                     {rows.length === 0 && (
                         <Typography
                             color="text.secondary"

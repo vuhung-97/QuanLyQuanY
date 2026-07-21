@@ -14,6 +14,7 @@ import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
 import DonThuocTable from "@/components/common/DonThuoc.jsx";
 import SymptomsSection from "./KhamBenhSections/SymptomsSection.jsx";
+import PredictionPanel from "./KhamBenhSections/PredictionPanel.jsx";
 import DiagnosisSection from "./KhamBenhSections/DiagnosisSection.jsx";
 import FormActions from "./KhamBenhSections/FormActions.jsx";
 
@@ -47,6 +48,12 @@ export default function KhamBenhForm({
         maNhomBenh,
         setMaNhomBenh,
         nhomBenhList,
+        predictions,
+        predicting,
+        threshold,
+        setThreshold,
+        handleDiagnose,
+        handleSelectPrediction,
         prescriptionItems,
         handleSave,
         handlePrescriptionSave,
@@ -86,6 +93,11 @@ export default function KhamBenhForm({
     const handleOpenPrescription = useCallback(
         () => setOpenPrescription(true),
         [],
+    );
+
+    const hasSymptoms = useMemo(
+        () => trieuChung.split(/[,;]\s*/).filter(Boolean).length > 0,
+        [trieuChung],
     );
 
     return (
@@ -129,15 +141,26 @@ export default function KhamBenhForm({
                                     onChipClick={handleChipClick}
                                     readOnly={isReadOnly}
                                 />
-                                <DiagnosisSection
-                                    updateField={updateField}
-                                    getFieldDefault={getFieldDefault}
-                                    maNhomBenh={maNhomBenh}
-                                    nhomBenhList={nhomBenhList}
-                                    onMaNhomBenhChange={setMaNhomBenh}
+                                <PredictionPanel
+                                    predictions={predictions}
+                                    predicting={predicting}
+                                    threshold={threshold}
+                                    onThresholdChange={setThreshold}
+                                    onDiagnose={handleDiagnose}
+                                    onSelectPrediction={handleSelectPrediction}
                                     readOnly={isReadOnly}
+                                    disabled={!hasSymptoms}
                                 />
                             </Grid>
+
+                            <DiagnosisSection
+                                updateField={updateField}
+                                getFieldDefault={getFieldDefault}
+                                maNhomBenh={maNhomBenh}
+                                nhomBenhList={nhomBenhList}
+                                onMaNhomBenhChange={setMaNhomBenh}
+                                readOnly={isReadOnly}
+                            />
 
                             <DonThuocTable
                                 rows={prescriptionItems}

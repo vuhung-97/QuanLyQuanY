@@ -12,4 +12,6 @@ export const danhMucService = {
     createTrieuChung: (data) => api.post("/dm_trieu_chung", data),
     updateTrieuChung: (id, data) => api.patch(`/dm_trieu_chung/${id}`, data),
     deleteTrieuChung: (id) => api.delete(`/dm_trieu_chung/${id}`),
+
+    searchDisease: (keyword) => api.get("/dm_benh/search", { params: { q: keyword } }),
 };

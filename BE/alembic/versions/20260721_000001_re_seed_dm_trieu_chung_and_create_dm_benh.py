@@ -26,7 +26,7 @@ def upgrade() -> None:
     # --- 1. Re-seed dm_trieu_chung from symptoms.json ---
     op.execute("DELETE FROM dm_trieu_chung")
 
-    with open("model_ai/symptoms.json", encoding="utf-8") as f:
+    with open("app/model_ai/symptoms.json", encoding="utf-8") as f:
         data = json.load(f)
 
     symptoms = data["symptoms"]
@@ -52,7 +52,7 @@ def upgrade() -> None:
     )
 
     # --- 3. Seed dm_benh from diseases.json ---
-    with open("model_ai/diseases.json", encoding="utf-8") as f:
+    with open("app/model_ai/diseases.json", encoding="utf-8") as f:
         data = json.load(f)
 
     diseases = data["diseases"]

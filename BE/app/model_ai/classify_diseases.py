@@ -1,6 +1,6 @@
 """
 Classify diseases into nhóm bệnh based on medical knowledge.
-Run from BE/ directory: python model_ai/classify_diseases.py
+Run from BE/ directory: python app/model_ai/classify_diseases.py
 """
 import sys
 sys.path.insert(0, ".")
