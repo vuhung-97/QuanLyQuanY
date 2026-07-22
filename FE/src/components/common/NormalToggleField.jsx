@@ -10,6 +10,7 @@ const NormalToggleField = memo(function NormalToggleField({
     normalText = "Bình thường",
     multiline = false,
     minRows = 1,
+    height,
     size = "medium",
     disabled = false,
     readOnly = false,
@@ -34,6 +35,7 @@ const NormalToggleField = memo(function NormalToggleField({
             fullWidth
             size={size}
             helperText={helperText}
+            sx={height ? { '& .MuiInputBase-root': { height, overflow: 'auto' } } : undefined}
             slotProps={{
                 input: {
                     sx: multiline ? { fontSize: "1rem" } : undefined,

@@ -1,13 +1,12 @@
-import { memo } from "react";
+import { memo, useCallback, useState } from "react";
 import { Grid, InputAdornment, TextField, Tooltip } from "@mui/material";
-import { fieldRanges, isOutOfRange } from "../../tabs/fieldRanges.js";
+import { fieldRanges, isOutOfRange } from "../tabs/fieldRanges.js";
 
-const RangeField = memo(function RangeField({
+const RangeFieldSM = memo(function RangeFieldSM({
     name,
     label,
-    value,
     unit,
-    onChange,
+    dataRef,
     readOnly = false,
     size = "small",
     step = "1",
@@ -15,8 +14,21 @@ const RangeField = memo(function RangeField({
     xs = 6,
     sm = 4,
     md = 2,
+    onChangeExtra,
 }) {
-    const outOfRange = isOutOfRange(name, value);
+    const [val, setVal] = useState(() => dataRef.current?.[name] ?? "");
+
+    const handleChange = useCallback(
+        (e) => {
+            const v = e.target.value;
+            setVal(v);
+            dataRef.current[name] = v;
+            onChangeExtra?.(name, v);
+        },
+        [name, dataRef, onChangeExtra],
+    );
+
+    const outOfRange = isOutOfRange(name, val);
 
     return (
         <Grid size={{ xs, sm, md }}>
@@ -29,8 +41,8 @@ const RangeField = memo(function RangeField({
                     name={name}
                     label={label}
                     type="number"
-                    value={value}
-                    onChange={onChange}
+                    value={val}
+                    onChange={handleChange}
                     disabled={readOnly}
                     fullWidth
                     size={size}
@@ -53,4 +65,4 @@ const RangeField = memo(function RangeField({
     );
 });
 
-export default RangeField;
+export default RangeFieldSM;

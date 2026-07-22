@@ -1,19 +1,9 @@
 import { forwardRef, memo, useCallback, useState } from "react";
-import {
-    Card,
-    CardContent,
-    Divider,
-    FormControl,
-    Grid,
-    InputLabel,
-    MenuItem,
-    Select,
-    Typography,
-} from "@mui/material";
+import { Card, CardContent, Divider, Grid, Typography } from "@mui/material";
 import useFormTab from "@/hooks/useFormTab";
 import NormalToggleField from "@/components/common/NormalToggleField";
+import PhanLoaiSelect from "../common/PhanLoaiSelect.jsx";
 import SectionTitle from "@/components/KhamSucKhoe/common/SectionTitle.jsx";
-import { PHAN_LOAI_OPTIONS } from "@/constants/khamSucKhoeConstants.js";
 
 const specialities = [
     { id: "tim_mach", label: "Tim mạch" },
@@ -39,22 +29,19 @@ const specialities = [
 
 const ChuyenKhoaRow = memo(({ sp, dataRef, readOnly }) => {
     const noteName = `${sp.id}_note`;
-    const loaiName = `${sp.id}_loai`;
 
-    const [noteVal, setNoteVal] = useState(() => dataRef.current?.[noteName] ?? "");
-    const [loaiVal, setLoaiVal] = useState(() => dataRef.current?.[loaiName] ?? PHAN_LOAI_OPTIONS[0]);
+    const [noteVal, setNoteVal] = useState(
+        () => dataRef.current?.[noteName] ?? "",
+    );
 
-    const handleNoteChange = useCallback((e) => {
-        const v = e.target.value;
-        setNoteVal(v);
-        dataRef.current[noteName] = v;
-    }, [noteName, dataRef]);
-
-    const handleLoaiChange = useCallback((e) => {
-        const v = e.target.value;
-        setLoaiVal(v);
-        dataRef.current[loaiName] = v;
-    }, [loaiName, dataRef]);
+    const handleNoteChange = useCallback(
+        (e) => {
+            const v = e.target.value;
+            setNoteVal(v);
+            dataRef.current[noteName] = v;
+        },
+        [noteName, dataRef],
+    );
 
     return (
         <Grid size={12}>
@@ -76,26 +63,16 @@ const ChuyenKhoaRow = memo(({ sp, dataRef, readOnly }) => {
                         onChange={handleNoteChange}
                         readOnly={readOnly}
                         size="small"
+                        multiline
                     />
                 </Grid>
-                <Grid size={{ xs: 12, sm: 3 }}>
-                    <FormControl fullWidth size="small">
-                        <InputLabel>Phân loại</InputLabel>
-                        <Select
-                            name={loaiName}
-                            value={loaiVal}
-                            onChange={handleLoaiChange}
-                            label="Phân loại"
-                            disabled={readOnly}
-                        >
-                            {PHAN_LOAI_OPTIONS.map((loai) => (
-                                <MenuItem key={loai} value={loai}>
-                                    {loai}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                </Grid>
+                <PhanLoaiSelect
+                    name={`${sp.id}_loai`}
+                    label={`Phân loại ${sp.label}`}
+                    dataRef={dataRef}
+                    readOnly={readOnly}
+                    gridProps={{ xs: 12, sm: 3 }}
+                />
                 <Grid size={12}>
                     <Divider sx={{ opacity: 0.5 }} />
                 </Grid>

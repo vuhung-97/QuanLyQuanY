@@ -1,8 +1,9 @@
 import { forwardRef, memo, useCallback, useState } from "react";
 import { Card, CardContent, Grid, MenuItem, TextField, Typography } from "@mui/material";
 import useFormTab from "@/hooks/useFormTab";
-import RangeField from "../common/fields/RangeField.jsx";
 import { fieldRanges, isOutOfRange } from "./fieldRanges";
+import PhanLoaiSelect from "../common/PhanLoaiSelect.jsx";
+import RangeFieldSM from "../common/RangeFieldSM.jsx";
 import SectionTitle from "@/components/KhamSucKhoe/common/SectionTitle.jsx";
 
 const xetNghiemMauFields = [
@@ -31,28 +32,6 @@ const xetNghiemNuocTieuFields = [
     },
     { name: "nuoc_tieu_te_bao", label: "Tế bào nước tiểu" },
 ];
-
-const RangeFieldSM = memo(({ name, label, dataRef, readOnly, unit, xs, sm, md }) => {
-    const [val, setVal] = useState(() => dataRef.current?.[name] ?? "");
-
-    const handleChange = useCallback((e) => {
-        const v = e.target.value;
-        setVal(v);
-        dataRef.current[name] = v;
-    }, [name, dataRef]);
-
-    return (
-        <RangeField
-            name={name}
-            label={label}
-            value={val}
-            unit={unit}
-            onChange={handleChange}
-            readOnly={readOnly}
-            xs={xs} sm={sm} md={md}
-        />
-    );
-});
 
 const SelectFieldSM = memo(({ name, label, dataRef, readOnly, options }) => {
     const [val, setVal] = useState(() => dataRef.current?.[name] ?? "");
@@ -111,6 +90,13 @@ const XetNghiemTab = memo(
                                     xs={12} sm={3} md={3}
                                 />
                             ))}
+                            <PhanLoaiSelect
+                                name="xn_mau_loai"
+                                label="Phân loại xét nghiệm máu"
+                                dataRef={dataRef}
+                                readOnly={readOnly}
+                                gridProps={{ xs: 12, sm: 3, md: 3 }}
+                            />
                         </Grid>
                     </CardContent>
                 </Card>
@@ -143,6 +129,13 @@ const XetNghiemTab = memo(
                                     />
                                 );
                             })}
+                            <PhanLoaiSelect
+                                name="xn_nuoc_tieu_loai"
+                                label="Phân loại nước tiểu"
+                                dataRef={dataRef}
+                                readOnly={readOnly}
+                                gridProps={{ xs: 12, sm: 4, md: 4 }}
+                            />
                         </Grid>
                     </CardContent>
                 </Card>

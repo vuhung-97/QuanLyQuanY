@@ -26,7 +26,12 @@ export const ROLE_LABELS = {
     ket_luan: "Kết luận",
 };
 
-export const roleOrder = { ROLE_ADMIN: 0, ROLE_CNQY: 1, ROLE_BACSI: 2, ROLE_YSI: 3 };
+export const roleOrder = {
+    ROLE_ADMIN: 0,
+    ROLE_CNQY: 1,
+    ROLE_BACSI: 2,
+    ROLE_YSI: 3,
+};
 
 export const DEFAULT_PHAN_LOAI = "Loại 1";
 
@@ -35,14 +40,17 @@ export const DEFAULT_TS = {
     di_ung: "",
     khac: "",
     gia_dinh: "",
+    tien_su_loai: DEFAULT_PHAN_LOAI,
     chieu_cao: "",
     can_nang: "",
     vong_nguc: "",
     vong_bung: "",
+    bmi: "",
+    the_luc_loai: DEFAULT_PHAN_LOAI,
     mach: "",
     huyet_ap_tam_thu: "",
     huyet_ap_tam_truong: "",
-    bmi: "",
+    sinh_ton_loai: DEFAULT_PHAN_LOAI,
     mat_khong_kinh_trai: "",
     mat_khong_kinh_phai: "",
     mat_co_kinh_trai: "",
@@ -89,16 +97,22 @@ export const DEFAULT_XN = {
     creatinin: "",
     ast: "",
     alt: "",
+    xn_mau_loai: DEFAULT_PHAN_LOAI,
     nuoc_tieu_glucose: "",
     nuoc_tieu_protein: "",
     nuoc_tieu_te_bao: "",
+    xn_nuoc_tieu_loai: DEFAULT_PHAN_LOAI,
 };
 
 export const DEFAULT_CDHA = {
     dien_tim: "",
+    dien_tim_loai: DEFAULT_PHAN_LOAI,
     x_quang: "",
+    x_quang_loai: DEFAULT_PHAN_LOAI,
     sieu_am: "",
+    sieu_am_loai: DEFAULT_PHAN_LOAI,
     khac: "",
+    khac_loai: DEFAULT_PHAN_LOAI,
 };
 
 export const DEFAULT_KL = {
@@ -126,7 +140,14 @@ export const ROLE_TAB_ACCESS = {
     ket_luan: { edit: [4], view: [0, 1, 2, 3, 4] },
 };
 
-export const PHAN_LOAI_OPTIONS = [DEFAULT_PHAN_LOAI, "Loại 2", "Loại 3", "Loại 4", "Loại 5"];
+export const PHAN_LOAI_OPTIONS = [
+    DEFAULT_PHAN_LOAI,
+    "Loại 2",
+    "Loại 3",
+    "Loại 4",
+    "Loại 5",
+    "Loại 6",
+];
 
 export const PHAN_LOAI_SUC_KHOE = [
     { value: DEFAULT_PHAN_LOAI, label: "Loại 1 (Rất khỏe)" },

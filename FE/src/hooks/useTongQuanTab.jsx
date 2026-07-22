@@ -1,8 +1,7 @@
-import { useCallback, useImperativeHandle, useRef, useState } from "react";
+import { useImperativeHandle, useRef } from "react";
 
 export default function useTongQuanTab(initialData, ref) {
     const dataRef = useRef({ ...initialData });
-    const [showCoKinh, setShowCoKinh] = useState(false);
 
     useImperativeHandle(
         ref,
@@ -22,13 +21,7 @@ export default function useTongQuanTab(initialData, ref) {
         [],
     );
 
-    const toggleCoKinh = useCallback(() => {
-        setShowCoKinh((p) => !p);
-    }, []);
-
     return {
         dataRef,
-        showCoKinh,
-        toggleCoKinh,
     };
 }
