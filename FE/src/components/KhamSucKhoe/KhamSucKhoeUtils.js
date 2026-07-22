@@ -82,6 +82,156 @@ export const parseChanDoanHinhAnh = (str) =>
 export const parseKetLuan = (str) =>
     parseWithDefault(str, DEFAULT_KL, "benh_tat_theo_doi");
 
+/* ─── Thể lực helpers ─── */
+
+function loaiTuCao(cm, isNam) {
+    const v = parseFloat(cm);
+    if (isNaN(v) || v <= 0) return 1;
+    if (isNam) {
+        if (v >= 163) return 1;
+        if (v >= 160) return 2;
+        if (v >= 157) return 3;
+        if (v >= 155) return 4;
+        if (v >= 153) return 5;
+        return 6;
+    }
+    if (v >= 154) return 1;
+    if (v >= 152) return 2;
+    if (v >= 150) return 3;
+    if (v >= 148) return 4;
+    if (v >= 147) return 5;
+    return 6;
+}
+
+function loaiTuNang(kg, isNam) {
+    const v = parseFloat(kg);
+    if (isNaN(v) || v <= 0) return 1;
+    if (isNam) {
+        if (v >= 51) return 1;
+        if (v >= 47) return 2;
+        if (v >= 43) return 3;
+        if (v >= 41) return 4;
+        if (v >= 40) return 5;
+        return 6;
+    }
+    if (v >= 48) return 1;
+    if (v >= 44) return 2;
+    if (v >= 42) return 3;
+    if (v >= 40) return 4;
+    if (v >= 38) return 5;
+    return 6;
+}
+
+function loaiTuVongNguc(vn) {
+    const v = parseFloat(vn);
+    if (isNaN(v) || v <= 0) return 1;
+    if (v >= 81) return 1;
+    if (v >= 78) return 2;
+    if (v >= 75) return 3;
+    if (v >= 73) return 4;
+    if (v >= 71) return 5;
+    return 6;
+}
+
+function loaiTuBMI(bmi) {
+    const v = parseFloat(bmi);
+    if (isNaN(v) || v <= 0) return 1;
+    if (v >= 40) return 6;
+    if (v >= 35) return 5;
+    if (v >= 30) return 4;
+    if (v >= 27) return 3;
+    if (v >= 25) return 2;
+    if (v >= 18.5) return 1;
+    return 4;
+}
+
+export function classifyTheLuc(data, gioiTinh) {
+    const isNam = gioiTinh !== false;
+    const loaiCC = loaiTuCao(data?.chieu_cao, isNam);
+    const loaiCN = loaiTuNang(data?.can_nang, isNam);
+    const loaiVN = isNam ? loaiTuVongNguc(data?.vong_nguc) : 1;
+    const h = parseFloat(data?.chieu_cao);
+    const w = parseFloat(data?.can_nang);
+    let bmi = "";
+    if (h > 0 && w > 0) bmi = (w / Math.pow(h / 100, 2)).toFixed(1);
+    const loaiBMI = loaiTuBMI(bmi);
+    return `Loại ${Math.max(loaiCC, loaiCN, loaiVN, loaiBMI)}`;
+}
+
+/* ─── Sinh tồn helpers ─── */
+
+function diemHATT(v) {
+    if (isNaN(v)) return 1;
+    if (v >= 160) return 6;
+    if (v >= 150) return 5;
+    if (v >= 140) return 4;
+    if (v >= 131) return 3;
+    if (v >= 121) return 2;
+    if (v >= 110) return 1;
+    if (v >= 100) return 2;
+    if (v >= 90) return 3;
+    return 4;
+}
+
+function diemHATTr(v) {
+    if (isNaN(v)) return 1;
+    if (v >= 100) return 5;
+    if (v >= 90) return 4;
+    if (v >= 86) return 3;
+    if (v >= 81) return 2;
+    return 1;
+}
+
+function diemMach(v) {
+    if (isNaN(v)) return 1;
+    if (v > 100 || v < 50) return 6;
+    if (v >= 91) return 4;
+    if (v >= 86) return 3;
+    if (v >= 81) return 2;
+    if (v >= 60) return 1;
+    if (v >= 57) return 2;
+    if (v >= 55) return 3;
+    if (v >= 50) return 4;
+    return 6;
+}
+
+export function classifySinhTon(data) {
+    const maxDiem = Math.max(
+        diemHATT(parseFloat(data?.huyet_ap_tam_thu)),
+        diemHATTr(parseFloat(data?.huyet_ap_tam_truong)),
+        diemMach(parseFloat(data?.mach)),
+    );
+    return `Loại ${maxDiem}`;
+}
+
+/* ─── Mắt helpers ─── */
+
+function diemMatPhai(phai) {
+    if (isNaN(phai) || phai <= 0) return 1;
+    if (phai >= 10) return 1;
+    if (phai >= 9) return 3;
+    if (phai >= 8) return 4;
+    if (phai >= 6) return 5;
+    return 6;
+}
+
+function diemMatTong(tong) {
+    if (isNaN(tong) || tong <= 0) return 1;
+    if (tong >= 19) return 1;
+    if (tong >= 18) return 2;
+    if (tong >= 17) return 3;
+    if (tong >= 16) return 4;
+    if (tong >= 13) return 5;
+    return 6;
+}
+
+export function classifyMat(data) {
+    const phai = parseFloat(data?.mat_khong_kinh_phai);
+    const trai = parseFloat(data?.mat_khong_kinh_trai);
+    const tong = (isNaN(phai) ? 0 : phai) + (isNaN(trai) ? 0 : trai);
+    return `Loại ${Math.max(diemMatPhai(phai), diemMatTong(tong))}`;
+}
+
 export function filterSoldiers(soldiers, phieuMap, filterTab, searchText) {
     return soldiers.filter((qn) => {
         const phieu = phieuMap[qn.ma_quan_nhan];

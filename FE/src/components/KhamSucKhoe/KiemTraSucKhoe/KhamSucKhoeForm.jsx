@@ -1,10 +1,10 @@
+import { useMemo } from "react";
 import {
     Box,
     Button,
     Dialog,
     DialogActions,
     DialogContent,
-    Grid,
     Tab,
     Tabs,
     Typography,
@@ -17,92 +17,30 @@ import HistoryIcon from "@mui/icons-material/History";
 import MonitorHeartIcon from "@mui/icons-material/MonitorHeart";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
 import useKhamSucKhoeForm from "@/hooks/useKhamSucKhoeForm";
-import {
-    ALL_TABS,
-    cardStyle,
-    ROLE_TAB_ACCESS,
-} from "@/constants/khamSucKhoeConstants.js";
+import { ALL_TABS, cardStyle } from "@/constants/khamSucKhoeConstants.js";
 import TongQuanTab from "./tabs/TongQuanTab";
 import LamSangTab from "./tabs/LamSangTab";
 import XetNghiemTab from "./tabs/XetNghiemTab";
 import ChanDoanHinhAnhTab from "./tabs/ChanDoanHinhAnhTab";
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
+import PatientInfoCard from "@/components/common/PatientInfoCard";
 import KetLuanTab from "./tabs/KetLuanTab";
 
 function FormHeader({ quanNhan }) {
     return <DialogTitleWrapper>Phiếu khám sức khỏe định kỳ</DialogTitleWrapper>;
 }
 
-const itemSx = {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    minHeight: 56,
-};
-
-function FormInfoCard({
-    quanNhan,
-    ngayNhapNgu,
-    phieu,
-    unitLookup = new Map(),
-}) {
-    const infoFields = [
-        {
-            label: "Họ và tên",
-            value: `${quanNhan?.ho_ten || "—"} (${quanNhan?.ma_quan_nhan || "N/A"})`,
-        },
-        {
-            label: "Đơn vị",
-            value:
-                unitLookup.get(quanNhan?.ma_don_vi) ||
-                quanNhan?.ma_don_vi ||
-                "—",
-        },
-        {
-            label: "Cấp bậc / Chức vụ",
-            value: `${quanNhan?.cap_bac || "—"} / ${quanNhan?.chuc_vu || "—"}`,
-        },
-        {
-            label: "Ngày sinh",
-            value: quanNhan?.ngay_sinh || quanNhan?.nam_sinh || "—",
-        },
-        { label: "Ngày nhập ngũ", value: ngayNhapNgu || "—" },
-        { label: "Mã lấy máu", value: phieu?.ma_lay_mau || "—" },
-    ];
-    return (
-        <Box sx={{ ...cardStyle, mb: 3 }}>
-            <Box sx={{ py: 2, px: 3 }}>
-                <Grid container spacing={2} sx={{ alignItems: "stretch" }}>
-                    {infoFields.map((field, index) => (
-                        <Grid
-                            size={{ xs: 12, sm: 6, md: 2 }}
-                            key={index}
-                            sx={itemSx}
-                        >
-                            <Box>
-                                <Typography
-                                    variant="caption"
-                                    color="text.secondary"
-                                >
-                                    {field.label}
-                                </Typography>
-                                <Typography
-                                    variant="body2"
-                                    fontWeight="600"
-                                    color={
-                                        index === 0 ? "primary" : "text.primary"
-                                    }
-                                >
-                                    {field.value}
-                                </Typography>
-                            </Box>
-                        </Grid>
-                    ))}
-                </Grid>
-            </Box>
-        </Box>
-    );
-}
+const CARD_FIELDS = [
+    "ho_ten",
+    "ma_quan_nhan",
+    "ten_don_vi",
+    "cap_bac",
+    "chuc_vu",
+    "ngay_sinh",
+    "gioi_tinh",
+    "ngay_nhap_ngu",
+    "ma_lay_mau",
+];
 
 const tabConfigs = [
     { icon: <HistoryIcon />, label: "Tổng quan" },
@@ -209,6 +147,18 @@ export default function KhamSucKhoeForm({
         editableTabs,
     });
 
+    const cardData = useMemo(
+        () => ({
+            ...quanNhan,
+            ten_don_vi:
+                unitLookup?.get(quanNhan?.ma_don_vi) ||
+                quanNhan?.ma_don_vi ||
+                undefined,
+            ma_lay_mau: existingPhieu?.ma_lay_mau,
+        }),
+        [quanNhan, unitLookup, existingPhieu],
+    );
+
     return (
         <Dialog
             open={open}
@@ -238,11 +188,10 @@ export default function KhamSucKhoeForm({
                         </Typography>
                     )}
 
-                    <FormInfoCard
-                        quanNhan={quanNhan}
-                        ngayNhapNgu={ngayNhapNgu}
-                        phieu={existingPhieu}
-                        unitLookup={unitLookup}
+                    <PatientInfoCard
+                        data={cardData}
+                        fields={CARD_FIELDS}
+                        columnsPerRow={6}
                     />
 
                     <FormTabBar
@@ -258,6 +207,7 @@ export default function KhamSucKhoeForm({
                                 initialData={initialTS}
                                 cardStyle={cardStyle}
                                 readOnly={readOnly || !editableTabs.includes(0)}
+                                gioiTinh={quanNhan?.gioi_tinh}
                             />
                         </TabPanel>
                     )}

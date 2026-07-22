@@ -10,6 +10,11 @@ import {
     Stack,
 } from "@mui/material";
 import useTongQuanTab from "@/hooks/useTongQuanTab";
+import {
+    classifyTheLuc,
+    classifySinhTon,
+    classifyMat,
+} from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
 import SectionTitle from "@/components/KhamSucKhoe/common/SectionTitle.jsx";
 import PhanLoaiSelect from "../common/PhanLoaiSelect.jsx";
 import RangeFieldSM from "../common/RangeFieldSM.jsx";
@@ -89,34 +94,37 @@ const getBmiStatus = (bmiStr) => {
     return { text: "Béo phì", color: "error" };
 };
 
-const MatNumberFieldSM = memo(({ name, label, dataRef, readOnly }) => {
-    const [val, setVal] = useState(() => dataRef.current?.[name] ?? "");
+const MatNumberFieldSM = memo(
+    ({ name, label, dataRef, readOnly, onChangeExtra }) => {
+        const [val, setVal] = useState(() => dataRef.current?.[name] ?? "");
 
-    const handleChange = useCallback(
-        (e) => {
-            const v = e.target.value;
-            setVal(v);
-            dataRef.current[name] = v;
-        },
-        [name, dataRef],
-    );
+        const handleChange = useCallback(
+            (e) => {
+                const v = e.target.value;
+                setVal(v);
+                dataRef.current[name] = v;
+                onChangeExtra?.();
+            },
+            [name, dataRef, onChangeExtra],
+        );
 
-    return (
-        <Grid size={{ xs: 6, sm: 4, md: true }}>
-            <TextField
-                name={name}
-                label={label}
-                type="number"
-                value={val}
-                onChange={handleChange}
-                disabled={readOnly}
-                fullWidth
-                size="small"
-                slotProps={{ htmlInput: { min: 1, max: 10, step: 1 } }}
-            />
-        </Grid>
-    );
-});
+        return (
+            <Grid size={{ xs: 6, sm: 4, md: true }}>
+                <TextField
+                    name={name}
+                    label={label}
+                    type="number"
+                    value={val}
+                    onChange={handleChange}
+                    disabled={readOnly}
+                    fullWidth
+                    size="small"
+                    slotProps={{ htmlInput: { min: 1, max: 10, step: 1 } }}
+                />
+            </Grid>
+        );
+    },
+);
 
 const BmiDisplaySM = memo(({ dataRef, tick }) => {
     const h = parseFloat(dataRef.current.chieu_cao);
@@ -147,7 +155,7 @@ const BmiDisplaySM = memo(({ dataRef, tick }) => {
     );
 });
 
-const MatKhamSection = memo(({ dataRef, readOnly }) => (
+const MatKhamSection = memo(({ dataRef, readOnly, onMatChange, classTick }) => (
     <Card
         sx={{
             borderRadius: 2,
@@ -169,6 +177,7 @@ const MatKhamSection = memo(({ dataRef, readOnly }) => (
                     multiline
                     minRows={3}
                     maxRows={3}
+                    normalText="Không"
                     grid={{ xs: 12, sm: 12 }}
                 />
                 {MAT_KHONG_KINH_FIELDS.map((f) => (
@@ -178,9 +187,11 @@ const MatKhamSection = memo(({ dataRef, readOnly }) => (
                         label={f.label}
                         dataRef={dataRef}
                         readOnly={readOnly}
+                        onChangeExtra={onMatChange}
                     />
                 ))}
                 <PhanLoaiSelect
+                    key={classTick}
                     name="mat_loai"
                     label="Phân loại mắt"
                     dataRef={dataRef}
@@ -193,13 +204,14 @@ const MatKhamSection = memo(({ dataRef, readOnly }) => (
 
 const TongQuanTab = memo(
     forwardRef(function TongQuanTab(
-        { initialData, cardStyle, readOnly = false },
+        { initialData, cardStyle, readOnly = false, gioiTinh },
         ref,
     ) {
         const { dataRef } = useTongQuanTab(initialData, ref);
         const [bmiTick, setBmiTick] = useState(0);
+        const [classTick, setClassTick] = useState(0);
 
-        const onBmiChange = useCallback(() => {
+        const onTheLucFieldChange = useCallback(() => {
             const h = parseFloat(dataRef.current.chieu_cao);
             const w = parseFloat(dataRef.current.can_nang);
             if (h > 0 && w > 0) {
@@ -208,6 +220,21 @@ const TongQuanTab = memo(
                 dataRef.current.bmi = "";
             }
             setBmiTick((t) => t + 1);
+            dataRef.current.the_luc_loai = classifyTheLuc(
+                dataRef.current,
+                gioiTinh,
+            );
+            setClassTick((t) => t + 1);
+        }, [dataRef, gioiTinh]);
+
+        const onSinhTonChange = useCallback(() => {
+            dataRef.current.sinh_ton_loai = classifySinhTon(dataRef.current);
+            setClassTick((t) => t + 1);
+        }, [dataRef]);
+
+        const onMatChange = useCallback(() => {
+            dataRef.current.mat_loai = classifyMat(dataRef.current);
+            setClassTick((t) => t + 1);
         }, [dataRef]);
 
         return (
@@ -262,8 +289,9 @@ const TongQuanTab = memo(
                                     md={2}
                                     onChangeExtra={
                                         f.name === "chieu_cao" ||
-                                        f.name === "can_nang"
-                                            ? onBmiChange
+                                        f.name === "can_nang" ||
+                                        f.name === "vong_nguc"
+                                            ? onTheLucFieldChange
                                             : undefined
                                     }
                                 />
@@ -284,6 +312,7 @@ const TongQuanTab = memo(
                                 </Box>
                             </Grid>
                             <PhanLoaiSelect
+                                key={classTick}
                                 name="the_luc_loai"
                                 label="Phân loại thể lực"
                                 dataRef={dataRef}
@@ -315,9 +344,11 @@ const TongQuanTab = memo(
                                     xs={12}
                                     sm={4}
                                     md={3}
+                                    onChangeExtra={onSinhTonChange}
                                 />
                             ))}
                             <PhanLoaiSelect
+                                key={classTick}
                                 name="sinh_ton_loai"
                                 label="Phân loại chỉ số sinh tồn"
                                 dataRef={dataRef}
@@ -328,7 +359,12 @@ const TongQuanTab = memo(
                     </CardContent>
                 </Card>
 
-                <MatKhamSection dataRef={dataRef} readOnly={readOnly} />
+                <MatKhamSection
+                    dataRef={dataRef}
+                    readOnly={readOnly}
+                    onMatChange={onMatChange}
+                    classTick={classTick}
+                />
             </Stack>
         );
     }),

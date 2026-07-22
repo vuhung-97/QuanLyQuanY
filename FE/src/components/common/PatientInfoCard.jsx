@@ -89,6 +89,14 @@ const FIELD_DEFS = {
     },
     ten_buong: { label: "Buồng", get: (d) => d?.ten_buong || "--" },
     ten_giuong: { label: "Giường", get: (d) => d?.ten_giuong || "--" },
+    ma_lay_mau: {
+        label: "Mã lấy máu",
+        get: (d) => d?.ma_lay_mau || "--",
+    },
+    ngay_nhap_ngu: {
+        label: "Ngày nhập ngũ",
+        get: (d) => d?.ngay_nhap_ngu || "--",
+    },
 };
 
 function InfoRow({ label, value }) {
