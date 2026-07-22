@@ -161,6 +161,16 @@ const MatKhamSection = memo(({ dataRef, readOnly }) => (
         <CardContent>
             <SectionTitle>Khám mắt</SectionTitle>
             <Grid container spacing={2} sx={{ alignItems: "center" }}>
+                <NormalToggleFieldSM
+                    name="mat_benh"
+                    label="Bệnh về mắt"
+                    dataRef={dataRef}
+                    readOnly={readOnly}
+                    multiline
+                    minRows={3}
+                    maxRows={3}
+                    grid={{ xs: 12, sm: 12 }}
+                />
                 {MAT_KHONG_KINH_FIELDS.map((f) => (
                     <MatNumberFieldSM
                         key={f.name}
