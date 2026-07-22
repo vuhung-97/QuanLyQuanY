@@ -26,6 +26,7 @@ export default function useKhamBenhForm({
     const [predictions, setPredictions] = useState([]);
     const [predicting, setPredicting] = useState(false);
     const [threshold, setThreshold] = useState(5);
+    const isFirstLoad = useRef(true);
 
     const formRef = useRef({ chan_doan: "", phuong_phap_dieu_tri: "" });
     const updateField = useCallback((name, value) => {
@@ -53,6 +54,8 @@ export default function useKhamBenhForm({
     useEffect(() => {
         if (!open || !examinationId) return;
         let ignore = false;
+        setPredictions([]);
+        isFirstLoad.current = true;
         async function load() {
             setLoading(true);
             try {
@@ -92,6 +95,24 @@ export default function useKhamBenhForm({
                     data.phuong_phap_dieu_tri || "";
                 setMaNhomBenh(data.ma_nhom_benh || "");
                 setPrescriptionItems(items);
+
+                // Tự động predict AI nếu có triệu chứng (mở lần đầu)
+                if (data.trieu_chung?.trim() && isFirstLoad.current) {
+                    isFirstLoad.current = false;
+                    const words = data.trieu_chung.split(/[,;]\s*/).filter(Boolean);
+                    if (words.length > 0) {
+                        setPredicting(true);
+                        khamBenhService
+                            .predictDisease(words, threshold)
+                            .then((res) => {
+                                if (!ignore) setPredictions(res.data.predictions || []);
+                            })
+                            .catch(() => {})
+                            .finally(() => {
+                                if (!ignore) setPredicting(false);
+                            });
+                    }
+                }
                 if (data.ma_quan_nhan) {
                     try {
                         const qnRes = await khamBenhService.getQuanNhan(

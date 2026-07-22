@@ -26,7 +26,7 @@ export default function useKhamSucKhoeData() {
     const [filters, setFilters] = useState({
         schedule: "",
         unit: "",
-        filterModeLeft: true,
+        filterModeLeft: false,
     });
 
     const {

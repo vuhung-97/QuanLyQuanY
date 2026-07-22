@@ -86,6 +86,8 @@ class MedicalExaminationService:
             kb.phuong_phap_dieu_tri = data["phuong_phap_dieu_tri"]
         if "chan_doan" in data:
             kb.chan_doan = data["chan_doan"]
+        if "ma_nhom_benh" in data:
+            kb.ma_nhom_benh = data["ma_nhom_benh"]
 
         prescription_items = data.get("prescription_items")
         if prescription_items:
