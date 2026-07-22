@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
 import { fetchAllPages } from "@/utils/fetchAll.js";
-import { getNamOptions } from "@/utils/yearOptions.js";
+import { getScheduleStatus } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
 
 export default function useKhamSucKhoeData() {
     const [schedules, setSchedules] = useState([]);
@@ -26,13 +26,13 @@ export default function useKhamSucKhoeData() {
     const [filters, setFilters] = useState({
         schedule: "",
         unit: "",
-        year: String(new Date().getFullYear()),
+        filterModeLeft: true,
     });
 
     const {
         schedule: selectedSchedule,
         unit: selectedUnit,
-        year: selectedYear,
+        filterModeLeft,
     } = filters;
 
     const selectedScheduleObj = useMemo(
@@ -47,10 +47,6 @@ export default function useKhamSucKhoeData() {
 
     const setSelectedUnit = useCallback((u) => {
         setFilters((prev) => ({ ...prev, unit: u }));
-    }, []);
-
-    const setSelectedYear = useCallback((y) => {
-        setFilters((prev) => ({ ...prev, year: y }));
     }, []);
 
     useEffect(() => {
@@ -190,23 +186,22 @@ export default function useKhamSucKhoeData() {
         }
     }, [selectedUnit, allSoldiers, allPhieuMap, unitChildrenMap]);
 
-    const years = useMemo(() => getNamOptions(), []);
-
     const filteredSchedules = useMemo(
         () =>
-            selectedYear
-                ? schedules.filter((s) => {
-                      const y = s.thoi_gian_bat_dau
-                          ? new Date(s.thoi_gian_bat_dau).getFullYear()
-                          : null;
-                      return y === Number(selectedYear);
-                  })
-                : schedules,
-        [schedules, selectedYear],
+            filterModeLeft
+                ? schedules
+                : schedules.filter(
+                      (s) => getScheduleStatus(s) === "Đang thực hiện",
+                  ),
+        [schedules, filterModeLeft],
     );
 
-    const handleYearChange = useCallback((year) => {
-        setFilters({ year, schedule: "", unit: "" });
+    const handleFilterModeChange = useCallback(() => {
+        setFilters((prev) => ({
+            filterModeLeft: !prev.filterModeLeft,
+            schedule: "",
+            unit: "",
+        }));
     }, []);
 
     const handleScheduleChange = useCallback((scheduleId) => {
@@ -227,13 +222,11 @@ export default function useKhamSucKhoeData() {
         selectedSchedule,
         selectedUnit,
         selectedScheduleObj,
-        selectedYear,
-        years,
+        filterModeLeft,
         filteredSchedules,
-        setSelectedYear,
         setSelectedSchedule,
         setSelectedUnit,
-        handleYearChange,
+        handleFilterModeChange,
         handleScheduleChange,
         refreshStats,
     };

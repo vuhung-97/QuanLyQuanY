@@ -32,10 +32,9 @@ export default function KhamSucKhoeMain() {
         selectedSchedule,
         selectedUnit,
         selectedScheduleObj,
-        selectedYear,
-        years,
+        filterModeLeft,
         filteredSchedules,
-        handleYearChange,
+        handleFilterModeChange,
         handleScheduleChange,
         setSelectedUnit,
         filteredSoldiers,
@@ -80,9 +79,8 @@ export default function KhamSucKhoeMain() {
     return (
         <Stack spacing={3}>
             <DanhSachPhieuKhamFilterBar
-                years={years}
-                selectedYear={selectedYear}
-                onYearChange={handleYearChange}
+                filterModeLeft={filterModeLeft}
+                onFilterModeChange={handleFilterModeChange}
                 filteredSchedules={filteredSchedules}
                 selectedSchedule={selectedSchedule}
                 onScheduleChange={handleScheduleChange}

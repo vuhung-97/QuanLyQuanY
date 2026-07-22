@@ -25,14 +25,9 @@ export default defineConfig({
     build: {
         rollupOptions: {
             output: {
-                manualChunks: {
-                    vendor: ["react", "react-dom"],
-                    mui: [
-                        "@mui/material",
-                        "@mui/icons-material",
-                        "@mui/x-data-grid",
-                        "@mui/x-date-pickers",
-                    ],
+                manualChunks(id) {
+                    if (id.includes("node_modules/react")) return "vendor";
+                    if (id.includes("@mui/")) return "mui";
                 },
             },
         },

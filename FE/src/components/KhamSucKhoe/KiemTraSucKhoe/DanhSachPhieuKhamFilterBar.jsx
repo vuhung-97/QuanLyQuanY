@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Button, Card, CardContent, Menu, MenuItem, Stack, TextField } from "@mui/material";
 import { Print as PrintIcon } from "@mui/icons-material";
+import FilterModeToggle from "@/components/common/FilterModeToggle.jsx";
 
 export default function DanhSachPhieuKhamFilterBar({
-    years,
-    selectedYear,
-    onYearChange,
+    filterModeLeft,
+    onFilterModeChange,
     filteredSchedules,
     selectedSchedule,
     onScheduleChange,
@@ -24,21 +24,13 @@ export default function DanhSachPhieuKhamFilterBar({
                     spacing={2}
                     sx={{ alignItems: { sm: "center" } }}
                 >
-                    <TextField
-                        select
-                        size="small"
-                        label="Chọn năm"
-                        value={selectedYear}
-                        onChange={(e) => onYearChange(e.target.value)}
-                        sx={{ minWidth: 120 }}
-                    >
-                        <MenuItem value="">-- Tất cả --</MenuItem>
-                        {years.map((y) => (
-                            <MenuItem key={y} value={y}>
-                                {y}
-                            </MenuItem>
-                        ))}
-                    </TextField>
+                    <FilterModeToggle
+                        isLeft={filterModeLeft}
+                        onChange={onFilterModeChange}
+                        labelLeft="Tất cả"
+                        labelRight="Đang thực hiện"
+                        showDatePicker={false}
+                    />
                     <TextField
                         select
                         size="small"
