@@ -13,11 +13,11 @@ import FilterModeToggle from "@/components/common/FilterModeToggle.jsx";
 import PaginationWidget from "@/components/common/PaginationWidget.jsx";
 import YearMonthFilter from "@/components/common/YearMonthFilter.jsx";
 import {
-    CheckCircle as CheckCircleIcon,
     Download as DownloadIcon,
     LocalPharmacy as LocalPharmacyIcon,
     MedicalServices as MedicalServicesIcon,
     Refresh as RefreshIcon,
+    Visibility as VisibilityIcon,
 } from "@mui/icons-material";
 import useCapThuoc from "@/hooks/useCapThuoc.jsx";
 import CapThuocForm from "./CapThuocForm.jsx";
@@ -65,7 +65,7 @@ const columns = [
             row.trang_thai === "chờ_nhận_thuốc" ? (
                 <ActionIcon title="Cấp thuốc" icon={<LocalPharmacyIcon />} color="primary" onClick={() => onDispense(row.ma_kham_benh)} />
             ) : (
-                <ActionIcon title="Đã nhận" icon={<CheckCircleIcon />} color="default" disabled />
+                <ActionIcon title="Xem" icon={<VisibilityIcon />} color="default" onClick={() => onDispense(row.ma_kham_benh)} />
             )
         ),
     },
