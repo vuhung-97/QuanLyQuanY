@@ -1,8 +1,14 @@
 import { forwardRef, memo, useCallback, useState } from "react";
-import { Card, CardContent, Grid, MenuItem, TextField, Typography } from "@mui/material";
+import {
+    Card,
+    CardContent,
+    Grid,
+    MenuItem,
+    TextField,
+    Typography,
+} from "@mui/material";
 import useFormTab from "@/hooks/useFormTab";
 import { fieldRanges, isOutOfRange } from "./fieldRanges";
-import PhanLoaiSelect from "../common/PhanLoaiSelect.jsx";
 import RangeFieldSM from "../common/RangeFieldSM.jsx";
 import SectionTitle from "@/components/KhamSucKhoe/common/SectionTitle.jsx";
 
@@ -36,11 +42,14 @@ const xetNghiemNuocTieuFields = [
 const SelectFieldSM = memo(({ name, label, dataRef, readOnly, options }) => {
     const [val, setVal] = useState(() => dataRef.current?.[name] ?? "");
 
-    const handleChange = useCallback((e) => {
-        const v = e.target.value;
-        setVal(v);
-        dataRef.current[name] = v;
-    }, [name, dataRef]);
+    const handleChange = useCallback(
+        (e) => {
+            const v = e.target.value;
+            setVal(v);
+            dataRef.current[name] = v;
+        },
+        [name, dataRef],
+    );
 
     const outOfRange = isOutOfRange(name, val);
 
@@ -59,7 +68,9 @@ const SelectFieldSM = memo(({ name, label, dataRef, readOnly, options }) => {
             >
                 <MenuItem value="">-- Chọn --</MenuItem>
                 {options.map((opt) => (
-                    <MenuItem key={opt} value={opt}>{opt}</MenuItem>
+                    <MenuItem key={opt} value={opt}>
+                        {opt}
+                    </MenuItem>
                 ))}
             </TextField>
         </Grid>
@@ -87,16 +98,11 @@ const XetNghiemTab = memo(
                                     dataRef={dataRef}
                                     readOnly={readOnly}
                                     unit={f.unit}
-                                    xs={12} sm={3} md={3}
+                                    xs={12}
+                                    sm={3}
+                                    md={3}
                                 />
                             ))}
-                            <PhanLoaiSelect
-                                name="xn_mau_loai"
-                                label="Phân loại xét nghiệm máu"
-                                dataRef={dataRef}
-                                readOnly={readOnly}
-                                gridProps={{ xs: 12, sm: 3, md: 3 }}
-                            />
                         </Grid>
                     </CardContent>
                 </Card>
@@ -125,17 +131,12 @@ const XetNghiemTab = memo(
                                         label={f.label}
                                         dataRef={dataRef}
                                         readOnly={readOnly}
-                                        xs={12} sm={4} md={4}
+                                        xs={12}
+                                        sm={4}
+                                        md={4}
                                     />
                                 );
                             })}
-                            <PhanLoaiSelect
-                                name="xn_nuoc_tieu_loai"
-                                label="Phân loại nước tiểu"
-                                dataRef={dataRef}
-                                readOnly={readOnly}
-                                gridProps={{ xs: 12, sm: 4, md: 4 }}
-                            />
                         </Grid>
                     </CardContent>
                 </Card>
