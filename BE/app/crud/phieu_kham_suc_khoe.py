@@ -1,13 +1,7 @@
-import json
-
-from sqlalchemy import text
-from sqlalchemy.exc import SQLAlchemyError
-
-from app.crud.base import CRUDBase, CRUDDatabaseError
+from app.crud.base import CRUDBase
 from app.database.phieu_kham_suc_khoe import PhieuKhamSucKhoe
 from app.schemas.phieu_kham_suc_khoe import PhieuKhamSucKhoeRead
 
-# Các cột JSON cần merge (chỉ ghi đè field có trong request)
 JSON_MERGE_COLUMNS = {"tong_quan", "kham_lam_sang", "xet_nghiem", "chan_doan_hinh_anh", "ket_luan"}
 
 
@@ -34,16 +28,9 @@ class PhieuKhamSucKhoeCRUD(CRUDBase):
             if field in self._primary_key_columns():
                 continue
             if field in JSON_MERGE_COLUMNS and value is not None:
-                json_val = json.dumps(value, ensure_ascii=False)
-                try:
-                    db.execute(text(f"""
-                        UPDATE {self.model.__tablename__}
-                        SET {field} = COALESCE({field}, '{{}}'::jsonb) || CAST(:json_val AS jsonb)
-                        WHERE {self.model.ma_phieu_kham.name} = :item_id
-                    """), {"json_val": json_val, "item_id": item_id})
-                except SQLAlchemyError as exc:
-                    db.rollback()
-                    raise CRUDDatabaseError(f"Lỗi cập nhật trường JSON: {field}") from exc
+                existing = getattr(row, field) or {}
+                existing.update(value)
+                setattr(row, field, existing)
             elif field in self._column_keys():
                 setattr(row, field, value)
 

@@ -53,8 +53,6 @@ export const DEFAULT_TS = {
     sinh_ton_loai: DEFAULT_PHAN_LOAI,
     mat_khong_kinh_trai: "",
     mat_khong_kinh_phai: "",
-    mat_co_kinh_trai: "",
-    mat_co_kinh_phai: "",
     mat_benh: "",
     mat_loai: DEFAULT_PHAN_LOAI,
 };
