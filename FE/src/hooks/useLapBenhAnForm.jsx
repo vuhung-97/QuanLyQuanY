@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import api from "../services/api";
 import { noiTruService } from "../services/noiTruService";
 
-export default function useLapBenhAnForm({ open, onSave: externalSave, benhAn }) {
+export default function useLapBenhAnForm({ open, onSave: externalSave, benhAn, exam }) {
     const [buongList, setBuongList] = useState([]);
     const [giuongList, setGiuongList] = useState([]);
     const [loadingBuong, setLoadingBuong] = useState(false);
@@ -52,17 +52,21 @@ export default function useLapBenhAnForm({ open, onSave: externalSave, benhAn })
     }, [isEdit, parsedChiTiet, benhAn]);
 
     const chiTietInitialValues = useMemo(() => {
-        if (!isEdit || !parsedChiTiet) return null;
-        return {
-            benh_su: parsedChiTiet.benh_su || "",
-            tien_su_ban_than: parsedChiTiet.tien_su_ban_than || "",
-            tien_su_gia_dinh: parsedChiTiet.tien_su_gia_dinh || "",
-            tom_tat_benh_an: parsedChiTiet.tom_tat_benh_an || "",
-            chan_doan_chinh: parsedChiTiet.chan_doan_chinh || "",
-            chan_doan_kem_theo: parsedChiTiet.chan_doan_kem_theo || "",
-            chan_doan_phan_biet: parsedChiTiet.chan_doan_phan_biet || "",
-        };
-    }, [isEdit, parsedChiTiet]);
+        if (isEdit) {
+            if (!parsedChiTiet) return null;
+            return {
+                benh_su: parsedChiTiet.benh_su || "",
+                tien_su_ban_than: parsedChiTiet.tien_su_ban_than || "",
+                tien_su_gia_dinh: parsedChiTiet.tien_su_gia_dinh || "",
+                tom_tat_benh_an: parsedChiTiet.tom_tat_benh_an || "",
+                chan_doan_chinh: parsedChiTiet.chan_doan_chinh || "",
+                chan_doan_kem_theo: parsedChiTiet.chan_doan_kem_theo || "",
+                chan_doan_phan_biet: parsedChiTiet.chan_doan_phan_biet || "",
+            };
+        }
+        if (!exam) return null;
+        return { chan_doan_chinh: exam.chan_doan || "" };
+    }, [isEdit, parsedChiTiet, exam]);
 
     useEffect(() => {
         if (open) {
@@ -96,7 +100,7 @@ export default function useLapBenhAnForm({ open, onSave: externalSave, benhAn })
             } else {
                 setMaBuong("");
                 setMaGiuong("");
-                setMaNhomBenh("");
+                setMaNhomBenh(exam?.ma_nhom_benh || "");
                 setGiuongList([]);
                 setNgayNhapVien(new Date().toISOString());
                 setErrors({ ma_buong: "", ma_giuong: "" });
@@ -108,7 +112,7 @@ export default function useLapBenhAnForm({ open, onSave: externalSave, benhAn })
                 });
             }
         }
-    }, [open]);
+        }, [open, exam]);
 
     useEffect(() => {
         if (maBuong) {

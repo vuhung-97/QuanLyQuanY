@@ -145,6 +145,7 @@ class MedicalExaminationService:
             ly_do_nhap_vien=data.get("ly_do_nhap_vien"),
             quan_ly_nguoi_benh=data.get("quan_ly_nguoi_benh"),
             chan_doan=data.get("chan_doan", kb.chan_doan),
+            ma_nhom_benh=data.get("ma_nhom_benh", kb.ma_nhom_benh),
             chi_tiet_benh_an=data.get("chi_tiet_benh_an"),
             ma_buong=ma_buong,
             ma_giuong=ma_giuong,

@@ -55,7 +55,7 @@ export default function LapBenhAnForm({
         defaultValues,
         chiTietInitialValues,
         isEdit,
-    } = useLapBenhAnForm({ open, onSave, benhAn });
+    } = useLapBenhAnForm({ open, onSave, benhAn, exam });
 
     const infoSource = benhAn || exam;
 
