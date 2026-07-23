@@ -9,11 +9,11 @@ class PhieuKhamSucKhoeBase(SchemaBase):
     ma_quan_nhan: str | None = Field(default=None, max_length=10)
     ma_lich_kham: str | None = Field(default=None, max_length=10)
     nam: int | None = None
-    tong_quan: str | None = None
-    kham_lam_sang: str | None = None
-    xet_nghiem: str | None = None
-    chan_doan_hinh_anh: str | None = None
-    ket_luan: str | None = None
+    tong_quan: dict | None = None
+    kham_lam_sang: dict | None = None
+    xet_nghiem: dict | None = None
+    chan_doan_hinh_anh: dict | None = None
+    ket_luan: dict | None = None
     trang_thai: str | None = None
     ma_lay_mau: str | None = None
 

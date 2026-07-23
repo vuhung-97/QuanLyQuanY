@@ -145,11 +145,11 @@ export default function useKhamSucKhoeForm({
                 ma_quan_nhan: quanNhan.ma_quan_nhan,
                 ma_lich_kham: maLichKham,
                 nam: nam || null,
-                tong_quan: JSON.stringify(ts),
-                kham_lam_sang: JSON.stringify(ls),
-                xet_nghiem: JSON.stringify(xn),
-                chan_doan_hinh_anh: JSON.stringify(cdha),
-                ket_luan: JSON.stringify(kl),
+                tong_quan: ts,
+                kham_lam_sang: ls,
+                xet_nghiem: xn,
+                chan_doan_hinh_anh: cdha,
+                ket_luan: kl,
                 trang_thai: hasKetLuan ? "da_kham" : "dang_kham",
             };
 

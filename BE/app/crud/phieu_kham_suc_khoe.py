@@ -38,7 +38,7 @@ class PhieuKhamSucKhoeCRUD(CRUDBase):
                 try:
                     db.execute(text(f"""
                         UPDATE {self.model.__tablename__}
-                        SET {field} = (COALESCE({field}::jsonb, '{{}}'::jsonb) || CAST(:json_val AS jsonb))::text
+                        SET {field} = COALESCE({field}, '{{}}'::jsonb) || CAST(:json_val AS jsonb)
                         WHERE {self.model.ma_phieu_kham.name} = :item_id
                     """), {"json_val": json_val, "item_id": item_id})
                 except SQLAlchemyError as exc:

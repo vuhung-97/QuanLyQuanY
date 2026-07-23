@@ -22,7 +22,9 @@ export function statusColor(status) {
 export function getPhanLoai(phieu) {
     if (!phieu?.ket_luan) return "";
     try {
-        const parsed = JSON.parse(phieu.ket_luan);
+        const parsed = typeof phieu.ket_luan === "string"
+            ? JSON.parse(phieu.ket_luan)
+            : phieu.ket_luan;
         return parsed.phan_loai_suc_khoe || "";
     } catch {
         return "";
@@ -55,10 +57,10 @@ export function getStatus(phieu) {
     return TRANG_THAI_LABEL[phieu.trang_thai] || "Chưa khám";
 }
 
-function parseWithDefault(str, defaultObj, fallbackKey) {
-    if (!str) return { ...defaultObj };
+function parseWithDefault(data, defaultObj, fallbackKey) {
+    if (!data) return { ...defaultObj };
     try {
-        const parsed = JSON.parse(str);
+        const parsed = typeof data === "string" ? JSON.parse(data) : data;
         if (parsed && typeof parsed === "object") {
             const mapped = { ...defaultObj, ...parsed };
             Object.keys(defaultObj)
