@@ -1,5 +1,7 @@
 import json
 
+from sqlalchemy import text
+
 from app.crud.base import CRUDBase
 from app.database.phieu_kham_suc_khoe import PhieuKhamSucKhoe
 
@@ -7,18 +9,10 @@ from app.database.phieu_kham_suc_khoe import PhieuKhamSucKhoe
 JSON_MERGE_COLUMNS = {"tong_quan", "kham_lam_sang", "xet_nghiem", "chan_doan_hinh_anh", "ket_luan"}
 
 
-def _merge_json(old_val: str | None, new_val: str | None) -> str:
-    old_json = json.loads(old_val) if old_val else {}
-    new_json = json.loads(new_val) if new_val else {}
-    merged = {**old_json, **new_json}
-    return json.dumps(merged, ensure_ascii=False)
-
-
 class PhieuKhamSucKhoeCRUD(CRUDBase):
 
     def create(self, db, payload, nguoi_dung_id=None):
         row = self.model(**self._payload_values(payload))
-        # Khi tạo mới: nếu payload gửi {} thì lưu {} thay vì null
         for col in JSON_MERGE_COLUMNS:
             val = getattr(payload, col, None)
             if val is not None:
@@ -38,12 +32,17 @@ class PhieuKhamSucKhoeCRUD(CRUDBase):
             if field in self._primary_key_columns():
                 continue
             if field in JSON_MERGE_COLUMNS and value is not None:
-                old_val = getattr(row, field, None)
-                merged = _merge_json(old_val, value)
-                setattr(row, field, merged)
+                json_val = json.dumps(value, ensure_ascii=False)
+                db.execute(text(f"""
+                    UPDATE {self.model.__tablename__}
+                    SET {field} = (COALESCE({field}::jsonb, '{{}}'::jsonb) || :json_val::jsonb)::text
+                    WHERE {self.model.ma_phieu_kham.name} = :item_id
+                """), {"json_val": json_val, "item_id": item_id})
             elif field in self._column_keys():
                 setattr(row, field, value)
 
+        db.flush()
+        db.refresh(row)
         self._validate_updated_row(db, row, type(payload))
         self._commit(db)
         db.refresh(row)
