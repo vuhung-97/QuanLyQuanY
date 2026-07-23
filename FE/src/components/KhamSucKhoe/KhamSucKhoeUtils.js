@@ -232,6 +232,19 @@ export function classifyMat(data) {
     return `Loại ${Math.max(diemMatPhai(phai), diemMatTong(tong))}`;
 }
 
+export function computeHighestClassification(ts, ls, xn, cdha) {
+    const nums = [];
+    const all = { ...ts, ...ls, ...xn, ...cdha };
+    for (const [key, val] of Object.entries(all)) {
+        if (key.endsWith("_loai") && key !== "phan_loai_suc_khoe" && val) {
+            const m = String(val).match(/Loại\s*(\d+)/);
+            if (m) nums.push(parseInt(m[1], 10));
+        }
+    }
+    if (nums.length === 0) return DEFAULT_PHAN_LOAI;
+    return `Loại ${Math.max(...nums)}`;
+}
+
 export function filterSoldiers(soldiers, phieuMap, filterTab, searchText) {
     return soldiers.filter((qn) => {
         const phieu = phieuMap[qn.ma_quan_nhan];

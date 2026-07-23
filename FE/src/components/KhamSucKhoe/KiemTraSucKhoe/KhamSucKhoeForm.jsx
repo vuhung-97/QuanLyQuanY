@@ -134,6 +134,7 @@ export default function KhamSucKhoeForm({
         initialXN,
         initialCDHA,
         initialKL,
+        klVersion,
         handleSubmit,
     } = useKhamSucKhoeForm({
         open,
@@ -244,6 +245,7 @@ export default function KhamSucKhoeForm({
                     {allowedTabs.includes(4) && (
                         <TabPanel value={activeTab} index={4}>
                             <KetLuanTab
+                                key={klVersion}
                                 ref={klRef}
                                 initialData={initialKL}
                                 cardStyle={cardStyle}

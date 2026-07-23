@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import useFormTab from "@/hooks/useFormTab";
 import { fieldRanges, isOutOfRange } from "./fieldRanges";
+import PhanLoaiSelect from "../common/PhanLoaiSelect.jsx";
 import RangeFieldSM from "../common/RangeFieldSM.jsx";
 import SectionTitle from "@/components/KhamSucKhoe/common/SectionTitle.jsx";
 
@@ -103,6 +104,13 @@ const XetNghiemTab = memo(
                                     md={3}
                                 />
                             ))}
+
+                            <PhanLoaiSelect
+                                name="xn_mau_loai"
+                                label="Phân loại xét nghiệm máu"
+                                dataRef={dataRef}
+                                readOnly={readOnly}
+                            />
                         </Grid>
                     </CardContent>
                 </Card>
@@ -137,6 +145,13 @@ const XetNghiemTab = memo(
                                     />
                                 );
                             })}
+
+                            <PhanLoaiSelect
+                                name="xn_nuoc_tieu_loai"
+                                label="Phân loại xét nghiệm nước tiểu"
+                                dataRef={dataRef}
+                                readOnly={readOnly}
+                            />
                         </Grid>
                     </CardContent>
                 </Card>

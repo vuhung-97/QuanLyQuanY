@@ -14,6 +14,7 @@ import {
     parseXetNghiem,
     parseChanDoanHinhAnh,
     parseKetLuan,
+    computeHighestClassification,
 } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
 
 function getDirty(current, initial) {
@@ -51,6 +52,7 @@ export default function useKhamSucKhoeForm({
     const [initialXN, setInitialXN] = useState(null);
     const [initialCDHA, setInitialCDHA] = useState(null);
     const [initialKL, setInitialKL] = useState(null);
+    const [klVersion, setKlVersion] = useState(0);
 
     const isEdit = Boolean(existingPhieu);
 
@@ -80,6 +82,17 @@ export default function useKhamSucKhoeForm({
     useEffect(() => {
         setActiveTab(allowedTabs[0] ?? 0);
     }, [allowedTabs]);
+
+    useEffect(() => {
+        if (activeTab !== 4) return;
+        const ts = tsRef.current?.getData() ?? initialTS;
+        const ls = lsRef.current?.getData() ?? initialLS;
+        const xn = xnRef.current?.getData() ?? initialXN;
+        const cdha = cdhaRef.current?.getData() ?? initialCDHA;
+        const highest = computeHighestClassification(ts, ls, xn, cdha);
+        setInitialKL((prev) => ({ ...prev, phan_loai_suc_khoe: highest }));
+        setKlVersion((v) => v + 1);
+    }, [activeTab]);
 
     const canEdit = (tabIdx) => editableTabs.includes(tabIdx);
 
@@ -114,7 +127,20 @@ export default function useKhamSucKhoeForm({
                 ? getDirty(klRef.current?.getData() ?? initialKL, initialKL)
                 : {};
 
-            const hasKetLuan = Object.values(kl).some((v) => v && v !== "");
+            const tsFull = tsRef.current?.getData() ?? initialTS;
+            const lsFull = lsRef.current?.getData() ?? initialLS;
+            const xnFull = xnRef.current?.getData() ?? initialXN;
+            const cdhaFull = cdhaRef.current?.getData() ?? initialCDHA;
+            const klFull = klRef.current?.getData() ?? initialKL;
+            kl.phan_loai_suc_khoe = computeHighestClassification(
+                tsFull, lsFull, xnFull, cdhaFull,
+            );
+
+            const hasKetLuan = Boolean(
+                klFull.ly_do?.trim() &&
+                klFull.benh_tat_theo_doi?.trim() &&
+                klFull.chi_dan_khac?.trim(),
+            );
             const phieuData = {
                 ma_quan_nhan: quanNhan.ma_quan_nhan,
                 ma_lich_kham: maLichKham,
@@ -161,6 +187,7 @@ export default function useKhamSucKhoeForm({
         initialXN,
         initialCDHA,
         initialKL,
+        klVersion,
         handleSubmit,
     };
 }

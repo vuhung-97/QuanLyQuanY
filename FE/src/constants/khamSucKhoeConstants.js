@@ -150,14 +150,6 @@ export const PHAN_LOAI_OPTIONS = [
     "Loại 6",
 ];
 
-export const PHAN_LOAI_SUC_KHOE = [
-    { value: DEFAULT_PHAN_LOAI, label: "Loại 1 (Rất khỏe)" },
-    { value: "Loại 2", label: "Loại 2 (Khỏe)" },
-    { value: "Loại 3", label: "Loại 3 (Trung bình)" },
-    { value: "Loại 4", label: "Loại 4 (Yếu)" },
-    { value: "Loại 5", label: "Loại 5 (Rất yếu)" },
-];
-
 export const TRANG_THAI_LABEL = {
     chua_kham: "Chưa khám",
     dang_kham: "Đang khám",

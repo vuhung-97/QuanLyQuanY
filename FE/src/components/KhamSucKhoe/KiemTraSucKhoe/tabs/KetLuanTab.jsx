@@ -6,7 +6,7 @@ import NormalToggleFieldSM from "../common/NormalToggleFieldSM.jsx";
 import SectionTitle from "@/components/KhamSucKhoe/common/SectionTitle.jsx";
 import {
     DEFAULT_PHAN_LOAI,
-    PHAN_LOAI_SUC_KHOE,
+    PHAN_LOAI_OPTIONS,
 } from "@/constants/khamSucKhoeConstants.js";
 
 const KetLuanTab = memo(
@@ -37,7 +37,7 @@ const KetLuanTab = memo(
                             label="Phân loại sức khỏe chung"
                             dataRef={dataRef}
                             readOnly={readOnly}
-                            options={PHAN_LOAI_SUC_KHOE}
+                            options={PHAN_LOAI_OPTIONS}
                             gridProps={{ xs: 12, sm: 4 }}
                         />
                         <NormalToggleFieldSM
