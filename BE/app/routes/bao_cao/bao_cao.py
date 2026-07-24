@@ -42,6 +42,19 @@ def get_quan_y_nam(
     return service.yearly_medical_report(nam)
 
 
+@router.get("/quan-y-thang/chi-tiet-nhom-benh")
+def get_chi_tiet_nhom_benh(
+    loai: str = Query(...),
+    ma_nhom: str = Query(...),
+    thang: int = Query(..., ge=1, le=12),
+    nam: int = Query(...),
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user),
+):
+    service = ReportService(db)
+    return service.get_chi_tiet_nhom_benh(loai, ma_nhom, thang, nam)
+
+
 @router.get("/quan-so-khoe")
 def get_quan_so_khoe(
     thang: int = Query(..., ge=1, le=12),

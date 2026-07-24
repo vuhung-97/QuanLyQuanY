@@ -10,4 +10,7 @@ export const baoCaoService = {
     getQuanSoKhoe: (thang, nam) =>
         api.get("/bao-cao/quan-so-khoe", { params: { thang, nam } }),
 
+    getChiTietNhomBenh: (loai, maNhom, thang, nam) =>
+        api.get("/bao-cao/quan-y-thang/chi-tiet-nhom-benh", { params: { loai, ma_nhom: maNhom, thang, nam } }),
+
 };

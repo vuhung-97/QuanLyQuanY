@@ -92,7 +92,7 @@ export default function BaoCaoThangMain({ hidePrint = false }) {
                         ]}
                     />
 
-                    <BaoCaoThangCharts data={data} />
+                    <BaoCaoThangCharts data={data} thang={thang} nam={nam} />
                     <BaoCaoThangSoSanh key={data.thang ? "month" : "year"} mode={data.thang ? "month" : "year"} />
                     <BaoCaoThuocDaSuDung data={data.thuoc_da_su_dung} thang={data.thang} />
                     <BaoCaoThuocDaNhap data={data.thuoc_da_nhap} thang={data.thang} />
