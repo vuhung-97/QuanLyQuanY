@@ -6,11 +6,11 @@ import {
     PendingActions as PendingIcon,
 } from "@mui/icons-material";
 import KetQuaKhamFilter from "./KetQuaKhamFilter.jsx";
-import KetQuaKhamTienDo from "./KetQuaKhamTienDo.jsx";
-import KetQuaKhamPhanLoai from "./KetQuaKhamPhanLoai.jsx";
+import KetQuaKhamSection1 from "./KetQuaKhamSection1.jsx";
+import KetQuaKhamLamSangBenh from "./KetQuaKhamLamSangBenh.jsx";
 import KetQuaKhamTheLuc from "./KetQuaKhamTheLuc.jsx";
 import KetQuaKhamBenhTat from "./KetQuaKhamBenhTat.jsx";
-import KetQuaKhamDonVi from "./KetQuaKhamDonVi.jsx";
+import KetQuaKhamSection5 from "./KetQuaKhamSection5.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import LoadingAlert from "@/components/common/LoadingAlert.jsx";
 import useKetQuaKham from "@/hooks/useKetQuaKham.jsx";
@@ -32,8 +32,8 @@ export default function KetQuaKhamMain() {
         xetNghiemTrungBinh,
         benhTat,
         lamSangBatThuong,
-        donViData,
-        XN_FIELDS,
+        soldiers,
+        phieuMap,
     } = useKetQuaKham();
 
     const tongQuanItems = stats
@@ -92,11 +92,16 @@ export default function KetQuaKhamMain() {
                 <>
                     <StatCardGrid items={tongQuanItems} />
 
-                    <KetQuaKhamTienDo tienDo={tienDo} donViData={donViData} />
+                    <KetQuaKhamSection1 tienDo={tienDo} phanBoPhanLoai={phanBoPhanLoai} />
 
-                    <KetQuaKhamPhanLoai
-                        phanBoPhanLoai={phanBoPhanLoai}
+                    <KetQuaKhamLamSangBenh
                         lamSangBatThuong={lamSangBatThuong}
+                        benhTat={benhTat}
+                        soldiers={soldiers}
+                        phieuMap={phieuMap}
+                        maLichKham={scheduleId}
+                        nam={nam}
+                        stats={stats}
                     />
 
                     <Typography variant="h4" sx={{ color: "primary.main" }}>
@@ -104,13 +109,16 @@ export default function KetQuaKhamMain() {
                     </Typography>
                     <KetQuaKhamTheLuc theLucTrungBinh={theLucTrungBinh} />
 
-                    <KetQuaKhamBenhTat
-                        benhTat={benhTat}
-                        xetNghiemTrungBinh={xetNghiemTrungBinh}
-                        XN_FIELDS={XN_FIELDS}
-                    />
+                    <KetQuaKhamBenhTat xetNghiemTrungBinh={xetNghiemTrungBinh} />
 
-                    <KetQuaKhamDonVi phanBoPhanLoai={phanBoPhanLoai} />
+                    <KetQuaKhamSection5
+                        phanBoPhanLoai={phanBoPhanLoai}
+                        soldiers={soldiers}
+                        phieuMap={phieuMap}
+                        maLichKham={scheduleId}
+                        nam={nam}
+                        stats={stats}
+                    />
                 </>
             )}
         </Stack>

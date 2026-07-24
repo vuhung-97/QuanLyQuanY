@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
 import { fetchAllPages } from "@/utils/fetchAll.js";
 
-const PHAN_LOAI_LABELS = ["Loại 1", "Loại 2", "Loại 3", "Loại 4", "Loại 5"];
+const PHAN_LOAI_LABELS = ["Loại 1", "Loại 2", "Loại 3", "Loại 4", "Loại 5", "Loại 6"];
 
 function countBy(arr, keyFn) {
     const map = {};
@@ -145,7 +145,7 @@ export default function useKetQuaKham() {
             name: l,
             value: counts[l],
             ty_le: ((counts[l] / total) * 100).toFixed(1),
-            color: ["#10B981", "#3B82F6", "#F59E0B", "#EF4444", "#8B5CF6"][i],
+            color: ["#10B981", "#3B82F6", "#F59E0B", "#EF4444", "#8B5CF6", "#94A3B8"][i],
         }));
     }, [daKhamPhieu]);
 

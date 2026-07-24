@@ -33,7 +33,7 @@ FE/
     │   ├── KhamBenhChoQN/      # CapThuoc/ ChuyenTuyen/ DanhMuc/ KhamBenh/ (forms, dialogs, lists)
     │   │                       # └── DanhMuc/ → DanhMucList, DanhMucDialog
     │   │                       # └── KhamBenhSections/ (Symptoms, Diagnosis, FormActions)
-    │   ├── KhamSucKhoe/        # common/ KiemTraSucKhoe/ LapLich/
+    │   ├── KhamSucKhoe/        # common/ KiemTraSucKhoe/ LapLich/ KetQuaKham/
     │   │                       # └── KiemTraSucKhoe/ → common/fields/ tabs/ KhamSucKhoePrint
     │   ├── BaoCao/             # BaoCaoThangMain, BaoCaoTonKhoMain, BaoCaoToolbar,
 │   │                       # BaoCaoThangPrint, BaoCaoPrintDialog, BaoCaoThuocDaNhap,
