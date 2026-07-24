@@ -1,6 +1,6 @@
 import { Box, Card, CardContent, Grid, Stack, Typography } from "@mui/material";
 
-export default function StatCardGrid({ items, loading, sizeOverrides }) {
+export default function StatCardGrid({ items, loading, sizeOverrides, onCardClick }) {
     if (loading) return null;
     return (
         <Grid container spacing={2.5}>
@@ -13,7 +13,18 @@ export default function StatCardGrid({ items, loading, sizeOverrides }) {
                     }}
                     key={item.label}
                 >
-                    <Card sx={{ height: "100%", borderRadius: 3 }}>
+                    <Card
+                        onClick={() => onCardClick?.(item.filterKey)}
+                        sx={{
+                            height: "100%",
+                            borderRadius: 3,
+                            cursor: onCardClick ? "pointer" : "default",
+                            transition: "box-shadow 0.2s",
+                            "&:hover": onCardClick
+                                ? { boxShadow: 6 }
+                                : undefined,
+                        }}
+                    >
                         <CardContent>
                             <Stack
                                 direction="row"

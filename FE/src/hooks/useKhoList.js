@@ -8,6 +8,7 @@ export default function useKhoList() {
     const [sapHetHan, setSapHetHan] = useState([]);
     const [search, setSearch] = useState("");
     const [phanLoaiFilter, setPhanLoaiFilter] = useState("");
+    const [filterMode, setFilterMode] = useState("all");
     const [page, setPage] = useState(1);
     const [dialog, setDialog] = useState({
         open: false,
@@ -56,6 +57,11 @@ export default function useKhoList() {
         return [...s].sort();
     }, [allItems]);
 
+    const sapHetHanMaSet = useMemo(
+        () => new Set(sapHetHan.map((i) => i.ma_thuoc_vtyt)),
+        [sapHetHan],
+    );
+
     const filteredItems = useMemo(() => {
         let items = allItems;
         if (search.trim()) {
@@ -70,8 +76,16 @@ export default function useKhoList() {
         if (phanLoaiFilter) {
             items = items.filter((i) => i.phan_loai === phanLoaiFilter);
         }
+        if (filterMode === "low-stock") {
+            items = items.filter((i) => {
+                const qty = i.so_luong ?? 0;
+                return i.loai !== "vat_tu" ? qty < 100 : qty < 30;
+            });
+        } else if (filterMode === "expiring") {
+            items = items.filter((i) => sapHetHanMaSet.has(i.ma_thuoc_vtyt));
+        }
         return items;
-    }, [allItems, search, phanLoaiFilter]);
+    }, [allItems, search, phanLoaiFilter, filterMode, sapHetHanMaSet]);
 
     const totalPages = Math.ceil(filteredItems.length / ROWS_PER_PAGE);
 
@@ -80,16 +94,11 @@ export default function useKhoList() {
         return filteredItems.slice(start, start + ROWS_PER_PAGE);
     }, [filteredItems, page]);
 
-    const sapHetHanMaSet = useMemo(
-        () => new Set(sapHetHan.map((i) => i.ma_thuoc_vtyt)),
-        [sapHetHan],
-    );
-
     const statItems = useMemo(() => {
-        const thuocSapHet = allItems.filter(
+        const thuocTonThap = allItems.filter(
             (i) => (i.so_luong ?? 0) < 100 && i.loai !== "vat_tu",
         ).length;
-        const vtytSapHet = allItems.filter(
+        const vtytTonThap = allItems.filter(
             (i) => (i.so_luong ?? 0) < 30 && i.loai === "vat_tu",
         ).length;
         return [
@@ -99,20 +108,15 @@ export default function useKhoList() {
                 icon: "inventory",
                 color: "#0B3B60",
                 bg: "#E8F0FE",
+                filterKey: "all",
             },
             {
-                label: "Thuốc tồn thấp (< 100)",
-                value: thuocSapHet,
+                label: "Thuốc, VTYT tồn kho thấp",
+                value: thuocTonThap + vtytTonThap,
                 icon: "warning",
                 color: "#F59E0B",
                 bg: "#FEF3C7",
-            },
-            {
-                label: "VTYT tồn thấp (< 30)",
-                value: vtytSapHet,
-                icon: "warning",
-                color: "#EF4444",
-                bg: "#FEE2E2",
+                filterKey: "low-stock",
             },
             {
                 label: "Sắp hết hạn (90 ngày)",
@@ -120,6 +124,7 @@ export default function useKhoList() {
                 icon: "error",
                 color: "#DC2626",
                 bg: "#FEE2E2",
+                filterKey: "expiring",
             },
         ];
     }, [allItems, sapHetHan]);
@@ -131,6 +136,11 @@ export default function useKhoList() {
 
     const handlePhanLoaiChange = useCallback((e) => {
         setPhanLoaiFilter(e.target.value);
+        setPage(1);
+    }, []);
+
+    const handleCardClick = useCallback((filterKey) => {
+        setFilterMode(filterKey || "all");
         setPage(1);
     }, []);
 
@@ -180,6 +190,7 @@ export default function useKhoList() {
         loading,
         search,
         phanLoaiFilter,
+        filterMode,
         page,
         dialog,
         confirm,
@@ -198,6 +209,7 @@ export default function useKhoList() {
         setSnackbar,
         handleSearchChange,
         handlePhanLoaiChange,
+        handleCardClick,
         handleView,
         handleEdit,
         handleDelete,

@@ -125,7 +125,11 @@ export default function KhoList() {
 
     return (
         <>
-            <StatCardGrid items={statItems} loading={hook.loading} />
+            <StatCardGrid
+                items={statItems}
+                loading={hook.loading}
+                onCardClick={hook.handleCardClick}
+            />
 
             <Card sx={{ borderRadius: 3 }}>
                 <CardContent>

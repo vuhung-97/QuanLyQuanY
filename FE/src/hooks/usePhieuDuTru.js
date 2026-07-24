@@ -123,6 +123,52 @@ export default function usePhieuDuTru({ open, phieuId = null, mode = "create", o
         return arr.every((item) => item.tenThuoc.trim() && item.soLuong > 0);
     }, []);
 
+    const [loadingAuto, setLoadingAuto] = useState(false);
+
+    const handleAutoCreate = useCallback(async () => {
+        if (isView) return;
+        setLoadingAuto(true);
+        try {
+            const allItems = await khoDuocService.fetchAllThuocVtyt();
+            const lowStock = (allItems || []).filter((i) => {
+                const qty = i.so_luong ?? 0;
+                return i.loai !== "vat_tu" ? qty < 100 : qty < 30;
+            });
+            if (lowStock.length === 0) {
+                setSnackbar({
+                    open: true,
+                    message: "Không có thuốc / VTYT nào tồn kho thấp.",
+                    severity: "info",
+                });
+                return;
+            }
+            itemsRef.current = lowStock.map((i) => {
+                const qty = i.so_luong ?? 0;
+                const target = i.loai !== "vat_tu" ? 100 : 30;
+                return {
+                    tenThuoc: i.ten_thuoc_vtyt || "",
+                    donViTinh: i.don_vi_tinh || "",
+                    soLuong: Math.max(1, target - qty),
+                    maThuocVtyt: i.ma_thuoc_vtyt,
+                };
+            });
+            setKeys(itemsRef.current.map(() => nextKey()));
+            setSnackbar({
+                open: true,
+                message: `Đã tạo tự động ${lowStock.length} dòng thuốc / VTYT tồn kho thấp.`,
+                severity: "success",
+            });
+        } catch {
+            setSnackbar({
+                open: true,
+                message: "Lỗi khi tải danh sách tồn kho.",
+                severity: "error",
+            });
+        } finally {
+            setLoadingAuto(false);
+        }
+    }, [isView]);
+
     const handleAddFromKhoThuoc = useCallback((selectedItems) => {
         const newKeys = [];
         for (const si of selectedItems) {
@@ -246,6 +292,7 @@ export default function usePhieuDuTru({ open, phieuId = null, mode = "create", o
         keys,
         getItem,
         saving,
+        loadingAuto,
         loadingData,
         snackbar,
         openKhoThuoc,
@@ -260,6 +307,7 @@ export default function usePhieuDuTru({ open, phieuId = null, mode = "create", o
         removeItem,
         updateItem,
         handleAddFromKhoThuoc,
+        handleAutoCreate,
         handleSave,
         handleClose,
         setSnackbar,

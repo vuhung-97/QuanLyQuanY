@@ -30,6 +30,7 @@ export default function PhieuDuTruDialog({
         keys,
         getItem,
         saving,
+        loadingAuto,
         loadingData,
         snackbar,
         setSnackbar,
@@ -45,6 +46,7 @@ export default function PhieuDuTruDialog({
         removeItem,
         updateItem,
         handleAddFromKhoThuoc,
+        handleAutoCreate,
         handleSave,
         handleClose,
     } = usePhieuDuTru({ open, phieuId, mode, onClose, onSaved });
@@ -126,6 +128,8 @@ export default function PhieuDuTruDialog({
                 onOpenKhoThuoc={() => setOpenKhoThuoc(true)}
                 onCloseKhoThuoc={() => setOpenKhoThuoc(false)}
                 isView={isView}
+                onAutoCreate={handleAutoCreate}
+                loadingAuto={loadingAuto}
             />
         </>
     );

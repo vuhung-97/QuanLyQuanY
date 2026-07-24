@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import {
     Add as AddIcon,
+    AutoAwesome as AutoAwesomeIcon,
     Delete as DeleteIcon,
     Inventory2 as KhoIcon,
 } from "@mui/icons-material";
@@ -110,6 +111,7 @@ const DuTruRow = memo(function DuTruRow({
 const ChiTietDuTruTable = memo(function ChiTietDuTruTable({
     keys, getItem, onUpdateItem, onRemoveItem, onAddItem,
     onAddFromKhoThuoc, openKhoThuoc, onOpenKhoThuoc, onCloseKhoThuoc, isView,
+    onAutoCreate, loadingAuto,
 }) {
     return (
         <>
@@ -155,6 +157,15 @@ const ChiTietDuTruTable = memo(function ChiTietDuTruTable({
                             color="info"
                         >
                             Mở kho thuốc
+                        </Button>
+                        <Button
+                            startIcon={<AutoAwesomeIcon />}
+                            onClick={onAutoCreate}
+                            variant="outlined"
+                            color="success"
+                            disabled={loadingAuto}
+                        >
+                            {loadingAuto ? "Đang tạo..." : "Tạo tự động"}
                         </Button>
                     </Stack>
 
