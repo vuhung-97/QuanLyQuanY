@@ -52,90 +52,149 @@ export default function App() {
                     >
                         <Route index element={<DashboardPage />} />
 
-                        <Route
-                            element={
-                                <RoleRoute
-                                    roles={MENU_ROLE_MAP["kham-dinh-ky"]}
-                                >
-                                    <Outlet />
-                                </RoleRoute>
-                            }
-                        >
-                            <Route path="kham-dinh-ky">
-                                <Route
-                                    index
-                                    element={<Navigate to="lap-lich" replace />}
-                                />
-                                <Route
-                                    path="lap-lich"
-                                    element={<LapLichPage />}
-                                />
-                                <Route
-                                    path="kham-suc-khoe"
-                                    element={<KhamSucKhoePage />}
-                                />
-                                <Route
-                                    path="ket-qua-kham"
-                                    element={<KetQuaKhamPage />}
-                                />
-                            </Route>
-                            <Route path="noi-tru">
-                                <Route
-                                    index
-                                    element={
-                                        <Navigate to="danh-sach" replace />
-                                    }
-                                />
-                                <Route
-                                    path="danh-sach"
-                                    element={<DanhSachNoiTruPage />}
-                                />
-                                <Route
-                                    path="lap-benh-an"
-                                    element={<LapBenhAnPage />}
-                                />
-                                <Route
-                                    path="quan-ly-phong-giuong"
-                                    element={<QuanLyPhongGiuongPage />}
-                                />
-                            </Route>
-                            <Route path="kham-benh">
-                                <Route
-                                    index
-                                    element={
-                                        <Navigate
-                                            to="Kham-benh-cho-quan-nhan"
-                                            replace
-                                        />
-                                    }
-                                />
-                                <Route
-                                    path="Kham-benh-cho-quan-nhan"
-                                    element={<KhamBenhPage />}
-                                />
-                                <Route
-                                    path="Cap-thuoc"
-                                    element={<CapThuocPage />}
-                                />
-                                <Route
-                                    path="Chuyen-tuyen"
-                                    element={<ChuyenTuyenPage />}
-                                />
-                                <Route
-                                    path="danh-muc"
-                                    element={<DanhMucPage />}
-                                />
-                            </Route>
-                            <Route path="kho-duoc">
-                                <Route
-                                    index
-                                    element={<Navigate to="kho" replace />}
-                                />
-                                <Route path="kho" element={<KhoPage />} />
-                                <Route path="du-tru" element={<DuTruPage />} />
-                                <Route path="nhap" element={<NhapKhoPage />} />
-                                <Route path="xuat" element={<XuatKhoPage />} />
-                            </Route>
+                        <Route path="kham-dinh-ky">
+                            <Route
+                                index
+                                element={<Navigate to="lap-lich" replace />}
+                            />
+                            <Route
+                                path="lap-lich"
+                                element={
+                                    <RoleRoute roles={MENU_ROLE_MAP["lap-lich"]}>
+                                        <LapLichPage />
+                                    </RoleRoute>
+                                }
+                            />
+                            <Route
+                                path="kham-suc-khoe"
+                                element={
+                                    <RoleRoute roles={MENU_ROLE_MAP["kham-suc-khoe"]}>
+                                        <KhamSucKhoePage />
+                                    </RoleRoute>
+                                }
+                            />
+                            <Route
+                                path="ket-qua-kham"
+                                element={
+                                    <RoleRoute roles={MENU_ROLE_MAP["ket-qua-kham"]}>
+                                        <KetQuaKhamPage />
+                                    </RoleRoute>
+                                }
+                            />
+                        </Route>
+
+                        <Route path="noi-tru">
+                            <Route
+                                index
+                                element={<Navigate to="danh-sach" replace />}
+                            />
+                            <Route
+                                path="danh-sach"
+                                element={
+                                    <RoleRoute roles={MENU_ROLE_MAP["danh-sach-noi-tru"]}>
+                                        <DanhSachNoiTruPage />
+                                    </RoleRoute>
+                                }
+                            />
+                            <Route
+                                path="lap-benh-an"
+                                element={
+                                    <RoleRoute roles={MENU_ROLE_MAP["lap-benh-an"]}>
+                                        <LapBenhAnPage />
+                                    </RoleRoute>
+                                }
+                            />
+                            <Route
+                                path="quan-ly-phong-giuong"
+                                element={
+                                    <RoleRoute roles={MENU_ROLE_MAP["quan-ly-phong-giuong"]}>
+                                        <QuanLyPhongGiuongPage />
+                                    </RoleRoute>
+                                }
+                            />
+                        </Route>
+
+                        <Route path="kham-benh">
+                            <Route
+                                index
+                                element={
+                                    <Navigate
+                                        to="Kham-benh-cho-quan-nhan"
+                                        replace
+                                    />
+                                }
+                            />
+                            <Route
+                                path="Kham-benh-cho-quan-nhan"
+                                element={
+                                    <RoleRoute roles={MENU_ROLE_MAP["kham-benh-cho-quan-nhan"]}>
+                                        <KhamBenhPage />
+                                    </RoleRoute>
+                                }
+                            />
+                            <Route
+                                path="Cap-thuoc"
+                                element={
+                                    <RoleRoute roles={MENU_ROLE_MAP["cap-thuoc"]}>
+                                        <CapThuocPage />
+                                    </RoleRoute>
+                                }
+                            />
+                            <Route
+                                path="Chuyen-tuyen"
+                                element={
+                                    <RoleRoute roles={MENU_ROLE_MAP["chuyen-tuyen"]}>
+                                        <ChuyenTuyenPage />
+                                    </RoleRoute>
+                                }
+                            />
+                            <Route
+                                path="danh-muc"
+                                element={
+                                    <RoleRoute roles={MENU_ROLE_MAP["danh-muc-benh"]}>
+                                        <DanhMucPage />
+                                    </RoleRoute>
+                                }
+                            />
+                        </Route>
+
+                        <Route path="kho-duoc">
+                            <Route
+                                index
+                                element={<Navigate to="kho" replace />}
+                            />
+                            <Route
+                                path="kho"
+                                element={
+                                    <RoleRoute roles={MENU_ROLE_MAP["kho"]}>
+                                        <KhoPage />
+                                    </RoleRoute>
+                                }
+                            />
+                            <Route
+                                path="du-tru"
+                                element={
+                                    <RoleRoute roles={MENU_ROLE_MAP["du-tru"]}>
+                                        <DuTruPage />
+                                    </RoleRoute>
+                                }
+                            />
+                            <Route
+                                path="nhap"
+                                element={
+                                    <RoleRoute roles={MENU_ROLE_MAP["nhap-kho"]}>
+                                        <NhapKhoPage />
+                                    </RoleRoute>
+                                }
+                            />
+                            <Route
+                                path="xuat"
+                                element={
+                                    <RoleRoute roles={MENU_ROLE_MAP["xuat-kho"]}>
+                                        <XuatKhoPage />
+                                    </RoleRoute>
+                                }
+                            />
                         </Route>
 
                         <Route path="bao-cao" element={<BaoCaoPage />} />

@@ -56,6 +56,14 @@ export default function useKhamBenhForm({
         let ignore = false;
         setPredictions([]);
         isFirstLoad.current = true;
+
+        setExam(null);
+        setQn(null);
+        setTrieuChung("");
+        setMaNhomBenh("");
+        setPrescriptionItems([]);
+        formRef.current = { chan_doan: "", phuong_phap_dieu_tri: "" };
+
         async function load() {
             setLoading(true);
             try {
@@ -99,13 +107,16 @@ export default function useKhamBenhForm({
                 // Tự động predict AI nếu có triệu chứng (mở lần đầu)
                 if (data.trieu_chung?.trim() && isFirstLoad.current) {
                     isFirstLoad.current = false;
-                    const words = data.trieu_chung.split(/[,;]\s*/).filter(Boolean);
+                    const words = data.trieu_chung
+                        .split(/[,;]\s*/)
+                        .filter(Boolean);
                     if (words.length > 0) {
                         setPredicting(true);
                         khamBenhService
                             .predictDisease(words, threshold)
                             .then((res) => {
-                                if (!ignore) setPredictions(res.data.predictions || []);
+                                if (!ignore)
+                                    setPredictions(res.data.predictions || []);
                             })
                             .catch(() => {})
                             .finally(() => {
