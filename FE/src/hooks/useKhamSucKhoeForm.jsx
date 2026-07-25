@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
 import {
     DEFAULT_TS,
@@ -41,7 +41,7 @@ export default function useKhamSucKhoeForm({
     const [activeTab, setActiveTab] = useState(0);
     const [ngayNhapNgu, setNgayNhapNgu] = useState("");
     const [saving, setSaving] = useState(false);
-    const [error, setError] = useState("");
+    const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "error" });
     const tsRef = useRef(null);
     const lsRef = useRef(null);
     const xnRef = useRef(null);
@@ -55,6 +55,10 @@ export default function useKhamSucKhoeForm({
     const [klVersion, setKlVersion] = useState(0);
 
     const isEdit = Boolean(existingPhieu);
+
+    const handleCloseSnackbar = useCallback(() => {
+        setSnackbar((s) => ({ ...s, open: false }));
+    }, []);
 
     useEffect(() => {
         if (open && quanNhan) {
@@ -74,7 +78,7 @@ export default function useKhamSucKhoeForm({
                 setInitialCDHA({ ...DEFAULT_CDHA });
                 setInitialKL({ ...DEFAULT_KL });
             }
-            setError("");
+            setSnackbar({ open: false, message: "", severity: "error" });
             setActiveTab(allowedTabs[0] ?? 0);
         }
     }, [open, quanNhan, existingPhieu]);
@@ -99,10 +103,10 @@ export default function useKhamSucKhoeForm({
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSaving(true);
-        setError("");
+        setSnackbar({ open: false, message: "", severity: "error" });
         try {
             if (!initialTS) {
-                setError("Dữ liệu chưa sẵn sàng.");
+                setSnackbar({ open: true, message: "Dữ liệu chưa sẵn sàng.", severity: "warning" });
                 setSaving(false);
                 return;
             }
@@ -165,7 +169,11 @@ export default function useKhamSucKhoeForm({
             onSaved(saved.data);
             onClose();
         } catch (err) {
-            setError(err.response?.data?.detail || "Không thể lưu phiếu khám.");
+            setSnackbar({
+                open: true,
+                message: err.response?.data?.detail || "Không thể lưu phiếu khám.",
+                severity: "error",
+            });
         } finally {
             setSaving(false);
         }
@@ -176,7 +184,8 @@ export default function useKhamSucKhoeForm({
         setActiveTab,
         ngayNhapNgu,
         saving,
-        error,
+        snackbar,
+        handleCloseSnackbar,
         tsRef,
         lsRef,
         xnRef,

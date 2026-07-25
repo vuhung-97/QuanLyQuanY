@@ -7,7 +7,6 @@ import {
     DialogContent,
     Tab,
     Tabs,
-    Typography,
 } from "@mui/material";
 import {
     Biotech as BiotechIcon,
@@ -23,6 +22,7 @@ import LamSangTab from "./tabs/LamSangTab";
 import XetNghiemTab from "./tabs/XetNghiemTab";
 import ChanDoanHinhAnhTab from "./tabs/ChanDoanHinhAnhTab";
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
+import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import PatientInfoCard from "@/components/common/PatientInfoCard";
 import KetLuanTab from "./tabs/KetLuanTab";
 
@@ -123,7 +123,8 @@ export default function KhamSucKhoeForm({
         setActiveTab,
         ngayNhapNgu,
         saving,
-        error,
+        snackbar,
+        handleCloseSnackbar,
         tsRef,
         lsRef,
         xnRef,
@@ -161,6 +162,7 @@ export default function KhamSucKhoeForm({
     );
 
     return (
+        <>
         <Dialog
             open={open}
             onClose={onClose}
@@ -179,16 +181,6 @@ export default function KhamSucKhoeForm({
                 <FormHeader quanNhan={quanNhan} />
 
                 <DialogContent dividers sx={{ px: 3 }}>
-                    {error && (
-                        <Typography
-                            color="error"
-                            variant="body2"
-                            sx={{ mb: 2 }}
-                        >
-                            {error}
-                        </Typography>
-                    )}
-
                     <PatientInfoCard
                         data={cardData}
                         fields={CARD_FIELDS}
@@ -285,5 +277,13 @@ export default function KhamSucKhoeForm({
                 </DialogActions>
             </Box>
         </Dialog>
+
+            <FeedbackSnackbar
+                open={snackbar.open}
+                message={snackbar.message}
+                severity={snackbar.severity}
+                onClose={handleCloseSnackbar}
+            />
+        </>
     );
 }
