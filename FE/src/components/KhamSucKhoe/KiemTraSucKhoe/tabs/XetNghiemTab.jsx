@@ -99,6 +99,7 @@ const XetNghiemTab = memo(
                                     dataRef={dataRef}
                                     readOnly={readOnly}
                                     unit={f.unit}
+                                    step={0.1}
                                     xs={12}
                                     sm={3}
                                     md={3}
