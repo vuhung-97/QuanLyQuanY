@@ -28,7 +28,7 @@ class PhieuKhamSucKhoeCRUD(CRUDBase):
             if field in self._primary_key_columns():
                 continue
             if field in JSON_MERGE_COLUMNS and value is not None:
-                existing = getattr(row, field) or {}
+                existing = dict(getattr(row, field) or {})
                 existing.update(value)
                 setattr(row, field, existing)
             elif field in self._column_keys():
