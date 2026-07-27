@@ -34,15 +34,11 @@ export default function PasswordChangeForm({ onSuccess, onError }) {
     return (
         <>
             <Divider sx={{ my: 1 }} />
-            <Typography variant="h2">- Đổi mật khẩu</Typography>
+            <Typography variant="h4">- Đổi mật khẩu</Typography>
             <Typography variant="body2" color="text.secondary">
                 <i>(Tối thiểu 8 ký tự)</i>
             </Typography>
-            <Stack
-                component="form"
-                onSubmit={handleSubmit}
-                spacing={2}
-            >
+            <Stack component="form" onSubmit={handleSubmit} spacing={2}>
                 <TextField
                     label="Mật khẩu cũ"
                     type="password"
@@ -76,11 +72,7 @@ export default function PasswordChangeForm({ onSuccess, onError }) {
                             : " "
                     }
                 />
-                <Button
-                    type="submit"
-                    variant="contained"
-                    disabled={saving}
-                >
+                <Button type="submit" variant="contained" disabled={saving}>
                     {saving ? "Đang đổi..." : "Đổi mật khẩu"}
                 </Button>
             </Stack>

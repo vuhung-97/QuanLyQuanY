@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Stack, TextField, Typography } from "@mui/material";
+import { Button, Divider, Stack, TextField, Typography } from "@mui/material";
 import api from "@/services/api.js";
 
 export default function ProfileUpdateForm({ initialName, onSuccess, onError }) {
@@ -13,7 +13,9 @@ export default function ProfileUpdateForm({ initialName, onSuccess, onError }) {
             const res = await api.patch("/nguoi_dung/me", { ho_ten: hoTen });
             onSuccess?.(res.data);
         } catch (err) {
-            onError?.(err.response?.data?.detail || "Không thể cập nhật thông tin.");
+            onError?.(
+                err.response?.data?.detail || "Không thể cập nhật thông tin.",
+            );
         } finally {
             setSaving(false);
         }
@@ -21,7 +23,8 @@ export default function ProfileUpdateForm({ initialName, onSuccess, onError }) {
 
     return (
         <>
-            <Typography variant="h3" sx={{ mt: 1 }}>
+            <Divider sx={{ my: 1 }} />
+            <Typography variant="h4" sx={{ mt: 1 }}>
                 - Cập nhật họ tên
             </Typography>
             <Stack
@@ -40,11 +43,7 @@ export default function ProfileUpdateForm({ initialName, onSuccess, onError }) {
                         htmlInput: { maxLength: 100 },
                     }}
                 />
-                <Button
-                    type="submit"
-                    variant="contained"
-                    disabled={saving}
-                >
+                <Button type="submit" variant="contained" disabled={saving}>
                     {saving ? "Đang lưu..." : "Lưu"}
                 </Button>
             </Stack>

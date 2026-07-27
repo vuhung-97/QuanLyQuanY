@@ -138,7 +138,7 @@ export default function UserFormDialog({
                         />
                     </Stack>
                 </DialogContent>
-                <DialogActions sx={{ px: 3, pb: 2.5 }}>
+                <DialogActions sx={{ p: 2 }}>
                     <Button onClick={onClose}>Hủy</Button>
                     <Button type="submit" variant="contained" disabled={saving}>
                         {saving ? "Đang lưu..." : "Lưu"}

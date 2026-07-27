@@ -98,7 +98,7 @@ export default function AccountSettingsDialog({ open, onClose }) {
                         </Stack>
                     )}
                 </DialogContent>
-                <DialogActions sx={{ px: 3, pb: 2.5 }}>
+                <DialogActions sx={{ p: 1 }}>
                     <Button onClick={onClose}>Đóng</Button>
                 </DialogActions>
             </Dialog>

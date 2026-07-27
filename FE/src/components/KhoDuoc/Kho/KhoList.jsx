@@ -102,11 +102,8 @@ const columns = [
             const { onView, onEdit, onDelete } = extra || {};
             return (
                 <Stack direction="row" spacing={0.5}>
-                    <ActionIcon title="Xem" icon={<VisibilityIcon />} onClick={() => onView(row.ma_thuoc_vtyt)} />
-                    <IfRole roles={[ROLES.ADMIN, ROLES.CNQY]}>
-                        <ActionIcon title="Sửa" icon={<EditIcon />} onClick={() => onEdit(row.ma_thuoc_vtyt)} />
-                        <ActionIcon title="Xoá" icon={<DeleteIcon />} color="error" onClick={() => onDelete(row.ma_thuoc_vtyt)} />
-                    </IfRole>
+                    <ActionIcon title="Sửa" icon={<EditIcon />} onClick={() => onEdit(row.ma_thuoc_vtyt)} />
+                    <ActionIcon title="Xoá" icon={<DeleteIcon />} color="error" onClick={() => onDelete(row.ma_thuoc_vtyt)} />
                 </Stack>
             );
         },
