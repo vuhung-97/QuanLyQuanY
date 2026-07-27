@@ -436,7 +436,7 @@ class ReportService:
 
         lich_kham_sk_chua_duyet = (
             self.db.query(func.count(LichKhamSkNam.ma_lich_kham))
-            .filter(LichKhamSkNam.trang_thai != "da_duyet")
+            .filter(LichKhamSkNam.trang_thai == "cho_duyet")
             .scalar()
             or 0
         )
