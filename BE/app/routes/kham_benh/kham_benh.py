@@ -309,6 +309,11 @@ def get_danh_sach_chuyen_tuyen(
         else:
             d["chuyen_tuyen_status"] = "chờ_chuyển_tuyến"
 
+        d["ngay_di"] = str(dt_ngay_di) if dt_ngay_di else None
+        d["ngay_ve"] = str(dt_ngay_ve) if dt_ngay_ve else None
+        d["ten_benh_vien"] = gt_ten_benh_vien
+        d["y_kien_de_nghi"] = gt_y_kien_de_nghi
+
         result.append(d)
     return {"data": result, "total": total}
 

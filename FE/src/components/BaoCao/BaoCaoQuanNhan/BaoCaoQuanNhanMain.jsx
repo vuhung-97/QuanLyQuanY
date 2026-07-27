@@ -7,6 +7,7 @@ import {
     Typography,
     Box,
     Chip,
+    Grid,
 } from "@mui/material";
 import { PersonSearch as PersonSearchIcon } from "@mui/icons-material";
 import ChonQuanNhanDialog from "@/components/common/ChonQuanNhanDialog.jsx";
@@ -139,7 +140,7 @@ const BA_COLUMNS = [
 ];
 
 const CT_COLUMNS = [
-    { key: "ngay_kham", label: "Ngày", sx: { width: "15%" } },
+    { key: "ngay_di", label: "Ngày đi", sx: { width: "15%" } },
     { key: "ten_benh_vien", label: "Bệnh viện", sx: { width: "25%" } },
     { key: "y_kien_de_nghi", label: "Lý do", sx: { width: "35%" } },
     {
@@ -280,16 +281,16 @@ export default function BaoCaoQuanNhanMain({ maQuanNhan }) {
         () =>
             chuyenTuyenList
                 .filter((p) => {
-                    if (!p.ngay_kham) return false;
+                    if (!p.ngay_di) return false;
                     if (!ctNam && !ctThang) return true;
-                    const d = new Date(p.ngay_kham);
+                    const d = new Date(p.ngay_di);
                     if (ctNam && d.getFullYear() !== ctNam) return false;
                     if (ctThang && d.getMonth() + 1 !== ctThang) return false;
                     return true;
                 })
                 .map((p) => ({
                     ...p,
-                    ngay_kham: formatDateShort(p.ngay_kham),
+                    ngay_di: formatDateShort(p.ngay_di),
                 })),
         [chuyenTuyenList, ctNam, ctThang],
     );
@@ -339,146 +340,157 @@ export default function BaoCaoQuanNhanMain({ maQuanNhan }) {
             />
 
             {quanNhan && !loading && !error && (
-                <>
-                    <Card sx={CARD_SX}>
-                        <CardContent>
-                            <Stack
-                                direction="row"
-                                sx={{
-                                    mb: 2,
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                }}
-                            >
-                                <Typography
-                                    variant="h4"
-                                    sx={{ color: "primary.main" }}
+                <Grid container spacing={3}>
+                    <Grid size={{ xs: 12, lg: 6 }}>
+                        <Card sx={CARD_SX}>
+                            <CardContent>
+                                <Stack
+                                    direction="row"
+                                    sx={{
+                                        mb: 2,
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                    }}
                                 >
-                                    Khám sức khỏe định kỳ ({kskRows.length})
-                                </Typography>
-                                <YearMonthFilter
-                                    nam={kskNam}
-                                    onNamChange={setKskNam}
-                                    showThang={false}
+                                    <Typography
+                                        variant="h4"
+                                        sx={{ color: "primary.main" }}
+                                    >
+                                        Khám sức khỏe định kỳ ({kskRows.length})
+                                    </Typography>
+                                    <YearMonthFilter
+                                        nam={kskNam}
+                                        onNamChange={setKskNam}
+                                        showThang={false}
+                                    />
+                                </Stack>
+                                <DataTable
+                                    columns={KSK_COLUMNS}
+                                    rows={kskRows}
+                                    onRowClick={(row) =>
+                                        setDialogKsk({
+                                            open: true,
+                                            record: row,
+                                        })
+                                    }
+                                    sx={DATA_TABLE_SX}
+                                    emptyMessage="Không có dữ liệu khám sức khỏe."
                                 />
-                            </Stack>
-                            <DataTable
-                                columns={KSK_COLUMNS}
-                                rows={kskRows}
-                                onRowClick={(row) =>
-                                    setDialogKsk({ open: true, record: row })
-                                }
-                                sx={DATA_TABLE_SX}
-                                emptyMessage="Không có dữ liệu khám sức khỏe."
-                            />
-                        </CardContent>
-                    </Card>
+                            </CardContent>
+                        </Card>
+                    </Grid>
 
-                    <Card sx={CARD_SX}>
-                        <CardContent>
-                            <Stack
-                                direction="row"
-                                sx={{
-                                    mb: 2,
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                }}
-                            >
-                                <Typography
-                                    variant="h4"
-                                    sx={{ color: "primary.main" }}
+                    <Grid size={{ xs: 12, lg: 6 }}>
+                        <Card sx={CARD_SX}>
+                            <CardContent>
+                                <Stack
+                                    direction="row"
+                                    sx={{
+                                        mb: 2,
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                    }}
                                 >
-                                    Lịch khám bệnh ({kbRows.length})
-                                </Typography>
-                                <YearMonthFilter
-                                    nam={kbNam}
-                                    onNamChange={setKbNam}
-                                    thang={kbThang}
-                                    onThangChange={setKbThang}
+                                    <Typography
+                                        variant="h4"
+                                        sx={{ color: "primary.main" }}
+                                    >
+                                        Lịch khám bệnh ({kbRows.length})
+                                    </Typography>
+                                    <YearMonthFilter
+                                        nam={kbNam}
+                                        onNamChange={setKbNam}
+                                        thang={kbThang}
+                                        onThangChange={setKbThang}
+                                    />
+                                </Stack>
+                                <DataTable
+                                    columns={KB_COLUMNS}
+                                    rows={kbRows}
+                                    onRowClick={(row) =>
+                                        setDialogKb({ open: true, record: row })
+                                    }
+                                    sx={DATA_TABLE_SX}
+                                    emptyMessage="Không có dữ liệu khám bệnh."
                                 />
-                            </Stack>
-                            <DataTable
-                                columns={KB_COLUMNS}
-                                rows={kbRows}
-                                onRowClick={(row) =>
-                                    setDialogKb({ open: true, record: row })
-                                }
-                                sx={DATA_TABLE_SX}
-                                emptyMessage="Không có dữ liệu khám bệnh."
-                            />
-                        </CardContent>
-                    </Card>
+                            </CardContent>
+                        </Card>
+                    </Grid>
 
-                    <Card sx={CARD_SX}>
-                        <CardContent>
-                            <Stack
-                                direction="row"
-                                sx={{
-                                    mb: 2,
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                }}
-                            >
-                                <Typography
-                                    variant="h4"
-                                    sx={{ color: "primary.main" }}
+                    <Grid size={{ xs: 12, lg: 6 }}>
+                        <Card sx={CARD_SX}>
+                            <CardContent>
+                                <Stack
+                                    direction="row"
+                                    sx={{
+                                        mb: 2,
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                    }}
                                 >
-                                    Hồ sơ bệnh án ({baRows.length})
-                                </Typography>
-                                <YearMonthFilter
-                                    nam={baNam}
-                                    onNamChange={setBaNam}
-                                    thang={baThang}
-                                    onThangChange={setBaThang}
+                                    <Typography
+                                        variant="h4"
+                                        sx={{ color: "primary.main" }}
+                                    >
+                                        Hồ sơ bệnh án ({baRows.length})
+                                    </Typography>
+                                    <YearMonthFilter
+                                        nam={baNam}
+                                        onNamChange={setBaNam}
+                                        thang={baThang}
+                                        onThangChange={setBaThang}
+                                    />
+                                </Stack>
+                                <DataTable
+                                    columns={BA_COLUMNS}
+                                    rows={baRows}
+                                    onRowClick={(row) =>
+                                        setDialogBa({ open: true, record: row })
+                                    }
+                                    sx={DATA_TABLE_SX}
+                                    emptyMessage="Không có dữ liệu bệnh án."
                                 />
-                            </Stack>
-                            <DataTable
-                                columns={BA_COLUMNS}
-                                rows={baRows}
-                                onRowClick={(row) =>
-                                    setDialogBa({ open: true, record: row })
-                                }
-                                sx={DATA_TABLE_SX}
-                                emptyMessage="Không có dữ liệu bệnh án."
-                            />
-                        </CardContent>
-                    </Card>
+                            </CardContent>
+                        </Card>
+                    </Grid>
 
-                    <Card sx={CARD_SX}>
-                        <CardContent>
-                            <Stack
-                                direction="row"
-                                sx={{
-                                    mb: 2,
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                }}
-                            >
-                                <Typography
-                                    variant="h4"
-                                    sx={{ color: "primary.main" }}
+                    <Grid size={{ xs: 12, lg: 6 }}>
+                        <Card sx={CARD_SX}>
+                            <CardContent>
+                                <Stack
+                                    direction="row"
+                                    sx={{
+                                        mb: 2,
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                    }}
                                 >
-                                    Chuyển tuyến ({ctRows.length})
-                                </Typography>
-                                <YearMonthFilter
-                                    nam={ctNam}
-                                    onNamChange={setCtNam}
-                                    thang={ctThang}
-                                    onThangChange={setCtThang}
+                                    <Typography
+                                        variant="h4"
+                                        sx={{ color: "primary.main" }}
+                                    >
+                                        Chuyển tuyến ({ctRows.length})
+                                    </Typography>
+                                    <YearMonthFilter
+                                        nam={ctNam}
+                                        onNamChange={setCtNam}
+                                        thang={ctThang}
+                                        onThangChange={setCtThang}
+                                    />
+                                </Stack>
+                                <DataTable
+                                    columns={CT_COLUMNS}
+                                    rows={ctRows}
+                                    onRowClick={(row) =>
+                                        setDialogCt({ open: true, record: row })
+                                    }
+                                    sx={DATA_TABLE_SX}
+                                    emptyMessage="Không có dữ liệu chuyển tuyến."
                                 />
-                            </Stack>
-                            <DataTable
-                                columns={CT_COLUMNS}
-                                rows={ctRows}
-                                onRowClick={(row) =>
-                                    setDialogCt({ open: true, record: row })
-                                }
-                                sx={DATA_TABLE_SX}
-                                emptyMessage="Không có dữ liệu chuyển tuyến."
-                            />
-                        </CardContent>
-                    </Card>
-                </>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                </Grid>
             )}
 
             {!maQuanNhan && (

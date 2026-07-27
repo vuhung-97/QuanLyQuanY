@@ -31,7 +31,7 @@ import LapBenhAnPage from "./pages/NoiTru/LapBenhAnPage.jsx";
 import QuanLyPhongGiuongPage from "./pages/NoiTru/QuanLyPhongGiuongPage.jsx";
 import KhoPage from "./pages/KhoDuoc/KhoPage.jsx";
 import UserManagementPage from "./pages/Admin/UserManagementPage.jsx";
-import RolePermissionPage from "./pages/Admin/RolePermissionPage.jsx";
+// import RolePermissionPage from "./pages/Admin/RolePermissionPage.jsx";
 import AuditLogPage from "./pages/Admin/AuditLogPage.jsx";
 
 export default function App() {
@@ -60,7 +60,9 @@ export default function App() {
                             <Route
                                 path="lap-lich"
                                 element={
-                                    <RoleRoute roles={MENU_ROLE_MAP["lap-lich"]}>
+                                    <RoleRoute
+                                        roles={MENU_ROLE_MAP["lap-lich"]}
+                                    >
                                         <LapLichPage />
                                     </RoleRoute>
                                 }
@@ -68,7 +70,9 @@ export default function App() {
                             <Route
                                 path="kham-suc-khoe"
                                 element={
-                                    <RoleRoute roles={MENU_ROLE_MAP["kham-suc-khoe"]}>
+                                    <RoleRoute
+                                        roles={MENU_ROLE_MAP["kham-suc-khoe"]}
+                                    >
                                         <KhamSucKhoePage />
                                     </RoleRoute>
                                 }
@@ -76,7 +80,9 @@ export default function App() {
                             <Route
                                 path="ket-qua-kham"
                                 element={
-                                    <RoleRoute roles={MENU_ROLE_MAP["ket-qua-kham"]}>
+                                    <RoleRoute
+                                        roles={MENU_ROLE_MAP["ket-qua-kham"]}
+                                    >
                                         <KetQuaKhamPage />
                                     </RoleRoute>
                                 }
@@ -91,7 +97,11 @@ export default function App() {
                             <Route
                                 path="danh-sach"
                                 element={
-                                    <RoleRoute roles={MENU_ROLE_MAP["danh-sach-noi-tru"]}>
+                                    <RoleRoute
+                                        roles={
+                                            MENU_ROLE_MAP["danh-sach-noi-tru"]
+                                        }
+                                    >
                                         <DanhSachNoiTruPage />
                                     </RoleRoute>
                                 }
@@ -99,7 +109,9 @@ export default function App() {
                             <Route
                                 path="lap-benh-an"
                                 element={
-                                    <RoleRoute roles={MENU_ROLE_MAP["lap-benh-an"]}>
+                                    <RoleRoute
+                                        roles={MENU_ROLE_MAP["lap-benh-an"]}
+                                    >
                                         <LapBenhAnPage />
                                     </RoleRoute>
                                 }
@@ -107,7 +119,13 @@ export default function App() {
                             <Route
                                 path="quan-ly-phong-giuong"
                                 element={
-                                    <RoleRoute roles={MENU_ROLE_MAP["quan-ly-phong-giuong"]}>
+                                    <RoleRoute
+                                        roles={
+                                            MENU_ROLE_MAP[
+                                                "quan-ly-phong-giuong"
+                                            ]
+                                        }
+                                    >
                                         <QuanLyPhongGiuongPage />
                                     </RoleRoute>
                                 }
@@ -127,7 +145,13 @@ export default function App() {
                             <Route
                                 path="Kham-benh-cho-quan-nhan"
                                 element={
-                                    <RoleRoute roles={MENU_ROLE_MAP["kham-benh-cho-quan-nhan"]}>
+                                    <RoleRoute
+                                        roles={
+                                            MENU_ROLE_MAP[
+                                                "kham-benh-cho-quan-nhan"
+                                            ]
+                                        }
+                                    >
                                         <KhamBenhPage />
                                     </RoleRoute>
                                 }
@@ -135,7 +159,9 @@ export default function App() {
                             <Route
                                 path="Cap-thuoc"
                                 element={
-                                    <RoleRoute roles={MENU_ROLE_MAP["cap-thuoc"]}>
+                                    <RoleRoute
+                                        roles={MENU_ROLE_MAP["cap-thuoc"]}
+                                    >
                                         <CapThuocPage />
                                     </RoleRoute>
                                 }
@@ -143,7 +169,9 @@ export default function App() {
                             <Route
                                 path="Chuyen-tuyen"
                                 element={
-                                    <RoleRoute roles={MENU_ROLE_MAP["chuyen-tuyen"]}>
+                                    <RoleRoute
+                                        roles={MENU_ROLE_MAP["chuyen-tuyen"]}
+                                    >
                                         <ChuyenTuyenPage />
                                     </RoleRoute>
                                 }
@@ -151,7 +179,9 @@ export default function App() {
                             <Route
                                 path="danh-muc"
                                 element={
-                                    <RoleRoute roles={MENU_ROLE_MAP["danh-muc-benh"]}>
+                                    <RoleRoute
+                                        roles={MENU_ROLE_MAP["danh-muc-benh"]}
+                                    >
                                         <DanhMucPage />
                                     </RoleRoute>
                                 }
@@ -182,7 +212,9 @@ export default function App() {
                             <Route
                                 path="nhap"
                                 element={
-                                    <RoleRoute roles={MENU_ROLE_MAP["nhap-kho"]}>
+                                    <RoleRoute
+                                        roles={MENU_ROLE_MAP["nhap-kho"]}
+                                    >
                                         <NhapKhoPage />
                                     </RoleRoute>
                                 }
@@ -190,7 +222,9 @@ export default function App() {
                             <Route
                                 path="xuat"
                                 element={
-                                    <RoleRoute roles={MENU_ROLE_MAP["xuat-kho"]}>
+                                    <RoleRoute
+                                        roles={MENU_ROLE_MAP["xuat-kho"]}
+                                    >
                                         <XuatKhoPage />
                                     </RoleRoute>
                                 }
@@ -217,10 +251,10 @@ export default function App() {
                                     path="nguoi-dung"
                                     element={<UserManagementPage />}
                                 />
-                                <Route
+                                {/* <Route
                                     path="phan-quyen"
                                     element={<RolePermissionPage />}
-                                />
+                                /> */}
                                 <Route
                                     path="nhat-ky"
                                     element={<AuditLogPage />}
