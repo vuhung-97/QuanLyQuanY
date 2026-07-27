@@ -1,9 +1,16 @@
 import { useMemo } from "react";
-import { Edit as EditIcon, Visibility as VisibilityIcon } from "@mui/icons-material";
+import {
+    Edit as EditIcon,
+    Visibility as VisibilityIcon,
+} from "@mui/icons-material";
 import ActionIcon from "@/components/common/ActionIcon.jsx";
 import DataTable from "@/components/common/DataTable.jsx";
 
-export default function PhieuChamSocList({ records, readOnly = false, onEdit }) {
+export default function PhieuChamSocList({
+    records,
+    readOnly = false,
+    onEdit,
+}) {
     const sorted = useMemo(() => {
         if (!records || records.length === 0) return [];
         return [...records].sort((a, b) => {
@@ -15,26 +22,46 @@ export default function PhieuChamSocList({ records, readOnly = false, onEdit }) 
 
     const columns = useMemo(() => {
         const cols = [
-            { key: "stt", label: "STT", render: (_, idx) => idx + 1, sx: { width: 40 } },
+            {
+                key: "stt",
+                label: "STT",
+                render: (_, idx) => idx + 1,
+                sx: { width: 40 },
+            },
             {
                 key: "thoi_gian",
                 label: "Ngày",
                 render: (row) => {
                     if (!row.thoi_gian) return "--";
-                    const d = new Date(row.thoi_gian);
-                    const ngay = d.toLocaleDateString("vi-VN");
-                    const gio = d.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
+                    const iso = new Date(row.thoi_gian).toISOString();
+                    const ngay = iso
+                        .slice(0, 10)
+                        .split("-")
+                        .reverse()
+                        .join("/");
+                    const gio = iso.slice(11, 16);
                     return (
                         <>
-                            {ngay}<br />
+                            {ngay}
+                            <br />
                             {gio}
                         </>
                     );
                 },
                 sx: { width: 150 },
             },
-            { key: "so_giuong", label: "Giường", render: (row) => row.so_giuong || "--", sx: { width: 80 } },
-            { key: "buong", label: "Phòng", render: (row) => row.buong || "--", sx: { width: 80 } },
+            {
+                key: "so_giuong",
+                label: "Giường",
+                render: (row) => row.so_giuong || "--",
+                sx: { width: 80 },
+            },
+            {
+                key: "buong",
+                label: "Phòng",
+                render: (row) => row.buong || "--",
+                sx: { width: 80 },
+            },
             {
                 key: "nguoi_thuc_hien",
                 label: "Người TH",
@@ -49,13 +76,21 @@ export default function PhieuChamSocList({ records, readOnly = false, onEdit }) 
                 key: "theo_doi_dien_bien",
                 label: "Diễn biến",
                 render: (row) => row.theo_doi_dien_bien || "--",
-                sx: { maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis" },
+                sx: {
+                    maxWidth: 200,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                },
             },
             {
                 key: "thuc_hien_y_lenh",
                 label: "Y lệnh",
                 render: (row) => row.thuc_hien_y_lenh || "--",
-                sx: { maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis" },
+                sx: {
+                    maxWidth: 200,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                },
             },
             {
                 key: "thuoc",

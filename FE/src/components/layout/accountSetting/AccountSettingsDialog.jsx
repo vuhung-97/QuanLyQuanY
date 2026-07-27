@@ -13,11 +13,16 @@ import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import ProfileInfo from "./ProfileInfo.jsx";
 import ProfileUpdateForm from "./ProfileUpdateForm.jsx";
 import PasswordChangeForm from "./PasswordChangeForm.jsx";
+import DialogTitleWrapper from "@/components/common/DialogTitleWrapper.jsx";
 
 export default function AccountSettingsDialog({ open, onClose }) {
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+    const [snackbar, setSnackbar] = useState({
+        open: false,
+        message: "",
+        severity: "success",
+    });
 
     useEffect(() => {
         if (!open) return;
@@ -34,7 +39,9 @@ export default function AccountSettingsDialog({ open, onClose }) {
                 if (!ignore) {
                     setSnackbar({
                         open: true,
-                        message: err.response?.data?.detail || "Không thể tải thông tin tài khoản.",
+                        message:
+                            err.response?.data?.detail ||
+                            "Không thể tải thông tin tài khoản.",
                         severity: "error",
                     });
                 }
@@ -44,12 +51,18 @@ export default function AccountSettingsDialog({ open, onClose }) {
         }
 
         loadProfile();
-        return () => { ignore = true; };
+        return () => {
+            ignore = true;
+        };
     }, [open]);
 
     const onProfileSuccess = useCallback((updatedProfile) => {
         setProfile(updatedProfile);
-        setSnackbar({ open: true, message: "Cập nhật thông tin thành công", severity: "success" });
+        setSnackbar({
+            open: true,
+            message: "Cập nhật thông tin thành công",
+            severity: "success",
+        });
     }, []);
 
     const onPasswordSuccess = useCallback((message) => {
@@ -63,13 +76,11 @@ export default function AccountSettingsDialog({ open, onClose }) {
     return (
         <>
             <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-                <DialogTitle variant="h1" sx={{ textAlign: "center" }}>
-                    Cài đặt tài khoản
-                </DialogTitle>
-                <DialogContent>
+                <DialogTitleWrapper>Cài đặt tài khoản</DialogTitleWrapper>
+                <DialogContent dividers>
                     {loading ? null : (
                         <Stack spacing={2} sx={{ pt: 1 }}>
-                            <Typography variant="h2">
+                            <Typography variant="h4">
                                 - Thông tin tài khoản
                             </Typography>
                             <ProfileInfo profile={profile} />

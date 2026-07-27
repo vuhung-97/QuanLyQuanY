@@ -17,8 +17,15 @@ import { PersonSearch as PersonSearchIcon } from "@mui/icons-material";
 import FormTextField from "@/components/common/FormTextField.jsx";
 import ChonQuanNhanDialog from "@/components/common/ChonQuanNhanDialog.jsx";
 import useUserForm from "@/hooks/useUserForm.js";
+import DialogTitleWrapper from "@/components/common/DialogTitleWrapper.jsx";
 
-export default function UserFormDialog({ open, onClose, editingUser, roles, onSaved }) {
+export default function UserFormDialog({
+    open,
+    onClose,
+    editingUser,
+    roles,
+    onSaved,
+}) {
     const {
         formSnapshot,
         updateField,
@@ -35,10 +42,12 @@ export default function UserFormDialog({ open, onClose, editingUser, roles, onSa
     return (
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
             <Box component="form" onSubmit={handleSubmit}>
-                <DialogTitle>
-                    {editingUser ? "Cập nhật tài khoản" : "Thêm tài khoản người dùng"}
-                </DialogTitle>
-                <DialogContent>
+                <DialogTitleWrapper>
+                    {editingUser
+                        ? "Cập nhật tài khoản"
+                        : "Thêm tài khoản người dùng"}
+                </DialogTitleWrapper>
+                <DialogContent dividers>
                     {error && (
                         <TextField
                             error
@@ -62,7 +71,11 @@ export default function UserFormDialog({ open, onClose, editingUser, roles, onSa
                             name="mat_khau"
                             initialValue={formSnapshot.mat_khau}
                             onUpdateRef={updateField}
-                            label={editingUser ? "Mật khẩu mới (nếu đổi)" : "Mật khẩu"}
+                            label={
+                                editingUser
+                                    ? "Mật khẩu mới (nếu đổi)"
+                                    : "Mật khẩu"
+                            }
                             type="password"
                             required={!editingUser}
                             helperText="Tối thiểu 8 ký tự"
@@ -93,7 +106,9 @@ export default function UserFormDialog({ open, onClose, editingUser, roles, onSa
                                     endAdornment: (
                                         <InputAdornment position="end">
                                             <IconButton
-                                                onClick={() => setOpenChonQn(true)}
+                                                onClick={() =>
+                                                    setOpenChonQn(true)
+                                                }
                                                 size="small"
                                             >
                                                 <PersonSearchIcon />

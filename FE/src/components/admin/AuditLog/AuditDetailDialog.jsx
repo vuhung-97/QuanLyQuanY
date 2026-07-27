@@ -1,12 +1,5 @@
-import {
-    Box,
-    Dialog,
-    DialogContent,
-    DialogTitle,
-    Stack,
-    Typography,
-} from "@mui/material";
-
+import { Box, Dialog, DialogContent, Stack, Typography } from "@mui/material";
+import DialogTitleWrapper from "@/components/common/DialogTitleWrapper.jsx";
 function asJson(value) {
     if (!value) return "--";
     if (typeof value === "string") return value;
@@ -16,8 +9,8 @@ function asJson(value) {
 export default function AuditDetailDialog({ detail, onClose }) {
     return (
         <Dialog open={!!detail} onClose={onClose} fullWidth maxWidth="md">
-            <DialogTitle>Chi tiết thao tác</DialogTitle>
-            <DialogContent>
+            <DialogTitleWrapper>Chi tiết thao tác</DialogTitleWrapper>
+            <DialogContent dividers>
                 <Stack spacing={2}>
                     <Box>
                         <Typography fontWeight={700}>Dữ liệu cũ</Typography>
