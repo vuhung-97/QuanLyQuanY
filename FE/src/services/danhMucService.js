@@ -7,11 +7,5 @@ export const danhMucService = {
     updateNhomBenh: (id, data) => api.patch(`/dm_nhom_benh/${id}`, data),
     deleteNhomBenh: (id) => api.delete(`/dm_nhom_benh/${id}`),
 
-    listTrieuChung: (params) => api.get("/dm_trieu_chung", { params }),
-    getTrieuChung: (id) => api.get(`/dm_trieu_chung/${id}`),
-    createTrieuChung: (data) => api.post("/dm_trieu_chung", data),
-    updateTrieuChung: (id, data) => api.patch(`/dm_trieu_chung/${id}`, data),
-    deleteTrieuChung: (id) => api.delete(`/dm_trieu_chung/${id}`),
-
     searchDisease: (keyword) => api.get("/dm_benh/search", { params: { q: keyword } }),
 };
