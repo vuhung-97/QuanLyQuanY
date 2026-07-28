@@ -10,10 +10,12 @@ export default function DialogTitleWrapper({
     return (
         <DialogTitle
             sx={{
-                pb: 0,
-                mb: 2,
-                ...(wrap ? {} : { fontSize: 20, fontWeight: 600, textAlign: "center" }),
+                pb: 2,
+                ...(wrap
+                    ? {}
+                    : { fontSize: 20, fontWeight: 600, textAlign: "center" }),
                 ...sx,
+                backgroundColor: "background.default",
             }}
             {...rest}
         >

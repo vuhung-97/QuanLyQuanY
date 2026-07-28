@@ -34,7 +34,7 @@ export default function PasswordChangeForm({ onSuccess, onError }) {
     return (
         <>
             <Divider sx={{ my: 1 }} />
-            <Typography variant="h4">- Đổi mật khẩu</Typography>
+            <Typography variant="h4">Đổi mật khẩu</Typography>
             <Typography variant="body2" color="text.secondary">
                 <i>(Tối thiểu 8 ký tự)</i>
             </Typography>

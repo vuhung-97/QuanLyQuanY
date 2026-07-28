@@ -25,7 +25,7 @@ export default function ProfileUpdateForm({ initialName, onSuccess, onError }) {
         <>
             <Divider sx={{ my: 1 }} />
             <Typography variant="h4" sx={{ mt: 1 }}>
-                - Cập nhật họ tên
+                Cập nhật họ tên
             </Typography>
             <Stack
                 component="form"

@@ -81,7 +81,7 @@ export default function AccountSettingsDialog({ open, onClose }) {
                     {loading ? null : (
                         <Stack spacing={2} sx={{ pt: 1 }}>
                             <Typography variant="h4">
-                                - Thông tin tài khoản
+                                Thông tin tài khoản
                             </Typography>
                             <ProfileInfo profile={profile} />
 
