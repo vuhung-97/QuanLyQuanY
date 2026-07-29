@@ -50,7 +50,7 @@ const SOLDIER_COLUMNS = [
     { key: "cap_bac", label: "Cấp bậc" },
 ];
 
-function LamSangDialog({ lamSangBatThuong, soldiers, phieuMap, unitLookup, maLichKham, nam }) {
+function LamSangDialog({ lamSangBatThuong, soldiers, phieuMap, allUnitLookup, maLichKham, nam }) {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedLabel, setSelectedLabel] = useState(null);
     const [formOpen, setFormOpen] = useState(false);
@@ -69,9 +69,9 @@ function LamSangDialog({ lamSangBatThuong, soldiers, phieuMap, unitLookup, maLic
             .map((s, idx) => ({
                 ...s,
                 stt: idx + 1,
-                don_vi: (unitLookup && unitLookup[s.ma_don_vi]) || s.don_vi || s.ten_don_vi || "",
+                don_vi: (allUnitLookup?.get(s.ma_don_vi)) || s.don_vi || s.ten_don_vi || "",
             }));
-    }, [selectedLabel, soldiers, phieuMap, unitLookup]);
+    }, [selectedLabel, soldiers, phieuMap, allUnitLookup]);
 
     const handleRowClick = (row) => {
         setSelectedLabel(row.label);
@@ -142,13 +142,14 @@ function LamSangDialog({ lamSangBatThuong, soldiers, phieuMap, unitLookup, maLic
                     readOnly
                     allowedTabs={ALL_TABS}
                     editableTabs={[]}
+                    unitLookup={allUnitLookup}
                 />
             )}
         </>
     );
 }
 
-function BenhTatDialog({ benhTat, soldiers, phieuMap, unitLookup, maLichKham, nam }) {
+function BenhTatDialog({ benhTat, soldiers, phieuMap, allUnitLookup, maLichKham, nam }) {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedBenh, setSelectedBenh] = useState(null);
     const [formOpen, setFormOpen] = useState(false);
@@ -161,14 +162,14 @@ function BenhTatDialog({ benhTat, soldiers, phieuMap, unitLookup, maLichKham, na
                 const phieu = phieuMap[s.ma_quan_nhan];
                 const benh = phieu?.ket_luan?.benh_tat_theo_doi;
                 if (!benh || typeof benh !== "string") return false;
-                return benh.split(",").some((b) => b.trim() === selectedBenh);
+                return benh.split(",").some((b) => b.trim().replace(/\s+/g, " ").toLowerCase() === selectedBenh);
             })
             .map((s, idx) => ({
                 ...s,
                 stt: idx + 1,
-                don_vi: (unitLookup && unitLookup[s.ma_don_vi]) || s.don_vi || s.ten_don_vi || "",
+                don_vi: (allUnitLookup?.get(s.ma_don_vi)) || s.don_vi || s.ten_don_vi || "",
             }));
-    }, [selectedBenh, soldiers, phieuMap, unitLookup]);
+    }, [selectedBenh, soldiers, phieuMap, allUnitLookup]);
 
     const handleRowClick = (row) => {
         setSelectedBenh(row.ten);
@@ -245,20 +246,14 @@ function BenhTatDialog({ benhTat, soldiers, phieuMap, unitLookup, maLichKham, na
                     readOnly
                     allowedTabs={ALL_TABS}
                     editableTabs={[]}
+                    unitLookup={allUnitLookup}
                 />
             )}
         </>
     );
 }
 
-export default function KetQuaKhamLamSangBenh({ lamSangBatThuong, benhTat, soldiers, phieuMap, maLichKham, nam, stats }) {
-    const unitLookup = useMemo(() => {
-        const dvList = stats?.danh_sach_don_vi || [];
-        const map = {};
-        dvList.forEach((dv) => { map[dv.ma_don_vi] = dv.ten_don_vi; });
-        return map;
-    }, [stats]);
-
+export default function KetQuaKhamLamSangBenh({ lamSangBatThuong, benhTat, soldiers, phieuMap, maLichKham, nam, stats, allUnitLookup }) {
     return (
         <Grid container spacing={2.5}>
             <Grid size={{ xs: 12, md: 6 }}>
@@ -271,7 +266,7 @@ export default function KetQuaKhamLamSangBenh({ lamSangBatThuong, benhTat, soldi
                             lamSangBatThuong={lamSangBatThuong}
                             soldiers={soldiers}
                             phieuMap={phieuMap}
-                            unitLookup={unitLookup}
+                            allUnitLookup={allUnitLookup}
                             maLichKham={maLichKham}
                             nam={nam}
                         />
@@ -288,7 +283,7 @@ export default function KetQuaKhamLamSangBenh({ lamSangBatThuong, benhTat, soldi
                             benhTat={benhTat}
                             soldiers={soldiers}
                             phieuMap={phieuMap}
-                            unitLookup={unitLookup}
+                            allUnitLookup={allUnitLookup}
                             maLichKham={maLichKham}
                             nam={nam}
                         />

@@ -38,11 +38,19 @@ export default function useKetQuaKham() {
     const [soldiers, setSoldiers] = useState([]);
     const [phieuMap, setPhieuMap] = useState({});
     const [stats, setStats] = useState(null);
+    const [allUnitLookup, setAllUnitLookup] = useState(new Map());
 
     useEffect(() => {
         khamSucKhoeService.getScheduleList().then((res) => {
             const list = res.data || res;
-            setSchedules(list);
+            setSchedules(list.filter(s => s.trang_thai === "da_duyet"));
+        }).catch(() => {});
+    }, []);
+
+    useEffect(() => {
+        khamSucKhoeService.getDonViList().then((res) => {
+            const list = Array.isArray(res.data) ? res.data : [];
+            setAllUnitLookup(new Map(list.map((u) => [u.ma_don_vi, u.ten_don_vi])));
         }).catch(() => {});
     }, []);
 
@@ -187,8 +195,8 @@ export default function useKetQuaKham() {
             const benh = kl.benh_tat_theo_doi;
             if (benh && typeof benh === "string") {
                 benh.split(",").forEach((b) => {
-                    const trimmed = b.trim();
-                    if (trimmed) diseaseMap[trimmed] = (diseaseMap[trimmed] || 0) + 1;
+                    const key = b.trim().replace(/\s+/g, " ").toLowerCase();
+                    if (key) diseaseMap[key] = (diseaseMap[key] || 0) + 1;
                 });
             }
         });
@@ -260,6 +268,7 @@ export default function useKetQuaKham() {
         benhTat,
         lamSangBatThuong,
         donViData,
+        allUnitLookup,
         XN_FIELDS,
     };
 }

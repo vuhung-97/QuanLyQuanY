@@ -77,7 +77,7 @@ export default function useKhamSucKhoeData() {
                 const res = await khamSucKhoeService.getScheduleList();
                 if (!ignore) {
                     const data = Array.isArray(res.data) ? res.data : [];
-                    setSchedules(data);
+                    setSchedules(data.filter(s => s.trang_thai === "da_duyet"));
                 }
             } catch {}
         }

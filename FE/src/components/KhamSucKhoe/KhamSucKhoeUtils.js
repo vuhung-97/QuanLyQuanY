@@ -1,4 +1,12 @@
 export function getScheduleStatus(row) {
+    if (row.trang_thai && row.trang_thai !== "da_duyet") {
+        const statusMap = {
+            "cho_gui": "Chờ gửi",
+            "cho_duyet": "Chờ duyệt",
+            "tu_choi": "Từ chối",
+        };
+        return statusMap[row.trang_thai] || row.trang_thai;
+    }
     const now = new Date();
     const start = row.thoi_gian_bat_dau
         ? new Date(row.thoi_gian_bat_dau)
@@ -12,6 +20,12 @@ export function getScheduleStatus(row) {
 }
 
 export function statusColor(status) {
+    if (status === "Chờ gửi")
+        return { bgcolor: "rgba(148, 163, 184, 0.14)", color: "text.secondary" };
+    if (status === "Chờ duyệt")
+        return { bgcolor: "rgba(245, 158, 11, 0.14)", color: "warning.main" };
+    if (status === "Từ chối")
+        return { bgcolor: "rgba(239, 68, 68, 0.12)", color: "error.main" };
     if (status === "Đã kết thúc")
         return { bgcolor: "rgba(16, 185, 129, 0.12)", color: "success.main" };
     if (status === "Sắp diễn ra")

@@ -51,7 +51,7 @@ const renderBarLabel = (props) => {
     );
 };
 
-function PhanLoaiTable({ phanBoPhanLoai, soldiers, phieuMap, maLichKham, nam, unitLookup }) {
+function PhanLoaiTable({ phanBoPhanLoai, soldiers, phieuMap, maLichKham, nam, allUnitLookup }) {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedLoai, setSelectedLoai] = useState(null);
     const [formOpen, setFormOpen] = useState(false);
@@ -67,9 +67,9 @@ function PhanLoaiTable({ phanBoPhanLoai, soldiers, phieuMap, maLichKham, nam, un
             .map((s, idx) => ({
                 ...s,
                 stt: idx + 1,
-                don_vi: (unitLookup && unitLookup[s.ma_don_vi]) || s.don_vi || s.ten_don_vi || "",
+                don_vi: (allUnitLookup?.get(s.ma_don_vi)) || s.don_vi || s.ten_don_vi || "",
             }));
-    }, [selectedLoai, soldiers, phieuMap, unitLookup]);
+    }, [selectedLoai, soldiers, phieuMap, allUnitLookup]);
 
     const handleRowClick = (row) => {
         setSelectedLoai(row.name);
@@ -149,6 +149,7 @@ function PhanLoaiTable({ phanBoPhanLoai, soldiers, phieuMap, maLichKham, nam, un
                     readOnly
                     allowedTabs={ALL_TABS}
                     editableTabs={[]}
+                    unitLookup={allUnitLookup}
                 />
             )}
         </>
@@ -191,15 +192,8 @@ function DonViChart({ phanBoPhanLoai }) {
     );
 }
 
-export default function KetQuaKhamSection5({ phanBoPhanLoai, soldiers, phieuMap, maLichKham, nam, stats }) {
+export default function KetQuaKhamSection5({ phanBoPhanLoai, soldiers, phieuMap, maLichKham, nam, stats, allUnitLookup }) {
     if (!phanBoPhanLoai || phanBoPhanLoai.length === 0) return null;
-
-    const unitLookup = useMemo(() => {
-        const dvList = stats?.danh_sach_don_vi || [];
-        const map = {};
-        dvList.forEach((dv) => { map[dv.ma_don_vi] = dv.ten_don_vi; });
-        return map;
-    }, [stats]);
 
     return (
         <Grid container spacing={2.5}>
@@ -210,7 +204,7 @@ export default function KetQuaKhamSection5({ phanBoPhanLoai, soldiers, phieuMap,
                     phieuMap={phieuMap}
                     maLichKham={maLichKham}
                     nam={nam}
-                    unitLookup={unitLookup}
+                    allUnitLookup={allUnitLookup}
                 />
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>

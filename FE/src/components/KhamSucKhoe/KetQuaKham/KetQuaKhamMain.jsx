@@ -34,6 +34,7 @@ export default function KetQuaKhamMain() {
         lamSangBatThuong,
         soldiers,
         phieuMap,
+        allUnitLookup,
     } = useKetQuaKham();
 
     const tongQuanItems = stats
@@ -102,6 +103,7 @@ export default function KetQuaKhamMain() {
                         maLichKham={scheduleId}
                         nam={nam}
                         stats={stats}
+                        allUnitLookup={allUnitLookup}
                     />
 
                     <Typography variant="h4" sx={{ color: "primary.main" }}>
@@ -118,6 +120,7 @@ export default function KetQuaKhamMain() {
                         maLichKham={scheduleId}
                         nam={nam}
                         stats={stats}
+                        allUnitLookup={allUnitLookup}
                     />
                 </>
             )}
