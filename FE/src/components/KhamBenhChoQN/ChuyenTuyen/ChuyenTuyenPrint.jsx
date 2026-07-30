@@ -58,6 +58,7 @@ const ChuyenTuyenPrint = memo(function ChuyenTuyenPrint({
                 <div style={{ textAlign: "center", paddingTop: "24pt" }}>
                     <p
                         style={{
+                            margin: 0,
                             fontSize: "14pt",
                             fontWeight: "bold",
                             textAlign: "center",
@@ -66,32 +67,32 @@ const ChuyenTuyenPrint = memo(function ChuyenTuyenPrint({
                     >
                         GIẤY GIỚI THIỆU
                     </p>
-                    <p>Đi khám bệnh, đi bệnh viện</p>
+                    <p style={{ margin: 0 }}>Đi khám bệnh, đi bệnh viện</p>
                 </div>
             </div>
-            <p style={{ textAlign: "center" }}>
+            <p style={{ margin: 0, textAlign: "center" }}>
                 <strong>Kính gửi:</strong>{" "}
                 {tenBenhVien ||
                     ".................................................."}
             </p>
             <div style={{ display: "flex", gap: "8pt" }}>
-                <p style={{ width: "60%" }}>
+                <p style={{ margin: 0, width: "60%" }}>
                     <strong>Họ và tên:</strong> {selectedExam?.ho_ten || "—"}
                 </p>
-                <p>
+                <p style={{ margin: 0 }}>
                     <strong>Tuổi:</strong>{" "}
                     {tinhTuoi(selectedExam?.ngay_sinh) || "—"}
                 </p>
             </div>
             <div style={{ display: "flex", gap: "8pt" }}>
-                <p style={{ width: "60%" }}>
+                <p style={{ margin: 0, width: "60%" }}>
                     <strong>Cấp bậc:</strong> {selectedExam?.cap_bac || "—"}
                 </p>
-                <p>
+                <p style={{ margin: 0 }}>
                     <strong>Chức vụ:</strong> {selectedExam?.chuc_vu || "—"}
                 </p>
             </div>
-            <p>
+            <p style={{ margin: 0 }}>
                 <strong>Đơn vị:</strong> {selectedExam?.ten_don_vi || "—"}
             </p>
             <DottedField

@@ -88,3 +88,11 @@ export const DIALOG_FIELDS = [
 ];
 
 export const ROWS_PER_PAGE = 100;
+
+export const STORAGE_KEY_THRESHOLDS = "kho_duoc_thresholds";
+
+export const DEFAULT_THRESHOLDS = {
+    thuoc: 100,
+    vat_tu: 30,
+    sapHetHanNgay: 90,
+};

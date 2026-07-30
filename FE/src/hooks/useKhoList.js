@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { khoDuocService } from "@/services/khoDuocService.js";
-import { ROWS_PER_PAGE } from "@/constants/khoConstant.js";
+import { ROWS_PER_PAGE, DEFAULT_THRESHOLDS } from "@/constants/khoConstant.js";
 
-export default function useKhoList() {
+export default function useKhoList(thresholds = DEFAULT_THRESHOLDS) {
     const [allItems, setAllItems] = useState([]);
     const [loading, setLoading] = useState(false);
     const [sapHetHan, setSapHetHan] = useState([]);
@@ -27,7 +27,7 @@ export default function useKhoList() {
         try {
             const [data, expiring] = await Promise.all([
                 khoDuocService.fetchAllThuocVtyt(),
-                khoDuocService.getSapHetHan(90).catch(() => []),
+                khoDuocService.getSapHetHan(thresholds.sapHetHanNgay).catch(() => []),
             ]);
             setAllItems(
                 (data || []).sort((a, b) =>
@@ -46,7 +46,7 @@ export default function useKhoList() {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [thresholds.sapHetHanNgay]);
 
     useEffect(() => {
         fetchData();
@@ -79,13 +79,13 @@ export default function useKhoList() {
         if (filterMode === "low-stock") {
             items = items.filter((i) => {
                 const qty = i.so_luong ?? 0;
-                return i.loai !== "vat_tu" ? qty < 100 : qty < 30;
+                return i.loai !== "vat_tu" ? qty < thresholds.thuoc : qty < thresholds.vat_tu;
             });
         } else if (filterMode === "expiring") {
             items = items.filter((i) => sapHetHanMaSet.has(i.ma_thuoc_vtyt));
         }
         return items;
-    }, [allItems, search, phanLoaiFilter, filterMode, sapHetHanMaSet]);
+    }, [allItems, search, phanLoaiFilter, filterMode, sapHetHanMaSet, thresholds.thuoc, thresholds.vat_tu]);
 
     const totalPages = Math.ceil(filteredItems.length / ROWS_PER_PAGE);
 
@@ -96,10 +96,10 @@ export default function useKhoList() {
 
     const statItems = useMemo(() => {
         const thuocTonThap = allItems.filter(
-            (i) => (i.so_luong ?? 0) < 100 && i.loai !== "vat_tu",
+            (i) => (i.so_luong ?? 0) < thresholds.thuoc && i.loai !== "vat_tu",
         ).length;
         const vtytTonThap = allItems.filter(
-            (i) => (i.so_luong ?? 0) < 30 && i.loai === "vat_tu",
+            (i) => (i.so_luong ?? 0) < thresholds.vat_tu && i.loai === "vat_tu",
         ).length;
         return [
             {
@@ -111,7 +111,7 @@ export default function useKhoList() {
                 filterKey: "all",
             },
             {
-                label: "Thuốc, VTYT tồn kho thấp",
+                label: `Tồn kho thấp (<${thresholds.thuoc}T, <${thresholds.vat_tu}V)`,
                 value: thuocTonThap + vtytTonThap,
                 icon: "warning",
                 color: "#F59E0B",
@@ -119,7 +119,7 @@ export default function useKhoList() {
                 filterKey: "low-stock",
             },
             {
-                label: "Sắp hết hạn (90 ngày)",
+                label: `Sắp hết hạn (${thresholds.sapHetHanNgay} ngày)`,
                 value: sapHetHan.length,
                 icon: "error",
                 color: "#DC2626",
@@ -127,7 +127,7 @@ export default function useKhoList() {
                 filterKey: "expiring",
             },
         ];
-    }, [allItems, sapHetHan]);
+    }, [allItems, sapHetHan, thresholds.thuoc, thresholds.vat_tu, thresholds.sapHetHanNgay]);
 
     const handleSearchChange = useCallback((v) => {
         setSearch(v);

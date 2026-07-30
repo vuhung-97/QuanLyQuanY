@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
     Button,
     Card,
@@ -14,6 +15,7 @@ import {
     Edit as EditIcon,
     Error as ErrorIcon,
     Inventory2 as Inventory2Icon,
+    Settings as SettingsIcon,
     Visibility as VisibilityIcon,
     WarningAmber as WarningAmberIcon,
 } from "@mui/icons-material";
@@ -25,7 +27,9 @@ import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import SearchBarDebounced from "@/components/common/SearchBarDebounced.jsx";
 import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
 import KhoDialog from "./KhoDialog.jsx";
+import ThresholdDialog from "./ThresholdDialog.jsx";
 import useKhoList from "@/hooks/useKhoList.js";
+import useThresholdSettings from "@/hooks/useThresholdSettings.js";
 import { ROWS_PER_PAGE } from "@/constants/khoConstant.js";
 import IfRole from "@/components/common/IfRole.jsx";
 import { ROLES } from "@/constants/roleConstants.js";
@@ -55,18 +59,20 @@ const columns = [
         align: "right",
         render: (row, _idx, extra) => {
             const qty = row.so_luong ?? 0;
+            const t = extra?.thresholds ?? { thuoc: 100, vat_tu: 30 };
             const isThuoc = row.loai !== "vat_tu";
-            const lowStock = isThuoc ? qty < 100 : qty < 30;
+            const lowStock = isThuoc ? qty < t.thuoc : qty < t.vat_tu;
             return (
                 <Typography
                     variant="body2"
                     sx={{
                         fontWeight: 600,
-                        color: qty <= 5
-                            ? "error.main"
-                            : lowStock
-                              ? "warning.main"
-                              : "text.primary",
+                        color:
+                            qty <= 5
+                                ? "error.main"
+                                : lowStock
+                                  ? "warning.main"
+                                  : "text.primary",
                     }}
                 >
                     {qty}
@@ -102,8 +108,17 @@ const columns = [
             const { onView, onEdit, onDelete } = extra || {};
             return (
                 <Stack direction="row" spacing={0.5}>
-                    <ActionIcon title="Sửa" icon={<EditIcon />} onClick={() => onEdit(row.ma_thuoc_vtyt)} />
-                    <ActionIcon title="Xoá" icon={<DeleteIcon />} color="error" onClick={() => onDelete(row.ma_thuoc_vtyt)} />
+                    <ActionIcon
+                        title="Sửa"
+                        icon={<EditIcon />}
+                        onClick={() => onEdit(row.ma_thuoc_vtyt)}
+                    />
+                    <ActionIcon
+                        title="Xoá"
+                        icon={<DeleteIcon />}
+                        color="error"
+                        onClick={() => onDelete(row.ma_thuoc_vtyt)}
+                    />
                 </Stack>
             );
         },
@@ -111,14 +126,20 @@ const columns = [
 ];
 
 export default function KhoList() {
-    const hook = useKhoList();
+    const { thresholds, updateThresholds } = useThresholdSettings();
+    const hook = useKhoList(thresholds);
+    const [thresholdDialogOpen, setThresholdDialogOpen] = useState(false);
 
     const statItems = hook.statItems.map((s) => ({
         ...s,
         icon: STAT_ICONS[s.icon] || null,
     }));
 
-    const rowExtra = { ...hook.rowExtra, sapHetHanMaSet: hook.sapHetHanMaSet };
+    const rowExtra = {
+        ...hook.rowExtra,
+        sapHetHanMaSet: hook.sapHetHanMaSet,
+        thresholds,
+    };
 
     return (
         <>
@@ -165,7 +186,15 @@ export default function KhoList() {
                                     ))}
                                 </TextField>
                             </Stack>
-                            <IfRole roles={[ROLES.ADMIN, ROLES.CNQY]}>
+                            <Stack direction="row" spacing={1}>
+                                <Button
+                                    variant="outlined"
+                                    startIcon={<SettingsIcon />}
+                                    onClick={() => setThresholdDialogOpen(true)}
+                                    sx={{ mr: 1 }}
+                                >
+                                    Giới hạn tồn kho
+                                </Button>
                                 <Button
                                     variant="contained"
                                     startIcon={<AddIcon />}
@@ -179,7 +208,7 @@ export default function KhoList() {
                                 >
                                     Thêm thuốc / VTYT
                                 </Button>
-                            </IfRole>
+                            </Stack>
                         </Stack>
 
                         <DataTable
@@ -227,6 +256,17 @@ export default function KhoList() {
                 confirmColor="error"
                 onConfirm={hook.confirmDelete}
                 onClose={() => hook.setConfirm({ open: false, id: null })}
+            />
+
+            <ThresholdDialog
+                open={thresholdDialogOpen}
+                onClose={() => setThresholdDialogOpen(false)}
+                initialValues={thresholds}
+                onSave={(values) => {
+                    updateThresholds("thuoc", values.thuoc);
+                    updateThresholds("vat_tu", values.vat_tu);
+                    updateThresholds("sapHetHanNgay", values.sapHetHanNgay);
+                }}
             />
 
             <FeedbackSnackbar

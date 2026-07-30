@@ -43,10 +43,10 @@ export default function DonThuocPrint({ data, paperSize = "A5" }) {
                     justifyContent: "space-between",
                 }}
             >
-                <p>
+                <p style={{ margin: 0 }}>
                     <strong>Họ tên:</strong> {data.hoTenQN || "—"}
                 </p>
-                <p>
+                <p style={{ margin: 0 }}>
                     <strong>Cấp bậc:</strong> {data.capBac || "—"}
                 </p>
             </div>
@@ -56,28 +56,32 @@ export default function DonThuocPrint({ data, paperSize = "A5" }) {
                     justifyContent: "space-between",
                 }}
             >
-                <p>
+                <p style={{ margin: 0 }}>
                     <strong> Chức vụ:</strong> {data.chucVu || "—"}
                 </p>
-                <p>
+                <p style={{ margin: 0 }}>
                     <strong> Đơn vị:</strong> {data.tenDonVi || "—"}
                 </p>
             </div>
 
             {data.chanDoan && (
-                <p>
-                    <strong>Chẩn đoán:</strong> {data.chanDoan}
-                </p>
+                <div>
+                    <p style={{ margin: 0 }}>
+                        <strong>Chẩn đoán:</strong> {data.chanDoan}
+                    </p>
+                </div>
             )}
 
             {data.phuongPhapDieuTri && (
-                <p>
-                    <strong>Phương pháp điều trị:</strong>{" "}
-                    {data.phuongPhapDieuTri}
-                </p>
+                <div>
+                    <p style={{ margin: 0 }}>
+                        <strong>Phương pháp điều trị:</strong>{" "}
+                        {data.phuongPhapDieuTri}
+                    </p>
+                </div>
             )}
 
-            <table>
+            <table style={{ marginTop: "6pt" }}>
                 <thead>
                     <tr>
                         <th style={{ width: "7%" }}>STT</th>

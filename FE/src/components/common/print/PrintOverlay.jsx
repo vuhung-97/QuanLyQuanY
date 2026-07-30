@@ -1,6 +1,6 @@
 const paperSizes = {
     A4: {
-        padding: "2cm 2cm 2cm 2.5cm",
+        padding: "2cm 1.5cm 2cm 2.5cm",
         pageSize: "A4 portrait",
     },
     A5: {

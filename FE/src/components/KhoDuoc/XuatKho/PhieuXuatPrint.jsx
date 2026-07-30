@@ -18,7 +18,7 @@ export default function PhieuXuatPrint({ data, paperSize = "A4" }) {
                         fontSize: "16pt",
                         textTransform: "uppercase",
                         fontWeight: "bold",
-                        m: 0,
+                        margin: 0,
                     }}
                 >
                     PHIẾU XUẤT KHO
@@ -38,7 +38,6 @@ export default function PhieuXuatPrint({ data, paperSize = "A4" }) {
                 style={{
                     display: "grid",
                     gridTemplateColumns: "1fr 1fr",
-                    gap: "6pt",
                     marginLeft: "12pt",
                     marginBottom: "6pt",
                 }}
@@ -98,7 +97,7 @@ export default function PhieuXuatPrint({ data, paperSize = "A4" }) {
                 items={[
                     { label: "NGƯỜI NHẬN" },
                     { label: "NGƯỜI XUẤT" },
-                    { label: "CHỦ NHIỆM QUÂN Y", date: true },
+                    { label: "CHỦ NHIỆM", date: true },
                 ]}
             />
         </PrintOverlay>

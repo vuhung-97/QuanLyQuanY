@@ -59,9 +59,9 @@ const columns = [
         ),
     },
     {
-        key: "ngay_kham",
-        label: "Ngày khám",
-        render: (row) => formatDate(row.ngay_kham),
+        key: "ngay_di",
+        label: "Ngày đi",
+        render: (row) => formatDate(row.ngay_di),
     },
     {
         key: "thao_tac",

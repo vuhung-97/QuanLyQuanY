@@ -33,12 +33,12 @@ export default function PhieuDuTruPrint({ data, paperSize = "A4" }) {
             </div>
 
             {data.ghiChu && (
-                <p>
+                <p style={{ margin: "0" }}>
                     <strong>Ghi chú:</strong> {data.ghiChu}
                 </p>
             )}
 
-            <p>
+            <p style={{ margin: "0" }}>
                 <strong>Danh sách thuốc / VTYT</strong>
             </p>
             <table>
