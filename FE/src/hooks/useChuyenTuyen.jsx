@@ -9,6 +9,7 @@ export default function useChuyenTuyen() {
     const [initialLoading, setInitialLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [searchText, setSearchText] = useState("");
+    const [statusFilter, setStatusFilter] = useState("");
     const [nam, setNam] = useState(null);
     const [thang, setThang] = useState(null);
 
@@ -99,15 +100,21 @@ export default function useChuyenTuyen() {
     }, [examinations]);
 
     const filtered = useMemo(() => {
-        if (!searchText) return patients;
-        const q = searchText.toLowerCase();
-        return patients.filter(
-            (e) =>
-                (e.ma_kham_benh || "").toLowerCase().includes(q) ||
-                (e.ho_ten || "").toLowerCase().includes(q) ||
-                (e.ten_don_vi || "").toLowerCase().includes(q),
-        );
-    }, [patients, searchText]);
+        let result = patients;
+        if (statusFilter) {
+            result = result.filter((e) => e.chuyen_tuyen_status === statusFilter);
+        }
+        if (searchText) {
+            const q = searchText.toLowerCase();
+            result = result.filter(
+                (e) =>
+                    (e.ma_kham_benh || "").toLowerCase().includes(q) ||
+                    (e.ho_ten || "").toLowerCase().includes(q) ||
+                    (e.ten_don_vi || "").toLowerCase().includes(q),
+            );
+        }
+        return result;
+    }, [patients, searchText, statusFilter]);
 
     const handleViewDetail = useCallback(
         async (id) => {
@@ -255,6 +262,8 @@ export default function useChuyenTuyen() {
         refreshing,
         searchText,
         setSearchText,
+        statusFilter,
+        setStatusFilter,
         filtered,
         stats,
         snackbar,

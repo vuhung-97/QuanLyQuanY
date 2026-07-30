@@ -5,11 +5,7 @@ import {
     Card,
     CardContent,
     Chip,
-    IconButton,
-    MenuItem,
     Stack,
-    TextField,
-    Tooltip,
 } from "@mui/material";
 import {
     Add as AddIcon,
@@ -24,12 +20,12 @@ import DataTable from "@/components/common/DataTable.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import PaginationWidget from "@/components/common/PaginationWidget.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
+import StatusFilter from "@/components/common/StatusFilter.jsx";
 import PhieuDuTruDialog from "./PhieuDuTruDialog.jsx";
 import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
 import YearMonthFilter from "@/components/common/YearMonthFilter.jsx";
 import useDuTruList, {
     STATUS_CHIP,
-    TRANG_THAI_OPTIONS,
     ROWS_PER_PAGE,
 } from "@/hooks/useDuTruList.js";
 import { getCurrentUser } from "@/services/api.js";
@@ -99,23 +95,11 @@ function DuTruListFilterBar({
 }) {
     return (
         <Stack direction="row" spacing={1.5} sx={{ alignItems: "center" }}>
-            <TextField
-                select
-                size="small"
-                label="Trạng thái"
+            <StatusFilter
                 value={trangThai}
-                onChange={(e) => {
-                    onTrangThaiChange(e.target.value);
-                }}
-                sx={{ minWidth: 160 }}
-            >
-                {TRANG_THAI_OPTIONS.map((opt) => (
-                    <MenuItem key={opt.value} value={opt.value}>
-                        {opt.label}
-                    </MenuItem>
-                ))}
-            </TextField>
-
+                onChange={onTrangThaiChange}
+                statusMap={STATUS_CHIP}
+            />
             <YearMonthFilter
                 nam={nam}
                 onNamChange={onNamChange}

@@ -4,9 +4,7 @@ import {
     Card,
     CardContent,
     Chip,
-    MenuItem,
     Stack,
-    TextField,
 } from "@mui/material";
 import ActionIcon from "@/components/common/ActionIcon.jsx";
 import {
@@ -26,6 +24,7 @@ import DataTable from "@/components/common/DataTable.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import PaginationWidget from "@/components/common/PaginationWidget.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
+import StatusFilter from "@/components/common/StatusFilter.jsx";
 import YearMonthFilter from "@/components/common/YearMonthFilter.jsx";
 import { khoDuocService } from "@/services/khoDuocService.js";
 import { getCurrentUser } from "@/services/api.js";
@@ -33,15 +32,6 @@ import PhieuXuatDialog from "./PhieuXuatDialog.jsx";
 import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
 import IfRole from "@/components/common/IfRole.jsx";
 import { ROLES } from "@/constants/roleConstants.js";
-
-const TRANG_THAI_OPTIONS = [
-    { value: "", label: "Tất cả" },
-    { value: "cho_gui", label: "Chờ gửi" },
-    { value: "cho_duyet", label: "Chờ duyệt" },
-    { value: "da_duyet", label: "Đã duyệt" },
-    { value: "tu_choi", label: "Từ chối" },
-    { value: "da_xuat", label: "Đã xuất" },
-];
 
 const STATUS_CHIP = {
     cho_gui: { label: "Chờ gửi", color: "default" },
@@ -309,26 +299,14 @@ export default function XuatKhoList() {
                                 spacing={1.5}
                                 sx={{ alignItems: "center" }}
                             >
-                                <TextField
-                                    select
-                                    size="small"
-                                    label="Trạng thái"
+                                <StatusFilter
                                     value={trangThai}
-                                    onChange={(e) => {
-                                        setTrangThai(e.target.value);
+                                    onChange={(v) => {
+                                        setTrangThai(v);
                                         setPage(1);
                                     }}
-                                    sx={{ minWidth: 160 }}
-                                >
-                                    {TRANG_THAI_OPTIONS.map((opt) => (
-                                        <MenuItem
-                                            key={opt.value}
-                                            value={opt.value}
-                                        >
-                                            {opt.label}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
+                                    statusMap={STATUS_CHIP}
+                                />
                                 <YearMonthFilter
                                     nam={nam}
                                     onNamChange={(v) => {

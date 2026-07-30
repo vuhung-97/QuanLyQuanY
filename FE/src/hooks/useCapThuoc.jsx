@@ -11,6 +11,7 @@ export default function useCapThuoc() {
     const [refreshing, setRefreshing] = useState(false);
     const [selectedDate, setSelectedDate] = useState(dayjs());
     const [searchText, setSearchText] = useState("");
+    const [statusFilter, setStatusFilter] = useState("");
     const [nam, setNam] = useState(null);
     const [thang, setThang] = useState(null);
     const {
@@ -74,15 +75,21 @@ export default function useCapThuoc() {
     }, [patients]);
 
     const filtered = useMemo(() => {
-        if (!searchText) return patients;
-        const q = searchText.toLowerCase();
-        return patients.filter(
-            (e) =>
-                (e.ma_kham_benh || "").toLowerCase().includes(q) ||
-                (e.ho_ten || "").toLowerCase().includes(q) ||
-                (e.ten_don_vi || "").toLowerCase().includes(q),
-        );
-    }, [patients, searchText]);
+        let result = patients;
+        if (statusFilter) {
+            result = result.filter((e) => e.trang_thai === statusFilter);
+        }
+        if (searchText) {
+            const q = searchText.toLowerCase();
+            result = result.filter(
+                (e) =>
+                    (e.ma_kham_benh || "").toLowerCase().includes(q) ||
+                    (e.ho_ten || "").toLowerCase().includes(q) ||
+                    (e.ten_don_vi || "").toLowerCase().includes(q),
+            );
+        }
+        return result;
+    }, [patients, searchText, statusFilter]);
 
     const handleOpenForm = useCallback(async (id) => {
         const exam = examinations.find((e) => e.ma_kham_benh === id);
@@ -141,6 +148,8 @@ export default function useCapThuoc() {
         setSelectedDate,
         searchText,
         setSearchText,
+        statusFilter,
+        setStatusFilter,
         filtered,
         stats,
         snackbar,

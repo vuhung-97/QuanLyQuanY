@@ -24,9 +24,15 @@ import CapThuocForm from "./CapThuocForm.jsx";
 import DataTable from "@/components/common/DataTable.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import SearchBarDebounced from "@/components/common/SearchBarDebounced.jsx";
+import StatusFilter from "@/components/common/StatusFilter.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import { STATUS_MAP } from "@/constants/khamBenhConstants.js";
 import { formatDate } from "@/utils/date.js";
+
+const CAP_THUOC_STATUS_MAP = {
+    chờ_nhận_thuốc: { label: "Chờ nhận thuốc" },
+    đã_nhận_thuốc: { label: "Đã nhận thuốc" },
+};
 
 const columns = [
     {
@@ -78,6 +84,8 @@ export default function CapThuocList() {
         selectedDate,
         setSelectedDate,
         setSearchText,
+        statusFilter,
+        setStatusFilter,
         filtered,
         stats,
         snackbar,
@@ -164,6 +172,11 @@ export default function CapThuocList() {
                                     }}
                                 />
                             )}
+                            <StatusFilter
+                                value={statusFilter}
+                                onChange={setStatusFilter}
+                                statusMap={CAP_THUOC_STATUS_MAP}
+                            />
                         </Stack>
                         <Stack direction="row" spacing={1.5}>
                             <Button

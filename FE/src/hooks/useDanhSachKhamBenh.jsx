@@ -9,6 +9,7 @@ export default function useDanhSachKhamBenh() {
     const [initialLoading, setInitialLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [searchText, setSearchText] = useState("");
+    const [statusFilter, setStatusFilter] = useState("");
     const [nam, setNam] = useState(null);
     const [thang, setThang] = useState(null);
     const [selectedDate, setSelectedDate] = useState(dayjs());
@@ -66,15 +67,21 @@ export default function useDanhSachKhamBenh() {
     useEffect(() => { loadData(); }, [loadData]);
 
     const filtered = useMemo(() => {
-        if (!searchText) return examinations;
-        const q = searchText.toLowerCase();
-        return examinations.filter(
-            (e) =>
-                (e.ma_kham_benh || "").toLowerCase().includes(q) ||
-                (e.ho_ten || "").toLowerCase().includes(q) ||
-                (e.ten_don_vi || "").toLowerCase().includes(q),
-        );
-    }, [examinations, searchText]);
+        let result = examinations;
+        if (statusFilter) {
+            result = result.filter((e) => e.trang_thai === statusFilter);
+        }
+        if (searchText) {
+            const q = searchText.toLowerCase();
+            result = result.filter(
+                (e) =>
+                    (e.ma_kham_benh || "").toLowerCase().includes(q) ||
+                    (e.ho_ten || "").toLowerCase().includes(q) ||
+                    (e.ten_don_vi || "").toLowerCase().includes(q),
+            );
+        }
+        return result;
+    }, [examinations, searchText, statusFilter]);
 
     const statusCounts = useMemo(() => {
         const count = (status) => examinations.filter((e) => e.trang_thai === status).length;
@@ -154,6 +161,8 @@ export default function useDanhSachKhamBenh() {
         refreshing,
         searchText,
         setSearchText,
+        statusFilter,
+        setStatusFilter,
         filtered,
         selectedDate,
         setSelectedDate,

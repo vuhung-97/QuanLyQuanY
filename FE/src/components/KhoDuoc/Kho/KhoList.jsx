@@ -3,9 +3,7 @@ import {
     Button,
     Card,
     CardContent,
-    MenuItem,
     Stack,
-    TextField,
     Typography,
 } from "@mui/material";
 import ActionIcon from "@/components/common/ActionIcon.jsx";
@@ -25,6 +23,7 @@ import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import PaginationWidget from "@/components/common/PaginationWidget.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import SearchBarDebounced from "@/components/common/SearchBarDebounced.jsx";
+import StatusFilter from "@/components/common/StatusFilter.jsx";
 import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
 import KhoDialog from "./KhoDialog.jsx";
 import ThresholdDialog from "./ThresholdDialog.jsx";
@@ -170,21 +169,19 @@ export default function KhoList() {
                                     onSearch={hook.handleSearchChange}
                                     placeholder="Tên, hoạt chất, mã..."
                                 />
-                                <TextField
-                                    select
-                                    size="small"
-                                    label="Phân loại"
+                                <StatusFilter
                                     value={hook.phanLoaiFilter}
-                                    onChange={hook.handlePhanLoaiChange}
-                                    sx={{ minWidth: 160 }}
-                                >
-                                    <MenuItem value="">Tất cả</MenuItem>
-                                    {hook.phanLoaiOptions.map((o) => (
-                                        <MenuItem key={o} value={o}>
-                                            {o}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
+                                    onChange={(v) =>
+                                        hook.handlePhanLoaiChange({
+                                            target: { value: v },
+                                        })
+                                    }
+                                    options={hook.phanLoaiOptions.map((o) => ({
+                                        value: o,
+                                        label: o,
+                                    }))}
+                                    label="Phân loại"
+                                />
                             </Stack>
                             <Stack direction="row" spacing={1}>
                                 <Button

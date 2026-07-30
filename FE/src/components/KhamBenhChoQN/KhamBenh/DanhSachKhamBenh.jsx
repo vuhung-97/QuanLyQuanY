@@ -26,6 +26,7 @@ import DataTable from "@/components/common/DataTable.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import PaginationWidget from "@/components/common/PaginationWidget.jsx";
 import SearchBarDebounced from "@/components/common/SearchBarDebounced.jsx";
+import StatusFilter from "@/components/common/StatusFilter.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import KhamBenhForm from "./KhamBenhForm.jsx";
 import TiepNhanQnDialog from "./TiepNhanQnDialog.jsx";
@@ -117,6 +118,8 @@ export default function DanhSachKhamBenh() {
         initialLoading,
         refreshing,
         setSearchText,
+        statusFilter,
+        setStatusFilter,
         filtered,
         statusCounts,
         snackbar,
@@ -219,6 +222,11 @@ export default function DanhSachKhamBenh() {
                                     onThangChange={handleFilterThangChange}
                                 />
                             )}
+                            <StatusFilter
+                                value={statusFilter}
+                                onChange={setStatusFilter}
+                                statusMap={STATUS_MAP}
+                            />
                         </Stack>
                         <Toolbar
                             onReceive={() => setOpenReceiveDialog(true)}

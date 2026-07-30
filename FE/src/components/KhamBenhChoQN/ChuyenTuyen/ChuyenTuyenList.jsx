@@ -25,6 +25,7 @@ import DataTable from "@/components/common/DataTable.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import IfRole from "@/components/common/IfRole.jsx";
 import SearchBarDebounced from "@/components/common/SearchBarDebounced.jsx";
+import StatusFilter from "@/components/common/StatusFilter.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import { ROLES } from "@/constants/roleConstants.js";
 import { CHUYEN_TUYEN_STATUS_MAP } from "@/constants/khamBenhConstants.js";
@@ -85,6 +86,8 @@ export default function ChuyenTuyenList() {
         initialLoading,
         refreshing,
         setSearchText,
+        statusFilter,
+        setStatusFilter,
         filtered,
         stats,
         snackbar,
@@ -188,6 +191,11 @@ export default function ChuyenTuyenList() {
                                     setThang(v);
                                     setPage(1);
                                 }}
+                            />
+                            <StatusFilter
+                                value={statusFilter}
+                                onChange={setStatusFilter}
+                                statusMap={CHUYEN_TUYEN_STATUS_MAP}
                             />
                         </Stack>
                         <Stack direction="row" spacing={1.5}>
