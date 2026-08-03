@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button, Card, CardContent, Menu, MenuItem, Stack, TextField } from "@mui/material";
 import { Print as PrintIcon } from "@mui/icons-material";
 import FilterModeToggle from "@/components/common/FilterModeToggle.jsx";
+import { formatDate } from "@/utils/date.js";
 
 export default function DanhSachPhieuKhamFilterBar({
     filterModeLeft,
@@ -45,8 +46,7 @@ export default function DanhSachPhieuKhamFilterBar({
                                 key={s.ma_lich_kham}
                                 value={s.ma_lich_kham}
                             >
-                                {s.ma_lich_kham} ({s.thoi_gian_bat_dau || ""} -{" "}
-                                {s.thoi_gian_ket_thuc || ""})
+                                {s.ma_lich_kham} ({formatDate(s.thoi_gian_bat_dau)} - {formatDate(s.thoi_gian_ket_thuc)})
                             </MenuItem>
                         ))}
                     </TextField>

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
 import { fetchAllPages } from "@/utils/fetchAll.js";
+import { getScheduleStatus } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
 
 const PHAN_LOAI_LABELS = ["Loại 1", "Loại 2", "Loại 3", "Loại 4", "Loại 5", "Loại 6"];
 
@@ -68,23 +69,36 @@ export default function useKetQuaKham() {
         return schedules.filter((s) => new Date(s.thoi_gian_bat_dau).getFullYear() === Number(nam));
     }, [schedules, nam]);
 
+    const defaultScheduleId = useMemo(() => {
+        if (filteredSchedules.length === 0) return null;
+        const running = filteredSchedules.find(
+            (s) => getScheduleStatus(s) === "Đang thực hiện"
+        );
+        if (running) return running.ma_lich_kham;
+        const finished = filteredSchedules.filter(
+            (s) => getScheduleStatus(s) === "Đã kết thúc"
+        );
+        if (finished.length > 0) return finished[0].ma_lich_kham;
+        return filteredSchedules[0].ma_lich_kham;
+    }, [filteredSchedules]);
+
     useEffect(() => {
         if (filteredSchedules.length > 0) {
             setSelectedSchedule((prev) => {
                 if (prev && filteredSchedules.some((s) => s.ma_lich_kham === prev)) return prev;
-                return filteredSchedules[0].ma_lich_kham;
+                return defaultScheduleId;
             });
         } else {
             setSelectedSchedule(null);
         }
-    }, [filteredSchedules]);
+    }, [filteredSchedules, defaultScheduleId]);
 
     const scheduleId = useMemo(() => {
         if (filteredSchedules.length === 0) return "";
         if (selectedSchedule && filteredSchedules.some((s) => s.ma_lich_kham === selectedSchedule))
             return selectedSchedule;
-        return filteredSchedules[0]?.ma_lich_kham || "";
-    }, [filteredSchedules, selectedSchedule]);
+        return defaultScheduleId || "";
+    }, [filteredSchedules, selectedSchedule, defaultScheduleId]);
 
     const fetchData = useCallback(async (id) => {
         if (!id) return;

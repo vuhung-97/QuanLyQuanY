@@ -5,6 +5,7 @@ import {
     Select,
     Stack,
 } from "@mui/material";
+import { formatDate } from "@/utils/date.js";
 
 export default function KetQuaKhamFilter({
     nam,
@@ -45,18 +46,14 @@ export default function KetQuaKhamFilter({
                     onChange={(e) => onChange(e.target.value)}
                     disabled={loading || schedules.length === 0}
                 >
-                    {schedules.map((s) => {
-                        const start = s.thoi_gian_bat_dau?.split("T")[0] || "";
-                        const end = s.thoi_gian_ket_thuc?.split("T")[0] || "";
-                        return (
-                            <MenuItem
-                                key={s.ma_lich_kham}
-                                value={s.ma_lich_kham}
-                            >
-                                {s.ma_lich_kham} — {start} → {end}
-                            </MenuItem>
-                        );
-                    })}
+                    {schedules.map((s) => (
+                        <MenuItem
+                            key={s.ma_lich_kham}
+                            value={s.ma_lich_kham}
+                        >
+                            {s.ma_lich_kham} ({formatDate(s.thoi_gian_bat_dau)} → {formatDate(s.thoi_gian_ket_thuc)})
+                        </MenuItem>
+                    ))}
                 </Select>
             </FormControl>
         </Stack>

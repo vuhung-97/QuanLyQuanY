@@ -27,7 +27,7 @@ export default function useKhamSucKhoeData() {
     const [searchParams] = useSearchParams();
     const [filters, setFilters] = useState(() => ({
         schedule: searchParams.get("schedule") || "",
-        unit: searchParams.get("unit") || "",
+        unit: searchParams.get("unit") || "__ALL__",
         filterModeLeft: false,
     }));
 
@@ -42,6 +42,26 @@ export default function useKhamSucKhoeData() {
             schedules.find((s) => s.ma_lich_kham === selectedSchedule) || null,
         [schedules, selectedSchedule],
     );
+
+    const runningSchedules = useMemo(
+        () =>
+            schedules.filter(
+                (s) =>
+                    s.trang_thai === "da_duyet" &&
+                    getScheduleStatus(s) === "Đang thực hiện",
+            ),
+        [schedules],
+    );
+
+    useEffect(() => {
+        if (selectedSchedule) return;
+        if (runningSchedules.length > 0) {
+            setFilters((prev) => ({
+                ...prev,
+                schedule: runningSchedules[0].ma_lich_kham,
+            }));
+        }
+    }, [schedules, selectedSchedule, runningSchedules]);
 
     const setSelectedSchedule = useCallback((s) => {
         setFilters((prev) => ({ ...prev, schedule: s }));
@@ -224,6 +244,7 @@ export default function useKhamSucKhoeData() {
         selectedSchedule,
         selectedUnit,
         selectedScheduleObj,
+        runningSchedules,
         filterModeLeft,
         filteredSchedules,
         setSelectedSchedule,
