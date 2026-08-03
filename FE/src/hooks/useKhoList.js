@@ -1,14 +1,18 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
+import { useSearchParams } from "react-router-dom";
 import { khoDuocService } from "@/services/khoDuocService.js";
 import { ROWS_PER_PAGE, DEFAULT_THRESHOLDS } from "@/constants/khoConstant.js";
 
 export default function useKhoList(thresholds = DEFAULT_THRESHOLDS) {
+    const [searchParams] = useSearchParams();
     const [allItems, setAllItems] = useState([]);
     const [loading, setLoading] = useState(false);
     const [sapHetHan, setSapHetHan] = useState([]);
     const [search, setSearch] = useState("");
     const [phanLoaiFilter, setPhanLoaiFilter] = useState("");
-    const [filterMode, setFilterMode] = useState("all");
+    const [filterMode, setFilterMode] = useState(
+        () => searchParams.get("filter") || "all",
+    );
     const [page, setPage] = useState(1);
     const [dialog, setDialog] = useState({
         open: false,

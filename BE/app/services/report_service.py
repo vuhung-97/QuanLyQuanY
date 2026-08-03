@@ -1,6 +1,6 @@
 from datetime import date, datetime, timedelta
 
-from sqlalchemy import distinct, func, extract
+from sqlalchemy import distinct, func, extract, or_
 from sqlalchemy.orm import Session
 
 from app.database.benh_an import BenhAn
@@ -402,13 +402,18 @@ class ReportService:
         )
 
         chuyen_tuyen = (
-            self.db.query(func.count(distinct(KhamBenh.ma_quan_nhan)))
+            self.db.query(func.count(KhamBenh.ma_kham_benh))
             .outerjoin(GiayGioiThieu, KhamBenh.ma_kham_benh == GiayGioiThieu.ma_kham_benh)
             .outerjoin(DiTuyenSauDieuTri, GiayGioiThieu.ma_giay_gt == DiTuyenSauDieuTri.ma_giay_gt)
             .filter(
                 KhamBenh.trang_thai == "chuyển_tuyến",
-                GiayGioiThieu.ma_giay_gt.isnot(None),
-                DiTuyenSauDieuTri.ngay_ve.is_(None),
+                KhamBenh.da_duyet == True,
+                DiTuyenSauDieuTri.ngay_di.isnot(None),
+                DiTuyenSauDieuTri.ngay_di <= hom_nay,
+                or_(
+                    DiTuyenSauDieuTri.ngay_ve.is_(None),
+                    DiTuyenSauDieuTri.ngay_ve > hom_nay,
+                ),
             )
             .scalar()
             or 0

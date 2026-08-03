@@ -50,7 +50,16 @@ export default function App() {
                             </ProtectedRoute>
                         }
                     >
-                        <Route index element={<DashboardPage />} />
+                        <Route
+                            index
+                            element={
+                                <RoleRoute
+                                    roles={MENU_ROLE_MAP["tong-quan"]}
+                                >
+                                    <DashboardPage />
+                                </RoleRoute>
+                            }
+                        />
 
                         <Route path="kham-dinh-ky">
                             <Route

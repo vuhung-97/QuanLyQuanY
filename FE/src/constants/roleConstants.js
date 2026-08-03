@@ -23,13 +23,7 @@ export const ROLE_NAME_MAP = {
 };
 
 export const MENU_ROLE_MAP = {
-    "tong-quan": [
-        "ROLE_ADMIN",
-        "ROLE_CNQY",
-        "ROLE_BACSI",
-        "ROLE_YSI",
-        "ROLE_QN",
-    ],
+    "tong-quan": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
 
     "kham-dinh-ky": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
     "lap-lich": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],

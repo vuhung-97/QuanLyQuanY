@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { khoDuocService } from "@/services/khoDuocService.js";
 
 export const TRANG_THAI_OPTIONS = [
@@ -34,7 +35,10 @@ export default function useDuTruList() {
     const [total, setTotal] = useState(0);
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
-    const [trangThai, setTrangThai] = useState("");
+    const [searchParams] = useSearchParams();
+    const [trangThai, setTrangThai] = useState(
+        () => searchParams.get("filter") || "",
+    );
     const [nam, setNam] = useState(null);
     const [thang, setThang] = useState(null);
     const [stats, setStats] = useState(EMPTY_STATS);

@@ -1,19 +1,23 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import { khamBenhService } from "@/services/khamBenhService.js";
 
 const ROWS_PER_PAGE = 50;
 
 export default function useChuyenTuyen() {
+    const [searchParams] = useSearchParams();
     const [examinations, setExaminations] = useState([]);
     const [initialLoading, setInitialLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [searchText, setSearchText] = useState("");
-    const [statusFilter, setStatusFilter] = useState("");
+    const [statusFilter, setStatusFilter] = useState(
+        () => searchParams.get("filter") || "",
+    );
     const [nam, setNam] = useState(null);
     const [thang, setThang] = useState(null);
 
-    const [isLeft, setIsLeft] = useState(false);
+    const [isLeft, setIsLeft] = useState(() => searchParams.get("all") === "1");
     const [page, setPage] = useState(1);
     const [totalRecords, setTotalRecords] = useState(0);
 

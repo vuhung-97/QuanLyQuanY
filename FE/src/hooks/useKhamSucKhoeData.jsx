@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
 import { fetchAllPages } from "@/utils/fetchAll.js";
 import { getScheduleStatus } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
@@ -23,11 +24,12 @@ export default function useKhamSucKhoeData() {
         return codes;
     }
 
-    const [filters, setFilters] = useState({
-        schedule: "",
-        unit: "",
+    const [searchParams] = useSearchParams();
+    const [filters, setFilters] = useState(() => ({
+        schedule: searchParams.get("schedule") || "",
+        unit: searchParams.get("unit") || "",
         filterModeLeft: false,
-    });
+    }));
 
     const {
         schedule: selectedSchedule,

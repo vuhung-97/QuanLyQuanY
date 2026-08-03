@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Alert, Box, Button, Stack, Typography } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
 import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
@@ -38,7 +39,10 @@ export default function LapLichPage() {
     }, [schedules]);
 
     const [query, setQuery] = useState("");
-    const [statusFilter, setStatusFilter] = useState("Tất cả");
+    const [searchParams] = useSearchParams();
+    const [statusFilter, setStatusFilter] = useState(
+        () => searchParams.get("filter") || "Tất cả",
+    );
     const [dialog, setDialog] = useState({
         open: false,
         schedule: null,
