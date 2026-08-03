@@ -26,23 +26,17 @@ export default function LapLichPage() {
         loading,
         error,
         setError,
+        latestSchedule,
+        latestStatus,
         summaryItems,
         loadSchedules,
         refreshCounter,
     } = useLichKhamData();
 
-    const latestApprovedId = useMemo(() => {
-        const approved = schedules.filter((s) => s.trang_thai === "da_duyet");
-        return approved.length > 0
-            ? approved[approved.length - 1].ma_lich_kham
-            : null;
-    }, [schedules]);
+    const latestApprovedId = latestSchedule?.ma_lich_kham || null;
 
     const [query, setQuery] = useState("");
     const [searchParams] = useSearchParams();
-    const [statusFilter, setStatusFilter] = useState(
-        () => searchParams.get("filter") || "Tất cả",
-    );
     const [dialog, setDialog] = useState({
         open: false,
         schedule: null,
@@ -56,7 +50,6 @@ export default function LapLichPage() {
     });
 
     const filteredSchedules = schedules.filter((row) => {
-        const currentStatus = getScheduleStatus(row);
         const keyword = query.trim().toLowerCase();
         const details = chiTietMap[row.ma_lich_kham] || [];
         const detailMatches = details.some(
@@ -68,9 +61,7 @@ export default function LapLichPage() {
             .filter(Boolean)
             .some((v) => v.toLowerCase().includes(keyword));
         const matchedKeyword = !keyword || masterMatch || detailMatches;
-        const matchedStatus =
-            statusFilter === "Tất cả" || statusFilter === currentStatus;
-        return matchedKeyword && matchedStatus;
+        return matchedKeyword;
     });
 
     const handleEdit = (schedule) => {
@@ -211,10 +202,12 @@ export default function LapLichPage() {
                 chiTietMap={chiTietMap}
                 unitStats={unitStats}
                 latestScheduleId={latestApprovedId}
+                latestStatus={latestStatus}
             />
 
             <PhanCongNhiemVu
                 latestScheduleId={latestApprovedId}
+                latestStatus={latestStatus}
                 refreshCounter={refreshCounter}
             />
 
@@ -223,6 +216,7 @@ export default function LapLichPage() {
                 chiTietMap={chiTietMap}
                 unitMap={unitStats}
                 loading={loading}
+                initialStatus={searchParams.get("filter") || ""}
                 onEdit={handleEdit}
                 onDelete={handleDeleteClick}
                 onEditDetail={handleEditDetail}

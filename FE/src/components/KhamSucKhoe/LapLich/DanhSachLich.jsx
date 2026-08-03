@@ -28,6 +28,7 @@ import {
 } from "@mui/icons-material";
 import DataTable from "@/components/common/DataTable.jsx";
 import PaginationWidget from "@/components/common/PaginationWidget.jsx";
+import StatusFilter from "@/components/common/StatusFilter.jsx";
 import { findNearestDetail } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
 import { formatDateTime } from "@/utils/date.js";
 import IfRole from "@/components/common/IfRole.jsx";
@@ -281,6 +282,7 @@ export default function DanhSachLich({
     chiTietMap,
     unitMap,
     loading,
+    initialStatus = "",
     onEdit,
     onDelete,
     onEditDetail,
@@ -307,6 +309,16 @@ export default function DanhSachLich({
     };
 
     const [year, setYear] = useState("Tất cả");
+    const [status, setStatus] = useState(initialStatus || "");
+
+    const statusOptions = [
+        "Chờ gửi",
+        "Chờ duyệt",
+        "Từ chối",
+        "Sắp diễn ra",
+        "Đang thực hiện",
+        "Đã kết thúc",
+    ];
 
     const availableYears = useMemo(() => {
         const years = new Set(
@@ -316,16 +328,20 @@ export default function DanhSachLich({
     }, [schedules]);
 
     const filteredSchedules = useMemo(() => {
-        if (year === "Tất cả") return schedules;
-        return schedules.filter(
-            (s) => new Date(s.thoi_gian_bat_dau).getFullYear() === Number(year),
-        );
-    }, [schedules, year]);
+        return schedules.filter((s) => {
+            const matchYear =
+                year === "Tất cả" ||
+                new Date(s.thoi_gian_bat_dau).getFullYear() === Number(year);
+            const matchStatus =
+                status === "" || getScheduleStatus(s) === status;
+            return matchYear && matchStatus;
+        });
+    }, [schedules, year, status, getScheduleStatus]);
 
     const [page, setPage] = useState(1);
     const rowsPerPage = 10;
 
-    useEffect(() => setPage(1), [year]);
+    useEffect(() => setPage(1), [year, status]);
 
     const paginatedSchedules = useMemo(
         () =>
@@ -364,19 +380,30 @@ export default function DanhSachLich({
                             )}
                         </Typography>
                     </Box>
-                    <FormControl size="small" sx={{ minWidth: 100 }}>
-                        <Select
-                            value={year}
-                            onChange={(e) => setYear(e.target.value)}
-                            sx={{ textTransform: "none" }}
-                        >
-                            {availableYears.map((y) => (
-                                <MenuItem key={y} value={y}>
-                                    {y}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
+                    <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+                        <StatusFilter
+                            value={status}
+                            onChange={setStatus}
+                            options={statusOptions.map((s) => ({
+                                value: s,
+                                label: s,
+                            }))}
+                            label="Trạng thái"
+                        />
+                        <FormControl size="small" sx={{ minWidth: 100 }}>
+                            <Select
+                                value={year}
+                                onChange={(e) => setYear(e.target.value)}
+                                sx={{ textTransform: "none" }}
+                            >
+                                {availableYears.map((y) => (
+                                    <MenuItem key={y} value={y}>
+                                        {y}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </Stack>
                 </Stack>
                 <Box sx={{ maxHeight: 560, overflow: "auto" }}>
                     <DataTable

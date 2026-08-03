@@ -23,6 +23,7 @@ export default function TongQuanDonVi({
     chiTietMap,
     unitStats = [],
     latestScheduleId,
+    latestStatus = "",
 }) {
     const scheduleDetails = chiTietMap?.[latestScheduleId] || [];
     const unitCodes = useMemo(
@@ -56,14 +57,9 @@ export default function TongQuanDonVi({
                 >
                     <Box>
                         <Typography variant="h2">
-                            Lịch khám cuối cùng
-                        </Typography>
-                        <Typography
-                            variant="body2"
-                            color="text.secondary"
-                            sx={{ mt: 0.5 }}
-                        >
-                            Tổng quân số: <strong>{totalQuanSo}</strong> QN
+                            {latestStatus === "Đang thực hiện"
+                                ? "Lịch khám đang thực hiện"
+                                : "Lịch khám sắp tới"}
                         </Typography>
                     </Box>
                 </Stack>

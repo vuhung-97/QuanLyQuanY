@@ -16,8 +16,13 @@ const columns = [
     { key: "ten_vai_tro", label: "Vai trò" },
 ];
 
-export default function PhanCongNhiemVu({ latestScheduleId, refreshCounter }) {
+export default function PhanCongNhiemVu({ latestScheduleId, latestStatus = "", refreshCounter }) {
     const { assignments, loading } = usePhanCongNhiemVu(latestScheduleId, refreshCounter);
+
+    const title =
+        latestStatus === "Đang thực hiện"
+            ? "Phân công lịch khám đang thực hiện"
+            : "Phân công lịch khám sắp tới";
 
     return (
         <Card sx={{ borderRadius: 3 }}>
@@ -29,7 +34,7 @@ export default function PhanCongNhiemVu({ latestScheduleId, refreshCounter }) {
                 >
                     <Box>
                         <Typography variant="h2">
-                            Phân công cuối cùng
+                            {title}
                         </Typography>
                         <Typography
                             variant="body2"

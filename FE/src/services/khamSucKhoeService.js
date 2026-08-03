@@ -10,6 +10,7 @@ export const khamSucKhoeService = {
                 limit: 500,
                 offset: 0,
                 sort_by: "thoi_gian_bat_dau",
+                sort_desc: true,
                 ...params,
             },
         }),

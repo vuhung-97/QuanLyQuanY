@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
     CalendarMonth as CalendarIcon,
-    EventAvailable as EventAvailableIcon,
     Groups as GroupsIcon,
 } from "@mui/icons-material";
 import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
@@ -36,7 +35,10 @@ export default function useLichKhamData() {
                 await Promise.all(
                     masterList.map(async (m) => {
                         try {
-                            const ctRes = await khamSucKhoeService.getScheduleDetail(m.ma_lich_kham);
+                            const ctRes =
+                                await khamSucKhoeService.getScheduleDetail(
+                                    m.ma_lich_kham,
+                                );
                             ctMap[m.ma_lich_kham] = Array.isArray(ctRes.data)
                                 ? ctRes.data
                                 : [];
@@ -49,7 +51,7 @@ export default function useLichKhamData() {
                     setSchedules(masterList);
                     setUnitStats(Array.isArray(uvRes.data) ? uvRes.data : []);
                     setChiTietMap(ctMap);
-                    setRefreshCounter(c => c + 1);
+                    setRefreshCounter((c) => c + 1);
                 }
             } catch (err) {
                 if (!ignore) {
@@ -71,24 +73,27 @@ export default function useLichKhamData() {
 
     useEffect(loadSchedules, [loadSchedules]);
 
-    const allDetails = useMemo(
-        () => Object.values(chiTietMap).flat(),
-        [chiTietMap],
-    );
-
-    const nearestDetail = useMemo(() => {
-        const items = Object.values(chiTietMap)
-            .flat()
-            .filter((d) => d.thoi_gian_bat_dau);
-        if (items.length === 0) return null;
-        const now = new Date();
-        return items.reduce((a, b) =>
-            Math.abs(new Date(b.thoi_gian_bat_dau) - now) <
-            Math.abs(new Date(a.thoi_gian_bat_dau) - now)
-                ? b
-                : a,
+    const latestSchedule = useMemo(() => {
+        const approved = schedules.filter((s) => s.trang_thai === "da_duyet");
+        if (approved.length === 0) return null;
+        const dangThucHien = approved.find(
+            (s) => getScheduleStatus(s) === "Đang thực hiện",
         );
-    }, [chiTietMap]);
+        if (dangThucHien) return dangThucHien;
+        const now = new Date();
+        const upcoming = approved
+            .filter((s) => new Date(s.thoi_gian_bat_dau) > now)
+            .sort(
+                (a, b) =>
+                    new Date(a.thoi_gian_bat_dau) -
+                    new Date(b.thoi_gian_bat_dau),
+            );
+        return upcoming.length > 0 ? upcoming[0] : null;
+    }, [schedules]);
+
+    const latestStatus = latestSchedule
+        ? getScheduleStatus(latestSchedule)
+        : "";
 
     const scheduleStats = useMemo(() => {
         const tong = schedules.length;
@@ -102,39 +107,29 @@ export default function useLichKhamData() {
         const totalQn = unitStats
             ? unitStats.reduce((s, u) => s + (u.quan_so || 0), 0)
             : 0;
-        const tongDonViTrongLich = new Set(
-            allDetails.map((d) => d.ma_don_vi).filter(Boolean),
-        ).size;
+
+        const thoiGian = latestSchedule
+            ? `${formatDate(latestSchedule.thoi_gian_bat_dau)} - ${formatDate(latestSchedule.thoi_gian_ket_thuc)}`
+            : "Chưa có";
 
         return [
             {
                 label: "Tổng quân số",
                 value: totalQn,
-                note: "Toàn đơn vị",
                 color: "primary.main",
                 bg: "rgba(11, 59, 96, 0.1)",
                 icon: <GroupsIcon />,
             },
             {
-                label: "Phòng, Hải đội",
-                value: tongDonViTrongLich,
-                note: tongDonViTrongLich ? "Đã có lịch" : "Chưa có lịch",
-                color: "secondary.main",
-                bg: "rgba(0, 180, 216, 0.12)",
-                icon: <EventAvailableIcon />,
-            },
-            {
                 label: "Thời gian khám",
-                value: nearestDetail
-                    ? `${formatDate(nearestDetail.thoi_gian_bat_dau)} - ${formatDate(nearestDetail.thoi_gian_ket_thuc)}`
-                    : "Chưa có",
+                value: thoiGian,
                 note: "",
                 color: "success.main",
                 bg: "rgba(16, 185, 129, 0.12)",
                 icon: <CalendarIcon />,
             },
         ];
-    }, [unitStats, allDetails, nearestDetail]);
+    }, [unitStats, latestSchedule]);
 
     const unitOptions = useMemo(
         () => (unitStats ?? []).filter((u) => !u.ma_don_vi_truc_thuoc),
@@ -149,8 +144,8 @@ export default function useLichKhamData() {
         loading,
         error,
         setError,
-        allDetails,
-        nearestDetail,
+        latestSchedule,
+        latestStatus,
         scheduleStats,
         summaryItems,
         loadSchedules,
