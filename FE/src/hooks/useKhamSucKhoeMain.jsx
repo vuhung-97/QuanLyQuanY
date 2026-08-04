@@ -39,6 +39,7 @@ export default function useKhamSucKhoeMain() {
     const [searchText, setSearchText] = useState("");
     const [allowedTabs, setAllowedTabs] = useState(ALL_TABS);
     const [editableTabs, setEditableTabs] = useState(ALL_TABS);
+    const [noRoleNotice, setNoRoleNotice] = useState(false);
 
     const [formDialog, setFormDialog] = useState({
         open: false,
@@ -117,15 +118,18 @@ export default function useKhamSucKhoeMain() {
                         if (access) {
                             setAllowedTabs(access.view);
                             setEditableTabs(access.edit);
+                            setNoRoleNotice(false);
                             return;
                         }
                     }
                     setAllowedTabs(ALL_TABS);
-                    setEditableTabs(ALL_TABS);
+                    setEditableTabs([]);
+                    setNoRoleNotice(true);
                 })
                 .catch(() => {
                     setAllowedTabs(ALL_TABS);
                     setEditableTabs(ALL_TABS);
+                    setNoRoleNotice(false);
                 });
         }
     }, [formDialog.open, selectedSchedule]);
@@ -264,6 +268,7 @@ export default function useKhamSucKhoeMain() {
         filterTab,
         allowedTabs,
         editableTabs,
+        noRoleNotice,
         handleFormSaved,
         handlePrint,
         printDialog,

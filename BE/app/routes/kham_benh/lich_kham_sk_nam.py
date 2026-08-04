@@ -30,19 +30,21 @@ def _validate_detail_dates_raw(
     master_tg_bd, master_tg_kt,
     detail_tg_bd, detail_tg_kt,
     ma_don_vi: str = "",
+    label: str = "",
 ) -> None:
     if not master_tg_bd or not master_tg_kt:
         return
     tag = f" (đơn vị {ma_don_vi})" if ma_don_vi else ""
+    lbl = f" {label}" if label else ""
     if detail_tg_bd and detail_tg_bd < master_tg_bd:
         raise HTTPException(
             status_code=400,
-            detail=f"Thời gian bắt đầu ({detail_tg_bd}){tag} không được trước thời gian bắt đầu của lịch năm ({master_tg_bd})."
+            detail=f"Thời gian bắt đầu{lbl} ({detail_tg_bd}){tag} không được trước thời gian bắt đầu{lbl} của lịch năm ({master_tg_bd})."
         )
     if detail_tg_kt and detail_tg_kt > master_tg_kt:
         raise HTTPException(
             status_code=400,
-            detail=f"Thời gian kết thúc ({detail_tg_kt}){tag} không được sau thời gian kết thúc của lịch năm ({master_tg_kt})."
+            detail=f"Thời gian kết thúc{lbl} ({detail_tg_kt}){tag} không được sau thời gian kết thúc{lbl} của lịch năm ({master_tg_kt})."
         )
 
 
@@ -71,7 +73,22 @@ def create_lich_kham_batch(
         _validate_detail_dates_raw(
             payload.thoi_gian_bat_dau, payload.thoi_gian_ket_thuc,
             d.thoi_gian_bat_dau, d.thoi_gian_ket_thuc,
-            d.ma_don_vi,
+            d.ma_don_vi, "khám"
+        )
+        _validate_detail_dates_raw(
+            payload.thoi_gian_lay_mau_bat_dau, payload.thoi_gian_lay_mau_ket_thuc,
+            d.thoi_gian_lay_mau_bat_dau, d.thoi_gian_lay_mau_ket_thuc,
+            d.ma_don_vi, "lấy máu"
+        )
+        _validate_detail_dates_raw(
+            payload.thoi_gian_du_tru_lay_mau_bat_dau, payload.thoi_gian_du_tru_lay_mau_ket_thuc,
+            d.thoi_gian_du_tru_lay_mau_bat_dau, d.thoi_gian_du_tru_lay_mau_ket_thuc,
+            d.ma_don_vi, "dự trù lấy máu"
+        )
+        _validate_detail_dates_raw(
+            payload.thoi_gian_du_tru_kham_bat_dau, payload.thoi_gian_du_tru_kham_ket_thuc,
+            d.thoi_gian_du_tru_kham_bat_dau, d.thoi_gian_du_tru_kham_ket_thuc,
+            d.ma_don_vi, "dự trù khám"
         )
 
     ma_lich_kham = generate_id(10)
@@ -79,6 +96,12 @@ def create_lich_kham_batch(
         ma_lich_kham=ma_lich_kham,
         thoi_gian_bat_dau=payload.thoi_gian_bat_dau,
         thoi_gian_ket_thuc=payload.thoi_gian_ket_thuc,
+        thoi_gian_lay_mau_bat_dau=payload.thoi_gian_lay_mau_bat_dau,
+        thoi_gian_lay_mau_ket_thuc=payload.thoi_gian_lay_mau_ket_thuc,
+        thoi_gian_du_tru_lay_mau_bat_dau=payload.thoi_gian_du_tru_lay_mau_bat_dau,
+        thoi_gian_du_tru_lay_mau_ket_thuc=payload.thoi_gian_du_tru_lay_mau_ket_thuc,
+        thoi_gian_du_tru_kham_bat_dau=payload.thoi_gian_du_tru_kham_bat_dau,
+        thoi_gian_du_tru_kham_ket_thuc=payload.thoi_gian_du_tru_kham_ket_thuc,
         trang_thai="cho_gui",
     )
     db.add(master)
@@ -89,6 +112,12 @@ def create_lich_kham_batch(
             ma_don_vi=d.ma_don_vi,
             thoi_gian_bat_dau=d.thoi_gian_bat_dau,
             thoi_gian_ket_thuc=d.thoi_gian_ket_thuc,
+            thoi_gian_lay_mau_bat_dau=d.thoi_gian_lay_mau_bat_dau,
+            thoi_gian_lay_mau_ket_thuc=d.thoi_gian_lay_mau_ket_thuc,
+            thoi_gian_du_tru_lay_mau_bat_dau=d.thoi_gian_du_tru_lay_mau_bat_dau,
+            thoi_gian_du_tru_lay_mau_ket_thuc=d.thoi_gian_du_tru_lay_mau_ket_thuc,
+            thoi_gian_du_tru_kham_bat_dau=d.thoi_gian_du_tru_kham_bat_dau,
+            thoi_gian_du_tru_kham_ket_thuc=d.thoi_gian_du_tru_kham_ket_thuc,
             dia_diem=d.dia_diem,
         ))
 
@@ -127,14 +156,35 @@ def replace_lich_kham_batch(
 
     tg_bd = payload.thoi_gian_bat_dau if payload.thoi_gian_bat_dau is not None else master.thoi_gian_bat_dau
     tg_kt = payload.thoi_gian_ket_thuc if payload.thoi_gian_ket_thuc is not None else master.thoi_gian_ket_thuc
+    tg_lm_bd = payload.thoi_gian_lay_mau_bat_dau if payload.thoi_gian_lay_mau_bat_dau is not None else master.thoi_gian_lay_mau_bat_dau
+    tg_lm_kt = payload.thoi_gian_lay_mau_ket_thuc if payload.thoi_gian_lay_mau_ket_thuc is not None else master.thoi_gian_lay_mau_ket_thuc
+    tg_dt_lm_bd = payload.thoi_gian_du_tru_lay_mau_bat_dau if payload.thoi_gian_du_tru_lay_mau_bat_dau is not None else master.thoi_gian_du_tru_lay_mau_bat_dau
+    tg_dt_lm_kt = payload.thoi_gian_du_tru_lay_mau_ket_thuc if payload.thoi_gian_du_tru_lay_mau_ket_thuc is not None else master.thoi_gian_du_tru_lay_mau_ket_thuc
+    tg_dt_kh_bd = payload.thoi_gian_du_tru_kham_bat_dau if payload.thoi_gian_du_tru_kham_bat_dau is not None else master.thoi_gian_du_tru_kham_bat_dau
+    tg_dt_kh_kt = payload.thoi_gian_du_tru_kham_ket_thuc if payload.thoi_gian_du_tru_kham_ket_thuc is not None else master.thoi_gian_du_tru_kham_ket_thuc
 
     for d in payload.details:
-        _validate_detail_dates_raw(tg_bd, tg_kt, d.thoi_gian_bat_dau, d.thoi_gian_ket_thuc, d.ma_don_vi)
+        _validate_detail_dates_raw(tg_bd, tg_kt, d.thoi_gian_bat_dau, d.thoi_gian_ket_thuc, d.ma_don_vi, "khám")
+        _validate_detail_dates_raw(tg_lm_bd, tg_lm_kt, d.thoi_gian_lay_mau_bat_dau, d.thoi_gian_lay_mau_ket_thuc, d.ma_don_vi, "lấy máu")
+        _validate_detail_dates_raw(tg_dt_lm_bd, tg_dt_lm_kt, d.thoi_gian_du_tru_lay_mau_bat_dau, d.thoi_gian_du_tru_lay_mau_ket_thuc, d.ma_don_vi, "dự trù lấy máu")
+        _validate_detail_dates_raw(tg_dt_kh_bd, tg_dt_kh_kt, d.thoi_gian_du_tru_kham_bat_dau, d.thoi_gian_du_tru_kham_ket_thuc, d.ma_don_vi, "dự trù khám")
 
     if payload.thoi_gian_bat_dau is not None:
         master.thoi_gian_bat_dau = payload.thoi_gian_bat_dau
     if payload.thoi_gian_ket_thuc is not None:
         master.thoi_gian_ket_thuc = payload.thoi_gian_ket_thuc
+
+    for field in (
+        "thoi_gian_lay_mau_bat_dau",
+        "thoi_gian_lay_mau_ket_thuc",
+        "thoi_gian_du_tru_lay_mau_bat_dau",
+        "thoi_gian_du_tru_lay_mau_ket_thuc",
+        "thoi_gian_du_tru_kham_bat_dau",
+        "thoi_gian_du_tru_kham_ket_thuc",
+    ):
+        val = getattr(payload, field)
+        if val is not None:
+            setattr(master, field, val)
 
     db.query(LichKhamSkNamChiTiet).filter(
         LichKhamSkNamChiTiet.ma_lich_kham == item_id
@@ -150,6 +200,12 @@ def replace_lich_kham_batch(
             ma_don_vi=d.ma_don_vi,
             thoi_gian_bat_dau=d.thoi_gian_bat_dau,
             thoi_gian_ket_thuc=d.thoi_gian_ket_thuc,
+            thoi_gian_lay_mau_bat_dau=d.thoi_gian_lay_mau_bat_dau,
+            thoi_gian_lay_mau_ket_thuc=d.thoi_gian_lay_mau_ket_thuc,
+            thoi_gian_du_tru_lay_mau_bat_dau=d.thoi_gian_du_tru_lay_mau_bat_dau,
+            thoi_gian_du_tru_lay_mau_ket_thuc=d.thoi_gian_du_tru_lay_mau_ket_thuc,
+            thoi_gian_du_tru_kham_bat_dau=d.thoi_gian_du_tru_kham_bat_dau,
+            thoi_gian_du_tru_kham_ket_thuc=d.thoi_gian_du_tru_kham_ket_thuc,
             dia_diem=d.dia_diem,
         ))
 

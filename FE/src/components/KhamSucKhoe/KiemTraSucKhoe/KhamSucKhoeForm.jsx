@@ -163,120 +163,139 @@ export default function KhamSucKhoeForm({
 
     return (
         <>
-        <Dialog
-            open={open}
-            onClose={onClose}
-            fullWidth
-            maxWidth="lg"
-            slotProps={{
-                paper: {
-                    sx: {
-                        bgcolor: (theme) => theme.palette.background.paper,
+            <Dialog
+                open={open}
+                onClose={onClose}
+                fullWidth
+                maxWidth="lg"
+                slotProps={{
+                    paper: {
+                        sx: {
+                            bgcolor: (theme) => theme.palette.background.paper,
+                        },
                     },
-                },
-            }}
-            sx={{ "& .MuiDialog-paper": { height: "90vh" } }}
-        >
-            <Box component="form" onSubmit={handleSubmit}>
-                <FormHeader quanNhan={quanNhan} />
-
-                <DialogContent dividers sx={{ px: 3 }}>
-                    <PatientInfoCard
-                        data={cardData}
-                        fields={CARD_FIELDS}
-                        columnsPerRow={6}
-                    />
-
-                    <FormTabBar
-                        activeTab={activeTab}
-                        onTabChange={(_, val) => setActiveTab(val)}
-                        allowedTabs={allowedTabs}
-                    />
-
-                    {allowedTabs.includes(0) && (
-                        <TabPanel value={activeTab} index={0}>
-                            <TongQuanTab
-                                ref={tsRef}
-                                initialData={initialTS}
-                                cardStyle={cardStyle}
-                                readOnly={readOnly || !editableTabs.includes(0)}
-                                gioiTinh={quanNhan?.gioi_tinh}
-                            />
-                        </TabPanel>
-                    )}
-                    {allowedTabs.includes(1) && (
-                        <TabPanel value={activeTab} index={1}>
-                            <LamSangTab
-                                ref={lsRef}
-                                initialData={initialLS}
-                                cardStyle={cardStyle}
-                                readOnly={readOnly || !editableTabs.includes(1)}
-                            />
-                        </TabPanel>
-                    )}
-                    {allowedTabs.includes(2) && (
-                        <TabPanel value={activeTab} index={2}>
-                            <XetNghiemTab
-                                ref={xnRef}
-                                initialData={initialXN}
-                                cardStyle={cardStyle}
-                                readOnly={readOnly || !editableTabs.includes(2)}
-                            />
-                        </TabPanel>
-                    )}
-                    {allowedTabs.includes(3) && (
-                        <TabPanel value={activeTab} index={3}>
-                            <ChanDoanHinhAnhTab
-                                ref={cdhaRef}
-                                initialData={initialCDHA}
-                                cardStyle={cardStyle}
-                                readOnly={readOnly || !editableTabs.includes(3)}
-                            />
-                        </TabPanel>
-                    )}
-                    {allowedTabs.includes(4) && (
-                        <TabPanel value={activeTab} index={4}>
-                            <KetLuanTab
-                                key={klVersion}
-                                ref={klRef}
-                                initialData={initialKL}
-                                cardStyle={cardStyle}
-                                readOnly={readOnly || !editableTabs.includes(4)}
-                            />
-                        </TabPanel>
-                    )}
-                </DialogContent>
-
-                <DialogActions
+                }}
+                sx={{ "& .MuiDialog-paper": { height: "90vh" } }}
+            >
+                <Box
+                    component="form"
+                    onSubmit={handleSubmit}
                     sx={{
-                        p: 2,
-                        borderTop: "1px solid",
-                        borderColor: "divider",
-                        bgcolor: "background.paper",
+                        display: "flex",
+                        flexDirection: "column",
+                        height: "100%",
+                        overflow: "hidden", // Ngăn form tràn ra ngoài làm xuất hiện scrollbar ở Dialog container
                     }}
                 >
-                    <Button
-                        onClick={onClose}
-                        variant="outlined"
-                        color="inherit"
+                    <FormHeader quanNhan={quanNhan} />
+
+                    <DialogContent dividers sx={{ px: 3 }}>
+                        <PatientInfoCard
+                            data={cardData}
+                            fields={CARD_FIELDS}
+                            columnsPerRow={6}
+                        />
+
+                        <FormTabBar
+                            activeTab={activeTab}
+                            onTabChange={(_, val) => setActiveTab(val)}
+                            allowedTabs={allowedTabs}
+                        />
+
+                        {allowedTabs.includes(0) && (
+                            <TabPanel value={activeTab} index={0}>
+                                <TongQuanTab
+                                    ref={tsRef}
+                                    initialData={initialTS}
+                                    cardStyle={cardStyle}
+                                    readOnly={
+                                        readOnly || !editableTabs.includes(0)
+                                    }
+                                    gioiTinh={quanNhan?.gioi_tinh}
+                                />
+                            </TabPanel>
+                        )}
+                        {allowedTabs.includes(1) && (
+                            <TabPanel value={activeTab} index={1}>
+                                <LamSangTab
+                                    ref={lsRef}
+                                    initialData={initialLS}
+                                    cardStyle={cardStyle}
+                                    readOnly={
+                                        readOnly || !editableTabs.includes(1)
+                                    }
+                                />
+                            </TabPanel>
+                        )}
+                        {allowedTabs.includes(2) && (
+                            <TabPanel value={activeTab} index={2}>
+                                <XetNghiemTab
+                                    ref={xnRef}
+                                    initialData={initialXN}
+                                    cardStyle={cardStyle}
+                                    readOnly={
+                                        readOnly || !editableTabs.includes(2)
+                                    }
+                                />
+                            </TabPanel>
+                        )}
+                        {allowedTabs.includes(3) && (
+                            <TabPanel value={activeTab} index={3}>
+                                <ChanDoanHinhAnhTab
+                                    ref={cdhaRef}
+                                    initialData={initialCDHA}
+                                    cardStyle={cardStyle}
+                                    readOnly={
+                                        readOnly || !editableTabs.includes(3)
+                                    }
+                                />
+                            </TabPanel>
+                        )}
+                        {allowedTabs.includes(4) && (
+                            <TabPanel value={activeTab} index={4}>
+                                <KetLuanTab
+                                    key={klVersion}
+                                    ref={klRef}
+                                    initialData={initialKL}
+                                    cardStyle={cardStyle}
+                                    readOnly={
+                                        readOnly || !editableTabs.includes(4)
+                                    }
+                                />
+                            </TabPanel>
+                        )}
+                    </DialogContent>
+
+                    <DialogActions
+                        sx={{
+                            p: 2,
+                            borderTop: "1px solid",
+                            borderColor: "divider",
+                            bgcolor: "background.paper",
+                        }}
                     >
-                        Hủy
-                    </Button>
-                    <Button
-                        type="submit"
-                        variant="contained"
-                        color="primary"
-                        disabled={saving || readOnly}
-                    >
-                        {readOnly
-                            ? "Đã xem"
-                            : saving
-                              ? "Đang lưu..."
-                              : "Lưu phiếu khám"}
-                    </Button>
-                </DialogActions>
-            </Box>
-        </Dialog>
+                        <Button
+                            onClick={onClose}
+                            variant="outlined"
+                            color="inherit"
+                        >
+                            Hủy
+                        </Button>
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            color="primary"
+                            disabled={saving || readOnly}
+                        >
+                            {readOnly
+                                ? "Đã xem"
+                                : saving
+                                  ? "Đang lưu..."
+                                  : "Lưu phiếu khám"}
+                        </Button>
+                    </DialogActions>
+                </Box>
+            </Dialog>
 
             <FeedbackSnackbar
                 open={snackbar.open}

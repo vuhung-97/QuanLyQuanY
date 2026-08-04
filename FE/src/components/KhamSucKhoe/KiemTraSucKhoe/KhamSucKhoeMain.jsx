@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Stack, Typography } from "@mui/material";
+import { Stack, Alert, Typography } from "@mui/material";
 import useKhamSucKhoeMain from "@/hooks/useKhamSucKhoeMain.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
@@ -45,6 +45,7 @@ export default function KhamSucKhoeMain() {
         filterTab,
         allowedTabs,
         editableTabs,
+        noRoleNotice,
         handleFormSaved,
         handlePrint,
         printDialog,
@@ -118,6 +119,13 @@ export default function KhamSucKhoeMain() {
                 show={!selectedSchedule}
                 message="Vui lòng chọn lịch khám để bắt đầu."
             />
+
+            {noRoleNotice && (
+                <Alert severity="warning">
+                    Bạn chưa được phân công vai trò tạm thời cho lịch khám này,
+                    nên chỉ có thể xem kết quả khám, không chỉnh sửa được.
+                </Alert>
+            )}
 
             <LichSuKhamDialog
                 open={historyDialog.open}

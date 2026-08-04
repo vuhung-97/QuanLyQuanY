@@ -1,5 +1,6 @@
 import { memo } from "react";
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Stack, Tooltip, Typography } from "@mui/material";
+import { WarningAmber as WarningAmberIcon } from "@mui/icons-material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import dayjs from "dayjs";
@@ -12,6 +13,9 @@ const ChonNgayGio = memo(function ChonNgayGio({
     helperText,
     column,
     disabled = false,
+    defaultTime = "00:00",
+    error = false,
+    errorMessage = "",
 }) {
     const dv = value ? dayjs(value) : null;
     const minDv = minDate ? dayjs(minDate.split("T")[0]) : null;
@@ -20,6 +24,7 @@ const ChonNgayGio = memo(function ChonNgayGio({
         textField: {
             size: "small",
             disabled,
+            error,
             sx: {
                 minWidth: 0,
                 "& .MuiInputBase-root": {
@@ -58,7 +63,7 @@ const ChonNgayGio = memo(function ChonNgayGio({
                             onChange("");
                             return;
                         }
-                        const time = value?.split("T")[1] || "00:00";
+                        const time = value?.split("T")[1] || defaultTime;
                         onChange(`${nv.format("YYYY-MM-DD")}T${time}`);
                     }}
                     minDate={minDv}
@@ -85,6 +90,13 @@ const ChonNgayGio = memo(function ChonNgayGio({
                     slotProps={slotStyles}
                     sx={{ flex: column ? undefined : 1, minWidth: 0 }}
                 />
+                {error && (
+                    <Tooltip title={errorMessage || "Thời gian không hợp lệ"} arrow>
+                        <WarningAmberIcon
+                            sx={{ color: "error.main", fontSize: "1rem", flexShrink: 0 }}
+                        />
+                    </Tooltip>
+                )}
             </Stack>
             {helperText && (
                 <Typography variant="caption" color="text.secondary">
