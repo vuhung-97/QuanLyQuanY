@@ -17,10 +17,16 @@ import {
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
+import IfRole from "@/components/common/IfRole.jsx";
 import useLapLichDialog from "@/hooks/useLapLichDialog";
 import DataTable from "@/components/common/DataTable.jsx";
 import ChonNgayGio from "./ChonNgayGio.jsx";
 import { ROLE_LABELS, roleOrder } from "@/constants/khamSucKhoeConstants.js";
+import { ROLES } from "@/constants/roleConstants.js";
+import {
+    CheckCircle as CheckCircleIcon,
+    DoDisturb as DoDisturbIcon,
+} from "@mui/icons-material";
 
 function DiaDiemCell({ maDonVi, value, onChange, disabled }) {
     const [local, setLocal] = useState(value || "");
@@ -48,7 +54,26 @@ export default function LapLichDialog({
     chiTietList,
     unitOptions,
     readOnly = false,
+    onApprove,
+    onReject,
 }) {
+    const [actionConfirm, setActionConfirm] = useState({
+        open: false,
+        type: null,
+        schedule: null,
+    });
+
+    const handleActionConfirm = () => {
+        const { type, schedule: targetSchedule } = actionConfirm;
+        if (type === "approve") {
+            onApprove?.(targetSchedule);
+        } else if (type === "reject") {
+            onReject?.(targetSchedule);
+        }
+        setActionConfirm({ open: false, type: null, schedule: null });
+        onClose();
+    };
+
     const {
         thoiGianBatDau,
         setThoiGianBatDau,
@@ -613,6 +638,41 @@ export default function LapLichDialog({
                         </Stack>
                     </DialogContent>
                     <DialogActions sx={{ p: 2 }}>
+                        {readOnly &&
+                            schedule?.trang_thai === "cho_duyet" && (
+                                <IfRole
+                                    roles={[ROLES.ADMIN, ROLES.CNQY]}
+                                >
+                                    <Button
+                                        variant="contained"
+                                        color="success"
+                                        startIcon={<DoDisturbIcon />}
+                                        sx={{ mr: 1 }}
+                                        onClick={() =>
+                                            setActionConfirm({
+                                                open: true,
+                                                type: "reject",
+                                                schedule,
+                                            })
+                                        }
+                                    >
+                                        Từ chối
+                                    </Button>
+                                    <Button
+                                        variant="contained"
+                                        startIcon={<CheckCircleIcon />}
+                                        onClick={() =>
+                                            setActionConfirm({
+                                                open: true,
+                                                type: "approve",
+                                                schedule,
+                                            })
+                                        }
+                                    >
+                                        Duyệt
+                                    </Button>
+                                </IfRole>
+                            )}
                         <Button onClick={onClose}>
                             {readOnly ? "Đóng" : "Hủy"}
                         </Button>
@@ -641,6 +701,31 @@ export default function LapLichDialog({
                 confirmColor="warning"
                 onConfirm={handleConfirmSave}
                 onClose={handleCloseConfirm}
+            />
+
+            <ConfirmDialog
+                open={actionConfirm.open}
+                title={
+                    actionConfirm.type === "approve"
+                        ? "Xác nhận duyệt"
+                        : "Xác nhận từ chối"
+                }
+                message={`Bạn có chắc muốn ${actionConfirm.type === "approve" ? "duyệt" : "từ chối"} lịch khám ${actionConfirm.schedule?.ma_lich_kham || ""}?`}
+                confirmLabel={
+                    actionConfirm.type === "approve" ? "Duyệt" : "Từ chối"
+                }
+                confirmColor={actionConfirm.type === "approve" ? "success" : "error"}
+                confirmIcon={
+                    actionConfirm.type === "approve" ? (
+                        <CheckCircleIcon />
+                    ) : (
+                        <DoDisturbIcon />
+                    )
+                }
+                onConfirm={handleActionConfirm}
+                onClose={() =>
+                    setActionConfirm({ open: false, type: null, schedule: null })
+                }
             />
 
             <FeedbackSnackbar

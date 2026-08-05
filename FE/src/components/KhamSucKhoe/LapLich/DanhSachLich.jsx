@@ -1,13 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import React from "react";
 import {
     Box,
     Card,
     CardContent,
     Chip,
-    Collapse,
     FormControl,
-    IconButton,
     MenuItem,
     Select,
     Stack,
@@ -17,12 +14,8 @@ import {
 } from "@mui/material";
 import ActionIcon from "@/components/common/ActionIcon.jsx";
 import {
-    DoDisturb as DoDisturbIcon,
-    CheckCircle as CheckCircleIcon,
     Delete as DeleteIcon,
     Edit as EditIcon,
-    KeyboardArrowDown as ArrowDownIcon,
-    KeyboardArrowUp as ArrowUpIcon,
     Send as SendIcon,
     Visibility as VisibilityIcon,
 } from "@mui/icons-material";
@@ -35,7 +28,6 @@ import IfRole from "@/components/common/IfRole.jsx";
 import { ROLES } from "@/constants/roleConstants.js";
 
 const columns = [
-    { key: "expand", label: "", sx: { width: 40 } },
     { key: "ma_lich", label: "Mã lịch" },
     { key: "thoi_gian", label: "Thời gian khám" },
     { key: "dia_diem", label: "Địa điểm" },
@@ -43,271 +35,143 @@ const columns = [
     { key: "thao_tac", label: "Thao tác" },
 ];
 
-function DetailSubTable({
-    details,
-    donViLookup,
-    schedule,
-    onEditDetail,
-    onDeleteDetail,
-}) {
-    const showDetailActions = schedule.trang_thai === "cho_gui";
-    return (
-        <DataTable
-            columns={[
-                { key: "don_vi", label: "Đơn vị" },
-                { key: "thoi_gian", label: "Thời gian" },
-                { key: "dia_diem", label: "Địa điểm" },
-                ...(showDetailActions
-                    ? [
-                          {
-                              key: "thao_tac",
-                              label: "Thao tác",
-                              sx: { width: 120 },
-                          },
-                      ]
-                    : []),
-            ]}
-            emptyMessage=""
-            minWidth={500}
-        >
-            {details.map((ct) => (
-                <TableRow key={ct.ma_don_vi}>
-                    <TableCell>
-                        <Typography variant="body2" fontWeight={600}>
-                            {ct.ma_don_vi}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                            {donViLookup.get(ct.ma_don_vi) || ""}
-                        </Typography>
-                    </TableCell>
-                    <TableCell>
-                        {formatDateTime(ct.thoi_gian_bat_dau)} -{" "}
-                        {formatDateTime(ct.thoi_gian_ket_thuc)}
-                    </TableCell>
-                    <TableCell>{ct.dia_diem || "--"}</TableCell>
-                    {showDetailActions && (
-                        <TableCell>
-                            <IfRole
-                                roles={[
-                                    ROLES.ADMIN,
-                                    ROLES.CNQY,
-                                    ROLES.BACSI,
-                                    ROLES.YSI,
-                                ]}
-                            >
-                                <Stack direction="row" spacing={0.5}>
-                                    <ActionIcon
-                                        title="Sửa"
-                                        icon={<EditIcon />}
-                                        onClick={() =>
-                                            onEditDetail(schedule, ct)
-                                        }
-                                    />
-                                    <ActionIcon
-                                        title="Xóa"
-                                        icon={<DeleteIcon />}
-                                        color="error"
-                                        onClick={() =>
-                                            onDeleteDetail(schedule, ct)
-                                        }
-                                    />
-                                </Stack>
-                            </IfRole>
-                        </TableCell>
-                    )}
-                </TableRow>
-            ))}
-        </DataTable>
-    );
-}
-
 function ScheduleTableRow({
     row,
     details,
-    isExpanded,
-    onToggle,
     onEdit,
     onDelete,
-    onEditDetail,
-    onDeleteDetail,
-    onApprove,
     onSubmit,
-    onReject,
     onView,
-    donViLookup,
     getScheduleStatus,
     statusColor,
 }) {
     const currentStatus = getScheduleStatus(row);
     const nearest = findNearestDetail(details);
 
+    const isDangThucHien = currentStatus === "Đang thực hiện";
+
     return (
-        <React.Fragment>
-            <TableRow hover>
-                <TableCell>
-                    <IconButton size="small" onClick={onToggle}>
-                        {isExpanded ? <ArrowUpIcon /> : <ArrowDownIcon />}
-                    </IconButton>
-                </TableCell>
-                <TableCell sx={{ fontWeight: 700, color: "primary.main" }}>
-                    {row.ma_lich_kham}
-                </TableCell>
-                <TableCell>
-                    {formatDateTime(row.thoi_gian_bat_dau)} -{" "}
-                    {formatDateTime(row.thoi_gian_ket_thuc)}
-                </TableCell>
-                <TableCell>{nearest?.dia_diem || "--"}</TableCell>
-                <TableCell>
-                    <Stack
-                        direction="row"
-                        spacing={0.5}
-                        sx={{ alignItems: "center" }}
+        <TableRow
+            hover
+            sx={
+                isDangThucHien
+                    ? { bgcolor: statusColor(currentStatus).bgcolor }
+                    : undefined
+            }
+        >
+            <TableCell sx={{ fontWeight: 700, color: "primary.main" }}>
+                {row.ma_lich_kham}
+            </TableCell>
+            <TableCell>
+                {formatDateTime(row.thoi_gian_bat_dau)} -{" "}
+                {formatDateTime(row.thoi_gian_ket_thuc)}
+            </TableCell>
+            <TableCell>{nearest?.dia_diem || "--"}</TableCell>
+            <TableCell>
+                <Stack
+                    direction="row"
+                    spacing={0.5}
+                    sx={{ alignItems: "center" }}
+                >
+                    <Chip
+                        size="small"
+                        label={currentStatus}
+                        sx={{
+                            ...statusColor(currentStatus),
+                            fontWeight: 700,
+                        }}
+                    />
+                    <Chip
+                        size="small"
+                        label={
+                            row.trang_thai === "da_duyet"
+                                ? "Đã duyệt"
+                                : row.trang_thai === "cho_duyet"
+                                  ? "Chờ duyệt"
+                                  : row.trang_thai === "cho_gui"
+                                    ? "Chờ gửi"
+                                    : row.trang_thai === "tu_choi"
+                                      ? "Từ chối"
+                                      : row.trang_thai || "—"
+                        }
+                        color={
+                            row.trang_thai === "da_duyet"
+                                ? "success"
+                                : row.trang_thai === "cho_duyet"
+                                  ? "warning"
+                                  : row.trang_thai === "tu_choi"
+                                    ? "error"
+                                    : "default"
+                        }
+                        variant={row.trang_thai === "cho_gui" ? "outlined" : "filled"}
+                        sx={{ fontWeight: 600 }}
+                    />
+                </Stack>
+            </TableCell>
+            <TableCell>
+                {row.trang_thai === "da_duyet" ? (
+                    <IfRole
+                        roles={[
+                            ROLES.ADMIN,
+                            ROLES.CNQY,
+                            ROLES.BACSI,
+                            ROLES.YSI,
+                        ]}
                     >
-                        <Chip
-                            size="small"
-                            label={currentStatus}
-                            sx={{
-                                ...statusColor(currentStatus),
-                                fontWeight: 700,
-                            }}
-                        />
-                        <Chip
-                            size="small"
-                            label={
-                                row.trang_thai === "da_duyet"
-                                    ? "Đã duyệt"
-                                    : row.trang_thai === "cho_duyet"
-                                      ? "Chờ duyệt"
-                                      : row.trang_thai === "cho_gui"
-                                        ? "Chờ gửi"
-                                        : row.trang_thai === "tu_choi"
-                                          ? "Từ chối"
-                                          : row.trang_thai || "—"
-                            }
-                            color={
-                                row.trang_thai === "da_duyet"
-                                    ? "success"
-                                    : row.trang_thai === "cho_duyet"
-                                      ? "warning"
-                                      : row.trang_thai === "tu_choi"
-                                        ? "error"
-                                        : "default"
-                            }
-                            variant={row.trang_thai === "cho_gui" ? "outlined" : "filled"}
-                            sx={{ fontWeight: 600 }}
-                        />
-                    </Stack>
-                </TableCell>
-                <TableCell>
-                    {row.trang_thai === "da_duyet" ? (
-                        <IfRole
-                            roles={[
-                                ROLES.ADMIN,
-                                ROLES.CNQY,
-                                ROLES.BACSI,
-                                ROLES.YSI,
-                            ]}
-                        >
-                            <ActionIcon
-                                title="Xem"
-                                icon={<VisibilityIcon />}
-                                color="info"
-                                onClick={() => onView(row)}
-                            />
-                        </IfRole>
-                    ) : row.trang_thai === "cho_gui" ? (
-                        <IfRole
-                            roles={[
-                                ROLES.ADMIN,
-                                ROLES.CNQY,
-                                ROLES.BACSI,
-                                ROLES.YSI,
-                            ]}
-                        >
-                            <Stack direction="row" spacing={0.5}>
-                                <ActionIcon title="Sửa" icon={<EditIcon />} onClick={() => onEdit(row)} />
-                                <ActionIcon title="Gửi duyệt" icon={<SendIcon />} onClick={() => onSubmit(row)} />
-                                <ActionIcon title="Xóa" icon={<DeleteIcon />} color="error" onClick={() => onDelete(row)} />
-                            </Stack>
-                        </IfRole>
-                    ) : row.trang_thai === "cho_duyet" ? (
-                        <Stack direction="row" spacing={0.5}>
-                            <ActionIcon title="Xem" icon={<VisibilityIcon />} color="info" onClick={() => onView(row)} />
-                            <IfRole roles={[ROLES.ADMIN, ROLES.CNQY]}>
-                                <ActionIcon title="Duyệt" icon={<CheckCircleIcon />} color="success" onClick={() => onApprove(row)} />
-                                <ActionIcon title="Không duyệt" icon={<DoDisturbIcon />} color="error" onClick={() => onReject(row)} />
-                                <ActionIcon title="Xóa" icon={<DeleteIcon />} color="error" onClick={() => onDelete(row)} />
-                            </IfRole>
-                        </Stack>
-                    ) : row.trang_thai === "tu_choi" ? (
                         <ActionIcon
                             title="Xem"
                             icon={<VisibilityIcon />}
                             color="info"
                             onClick={() => onView(row)}
                         />
-                    ) : null}
-                </TableCell>
-            </TableRow>
-            <TableRow>
-                <TableCell sx={{ p: 0 }} colSpan={6}>
-                    <Collapse in={isExpanded} timeout="auto" unmountOnExit>
-                        <Box sx={{ p: 2, bgcolor: "grey.50" }}>
-                            {details.length === 0 ? (
-                                <Typography
-                                    color="text.secondary"
-                                    sx={{ textAlign: "center", py: 1 }}
-                                >
-                                    Chưa có đơn vị nào trong lịch này.
-                                </Typography>
-                            ) : (
-                                <DetailSubTable
-                                    details={details}
-                                    donViLookup={donViLookup}
-                                    schedule={row}
-                                    onEditDetail={onEditDetail}
-                                    onDeleteDetail={onDeleteDetail}
-                                />
-                            )}
-                        </Box>
-                    </Collapse>
-                </TableCell>
-            </TableRow>
-        </React.Fragment>
+                    </IfRole>
+                ) : row.trang_thai === "cho_gui" ? (
+                    <IfRole
+                        roles={[
+                            ROLES.ADMIN,
+                            ROLES.CNQY,
+                            ROLES.BACSI,
+                            ROLES.YSI,
+                        ]}
+                    >
+                        <Stack direction="row" spacing={0.5}>
+                            <ActionIcon title="Sửa" icon={<EditIcon />} onClick={() => onEdit(row)} />
+                            <ActionIcon title="Gửi duyệt" icon={<SendIcon />} onClick={() => onSubmit(row)} />
+                            <ActionIcon title="Xóa" icon={<DeleteIcon />} color="error" onClick={() => onDelete(row)} />
+                        </Stack>
+                    </IfRole>
+                ) : row.trang_thai === "cho_duyet" ? (
+                    <Stack direction="row" spacing={0.5}>
+                        <ActionIcon title="Xem" icon={<VisibilityIcon />} color="info" onClick={() => onView(row)} />
+                        <IfRole roles={[ROLES.ADMIN, ROLES.CNQY]}>
+                            <ActionIcon title="Xóa" icon={<DeleteIcon />} color="error" onClick={() => onDelete(row)} />
+                        </IfRole>
+                    </Stack>
+                ) : row.trang_thai === "tu_choi" ? (
+                    <ActionIcon
+                        title="Xem"
+                        icon={<VisibilityIcon />}
+                        color="info"
+                        onClick={() => onView(row)}
+                    />
+                ) : null}
+            </TableCell>
+        </TableRow>
     );
 }
 
 export default function DanhSachLich({
     schedules,
     chiTietMap,
-    unitMap,
     loading,
     initialStatus = "",
     onEdit,
     onDelete,
-    onEditDetail,
-    onDeleteDetail,
-    onApprove,
     onSubmit,
-    onReject,
     onView,
     getScheduleStatus,
     statusColor,
 }) {
-    const donViLookup = useMemo(() => {
-        const m = new Map();
-        (unitMap || []).forEach((u) => m.set(u.ma_don_vi, u.ten_don_vi));
-        return m;
-    }, [unitMap]);
-
-    const [expanded, setExpanded] = useState({});
-    const toggleExpand = (ma_lich_kham) => {
-        setExpanded((prev) => ({
-            ...prev,
-            [ma_lich_kham]: !prev[ma_lich_kham],
-        }));
-    };
-
     const [year, setYear] = useState("Tất cả");
     const [status, setStatus] = useState(initialStatus || "");
 
@@ -417,17 +281,10 @@ export default function DanhSachLich({
                                 key={row.ma_lich_kham}
                                 row={row}
                                 details={chiTietMap[row.ma_lich_kham] || []}
-                                isExpanded={Boolean(expanded[row.ma_lich_kham])}
-                                onToggle={() => toggleExpand(row.ma_lich_kham)}
                                 onEdit={onEdit}
                                 onDelete={onDelete}
-                                onEditDetail={onEditDetail}
-                                onDeleteDetail={onDeleteDetail}
-                                onApprove={onApprove}
                                 onSubmit={onSubmit}
-                                onReject={onReject}
                                 onView={onView}
-                                donViLookup={donViLookup}
                                 getScheduleStatus={getScheduleStatus}
                                 statusColor={statusColor}
                             />

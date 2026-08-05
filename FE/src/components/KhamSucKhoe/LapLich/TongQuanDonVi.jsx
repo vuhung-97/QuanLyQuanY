@@ -58,8 +58,8 @@ export default function TongQuanDonVi({
                     <Box>
                         <Typography variant="h2">
                             {latestStatus === "Đang thực hiện"
-                                ? "Lịch khám đang thực hiện"
-                                : "Lịch khám sắp tới"}
+                                ? "Lịch khám đơn vị đang thực hiện"
+                                : "Lịch khám đơn vị sắp tới"}
                         </Typography>
                     </Box>
                 </Stack>
@@ -73,8 +73,30 @@ export default function TongQuanDonVi({
                         const detail = scheduleDetails.find(
                             (d) => d.ma_don_vi === row.ma_don_vi,
                         );
+                        const now = new Date();
+                        const startTime = detail?.thoi_gian_bat_dau
+                            ? new Date(detail.thoi_gian_bat_dau)
+                            : null;
+                        const endTime = detail?.thoi_gian_ket_thuc
+                            ? new Date(detail.thoi_gian_ket_thuc)
+                            : null;
+                        const isActive =
+                            startTime &&
+                            endTime &&
+                            now >= startTime &&
+                            now <= endTime;
                         return (
-                            <TableRow key={row.ma_don_vi} hover>
+                            <TableRow
+                                key={row.ma_don_vi}
+                                hover
+                                sx={
+                                    isActive
+                                        ? {
+                                              bgcolor: "rgba(245, 158, 11, 0.14)",
+                                          }
+                                        : undefined
+                                }
+                            >
                                 <TableCell
                                     sx={{
                                         fontWeight: 700,
@@ -94,6 +116,11 @@ export default function TongQuanDonVi({
                                     {detail ? (
                                         <Chip
                                             size="small"
+                                            color={
+                                                isActive
+                                                    ? "warning"
+                                                    : "default"
+                                            }
                                             label={`${formatDateTime(detail.thoi_gian_bat_dau)} - ${formatDateTime(detail.thoi_gian_ket_thuc)}`}
                                             sx={{ fontWeight: 600 }}
                                         />

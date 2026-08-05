@@ -12,7 +12,7 @@ import DanhSachLich from "@/components/KhamSucKhoe/LapLich/DanhSachLich.jsx";
 import LapLichDialog from "@/components/KhamSucKhoe/LapLich/LapLichDialog.jsx";
 import TongQuanDonVi from "@/components/KhamSucKhoe/LapLich/TongQuanDonVi.jsx";
 import PhanCongNhiemVu from "@/components/KhamSucKhoe/LapLich/PhanCongNhiemVu.jsx";
-import StatCardGrid from "@/components/common/StatCardGrid.jsx";
+import ThoiGianKham from "@/components/KhamSucKhoe/LapLich/ThoiGianKham.jsx";
 import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
 import IfRole from "@/components/common/IfRole.jsx";
 import { ROLES } from "@/constants/roleConstants.js";
@@ -28,7 +28,6 @@ export default function LapLichPage() {
         setError,
         latestSchedule,
         latestStatus,
-        summaryItems,
         loadSchedules,
         refreshCounter,
     } = useLichKhamData();
@@ -73,15 +72,6 @@ export default function LapLichPage() {
         });
     };
 
-    const handleEditDetail = (schedule, detail) => {
-        setDialog({
-            open: true,
-            schedule,
-            chiTietList: chiTietMap[schedule.ma_lich_kham] || [],
-            readOnly: false,
-        });
-    };
-
     const handleView = (schedule) => {
         setDialog({
             open: true,
@@ -93,10 +83,6 @@ export default function LapLichPage() {
 
     const handleDeleteClick = (schedule) => {
         setDeleteDialog({ open: true, schedule, detailInfo: null });
-    };
-
-    const handleDeleteDetail = (schedule, detail) => {
-        setDeleteDialog({ open: true, schedule, detailInfo: detail });
     };
 
     const handleDeleteConfirm = async () => {
@@ -193,9 +179,22 @@ export default function LapLichPage() {
                 </Alert>
             )}
 
-            <StatCardGrid
-                items={summaryItems}
-                sizeOverrides={{ "Thời gian khám": { md: 6 } }}
+            <DanhSachLich
+                schedules={filteredSchedules}
+                chiTietMap={chiTietMap}
+                loading={loading}
+                initialStatus={searchParams.get("filter") || ""}
+                onEdit={handleEdit}
+                onDelete={handleDeleteClick}
+                onSubmit={handleSubmit}
+                onView={handleView}
+                getScheduleStatus={getScheduleStatus}
+                statusColor={statusColor}
+            />
+
+            <ThoiGianKham
+                schedule={latestSchedule}
+                latestStatus={latestStatus}
             />
 
             <TongQuanDonVi
@@ -211,24 +210,6 @@ export default function LapLichPage() {
                 refreshCounter={refreshCounter}
             />
 
-            <DanhSachLich
-                schedules={filteredSchedules}
-                chiTietMap={chiTietMap}
-                unitMap={unitStats}
-                loading={loading}
-                initialStatus={searchParams.get("filter") || ""}
-                onEdit={handleEdit}
-                onDelete={handleDeleteClick}
-                onEditDetail={handleEditDetail}
-                onDeleteDetail={handleDeleteDetail}
-                onApprove={handleApprove}
-                onSubmit={handleSubmit}
-                onReject={handleReject}
-                onView={handleView}
-                getScheduleStatus={getScheduleStatus}
-                statusColor={statusColor}
-            />
-
             <LapLichDialog
                 open={dialog.open}
                 onClose={() =>
@@ -239,6 +220,8 @@ export default function LapLichPage() {
                 chiTietList={dialog.chiTietList}
                 unitOptions={unitOptions}
                 readOnly={dialog.readOnly}
+                onApprove={handleApprove}
+                onReject={handleReject}
             />
 
             <ConfirmDialog
