@@ -172,6 +172,7 @@ export default function SucKhoeDonViWidget({ sx }) {
                                                 />
                                                 <Bar
                                                     dataKey="ty_le"
+                                                    name="Tỷ lệ"
                                                     radius={[0, 4, 4, 0]}
                                                     maxBarSize={32}
                                                 >
