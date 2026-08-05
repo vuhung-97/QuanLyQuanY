@@ -155,22 +155,26 @@ def get_benh_an_chi_tiet(id: str, db: Session = Depends(get_db)):
             QuanNhan.so_dien_thoai,
             QuanNhan.so_the_bhyt,
             QuanNhan.nghe_nghiep,
+            QuanNhan.ngay_sinh,
+            QuanNhan.gioi_tinh,
             DonVi.ten_don_vi,
             Buong.ten_buong,
             Giuong.ten_giuong,
             DmNhomBenh.ten_nhom,
+            KhamBenh.trieu_chung,
         )
         .join(QuanNhan, BenhAn.ma_quan_nhan == QuanNhan.ma_quan_nhan, isouter=True)
         .join(DonVi, QuanNhan.ma_don_vi == DonVi.ma_don_vi, isouter=True)
         .join(Buong, BenhAn.ma_buong == Buong.ma_buong, isouter=True)
         .join(Giuong, BenhAn.ma_giuong == Giuong.ma_giuong, isouter=True)
         .join(DmNhomBenh, BenhAn.ma_nhom_benh == DmNhomBenh.ma_nhom, isouter=True)
+        .join(KhamBenh, BenhAn.ma_kham_benh == KhamBenh.ma_kham_benh, isouter=True)
         .filter(BenhAn.ma_benh_an == id)
         .first()
     )
     if not result:
         raise HTTPException(status_code=404, detail="Không tìm thấy bệnh án.")
-    ba, ho_ten, cap_bac, chuc_vu, so_dien_thoai, so_the_bhyt, nghe_nghiep, ten_don_vi, ten_buong, ten_giuong, ten_nhom = result
+    ba, ho_ten, cap_bac, chuc_vu, so_dien_thoai, so_the_bhyt, nghe_nghiep, ngay_sinh, gioi_tinh, ten_don_vi, ten_buong, ten_giuong, ten_nhom, trieu_chung = result
     d = {c.key: getattr(ba, c.key) for c in inspect(BenhAn).columns}
     d["ho_ten"] = ho_ten
     d["cap_bac"] = cap_bac
@@ -178,10 +182,13 @@ def get_benh_an_chi_tiet(id: str, db: Session = Depends(get_db)):
     d["so_dien_thoai"] = so_dien_thoai
     d["so_the_bhyt"] = so_the_bhyt
     d["nghe_nghiep"] = nghe_nghiep
+    d["ngay_sinh"] = str(ngay_sinh) if ngay_sinh else None
+    d["gioi_tinh"] = gioi_tinh
     d["ten_don_vi"] = ten_don_vi
     d["ten_buong"] = ten_buong
     d["ten_giuong"] = ten_giuong
     d["ten_nhom"] = ten_nhom
+    d["trieu_chung"] = trieu_chung
     if ba.ma_nguoi_dung:
         nd = (
             db.query(NguoiDung.ho_ten, VaiTro.ten_vai_tro)

@@ -61,3 +61,6 @@ class BenhAnReadDetail(BenhAnRead):
     ten_nhom: str | None = None
     ten_nguoi_lap_ba: str | None = None
     vai_tro_nguoi_lap_ba: str | None = None
+    ngay_sinh: date | None = None
+    gioi_tinh: bool | None = None
+    trieu_chung: str | None = None

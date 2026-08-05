@@ -9,6 +9,7 @@ import { getScheduleStatus } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js"
 import GroupsIcon from "@mui/icons-material/Groups";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ScienceIcon from "@mui/icons-material/Science";
+import PendingIcon from "@mui/icons-material/Pending";
 
 export default function DotKhamSucKhoeWidget() {
     const navigate = useNavigate();
@@ -90,10 +91,17 @@ export default function DotKhamSucKhoeWidget() {
         const tongQuanSo = stats.tong_quan_so || 0;
         const daKham = stats.da_kham || 0;
         const daLayMau = stats.da_lay_mau || 0;
+        const chuaKham = Math.max(
+            0,
+            (stats.da_lay_mau || 0) - (stats.dang_kham || 0) - (stats.da_kham || 0),
+        );
+        const chuaLayMau = Math.max(0, tongQuanSo - daLayMau);
         const phanTramDaKham =
             tongQuanSo > 0 ? Math.round((daKham / tongQuanSo) * 100) : 0;
-        const phanTramDaLayMau =
-            tongQuanSo > 0 ? Math.round((daLayMau / tongQuanSo) * 100) : 0;
+        const phanTramChuaKham =
+            tongQuanSo > 0 ? Math.round((chuaKham / tongQuanSo) * 100) : 0;
+        const phanTramChuaLayMau =
+            tongQuanSo > 0 ? Math.round((chuaLayMau / tongQuanSo) * 100) : 0;
         const result = [
             {
                 label: "Tổng quân số đợt khám",
@@ -101,6 +109,7 @@ export default function DotKhamSucKhoeWidget() {
                 color: "primary.main",
                 bg: "rgba(11, 59, 96, 0.1)",
                 icon: <GroupsIcon />,
+                filterKey: "",
             },
             {
                 label: "Đã khám",
@@ -109,16 +118,27 @@ export default function DotKhamSucKhoeWidget() {
                 color: "success.main",
                 bg: "rgba(16, 185, 129, 0.12)",
                 icon: <CheckCircleIcon />,
+                filterKey: "da_kham",
+            },
+            {
+                label: "Chưa khám",
+                value: chuaKham,
+                note: `${phanTramChuaKham}% quân số đã lấy máu chưa khám`,
+                color: "warning.main",
+                bg: "rgba(245, 158, 11, 0.12)",
+                icon: <PendingIcon />,
+                filterKey: "da_lay_mau",
             },
         ];
         if (canXemXetNghiem) {
             result.push({
-                label: "Đã lấy máu xét nghiệm",
-                value: daLayMau,
-                note: `${phanTramDaLayMau}% quân số đã lấy máu`,
+                label: "Chưa lấy máu xét nghiệm",
+                value: chuaLayMau,
+                note: `${phanTramChuaLayMau}% quân số chưa lấy máu`,
                 color: "secondary.main",
                 bg: "rgba(0, 180, 216, 0.12)",
                 icon: <ScienceIcon />,
+                filterKey: "chua_lay_mau",
             });
         }
         return result;
@@ -137,9 +157,11 @@ export default function DotKhamSucKhoeWidget() {
             <StatCardGrid
                 items={items}
                 loading={loading}
-                onCardClick={() =>
+                onCardClick={(key = "") =>
                     navigate(
-                        `/kham-dinh-ky/kham-suc-khoe?schedule=${schedule.ma_lich_kham}&unit=__ALL__`,
+                        `/kham-dinh-ky/kham-suc-khoe?schedule=${schedule.ma_lich_kham}&unit=__ALL__${
+                            key ? `&status=${key}` : ""
+                        }`,
                     )
                 }
             />

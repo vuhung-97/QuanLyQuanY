@@ -105,9 +105,9 @@ export default function ChiTietBenhAn({ open, benhAnId, onClose, onSaved, readOn
     );
 
     const FIELDS = [
-        "ho_ten", "ma_quan_nhan", "cap_bac", "chuc_vu", "ten_don_vi",
-        "so_dien_thoai", "so_the_bhyt", "ma_benh_an", "ngay_nhap_vien",
-        "trang_thai", "ten_buong", "ten_giuong",
+        "ho_ten", "ma_quan_nhan", "ngay_sinh", "gioi_tinh", "cap_bac", "chuc_vu",
+        "ten_don_vi", "so_dien_thoai", "so_the_bhyt", "ma_benh_an", "ngay_nhap_vien",
+        "trang_thai", "ten_buong", "ten_giuong", "trieu_chung",
     ];
 
     return (

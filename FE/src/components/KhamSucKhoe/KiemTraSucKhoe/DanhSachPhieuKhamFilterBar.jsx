@@ -46,7 +46,7 @@ export default function DanhSachPhieuKhamFilterBar({
                                 key={s.ma_lich_kham}
                                 value={s.ma_lich_kham}
                             >
-                                {s.ma_lich_kham} ({formatDate(s.thoi_gian_bat_dau)} - {formatDate(s.thoi_gian_ket_thuc)})
+                                {s.ma_lich_kham} ({formatDate(s.thoi_gian_lay_mau_bat_dau || s.thoi_gian_bat_dau)} - {formatDate(s.thoi_gian_ket_thuc)})
                             </MenuItem>
                         ))}
                         {selectedSchedule &&

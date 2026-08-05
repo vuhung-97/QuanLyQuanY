@@ -136,16 +136,9 @@ export default function KhamSucKhoeMain() {
             {stats && (
                 <StatCardGrid
                     items={statsItems}
-                    onCardClick={(keys) => {
-                        if (!keys) return;
-                        setStatusFilter((prev) =>
-                            Array.isArray(keys) &&
-                            prev.length === keys.length &&
-                            keys.every((k) => prev.includes(k))
-                                ? []
-                                : keys,
-                        );
-                    }}
+                    onCardClick={(key = "") =>
+                        setStatusFilter((prev) => (prev === key ? "" : key))
+                    }
                 />
             )}
 

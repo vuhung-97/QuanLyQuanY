@@ -18,7 +18,7 @@ const FIELD_DEFS = {
     },
     ngay_sinh: {
         label: "Ngày sinh",
-        get: (d) => d?.ngay_sinh || "--",
+        get: (d) => formatDate(d?.ngay_sinh) || "--",
     },
     gioi_tinh: {
         label: "Giới tính",
@@ -89,6 +89,10 @@ const FIELD_DEFS = {
     },
     ten_buong: { label: "Buồng", get: (d) => d?.ten_buong || "--" },
     ten_giuong: { label: "Giường", get: (d) => d?.ten_giuong || "--" },
+    trieu_chung: {
+        label: "Triệu chứng",
+        get: (d) => d?.trieu_chung || "--",
+    },
     ma_lay_mau: {
         label: "Mã lấy máu",
         get: (d) => d?.ma_lay_mau || "--",

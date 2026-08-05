@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
     CheckCircle as CheckCircleIcon,
     PendingActions as PendingActionsIcon,
@@ -37,7 +38,10 @@ export default function useKhamSucKhoeMain() {
         refreshStats,
     } = useKhamSucKhoeData();
 
-    const [statusFilter, setStatusFilter] = useState([]);
+    const [searchParams] = useSearchParams();
+    const [statusFilter, setStatusFilter] = useState(
+        searchParams.get("status") || "",
+    );
     const [searchText, setSearchText] = useState("");
     const [myAssignment, setMyAssignment] = useState(null);
     const [allowedTabs, setAllowedTabs] = useState(ALL_TABS);
@@ -97,7 +101,7 @@ export default function useKhamSucKhoeMain() {
                           color: "success.main",
                           bg: "rgba(16, 185, 129, 0.12)",
                           icon: <CheckCircleIcon />,
-                          filterKey: ["da_kham"],
+                          filterKey: "da_kham",
                       },
                       {
                           label: "Đang khám",
@@ -105,23 +109,28 @@ export default function useKhamSucKhoeMain() {
                           color: "warning.main",
                           bg: "rgba(245, 158, 11, 0.14)",
                           icon: <PendingActionsIcon />,
-                          filterKey: ["dang_kham"],
+                          filterKey: "dang_kham",
                       },
                       {
-                          label: "Đã lấy máu xét nghiệm",
-                          value: stats.da_lay_mau ?? 0,
+                          label: "Chưa lấy máu xét nghiệm",
+                          value: (stats.tong_quan_so ?? 0) - (stats.da_lay_mau ?? 0),
                           color: "secondary.main",
                           bg: "rgba(0, 180, 216, 0.12)",
                           icon: <ScienceIcon />,
-                          filterKey: ["da_lay_mau", "dang_kham", "da_kham"],
+                          filterKey: "chua_lay_mau",
                       },
                       {
-                          label: "Còn lại",
-                          value: stats.con_lai ?? 0,
+                          label: "Chưa khám",
+                          value: Math.max(
+                              0,
+                              (stats.da_lay_mau ?? 0) -
+                                  (stats.dang_kham ?? 0) -
+                                  (stats.da_kham ?? 0),
+                          ),
                           color: "text.secondary",
                           bg: "rgba(100, 116, 139, 0.12)",
                           icon: <PersonAddAltIcon />,
-                          filterKey: ["chua_lay_mau", "da_lay_mau"],
+                          filterKey: "da_lay_mau",
                       },
                   ]
                 : [],
