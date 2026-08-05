@@ -23,10 +23,13 @@ export default function useKhamBenhForm({
     const [saving, setSaving] = useState(false);
     const [trieuChung, setTrieuChung] = useState("");
     const [maNhomBenh, setMaNhomBenh] = useState("");
+    const [chanDoan, setChanDoan] = useState("");
     const [predictions, setPredictions] = useState([]);
     const [predicting, setPredicting] = useState(false);
     const [threshold, setThreshold] = useState(5);
     const isFirstLoad = useRef(true);
+    const selectionSeqRef = useRef(0);
+    const predictSeqRef = useRef(0);
 
     const formRef = useRef({ chan_doan: "", phuong_phap_dieu_tri: "" });
     const updateField = useCallback((name, value) => {
@@ -61,6 +64,7 @@ export default function useKhamBenhForm({
         setQn(null);
         setTrieuChung("");
         setMaNhomBenh("");
+        setChanDoan("");
         setPrescriptionItems([]);
         formRef.current = { chan_doan: "", phuong_phap_dieu_tri: "" };
 
@@ -101,6 +105,7 @@ export default function useKhamBenhForm({
                 formRef.current.chan_doan = data.chan_doan || "";
                 formRef.current.phuong_phap_dieu_tri =
                     data.phuong_phap_dieu_tri || "";
+                setChanDoan(data.chan_doan || "");
                 setMaNhomBenh(data.ma_nhom_benh || "");
                 setPrescriptionItems(items);
 
@@ -263,10 +268,12 @@ export default function useKhamBenhForm({
         if (!trieuChung.trim()) return;
         const words = trieuChung.split(/[,;]\s*/).filter(Boolean);
         if (words.length === 0) return;
+        const seq = ++predictSeqRef.current;
         setPredicting(true);
         try {
-            const res = await khamBenhService.predictDisease(words, 5);
-            setPredictions(res.data.predictions || []);
+            const res = await khamBenhService.predictDisease(words, threshold);
+            if (seq === predictSeqRef.current)
+                setPredictions(res.data.predictions || []);
         } catch {
             setSnackbar({
                 open: true,
@@ -274,20 +281,49 @@ export default function useKhamBenhForm({
                 severity: "error",
             });
         } finally {
-            setPredicting(false);
+            if (seq === predictSeqRef.current) setPredicting(false);
         }
-    }, [trieuChung]);
+    }, [trieuChung, threshold]);
 
-    const handleSelectPrediction = useCallback(async (diseaseName) => {
-        try {
-            const res = await danhMucService.searchDisease(diseaseName);
-            const disease = res.data;
+    const getKhacGroup = useCallback(() => {
+        const khac =
+            nhomBenhList?.find((n) => n.ten_nhom === "Khác")?.ma_nhom ||
+            "XIV";
+        return khac;
+    }, [nhomBenhList]);
+
+    const handleSelectPrediction = useCallback(
+        async (diseaseName) => {
+            const seq = ++selectionSeqRef.current;
+            setChanDoan(diseaseName);
             formRef.current.chan_doan = diseaseName;
-            if (disease && disease.ma_nhom_benh) {
-                setMaNhomBenh(disease.ma_nhom_benh);
+            try {
+                const res = await danhMucService.searchDisease(diseaseName);
+                if (seq !== selectionSeqRef.current) return;
+                const disease = res.data;
+                if (disease && disease.ma_nhom_benh) {
+                    setMaNhomBenh(disease.ma_nhom_benh);
+                } else {
+                    // Không tìm thấy bệnh/phân loại → fallback về nhóm "Khác"
+                    setMaNhomBenh(getKhacGroup());
+                }
+            } catch {
+                setMaNhomBenh(getKhacGroup());
             }
-        } catch {
-            formRef.current.chan_doan = diseaseName;
+        },
+        [getKhacGroup],
+    );
+
+    const handleChanDoanChange = useCallback((value) => {
+        setChanDoan(value);
+        formRef.current.chan_doan = value;
+    }, []);
+
+    const handleSelectDisease = useCallback((disease) => {
+        setChanDoan(disease.ten_benh);
+        formRef.current.chan_doan = disease.ten_benh;
+        if (disease && disease.ma_nhom_benh) {
+            setMaNhomBenh(disease.ma_nhom_benh);
         }
     }, []);
 
@@ -425,6 +461,8 @@ export default function useKhamBenhForm({
         handleAdmissionConfirm,
         maNhomBenh,
         setMaNhomBenh,
+        chanDoan,
+        setChanDoan,
         nhomBenhList,
         predictions,
         predicting,
@@ -432,6 +470,8 @@ export default function useKhamBenhForm({
         setThreshold,
         handleDiagnose,
         handleSelectPrediction,
+        handleChanDoanChange,
+        handleSelectDisease,
         snackbar,
         setSnackbar,
     };

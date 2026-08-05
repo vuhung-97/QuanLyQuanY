@@ -3,14 +3,15 @@ import PrintHeaderDonVi from "@/components/common/print/PrintHeaderDonVi.jsx";
 import PrintSignature from "@/components/common/print/PrintSignature.jsx";
 
 const TRANG_THAI_LABEL = {
-    chua_kham: "Chưa khám",
+    chua_lay_mau: "Chưa lấy máu",
+    da_lay_mau: "Đã lấy máu",
     dang_kham: "Đang khám",
     da_kham: "Đã khám",
 };
 
 function getStatusLabel(phieu) {
-    if (!phieu) return "Chưa khám";
-    return TRANG_THAI_LABEL[phieu.trang_thai] || "Chưa khám";
+    if (!phieu) return "Chưa lấy máu";
+    return TRANG_THAI_LABEL[phieu.trang_thai] || "Chưa lấy máu";
 }
 
 export default function KhamSucKhoePrint({ data, paperSize = "A4" }) {

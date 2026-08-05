@@ -28,14 +28,18 @@ const NormalToggleField = memo(function NormalToggleField({
             name={name}
             value={value}
             onChange={onChange}
-            disabled={disabled || isNormal}
+            disabled={disabled || readOnly || isNormal}
             readOnly={readOnly}
             multiline={multiline}
             minRows={minRows}
             fullWidth
             size={size}
             helperText={helperText}
-            sx={height ? { '& .MuiInputBase-root': { height, overflow: 'auto' } } : undefined}
+            sx={
+                height
+                    ? { "& .MuiInputBase-root": { height, overflow: "auto" } }
+                    : undefined
+            }
             slotProps={{
                 input: {
                     sx: multiline ? { fontSize: "1rem" } : undefined,

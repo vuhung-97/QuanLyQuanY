@@ -1,14 +1,15 @@
 import ExcelJS from "exceljs";
 
 const TRANG_THAI_LABEL = {
-    chua_kham: "Chưa khám",
+    chua_lay_mau: "Chưa lấy máu",
+    da_lay_mau: "Đã lấy máu",
     dang_kham: "Đang khám",
     da_kham: "Đã khám",
 };
 
 function getStatusLabel(phieu) {
-    if (!phieu) return "Chưa khám";
-    return TRANG_THAI_LABEL[phieu.trang_thai] || "Chưa khám";
+    if (!phieu) return "Chưa lấy máu";
+    return TRANG_THAI_LABEL[phieu.trang_thai] || "Chưa lấy máu";
 }
 
 export function buildXlsContent(
@@ -31,7 +32,7 @@ export function buildXlsContent(
     const filtered = soldiers
         .filter((qn) => {
             const tt = getStatusLabel(phieuMap[qn.ma_quan_nhan]);
-            return tt === "Chưa khám" || tt === "Đang khám";
+            return tt !== "Đã khám";
         })
         .sort((a, b) => {
             const uA = a.ma_don_vi || "";
@@ -264,7 +265,7 @@ export function buildXlsContentChuaLayMau(
     const filtered = soldiers
         .filter((qn) => {
             const phieu = phieuMap[qn.ma_quan_nhan];
-            return !phieu?.ma_lay_mau || !phieu?.xet_nghiem;
+            return !phieu || phieu.trang_thai === "chua_lay_mau";
         })
         .sort((a, b) => {
             const uA = a.ma_don_vi || "";

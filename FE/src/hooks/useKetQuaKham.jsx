@@ -150,7 +150,7 @@ export default function useKetQuaKham() {
         return [
             { name: "Đã khám", value: countDaKham, color: "#10B981" },
             { name: "Đang khám", value: countDangKham, color: "#F59E0B" },
-            { name: "Chưa khám", value: conLai, color: "#94A3B8" },
+            { name: "Chưa lấy máu", value: conLai, color: "#94A3B8" },
         ];
     }, [soldiers, phieuMap]);
 

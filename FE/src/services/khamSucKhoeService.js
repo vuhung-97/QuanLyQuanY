@@ -29,6 +29,8 @@ export const khamSucKhoeService = {
 
     taoMaLayMau: (data) => api.post("/phieu_kham_suc_khoe/tao-ma-lay-mau", data),
 
+    xacNhanLayMau: (data) => api.post("/phieu_kham_suc_khoe/xac-nhan-lay-mau", data),
+
     getPhieuByMaQuanNhan: (maQuanNhan) =>
         api.get(`/phieu_kham_suc_khoe/quan-nhan/${maQuanNhan}`),
 

@@ -54,7 +54,8 @@ function StatusChip({ value, map }) {
 }
 
 const KSK_STATUS = {
-    chua_kham: { label: "Chưa khám", color: "default" },
+    chua_lay_mau: { label: "Chưa lấy máu", color: "default" },
+    da_lay_mau: { label: "Đã lấy máu", color: "info" },
     dang_kham: { label: "Đang khám", color: "warning" },
     da_kham: { label: "Đã khám", color: "success" },
 };

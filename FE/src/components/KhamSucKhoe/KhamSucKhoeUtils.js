@@ -34,6 +34,24 @@ export function getScheduleStatus(row) {
     return "Đang thực hiện";
 }
 
+function isInWindow(batDau, ketThuc, now) {
+    if (!batDau || !ketThuc) return true;
+    const t = now.getTime();
+    return new Date(batDau).getTime() <= t && t <= new Date(ketThuc).getTime();
+}
+
+export function isInLayMauWindow(row, now = new Date()) {
+    return isInWindow(
+        row?.thoi_gian_lay_mau_bat_dau,
+        row?.thoi_gian_lay_mau_ket_thuc,
+        now,
+    );
+}
+
+export function isInKhamWindow(row, now = new Date()) {
+    return isInWindow(row?.thoi_gian_bat_dau, row?.thoi_gian_ket_thuc, now);
+}
+
 export function statusColor(status) {
     if (status === "Chờ gửi")
         return { bgcolor: "rgba(148, 163, 184, 0.14)", color: "text.secondary" };
@@ -84,8 +102,8 @@ import {
 } from "@/constants/khamSucKhoeConstants.js";
 
 export function getStatus(phieu) {
-    if (!phieu) return "Chưa khám";
-    return TRANG_THAI_LABEL[phieu.trang_thai] || "Chưa khám";
+    if (!phieu) return "Chưa lấy máu";
+    return TRANG_THAI_LABEL[phieu.trang_thai] || "Chưa lấy máu";
 }
 
 function parseWithDefault(data, defaultObj, fallbackKey) {
@@ -278,15 +296,11 @@ export function computeHighestClassification(ts, ls, xn, cdha) {
     return `Loại ${Math.max(...nums)}`;
 }
 
-export function filterSoldiers(soldiers, phieuMap, filterTab, searchText) {
+export function filterSoldiers(soldiers, phieuMap, statusFilter, searchText) {
     return soldiers.filter((qn) => {
-        const phieu = phieuMap[qn.ma_quan_nhan];
-        const tt = phieu?.trang_thai || "chua_kham";
-        if (filterTab === 0) return true;
-        if (filterTab === 1) return tt === "chua_kham";
-        if (filterTab === 2) return tt === "dang_kham";
-        if (filterTab === 3) return tt === "da_kham";
-        return true;
+        const tt = phieuMap[qn.ma_quan_nhan]?.trang_thai || "chua_lay_mau";
+        if (!statusFilter) return true;
+        return tt === statusFilter;
     }).filter((qn) => {
         if (!searchText) return true;
         const keyword = searchText.toLowerCase().trim();

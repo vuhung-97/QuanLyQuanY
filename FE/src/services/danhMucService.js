@@ -8,4 +8,6 @@ export const danhMucService = {
     deleteNhomBenh: (id) => api.delete(`/dm_nhom_benh/${id}`),
 
     searchDisease: (keyword) => api.get("/dm_benh/search", { params: { q: keyword } }),
+    suggestDisease: (keyword, limit = 20) =>
+        api.get("/dm_benh/suggest", { params: { q: keyword, limit } }),
 };

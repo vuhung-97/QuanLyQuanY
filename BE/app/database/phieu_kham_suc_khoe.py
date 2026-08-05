@@ -21,5 +21,5 @@ class PhieuKhamSucKhoe(Base):
     xet_nghiem: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
     chan_doan_hinh_anh: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
     ket_luan: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
-    trang_thai: Mapped[str | None] = mapped_column(String(20), nullable=True, default="chua_kham")
+    trang_thai: Mapped[str | None] = mapped_column(String(20), nullable=True, default="chua_lay_mau")
     ma_lay_mau: Mapped[str | None] = mapped_column(String(4), nullable=True)

@@ -5,13 +5,12 @@ import {
     Chip,
     CircularProgress,
     Stack,
-    Tab,
     TableCell,
     TableRow,
-    Tabs,
     Typography,
 } from "@mui/material";
 import {
+    Bloodtype as BloodtypeIcon,
     Edit as EditIcon,
     MedicalServices as MedicalServicesIcon,
     QrCode as QrCodeIcon,
@@ -20,7 +19,8 @@ import {
 import ActionIcon from "@/components/common/ActionIcon.jsx";
 import SearchBarDebounced from "@/components/common/SearchBarDebounced.jsx";
 import DataTable from "@/components/common/DataTable.jsx";
-import { STATUS_CHIP } from "@/constants/khamSucKhoeConstants.js";
+import StatusFilter from "@/components/common/StatusFilter.jsx";
+import { STATUS_CHIP, TRANG_THAI_STATUS_FILTER } from "@/constants/khamSucKhoeConstants.js";
 import { getStatus } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
 
 const columns = [
@@ -46,7 +46,11 @@ const SoldierRows = memo(function SoldierRows({
     onEdit,
     onViewHistory,
     onGenerateBloodCode,
+    onConfirmBloodDraw,
     generatingCodes = new Set(),
+    isXetNghiem,
+    isLayMauWindow = true,
+    isKhamWindow = true,
 }) {
     return soldiers.map((qn, idx) => {
         const phieu = phieuMap[qn.ma_quan_nhan];
@@ -91,16 +95,19 @@ const SoldierRows = memo(function SoldierRows({
                         <Chip label={maCode} color="primary" size="small" sx={{ fontWeight: 700, minWidth: 90 }} />
                     ) : isGenerating ? (
                         <CircularProgress size={24} />
-                    ) : (
+                    ) : isXetNghiem && isLayMauWindow ? (
                         <ActionIcon title="Tạo mã lấy máu" icon={<QrCodeIcon />} color="secondary" onClick={() => onGenerateBloodCode(qn)} />
-                    )}
+                    ) : null}
                 </TableCell>
                 <TableCell>
                     <Stack direction="row" spacing={0.5}>
-                        {tt === "Chưa khám" && maCode && (
+                        {tt === "Chưa lấy máu" && maCode && isXetNghiem && isLayMauWindow && (
+                            <ActionIcon title="Xác nhận đã lấy máu" icon={<BloodtypeIcon />} color="secondary" onClick={() => onConfirmBloodDraw(qn)} />
+                        )}
+                        {tt === "Đã lấy máu" && isKhamWindow && (
                             <ActionIcon title="Khám" icon={<MedicalServicesIcon />} onClick={() => { document.activeElement?.blur(); onEdit(qn); }} />
                         )}
-                        {tt === "Đang khám" && (
+                        {tt === "Đang khám" && isKhamWindow && (
                             <ActionIcon title="Tiếp tục" icon={<EditIcon />} onClick={() => { document.activeElement?.blur(); onEdit(qn); }} />
                         )}
                         {tt === "Đã khám" && (
@@ -119,13 +126,16 @@ export default function BangQuanNhan({
     loading,
     allUnitLookup,
     onSearch,
-    filterTab,
-    onFilterTabChange,
+    statusFilter,
+    onStatusFilterChange,
     onEdit,
     onViewHistory,
     onGenerateBloodCode,
+    onConfirmBloodDraw,
     generatingCodes,
-    filterTabs,
+    isXetNghiem,
+    isLayMauWindow,
+    isKhamWindow,
 }) {
     return (
         <Card sx={{ borderRadius: 3 }}>
@@ -146,22 +156,13 @@ export default function BangQuanNhan({
                         onSearch={onSearch}
                         placeholder="Tìm kiếm quân nhân..."
                     />
-                    <Tabs
-                        value={filterTab}
-                        onChange={onFilterTabChange}
-                        sx={{
-                            minHeight: 36,
-                            "& .MuiTab-root": { minHeight: 36, py: 0.5 },
-                        }}
-                    >
-                        {filterTabs.map((t) => (
-                            <Tab
-                                key={t}
-                                label={t}
-                                sx={{ textTransform: "none", fontSize: 14 }}
-                            />
-                        ))}
-                    </Tabs>
+                    <StatusFilter
+                        value={statusFilter}
+                        onChange={onStatusFilterChange}
+                        statusMap={TRANG_THAI_STATUS_FILTER}
+                        label="Trạng thái"
+                        minWidth={160}
+                    />
                 </Stack>
                 <DataTable
                     columns={columns}
@@ -178,7 +179,11 @@ export default function BangQuanNhan({
                         onEdit={onEdit}
                         onViewHistory={onViewHistory}
                         onGenerateBloodCode={onGenerateBloodCode}
+                        onConfirmBloodDraw={onConfirmBloodDraw}
                         generatingCodes={generatingCodes}
+                        isXetNghiem={isXetNghiem}
+                        isLayMauWindow={isLayMauWindow}
+                        isKhamWindow={isKhamWindow}
                     />
                 </DataTable>
             </CardContent>

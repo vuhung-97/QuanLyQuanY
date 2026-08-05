@@ -61,7 +61,7 @@ export default function KetQuaKhamMain() {
                   bg: "rgba(245, 158, 11, 0.1)",
               },
               {
-                  label: "Chưa khám",
+                  label: "Chưa lấy máu",
                   value: stats.con_lai,
                   icon: <PendingIcon />,
                   color: "#94A3B8",

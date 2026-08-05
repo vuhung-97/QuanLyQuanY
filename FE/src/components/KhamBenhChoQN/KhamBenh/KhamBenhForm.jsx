@@ -47,6 +47,7 @@ export default function KhamBenhForm({
         getFieldDefault,
         maNhomBenh,
         setMaNhomBenh,
+        chanDoan,
         nhomBenhList,
         predictions,
         predicting,
@@ -54,6 +55,8 @@ export default function KhamBenhForm({
         setThreshold,
         handleDiagnose,
         handleSelectPrediction,
+        handleChanDoanChange,
+        handleSelectDisease,
         prescriptionItems,
         handleSave,
         handlePrescriptionSave,
@@ -156,6 +159,9 @@ export default function KhamBenhForm({
                             <DiagnosisSection
                                 updateField={updateField}
                                 getFieldDefault={getFieldDefault}
+                                chanDoan={chanDoan}
+                                onChanDoanChange={handleChanDoanChange}
+                                onSelectDisease={handleSelectDisease}
                                 maNhomBenh={maNhomBenh}
                                 nhomBenhList={nhomBenhList}
                                 onMaNhomBenhChange={setMaNhomBenh}

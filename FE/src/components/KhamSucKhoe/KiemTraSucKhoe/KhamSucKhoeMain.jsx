@@ -3,6 +3,7 @@ import { Stack, Alert, Typography } from "@mui/material";
 import useKhamSucKhoeMain from "@/hooks/useKhamSucKhoeMain.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
+import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
 import BangQuanNhan from "./BangQuanNhan.jsx";
 import KhamSucKhoeForm from "./KhamSucKhoeForm.jsx";
 import DanhSachPhieuKhamFilterBar from "./DanhSachPhieuKhamFilterBar.jsx";
@@ -20,8 +21,13 @@ function EmptyState({ show, message }) {
 }
 
 export default function KhamSucKhoeMain() {
-    const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+    const [snackbar, setSnackbar] = useState({
+        open: false,
+        message: "",
+        severity: "success",
+    });
     const [generatingCodes, setGeneratingCodes] = useState(new Set());
+    const [confirmDrawQn, setConfirmDrawQn] = useState(null);
     const {
         soldiers,
         phieuMap,
@@ -42,7 +48,11 @@ export default function KhamSucKhoeMain() {
         formDialog,
         historyDialog,
         searchText,
-        filterTab,
+        statusFilter,
+        setStatusFilter,
+        isXetNghiem,
+        isLayMauWindow,
+        isKhamWindow,
         allowedTabs,
         editableTabs,
         noRoleNotice,
@@ -56,23 +66,54 @@ export default function KhamSucKhoeMain() {
         closeFormDialog,
         closeHistoryDialog,
         handleGenerateBloodCode,
+        handleConfirmBloodDraw,
         handleSearchChange,
-        handleFilterTabChange,
-        filterTabs,
     } = useKhamSucKhoeMain();
 
     const onGenerateBloodCode = async (qn) => {
         setGeneratingCodes((prev) => new Set(prev).add(qn.ma_quan_nhan));
         try {
             await handleGenerateBloodCode(qn);
-            setSnackbar({ open: true, message: "Đã tạo mã lấy máu.", severity: "success" });
-        } catch {
-            setSnackbar({ open: true, message: "Không thể tạo mã lấy máu.", severity: "error" });
+            setSnackbar({
+                open: true,
+                message: "Đã tạo mã lấy máu.",
+                severity: "success",
+            });
+        } catch (err) {
+            setSnackbar({
+                open: true,
+                message: err?.message || "Không thể tạo mã lấy máu.",
+                severity: "error",
+            });
         } finally {
             setGeneratingCodes((prev) => {
                 const n = new Set(prev);
                 n.delete(qn.ma_quan_nhan);
                 return n;
+            });
+        }
+    };
+
+    const onConfirmBloodDraw = async (qn) => {
+        setConfirmDrawQn(qn);
+    };
+
+    const handleConfirmDraw = async () => {
+        const qn = confirmDrawQn;
+        setConfirmDrawQn(null);
+        if (!qn) return;
+        try {
+            await handleConfirmBloodDraw(qn);
+            setSnackbar({
+                open: true,
+                message: "Đã xác nhận quân nhân lấy máu xong.",
+                severity: "success",
+            });
+        } catch (err) {
+            setSnackbar({
+                open: true,
+                message: err?.message || "Không thể xác nhận lấy máu.",
+                severity: "error",
             });
         }
     };
@@ -101,13 +142,16 @@ export default function KhamSucKhoeMain() {
                     loading={loading}
                     allUnitLookup={allUnitLookup}
                     onSearch={handleSearchChange}
-                    filterTab={filterTab}
-                    onFilterTabChange={handleFilterTabChange}
+                    statusFilter={statusFilter}
+                    onStatusFilterChange={setStatusFilter}
                     onEdit={handleEdit}
                     onViewHistory={handleViewHistory}
                     onGenerateBloodCode={onGenerateBloodCode}
+                    onConfirmBloodDraw={onConfirmBloodDraw}
                     generatingCodes={generatingCodes}
-                    filterTabs={filterTabs}
+                    isXetNghiem={isXetNghiem}
+                    isLayMauWindow={isLayMauWindow}
+                    isKhamWindow={isKhamWindow}
                 />
             )}
 
@@ -154,7 +198,7 @@ export default function KhamSucKhoeMain() {
                               ).getFullYear()
                             : null
                     }
-                    readOnly={!!formDialog.phieu}
+                    readOnly={formDialog.readOnly || !!formDialog.phieu}
                     allowedTabs={allowedTabs}
                     editableTabs={editableTabs}
                 />
@@ -166,7 +210,9 @@ export default function KhamSucKhoeMain() {
                 title="In danh sách"
                 screenClass="kham-suc-khoe-print"
             >
-                {printDialog.data && <KhamSucKhoePrint data={printDialog.data} />}
+                {printDialog.data && (
+                    <KhamSucKhoePrint data={printDialog.data} />
+                )}
             </PrintDialog>
 
             <FeedbackSnackbar
@@ -174,6 +220,15 @@ export default function KhamSucKhoeMain() {
                 message={snackbar.message}
                 severity={snackbar.severity}
                 onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+            />
+
+            <ConfirmDialog
+                open={Boolean(confirmDrawQn)}
+                title="Xác nhận đã lấy máu"
+                message={`Xác nhận quân nhân ${confirmDrawQn?.ho_ten || ""} (${confirmDrawQn?.ma_quan_nhan || ""}) đã lấy máu xong?`}
+                confirmLabel="Xác nhận"
+                onConfirm={handleConfirmDraw}
+                onClose={() => setConfirmDrawQn(null)}
             />
         </Stack>
     );

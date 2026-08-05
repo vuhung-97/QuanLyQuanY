@@ -49,7 +49,9 @@ export default function LichSuKhamDialog({
                                 ? "Đã khám"
                                 : phieu?.trang_thai === "dang_kham"
                                   ? "Đang khám"
-                                  : "Chưa khám";
+                                  : phieu?.trang_thai === "da_lay_mau"
+                                    ? "Đã lấy máu"
+                                    : "Chưa lấy máu";
                         const pl = getPhanLoai(phieu);
                         return (
                             <ListItemButton

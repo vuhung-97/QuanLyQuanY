@@ -16,7 +16,12 @@ export const fallbackSchedules = [
     },
 ];
 
-export const filterTabs = ["Tất cả", "Chưa khám", "Đang khám", "Đã khám"];
+export const TRANG_THAI_STATUS_FILTER = {
+    chua_lay_mau: { label: "Chưa lấy máu" },
+    da_lay_mau: { label: "Đã lấy máu" },
+    dang_kham: { label: "Đang khám" },
+    da_kham: { label: "Đã khám" },
+};
 
 export const ROLE_LABELS = {
     tong_quan: "Tổng quan",
@@ -149,15 +154,20 @@ export const PHAN_LOAI_OPTIONS = [
 ];
 
 export const TRANG_THAI_LABEL = {
-    chua_kham: "Chưa khám",
+    chua_lay_mau: "Chưa lấy máu",
+    da_lay_mau: "Đã lấy máu",
     dang_kham: "Đang khám",
     da_kham: "Đã khám",
 };
 
 export const STATUS_CHIP = {
-    "Chưa khám": {
+    "Chưa lấy máu": {
         bgcolor: "rgba(100, 116, 139, 0.12)",
         color: "text.secondary",
+    },
+    "Đã lấy máu": {
+        bgcolor: "rgba(0, 180, 216, 0.12)",
+        color: "secondary.main",
     },
     "Đang khám": { bgcolor: "rgba(245, 158, 11, 0.14)", color: "warning.main" },
     "Đã khám": { bgcolor: "rgba(16, 185, 129, 0.12)", color: "success.main" },

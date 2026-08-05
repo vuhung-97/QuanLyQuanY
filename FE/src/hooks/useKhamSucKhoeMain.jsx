@@ -9,8 +9,10 @@ import useKhamSucKhoeData from "@/hooks/useKhamSucKhoeData";
 import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
 import { fetchAllPages } from "@/utils/fetchAll.js";
 import { filterSoldiers } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
-import { filterTabs } from "@/constants/khamSucKhoeConstants.js";
+import { isInKhamWindow, isInLayMauWindow } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
 import { ALL_TABS, ROLE_TAB_ACCESS } from "@/constants/khamSucKhoeConstants.js";
+import { getCurrentUser } from "@/services/api.js";
+import { ROLES } from "@/constants/roleConstants.js";
 
 
 export default function useKhamSucKhoeMain() {
@@ -35,8 +37,9 @@ export default function useKhamSucKhoeMain() {
         refreshStats,
     } = useKhamSucKhoeData();
 
-    const [filterTab, setFilterTab] = useState(0);
+    const [statusFilter, setStatusFilter] = useState("");
     const [searchText, setSearchText] = useState("");
+    const [myAssignment, setMyAssignment] = useState(null);
     const [allowedTabs, setAllowedTabs] = useState(ALL_TABS);
     const [editableTabs, setEditableTabs] = useState(ALL_TABS);
     const [noRoleNotice, setNoRoleNotice] = useState(false);
@@ -65,10 +68,26 @@ export default function useKhamSucKhoeMain() {
             filterSoldiers(
                 soldiers,
                 phieuMap,
-                filterTab,
+                statusFilter,
                 searchText,
             ),
-        [soldiers, phieuMap, filterTab, searchText],
+        [soldiers, phieuMap, statusFilter, searchText],
+    );
+
+    const isXetNghiem = useMemo(() => {
+        const currentUser = getCurrentUser();
+        if (currentUser?.role === ROLES.ADMIN) return true;
+        return myAssignment?.ma_vai_tro === "xet_nghiem";
+    }, [myAssignment]);
+
+    const isLayMauWindow = useMemo(
+        () => isInLayMauWindow(selectedScheduleObj),
+        [selectedScheduleObj],
+    );
+
+    const isKhamWindow = useMemo(
+        () => isInKhamWindow(selectedScheduleObj),
+        [selectedScheduleObj],
     );
 
     const statsItems = useMemo(
@@ -107,6 +126,24 @@ export default function useKhamSucKhoeMain() {
                 : [],
         [stats, daTaoMa],
     );
+
+    useEffect(() => {
+        if (!selectedSchedule) {
+            setMyAssignment(null);
+            return;
+        }
+        let ignore = false;
+        khamSucKhoeService.getMyAssignment(selectedSchedule)
+            .then((res) => {
+                if (!ignore) setMyAssignment(res.data || null);
+            })
+            .catch(() => {
+                if (!ignore) setMyAssignment(null);
+            });
+        return () => {
+            ignore = true;
+        };
+    }, [selectedSchedule]);
 
     useEffect(() => {
         if (formDialog.open && selectedSchedule) {
@@ -167,8 +204,8 @@ export default function useKhamSucKhoeMain() {
             const filtered = allSoldiers
                 .filter((qn) => {
                     const p = allPhieuMap[qn.ma_quan_nhan];
-                    if (isChuaLayMau) return !p || !p.ma_lay_mau || !p.xet_nghiem;
-                    return !p || p.trang_thai === "chua_kham" || p.trang_thai === "dang_kham";
+                    if (isChuaLayMau) return !p || p.trang_thai === "chua_lay_mau";
+                    return !p || p.trang_thai !== "da_kham";
                 })
                 .sort((a, b) => {
                     const uA = a.ma_don_vi || "";
@@ -196,8 +233,8 @@ export default function useKhamSucKhoeMain() {
 
     const handleEdit = useCallback((qn) => {
         document.activeElement?.blur();
-        setFormDialog({ open: true, qn, phieu: null });
-    }, []);
+        setFormDialog({ open: true, qn, phieu: null, readOnly: !isKhamWindow });
+    }, [isKhamWindow]);
 
     const handleViewHistory = useCallback((qn) => {
         setHistoryDialog({ open: true, qn });
@@ -214,12 +251,14 @@ export default function useKhamSucKhoeMain() {
     const closeFormDialog = useCallback(() => {
         setFormDialog({ open: false, qn: null, phieu: null });
     }, []);
-
     const closeHistoryDialog = useCallback(() => {
         setHistoryDialog({ open: false, qn: null });
     }, []);
 
     const handleGenerateBloodCode = useCallback(async (qn) => {
+        if (!isLayMauWindow) {
+            throw new Error("Ngoài thời gian lấy máu, không thể tạo mã lấy máu.");
+        }
         try {
             const nam = selectedScheduleObj
                 ? new Date(selectedScheduleObj.thoi_gian_bat_dau).getFullYear()
@@ -232,17 +271,32 @@ export default function useKhamSucKhoeMain() {
             const saved = res.data;
             setPhieuMap((prev) => ({ ...prev, [qn.ma_quan_nhan]: saved }));
             setAllPhieuMap((prev) => ({ ...prev, [qn.ma_quan_nhan]: saved }));
-        } catch {
-            throw new Error("Không thể tạo mã lấy máu.");
+        } catch (err) {
+            const detail = err?.response?.data?.detail;
+            throw new Error(detail || "Không thể tạo mã lấy máu.");
         }
-    }, [selectedSchedule, selectedScheduleObj, setPhieuMap, setAllPhieuMap]);
+    }, [selectedSchedule, selectedScheduleObj, setPhieuMap, setAllPhieuMap, isLayMauWindow]);
+
+    const handleConfirmBloodDraw = useCallback(async (qn) => {
+        if (!isLayMauWindow) {
+            throw new Error("Ngoài thời gian lấy máu, không thể xác nhận lấy máu.");
+        }
+        try {
+            const res = await khamSucKhoeService.xacNhanLayMau({
+                ma_quan_nhan: qn.ma_quan_nhan,
+                ma_lich_kham: selectedSchedule,
+            });
+            const saved = res.data;
+            setPhieuMap((prev) => ({ ...prev, [qn.ma_quan_nhan]: saved }));
+            setAllPhieuMap((prev) => ({ ...prev, [qn.ma_quan_nhan]: saved }));
+        } catch (err) {
+            const detail = err?.response?.data?.detail;
+            throw new Error(detail || "Không thể xác nhận lấy máu.");
+        }
+    }, [selectedSchedule, setPhieuMap, setAllPhieuMap, isLayMauWindow]);
 
     const handleSearchChange = useCallback((v) => {
         setSearchText(v);
-    }, []);
-
-    const handleFilterTabChange = useCallback((_, v) => {
-        setFilterTab(v);
     }, []);
 
     return {
@@ -265,7 +319,11 @@ export default function useKhamSucKhoeMain() {
         formDialog,
         historyDialog,
         searchText,
-        filterTab,
+        statusFilter,
+        setStatusFilter,
+        isXetNghiem,
+        isLayMauWindow,
+        isKhamWindow,
         allowedTabs,
         editableTabs,
         noRoleNotice,
@@ -279,8 +337,7 @@ export default function useKhamSucKhoeMain() {
         closeFormDialog,
         closeHistoryDialog,
         handleGenerateBloodCode,
+        handleConfirmBloodDraw,
         handleSearchChange,
-        handleFilterTabChange,
-        filterTabs,
     };
 }

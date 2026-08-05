@@ -6,10 +6,14 @@ import {
     Typography,
 } from "@mui/material";
 import FormTextField from "@/components/common/FormTextField.jsx";
+import ChanDoanAutocomplete from "./ChanDoanAutocomplete.jsx";
 
 export default memo(function DiagnosisSection({
     updateField,
     getFieldDefault,
+    chanDoan,
+    onChanDoanChange,
+    onSelectDisease,
     maNhomBenh,
     nhomBenhList,
     onMaNhomBenhChange,
@@ -41,13 +45,11 @@ export default memo(function DiagnosisSection({
             </Typography>
             <Grid container spacing={2}>
                 <Grid size={{ xs: 12, md: 8 }}>
-                    <FormTextField
-                        name="chan_doan"
-                        initialValue={getFieldDefault("chan_doan")}
-                        onUpdateRef={updateField}
-                        label="Chẩn đoán bệnh"
-                        fullWidth
-                        disabled={readOnly}
+                    <ChanDoanAutocomplete
+                        chanDoan={chanDoan}
+                        onChanDoanChange={onChanDoanChange}
+                        onSelectDisease={onSelectDisease}
+                        readOnly={readOnly}
                     />
                 </Grid>
                 <Grid size={{ xs: 12, md: 4 }}>

@@ -222,12 +222,12 @@ export default function useKhamSucKhoeData() {
         setFilters((prev) => ({
             filterModeLeft: !prev.filterModeLeft,
             schedule: "",
-            unit: "",
+            unit: "__ALL__",
         }));
     }, []);
 
     const handleScheduleChange = useCallback((scheduleId) => {
-        setFilters((prev) => ({ ...prev, schedule: scheduleId, unit: "" }));
+        setFilters((prev) => ({ ...prev, schedule: scheduleId, unit: "__ALL__" }));
     }, []);
 
     return {
