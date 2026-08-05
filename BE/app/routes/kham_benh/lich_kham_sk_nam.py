@@ -153,6 +153,12 @@ def replace_lich_kham_batch(
         raise HTTPException(status_code=404, detail="Không tìm thấy lịch khám.")
     if master.trang_thai == "da_duyet":
         raise HTTPException(status_code=400, detail="Lịch khám đã duyệt, không thể sửa.")
+    is_tam_hoan = master.trang_thai == "tam_hoan"
+    if is_tam_hoan and current_user.id_vai_tro not in ("ROLE_ADMIN", "ROLE_CNQY"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Chỉ CNQY/ADMIN mới được sửa lịch khám đã hoãn.",
+        )
 
     tg_bd = payload.thoi_gian_bat_dau if payload.thoi_gian_bat_dau is not None else master.thoi_gian_bat_dau
     tg_kt = payload.thoi_gian_ket_thuc if payload.thoi_gian_ket_thuc is not None else master.thoi_gian_ket_thuc
@@ -226,7 +232,54 @@ def replace_lich_kham_batch(
         db.rollback()
         raise HTTPException(status_code=409, detail="Cập nhật lịch khám thất bại.")
 
+    if is_tam_hoan:
+        master.trang_thai = "da_duyet"
+        db.commit()
+        db.refresh(master)
+
     return master
+
+
+@pre_router.post("/{ma_lich_kham}/hoan", dependencies=update_deps, response_model=read_schema)
+def hoan_lich_kham(
+    ma_lich_kham: str,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user),
+):
+    row = lich_kham_sk_nam_crud.get(db, ma_lich_kham)
+    if current_user.id_vai_tro not in ("ROLE_ADMIN", "ROLE_CNQY"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Chỉ CNQY/ADMIN mới có quyền hoãn lịch khám.",
+        )
+    if row.trang_thai != "da_duyet":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Không thể hoãn lịch khám ở trạng thái {row.trang_thai}.",
+        )
+    ends = [
+        row.thoi_gian_ket_thuc,
+        row.thoi_gian_du_tru_kham_ket_thuc,
+    ]
+    ends = [e for e in ends if e is not None]
+    if ends and max(ends) < datetime.now():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Lịch khám đã diễn ra xong, không thể hoãn.",
+        )
+    row.trang_thai = "tam_hoan"
+    db.commit()
+    db.refresh(row)
+    log = NhatKyThaoTac(
+        id_nguoi_dung=current_user.id,
+        thoi_gian=datetime.now(timezone.utc),
+        hanh_dong="HOAN",
+        ten_bang="lich_kham_sk_nam",
+        du_lieu_moi={"ma_lich_kham": ma_lich_kham, "trang_thai": "tam_hoan"},
+    )
+    db.add(log)
+    db.commit()
+    return row
 
 
 @pre_router.delete("/{item_id}", dependencies=delete_deps, status_code=status.HTTP_204_NO_CONTENT)
@@ -236,10 +289,14 @@ def delete_lich_kham(
     current_user = Depends(get_current_user),
 ):
     row = lich_kham_sk_nam_crud.get(db, item_id)
-    if row.trang_thai == "da_duyet":
+    if row.trang_thai in ("da_duyet", "tam_hoan"):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Lịch khám đã được duyệt, không thể xóa.",
+            detail=(
+                "Lịch khám đang tạm hoãn, không thể xóa."
+                if row.trang_thai == "tam_hoan"
+                else "Lịch khám đã được duyệt, không thể xóa."
+            ),
         )
     lich_kham_sk_nam_crud.delete(db, item_id, nguoi_dung_id=current_user.id)
 

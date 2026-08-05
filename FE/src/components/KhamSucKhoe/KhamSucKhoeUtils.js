@@ -1,19 +1,34 @@
+export function getScheduleTimeWindow(row) {
+    const startCandidates = [
+        row.thoi_gian_lay_mau_bat_dau,
+        row.thoi_gian_bat_dau,
+    ].filter(Boolean);
+    const endCandidates = [
+        row.thoi_gian_ket_thuc,
+        row.thoi_gian_du_tru_kham_ket_thuc,
+    ].filter(Boolean);
+    return {
+        start: startCandidates.length
+            ? new Date(Math.min(...startCandidates.map((t) => new Date(t))))
+            : null,
+        end: endCandidates.length
+            ? new Date(Math.max(...endCandidates.map((t) => new Date(t))))
+            : null,
+    };
+}
+
 export function getScheduleStatus(row) {
-    if (row.trang_thai && row.trang_thai !== "da_duyet") {
+    if (row.trang_thai !== "da_duyet") {
         const statusMap = {
             "cho_gui": "Chờ gửi",
             "cho_duyet": "Chờ duyệt",
             "tu_choi": "Từ chối",
+            "tam_hoan": "Tạm hoãn",
         };
-        return statusMap[row.trang_thai] || row.trang_thai;
+        return statusMap[row.trang_thai] || "Chưa duyệt";
     }
     const now = new Date();
-    const start = row.thoi_gian_bat_dau
-        ? new Date(row.thoi_gian_bat_dau)
-        : null;
-    const end = row.thoi_gian_ket_thuc
-        ? new Date(row.thoi_gian_ket_thuc)
-        : null;
+    const { start, end } = getScheduleTimeWindow(row);
     if (end && end < now) return "Đã kết thúc";
     if (start && start > now) return "Sắp diễn ra";
     return "Đang thực hiện";
@@ -30,6 +45,8 @@ export function statusColor(status) {
         return { bgcolor: "rgba(16, 185, 129, 0.12)", color: "success.main" };
     if (status === "Sắp diễn ra")
         return { bgcolor: "rgba(0, 180, 216, 0.12)", color: "secondary.main" };
+    if (status === "Tạm hoãn")
+        return { bgcolor: "rgba(100, 116, 139, 0.14)", color: "text.secondary" };
     return { bgcolor: "rgba(245, 158, 11, 0.14)", color: "warning.main" };
 }
 

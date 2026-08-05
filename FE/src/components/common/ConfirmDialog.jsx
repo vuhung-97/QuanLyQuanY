@@ -22,7 +22,7 @@ export default function ConfirmDialog({
         <Dialog open={open} onClose={loading ? undefined : onClose}>
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
-                <DialogContentText>{message}</DialogContentText>
+                <DialogContentText sx={{ whiteSpace: "pre-line" }}>{message}</DialogContentText>
             </DialogContent>
             <DialogActions>
                 <Button onClick={onClose} disabled={loading}>

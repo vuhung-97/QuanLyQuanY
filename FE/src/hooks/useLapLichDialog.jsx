@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import dayjs from "dayjs";
 import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
+import { getScheduleTimeWindow } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
+import { formatDateTime } from "@/utils/date.js";
 
 export default function useLapLichDialog({
     open,
@@ -9,6 +11,7 @@ export default function useLapLichDialog({
     onSaved,
     onClose,
     unitOptions = [],
+    schedules = [],
 }) {
     const isEdit = Boolean(schedule);
     const [thoiGianBatDau, setThoiGianBatDau] = useState("");
@@ -29,6 +32,7 @@ export default function useLapLichDialog({
         severity: "success",
     });
     const [confirmOpen, setConfirmOpen] = useState(false);
+    const [confirmTitle, setConfirmTitle] = useState("Lịch chưa đầy đủ");
     const [confirmMessage, setConfirmMessage] = useState("");
     const [detailData, setDetailData] = useState({});
     const [selectedUnits, setSelectedUnits] = useState({});
@@ -151,6 +155,7 @@ export default function useLapLichDialog({
                 setExistingAssignments([]);
             }
             setConfirmOpen(false);
+            setConfirmTitle("Lịch chưa đầy đủ");
             setConfirmMessage("");
             setSnackbar({ open: false, message: "", severity: "success" });
         }
@@ -785,11 +790,53 @@ export default function useLapLichDialog({
         const duTruThieu = duTruConfig().some((dt) => !dt.bd || !dt.kt);
         const chuaChonHetDonVi =
             Object.keys(selectedUnits).length < unitOptions.length;
-        if (duTruThieu || chuaChonHetDonVi) {
-            const items = [];
-            if (duTruThieu) items.push("Chưa điền đầy đủ thời gian dự trù");
-            if (chuaChonHetDonVi) items.push("Chưa chọn hết đơn vị");
-            setConfirmMessage(`${items.join(" và ")}. Bạn vẫn muốn lưu?`);
+
+        const curWindow = getScheduleTimeWindow({
+            thoi_gian_lay_mau_bat_dau: thoiGianLayMauBatDau,
+            thoi_gian_bat_dau: thoiGianBatDau,
+            thoi_gian_ket_thuc: thoiGianKetThuc,
+            thoi_gian_du_tru_kham_ket_thuc: thoiGianDuTruKhamKetThuc,
+        });
+        let overlapList = [];
+        if (curWindow.start && curWindow.end) {
+            const curStart = curWindow.start.valueOf();
+            const curEnd = curWindow.end.valueOf();
+            overlapList = schedules.filter((s) => {
+                if (s.trang_thai === "tu_choi") return false;
+                if (isEdit && s.ma_lich_kham === schedule.ma_lich_kham)
+                    return false;
+                const other = getScheduleTimeWindow(s);
+                if (!other.start || !other.end) return false;
+                const oStart = other.start.valueOf();
+                const oEnd = other.end.valueOf();
+                return curStart <= oEnd && oStart <= curEnd;
+            });
+        }
+
+        const lines = [];
+        for (const o of overlapList) {
+            const other = getScheduleTimeWindow(o);
+            const fmt = other?.start
+                ? `${formatDateTime(other.start)} - ${formatDateTime(other.end)}`
+                : "";
+            lines.push(
+                `- Thời gian trùng với lịch ${o.ma_lich_kham} (${fmt})`,
+            );
+        }
+        if (duTruThieu) lines.push("- Chưa điền đầy đủ thời gian dự trù");
+        if (chuaChonHetDonVi) {
+            const missing = unitOptions
+                .filter((u) => !selectedUnits[u.ma_don_vi])
+                .map((u) => u.ten_don_vi || u.ma_don_vi);
+            lines.push(`- Chưa chọn hết đơn vị: ${missing.join(", ")}`);
+        }
+        if (lines.length > 0) {
+            setConfirmTitle(
+                overlapList.length > 0
+                    ? "Trùng thời gian lịch khám"
+                    : "Lịch chưa đầy đủ",
+            );
+            setConfirmMessage(`${lines.join("\n")}\nBạn vẫn muốn lưu?`);
             setConfirmOpen(true);
             return;
         }
@@ -947,6 +994,7 @@ export default function useLapLichDialog({
         selectedUnits,
         handleToggleUnit,
         confirmOpen,
+        confirmTitle,
         confirmMessage,
         handleConfirmSave,
         handleCloseConfirm,

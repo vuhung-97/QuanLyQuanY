@@ -2,6 +2,8 @@ import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Alert, Box, Button, Stack, Typography } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
+import { CheckCircle as CheckCircleIcon, DoDisturb as DoDisturbIcon } from "@mui/icons-material";
+import { Update as UpdateIcon } from "@mui/icons-material";
 import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
 import useLichKhamData from "@/hooks/useLichKhamData";
 import {
@@ -32,10 +34,7 @@ export default function LapLichPage() {
         refreshCounter,
     } = useLichKhamData();
 
-    const latestApprovedId = latestSchedule?.ma_lich_kham || null;
-
-    const [query, setQuery] = useState("");
-    const [searchParams] = useSearchParams();
+    const [query, setQuery] = useState("");    const [searchParams] = useSearchParams();
     const [dialog, setDialog] = useState({
         open: false,
         schedule: null,
@@ -47,6 +46,25 @@ export default function LapLichPage() {
         schedule: null,
         detailInfo: null,
     });
+    const [confirmAction, setConfirmAction] = useState({
+        open: false,
+        type: null,
+        schedule: null,
+    });
+    const [hoanDialog, setHoanDialog] = useState({
+        open: false,
+        schedule: null,
+    });
+    const [activeLichId, setActiveLichId] = useState(null);
+
+    const displaySchedule =
+        schedules.find((s) => s.ma_lich_kham === activeLichId) ||
+        latestSchedule ||
+        null;
+    const displayScheduleId = displaySchedule?.ma_lich_kham || null;
+    const displayStatus = displaySchedule
+        ? getScheduleStatus(displaySchedule)
+        : latestStatus;
 
     const filteredSchedules = schedules.filter((row) => {
         const keyword = query.trim().toLowerCase();
@@ -135,6 +153,40 @@ export default function LapLichPage() {
         }
     };
 
+    const handleActionConfirm = () => {
+        const { type, schedule } = confirmAction;
+        if (type === "approve") {
+            handleApprove(schedule);
+        } else if (type === "reject") {
+            handleReject(schedule);
+        }
+        setConfirmAction({ open: false, type: null, schedule: null });
+    };
+
+    const handleResetDefault = () => {
+        setActiveLichId(null);
+    };
+
+    const handleHoan = (schedule) => {
+        setHoanDialog({ open: true, schedule });
+    };
+
+    const handleHoanConfirm = async () => {
+        try {
+            await khamSucKhoeService.hoanSchedule(
+                hoanDialog.schedule.ma_lich_kham,
+            );
+            loadSchedules();
+            setHoanDialog({ open: false, schedule: null });
+        } catch (err) {
+            setError(err.response?.data?.detail || "Không thể hoãn lịch khám.");
+        }
+    };
+
+    const handleSelectRow = (maLichKham) => {
+        setActiveLichId(maLichKham);
+    };
+
     return (
         <Stack spacing={3}>
             <Stack
@@ -186,27 +238,45 @@ export default function LapLichPage() {
                 initialStatus={searchParams.get("filter") || ""}
                 onEdit={handleEdit}
                 onDelete={handleDeleteClick}
+                onApprove={(schedule) =>
+                    setConfirmAction({
+                        open: true,
+                        type: "approve",
+                        schedule,
+                    })
+                }
+                onReject={(schedule) =>
+                    setConfirmAction({
+                        open: true,
+                        type: "reject",
+                        schedule,
+                    })
+                }
                 onSubmit={handleSubmit}
                 onView={handleView}
+                onHoan={handleHoan}
+                activeLichId={activeLichId}
+                onSelectRow={handleSelectRow}
+                onResetDefault={handleResetDefault}
                 getScheduleStatus={getScheduleStatus}
                 statusColor={statusColor}
             />
 
             <ThoiGianKham
-                schedule={latestSchedule}
-                latestStatus={latestStatus}
+                schedule={displaySchedule}
+                latestStatus={displayStatus}
             />
 
             <TongQuanDonVi
                 chiTietMap={chiTietMap}
                 unitStats={unitStats}
-                latestScheduleId={latestApprovedId}
-                latestStatus={latestStatus}
+                latestScheduleId={displayScheduleId}
+                latestStatus={displayStatus}
             />
 
             <PhanCongNhiemVu
-                latestScheduleId={latestApprovedId}
-                latestStatus={latestStatus}
+                latestScheduleId={displayScheduleId}
+                latestStatus={displayStatus}
                 refreshCounter={refreshCounter}
             />
 
@@ -220,8 +290,7 @@ export default function LapLichPage() {
                 chiTietList={dialog.chiTietList}
                 unitOptions={unitOptions}
                 readOnly={dialog.readOnly}
-                onApprove={handleApprove}
-                onReject={handleReject}
+                schedules={schedules}
             />
 
             <ConfirmDialog
@@ -239,6 +308,46 @@ export default function LapLichPage() {
                         schedule: null,
                         detailInfo: null,
                     })
+                }
+            />
+
+            <ConfirmDialog
+                open={confirmAction.open}
+                title={
+                    confirmAction.type === "approve"
+                        ? "Xác nhận duyệt"
+                        : "Xác nhận từ chối"
+                }
+                message={`Bạn có chắc muốn ${confirmAction.type === "approve" ? "duyệt" : "từ chối"} lịch khám ${confirmAction.schedule?.ma_lich_kham || ""}?`}
+                confirmLabel={
+                    confirmAction.type === "approve" ? "Duyệt" : "Từ chối"
+                }
+                confirmColor={
+                    confirmAction.type === "approve" ? "success" : "error"
+                }
+                confirmIcon={
+                    confirmAction.type === "approve" ? (
+                        <CheckCircleIcon />
+                    ) : (
+                        <DoDisturbIcon />
+                    )
+                }
+                onConfirm={handleActionConfirm}
+                onClose={() =>
+                    setConfirmAction({ open: false, type: null, schedule: null })
+                }
+            />
+
+            <ConfirmDialog
+                open={hoanDialog.open}
+                title="Xác nhận hoãn lịch khám"
+                message={`Bạn có chắc muốn hoãn lịch khám ${hoanDialog.schedule?.ma_lich_kham || ""}? Lịch sẽ chuyển sang trạng thái tạm hoãn và có thể sửa thời gian sau đó.`}
+                confirmLabel="Hoãn"
+                confirmColor="warning"
+                confirmIcon={<UpdateIcon />}
+                onConfirm={handleHoanConfirm}
+                onClose={() =>
+                    setHoanDialog({ open: false, schedule: null })
                 }
             />
         </Stack>

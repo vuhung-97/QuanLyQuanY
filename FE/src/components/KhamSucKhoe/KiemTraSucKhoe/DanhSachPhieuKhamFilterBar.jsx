@@ -49,6 +49,17 @@ export default function DanhSachPhieuKhamFilterBar({
                                 {s.ma_lich_kham} ({formatDate(s.thoi_gian_bat_dau)} - {formatDate(s.thoi_gian_ket_thuc)})
                             </MenuItem>
                         ))}
+                        {selectedSchedule &&
+                            !filteredSchedules.some(
+                                (s) => s.ma_lich_kham === selectedSchedule,
+                            ) && (
+                                <MenuItem
+                                    value={selectedSchedule}
+                                    sx={{ display: "none" }}
+                                >
+                                    {selectedSchedule}
+                                </MenuItem>
+                            )}
                     </TextField>
                     <TextField
                         select
@@ -65,6 +76,18 @@ export default function DanhSachPhieuKhamFilterBar({
                                 {u.ten_don_vi} ({u.tong_quan_so} QN)
                             </MenuItem>
                         ))}
+                        {selectedUnit &&
+                            selectedUnit !== "__ALL__" &&
+                            !units.some(
+                                (u) => u.ma_don_vi === selectedUnit,
+                            ) && (
+                                <MenuItem
+                                    value={selectedUnit}
+                                    sx={{ display: "none" }}
+                                >
+                                    {selectedUnit}
+                                </MenuItem>
+                            )}
                     </TextField>
                     {exportEnabled && (
                         <>

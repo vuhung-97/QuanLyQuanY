@@ -61,4 +61,5 @@ export const khamSucKhoeService = {
     approveSchedule: (id) => api.post(`/lich_kham_sk_nam/${id}/duyet`),
     submitSchedule: (id) => api.post(`/lich_kham_sk_nam/${id}/gui`),
     rejectSchedule: (id) => api.post(`/lich_kham_sk_nam/${id}/tu-choi`),
+    hoanSchedule: (id) => api.post(`/lich_kham_sk_nam/${id}/hoan`),
 };

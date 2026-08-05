@@ -29,7 +29,7 @@ export default function PhanCongNhiemVu({
     const title =
         latestStatus === "Đang thực hiện"
             ? "Phân công đang thực hiện"
-            : "Phân công sắp tới";
+            : "Phân công";
 
     return (
         <Card sx={{ borderRadius: 3 }}>

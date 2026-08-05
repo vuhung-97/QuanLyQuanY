@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
     Box,
+    Button,
     Card,
     CardContent,
     Chip,
@@ -15,8 +16,12 @@ import {
 import ActionIcon from "@/components/common/ActionIcon.jsx";
 import {
     Delete as DeleteIcon,
+    DoDisturb as DoDisturbIcon,
+    CheckCircle as CheckCircleIcon,
     Edit as EditIcon,
+    RestartAlt as RestartAltIcon,
     Send as SendIcon,
+    Update as UpdateIcon,
     Visibility as VisibilityIcon,
 } from "@mui/icons-material";
 import DataTable from "@/components/common/DataTable.jsx";
@@ -40,8 +45,13 @@ function ScheduleTableRow({
     details,
     onEdit,
     onDelete,
+    onApprove,
+    onReject,
     onSubmit,
     onView,
+    onHoan,
+    isSelected,
+    onSelectRow,
     getScheduleStatus,
     statusColor,
 }) {
@@ -50,14 +60,20 @@ function ScheduleTableRow({
 
     const isDangThucHien = currentStatus === "Đang thực hiện";
 
+    const rowBg = isSelected
+        ? "rgba(11, 59, 96, 0.12)"
+        : isDangThucHien
+          ? statusColor(currentStatus).bgcolor
+          : undefined;
+
     return (
         <TableRow
             hover
-            sx={
-                isDangThucHien
-                    ? { bgcolor: statusColor(currentStatus).bgcolor }
-                    : undefined
-            }
+            onClick={() => onSelectRow(row.ma_lich_kham)}
+            sx={{
+                cursor: "pointer",
+                ...(rowBg ? { bgcolor: rowBg } : {}),
+            }}
         >
             <TableCell sx={{ fontWeight: 700, color: "primary.main" }}>
                 {row.ma_lich_kham}
@@ -92,7 +108,9 @@ function ScheduleTableRow({
                                     ? "Chờ gửi"
                                     : row.trang_thai === "tu_choi"
                                       ? "Từ chối"
-                                      : row.trang_thai || "—"
+                                      : row.trang_thai === "tam_hoan"
+                                        ? "Tạm hoãn"
+                                        : row.trang_thai || "—"
                         }
                         color={
                             row.trang_thai === "da_duyet"
@@ -101,7 +119,9 @@ function ScheduleTableRow({
                                   ? "warning"
                                   : row.trang_thai === "tu_choi"
                                     ? "error"
-                                    : "default"
+                                    : row.trang_thai === "tam_hoan"
+                                      ? "secondary"
+                                      : "default"
                         }
                         variant={row.trang_thai === "cho_gui" ? "outlined" : "filled"}
                         sx={{ fontWeight: 600 }}
@@ -110,21 +130,49 @@ function ScheduleTableRow({
             </TableCell>
             <TableCell>
                 {row.trang_thai === "da_duyet" ? (
-                    <IfRole
-                        roles={[
-                            ROLES.ADMIN,
-                            ROLES.CNQY,
-                            ROLES.BACSI,
-                            ROLES.YSI,
-                        ]}
-                    >
+                    <Stack direction="row" spacing={0.5}>
+                        <IfRole
+                            roles={[
+                                ROLES.ADMIN,
+                                ROLES.CNQY,
+                                ROLES.BACSI,
+                                ROLES.YSI,
+                            ]}
+                        >
+                            <ActionIcon
+                                title="Xem"
+                                icon={<VisibilityIcon />}
+                                color="info"
+                                onClick={() => onView(row)}
+                            />
+                        </IfRole>
+                        {currentStatus !== "Đã kết thúc" && (
+                            <IfRole roles={[ROLES.ADMIN, ROLES.CNQY]}>
+                                <ActionIcon
+                                    title="Hoãn"
+                                    icon={<UpdateIcon />}
+                                    color="warning"
+                                    onClick={() => onHoan(row)}
+                                />
+                            </IfRole>
+                        )}
+                    </Stack>
+                ) : row.trang_thai === "tam_hoan" ? (
+                    <Stack direction="row" spacing={0.5}>
                         <ActionIcon
                             title="Xem"
                             icon={<VisibilityIcon />}
                             color="info"
                             onClick={() => onView(row)}
                         />
-                    </IfRole>
+                        <IfRole roles={[ROLES.ADMIN, ROLES.CNQY]}>
+                            <ActionIcon
+                                title="Sửa"
+                                icon={<EditIcon />}
+                                onClick={() => onEdit(row)}
+                            />
+                        </IfRole>
+                    </Stack>
                 ) : row.trang_thai === "cho_gui" ? (
                     <IfRole
                         roles={[
@@ -144,16 +192,35 @@ function ScheduleTableRow({
                     <Stack direction="row" spacing={0.5}>
                         <ActionIcon title="Xem" icon={<VisibilityIcon />} color="info" onClick={() => onView(row)} />
                         <IfRole roles={[ROLES.ADMIN, ROLES.CNQY]}>
+                            <ActionIcon title="Duyệt" icon={<CheckCircleIcon />} color="success" onClick={() => onApprove?.(row)} />
+                            <ActionIcon title="Không duyệt" icon={<DoDisturbIcon />} color="error" onClick={() => onReject?.(row)} />
                             <ActionIcon title="Xóa" icon={<DeleteIcon />} color="error" onClick={() => onDelete(row)} />
                         </IfRole>
                     </Stack>
                 ) : row.trang_thai === "tu_choi" ? (
-                    <ActionIcon
-                        title="Xem"
-                        icon={<VisibilityIcon />}
-                        color="info"
-                        onClick={() => onView(row)}
-                    />
+                    <Stack direction="row" spacing={0.5}>
+                        <ActionIcon
+                            title="Xem"
+                            icon={<VisibilityIcon />}
+                            color="info"
+                            onClick={() => onView(row)}
+                        />
+                        <IfRole
+                            roles={[
+                                ROLES.ADMIN,
+                                ROLES.CNQY,
+                                ROLES.BACSI,
+                                ROLES.YSI,
+                            ]}
+                        >
+                            <ActionIcon
+                                title="Xóa"
+                                icon={<DeleteIcon />}
+                                color="error"
+                                onClick={() => onDelete(row)}
+                            />
+                        </IfRole>
+                    </Stack>
                 ) : null}
             </TableCell>
         </TableRow>
@@ -167,8 +234,14 @@ export default function DanhSachLich({
     initialStatus = "",
     onEdit,
     onDelete,
+    onApprove,
+    onReject,
     onSubmit,
     onView,
+    onHoan,
+    activeLichId,
+    onSelectRow,
+    onResetDefault,
     getScheduleStatus,
     statusColor,
 }) {
@@ -179,6 +252,7 @@ export default function DanhSachLich({
         "Chờ gửi",
         "Chờ duyệt",
         "Từ chối",
+        "Tạm hoãn",
         "Sắp diễn ra",
         "Đang thực hiện",
         "Đã kết thúc",
@@ -245,6 +319,16 @@ export default function DanhSachLich({
                         </Typography>
                     </Box>
                     <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+                        {onResetDefault && activeLichId && (
+                            <Button
+                                variant="outlined"
+                                size="small"
+                                startIcon={<RestartAltIcon />}
+                                onClick={onResetDefault}
+                            >
+                                Mặc định
+                            </Button>
+                        )}
                         <StatusFilter
                             value={status}
                             onChange={setStatus}
@@ -283,8 +367,13 @@ export default function DanhSachLich({
                                 details={chiTietMap[row.ma_lich_kham] || []}
                                 onEdit={onEdit}
                                 onDelete={onDelete}
+                                onApprove={onApprove}
+                                onReject={onReject}
                                 onSubmit={onSubmit}
                                 onView={onView}
+                                onHoan={onHoan}
+                                isSelected={activeLichId === row.ma_lich_kham}
+                                onSelectRow={onSelectRow}
                                 getScheduleStatus={getScheduleStatus}
                                 statusColor={statusColor}
                             />

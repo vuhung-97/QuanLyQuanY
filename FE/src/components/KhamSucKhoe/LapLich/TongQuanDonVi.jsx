@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import {
     Box,
     Card,
@@ -43,6 +44,17 @@ export default function TongQuanDonVi({
 
     const loading = Boolean(latestScheduleId) && unitStats.length === 0;
 
+    const navigate = useNavigate();
+    const canClick =
+        latestStatus === "Đang thực hiện" && Boolean(latestScheduleId);
+
+    const goToKhamSucKhoe = (maDonVi) =>
+        navigate(
+            `/kham-dinh-ky/kham-suc-khoe?schedule=${encodeURIComponent(
+                latestScheduleId,
+            )}&unit=${encodeURIComponent(maDonVi)}`,
+        );
+
     return (
         <Card sx={{ borderRadius: 3 }}>
             <CardContent>
@@ -59,7 +71,7 @@ export default function TongQuanDonVi({
                         <Typography variant="h2">
                             {latestStatus === "Đang thực hiện"
                                 ? "Lịch khám đơn vị đang thực hiện"
-                                : "Lịch khám đơn vị sắp tới"}
+                                : "Lịch khám đơn vị"}
                         </Typography>
                     </Box>
                 </Stack>
@@ -89,13 +101,20 @@ export default function TongQuanDonVi({
                             <TableRow
                                 key={row.ma_don_vi}
                                 hover
-                                sx={
-                                    isActive
-                                        ? {
-                                              bgcolor: "rgba(245, 158, 11, 0.14)",
-                                          }
+                                onClick={
+                                    canClick
+                                        ? () => goToKhamSucKhoe(row.ma_don_vi)
                                         : undefined
                                 }
+                                sx={{
+                                    ...(canClick ? { cursor: "pointer" } : {}),
+                                    ...(isActive
+                                        ? {
+                                              bgcolor:
+                                                  "rgba(245, 158, 11, 0.14)",
+                                          }
+                                        : {}),
+                                }}
                             >
                                 <TableCell
                                     sx={{
@@ -117,9 +136,7 @@ export default function TongQuanDonVi({
                                         <Chip
                                             size="small"
                                             color={
-                                                isActive
-                                                    ? "warning"
-                                                    : "default"
+                                                isActive ? "warning" : "default"
                                             }
                                             label={`${formatDateTime(detail.thoi_gian_bat_dau)} - ${formatDateTime(detail.thoi_gian_ket_thuc)}`}
                                             sx={{ fontWeight: 600 }}
