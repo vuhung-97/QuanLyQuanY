@@ -297,10 +297,11 @@ export function computeHighestClassification(ts, ls, xn, cdha) {
 }
 
 export function filterSoldiers(soldiers, phieuMap, statusFilter, searchText) {
+    const statusList = Array.isArray(statusFilter) ? statusFilter : statusFilter ? [statusFilter] : [];
     return soldiers.filter((qn) => {
         const tt = phieuMap[qn.ma_quan_nhan]?.trang_thai || "chua_lay_mau";
-        if (!statusFilter) return true;
-        return tt === statusFilter;
+        if (statusList.length === 0) return true;
+        return statusList.includes(tt);
     }).filter((qn) => {
         if (!searchText) return true;
         const keyword = searchText.toLowerCase().trim();

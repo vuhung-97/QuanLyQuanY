@@ -89,8 +89,11 @@ export default function DotKhamSucKhoeWidget() {
         if (!schedule || !stats) return [];
         const tongQuanSo = stats.tong_quan_so || 0;
         const daKham = stats.da_kham || 0;
+        const daLayMau = stats.da_lay_mau || 0;
         const phanTramDaKham =
             tongQuanSo > 0 ? Math.round((daKham / tongQuanSo) * 100) : 0;
+        const phanTramDaLayMau =
+            tongQuanSo > 0 ? Math.round((daLayMau / tongQuanSo) * 100) : 0;
         const result = [
             {
                 label: "Tổng quân số đợt khám",
@@ -111,8 +114,8 @@ export default function DotKhamSucKhoeWidget() {
         if (canXemXetNghiem) {
             result.push({
                 label: "Đã lấy máu xét nghiệm",
-                value: "—",
-                note: "Đang cập nhật",
+                value: daLayMau,
+                note: `${phanTramDaLayMau}% quân số đã lấy máu`,
                 color: "secondary.main",
                 bg: "rgba(0, 180, 216, 0.12)",
                 icon: <ScienceIcon />,

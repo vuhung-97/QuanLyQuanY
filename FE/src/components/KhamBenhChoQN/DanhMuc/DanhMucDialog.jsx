@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import {
     Button,
     Dialog,
@@ -8,7 +9,9 @@ import {
 } from "@mui/material";
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
+import FormSelect from "@/components/common/FormSelect.jsx";
 import FormTextField from "@/components/common/FormTextField.jsx";
+import useStaticList from "@/hooks/useStaticList.js";
 import useDanhMucForm from "@/hooks/useDanhMucForm.js";
 
 export default function DanhMucDialog({
@@ -36,8 +39,48 @@ export default function DanhMucDialog({
         requiredFields,
     });
 
+    const selectField = config.fields.find(
+        (f) => f.type === "select" && f.optionsUrl,
+    );
+    const selectOptions = useStaticList(
+        selectField?.optionsUrl || "",
+        { pageSize: 500 },
+    );
+    const selectOptionsMap = useMemo(() => {
+        const map = new Map();
+        for (const item of selectOptions) {
+            map.set(
+                item[selectField?.valueField] ?? item[selectField?.idField],
+                item[selectField?.labelField],
+            );
+        }
+        return map;
+    }, [selectOptions, selectField]);
+
     const renderField = (field) => {
         const error = hook.errors[field.name];
+
+        if (field.type === "select") {
+            const options = field.optionsUrl
+                ? [...selectOptionsMap.entries()].map(([value, label]) => ({
+                      value,
+                      label,
+                  }))
+                : field.options || [];
+            return (
+                <FormSelect
+                    name={field.name}
+                    initialValue={hook.getFieldDefault(field.name)}
+                    onUpdateRef={hook.updateField}
+                    label={field.label}
+                    options={options}
+                    disabled={isView}
+                    required={field.required}
+                    error={!!error}
+                    helperText={error}
+                />
+            );
+        }
 
         return (
             <FormTextField

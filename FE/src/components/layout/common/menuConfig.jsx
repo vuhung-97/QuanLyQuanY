@@ -109,7 +109,7 @@ export const defaultMenuItems = [
             },
             {
                 id: "disease-catalog",
-                title: "Danh mục nhóm bệnh",
+                title: "Danh mục",
                 path: "/kham-benh/danh-muc",
                 icon: <CircleIcon sx={{ fontSize: 12 }} />,
                 allowedRoles: MENU_ROLE_MAP["danh-muc-benh"],

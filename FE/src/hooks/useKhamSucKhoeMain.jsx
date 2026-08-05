@@ -37,7 +37,7 @@ export default function useKhamSucKhoeMain() {
         refreshStats,
     } = useKhamSucKhoeData();
 
-    const [statusFilter, setStatusFilter] = useState("");
+    const [statusFilter, setStatusFilter] = useState([]);
     const [searchText, setSearchText] = useState("");
     const [myAssignment, setMyAssignment] = useState(null);
     const [allowedTabs, setAllowedTabs] = useState(ALL_TABS);
@@ -58,11 +58,6 @@ export default function useKhamSucKhoeMain() {
         data: null,
     });
 
-    const daTaoMa = useMemo(
-        () => Object.values(allPhieuMap || {}).filter((p) => p.ma_lay_mau).length,
-        [allPhieuMap],
-    );
-
     const filteredSoldiers = useMemo(
         () =>
             filterSoldiers(
@@ -73,6 +68,8 @@ export default function useKhamSucKhoeMain() {
             ),
         [soldiers, phieuMap, statusFilter, searchText],
     );
+
+    const isAdmin = useMemo(() => getCurrentUser()?.role === ROLES.ADMIN, []);
 
     const isXetNghiem = useMemo(() => {
         const currentUser = getCurrentUser();
@@ -100,6 +97,7 @@ export default function useKhamSucKhoeMain() {
                           color: "success.main",
                           bg: "rgba(16, 185, 129, 0.12)",
                           icon: <CheckCircleIcon />,
+                          filterKey: ["da_kham"],
                       },
                       {
                           label: "Đang khám",
@@ -107,13 +105,15 @@ export default function useKhamSucKhoeMain() {
                           color: "warning.main",
                           bg: "rgba(245, 158, 11, 0.14)",
                           icon: <PendingActionsIcon />,
+                          filterKey: ["dang_kham"],
                       },
                       {
-                          label: "Đã tạo mã",
-                          value: daTaoMa,
+                          label: "Đã lấy máu xét nghiệm",
+                          value: stats.da_lay_mau ?? 0,
                           color: "secondary.main",
                           bg: "rgba(0, 180, 216, 0.12)",
                           icon: <ScienceIcon />,
+                          filterKey: ["da_lay_mau", "dang_kham", "da_kham"],
                       },
                       {
                           label: "Còn lại",
@@ -121,10 +121,11 @@ export default function useKhamSucKhoeMain() {
                           color: "text.secondary",
                           bg: "rgba(100, 116, 139, 0.12)",
                           icon: <PersonAddAltIcon />,
+                          filterKey: ["chua_lay_mau", "da_lay_mau"],
                       },
                   ]
                 : [],
-        [stats, daTaoMa],
+        [stats],
     );
 
     useEffect(() => {
@@ -147,6 +148,12 @@ export default function useKhamSucKhoeMain() {
 
     useEffect(() => {
         if (formDialog.open && selectedSchedule) {
+            if (isAdmin) {
+                setAllowedTabs(ALL_TABS);
+                setEditableTabs(ALL_TABS);
+                setNoRoleNotice(false);
+                return;
+            }
             khamSucKhoeService.getMyAssignment(selectedSchedule)
                 .then((res) => {
                     const data = res.data;
@@ -169,7 +176,7 @@ export default function useKhamSucKhoeMain() {
                     setNoRoleNotice(false);
                 });
         }
-    }, [formDialog.open, selectedSchedule]);
+    }, [formDialog.open, selectedSchedule, isAdmin]);
 
     const handleFormSaved = useCallback(
         (savedPhieu) => {
@@ -233,8 +240,8 @@ export default function useKhamSucKhoeMain() {
 
     const handleEdit = useCallback((qn) => {
         document.activeElement?.blur();
-        setFormDialog({ open: true, qn, phieu: null, readOnly: !isKhamWindow });
-    }, [isKhamWindow]);
+        setFormDialog({ open: true, qn, phieu: null, readOnly: isAdmin ? false : !isKhamWindow });
+    }, [isKhamWindow, isAdmin]);
 
     const handleViewHistory = useCallback((qn) => {
         setHistoryDialog({ open: true, qn });

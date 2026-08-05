@@ -98,6 +98,7 @@ def thong_ke_lich_kham(
     tong_quan_so = 0
     tong_da_kham = 0
     tong_dang_kham = 0
+    tong_da_lay_mau = 0
     tong_con_lai = 0
 
     for unit in units:
@@ -117,6 +118,14 @@ def thong_ke_lich_kham(
         )
         da_kham = base.filter(PhieuKhamSucKhoe.trang_thai == "da_kham").scalar() or 0
         dang_kham = base.filter(PhieuKhamSucKhoe.trang_thai == "dang_kham").scalar() or 0
+        da_lay_mau = (
+            base.filter(
+                PhieuKhamSucKhoe.trang_thai.in_(
+                    ["da_lay_mau", "dang_kham", "da_kham"]
+                )
+            ).scalar()
+            or 0
+        )
 
         con_lai = quan_so - da_kham - dang_kham
         if con_lai < 0:
@@ -130,12 +139,14 @@ def thong_ke_lich_kham(
             "tong_quan_so": quan_so,
             "da_kham": da_kham,
             "dang_kham": dang_kham,
+            "da_lay_mau": da_lay_mau,
             "con_lai": con_lai,
         })
 
         tong_quan_so += quan_so
         tong_da_kham += da_kham
         tong_dang_kham += dang_kham
+        tong_da_lay_mau += da_lay_mau
         tong_con_lai += con_lai
 
     return {
@@ -143,6 +154,7 @@ def thong_ke_lich_kham(
         "tong_quan_so": tong_quan_so,
         "da_kham": tong_da_kham,
         "dang_kham": tong_dang_kham,
+        "da_lay_mau": tong_da_lay_mau,
         "con_lai": tong_con_lai,
         "danh_sach_don_vi": danh_sach_don_vi,
     }

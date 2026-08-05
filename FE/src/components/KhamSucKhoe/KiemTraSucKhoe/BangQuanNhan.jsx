@@ -162,6 +162,7 @@ export default function BangQuanNhan({
                         statusMap={TRANG_THAI_STATUS_FILTER}
                         label="Trạng thái"
                         minWidth={160}
+                        multiple
                     />
                 </Stack>
                 <DataTable

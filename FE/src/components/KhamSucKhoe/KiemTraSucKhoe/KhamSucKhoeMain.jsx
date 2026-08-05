@@ -133,7 +133,21 @@ export default function KhamSucKhoeMain() {
                 onExport={handlePrint}
             />
 
-            {stats && <StatCardGrid items={statsItems} />}
+            {stats && (
+                <StatCardGrid
+                    items={statsItems}
+                    onCardClick={(keys) => {
+                        if (!keys) return;
+                        setStatusFilter((prev) =>
+                            Array.isArray(keys) &&
+                            prev.length === keys.length &&
+                            keys.every((k) => prev.includes(k))
+                                ? []
+                                : keys,
+                        );
+                    }}
+                />
+            )}
 
             {selectedUnit && (
                 <BangQuanNhan
