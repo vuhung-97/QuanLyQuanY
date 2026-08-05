@@ -1,9 +1,13 @@
-import { memo } from "react";
+import { memo, useMemo, useState } from "react";
 import {
     Card,
     CardContent,
     Chip,
     CircularProgress,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
     Stack,
     TableCell,
     TableRow,
@@ -137,6 +141,37 @@ export default function BangQuanNhan({
     isLayMauWindow,
     isKhamWindow,
 }) {
+    const [sortBy, setSortBy] = useState("ho_ten");
+
+    const sortedSoldiers = useMemo(() => {
+        if (!sortBy) return soldiers;
+        const arr = [...soldiers];
+        arr.sort((a, b) => {
+            if (sortBy === "ho_ten") {
+                return (a.ho_ten || "").localeCompare(b.ho_ten || "", "vi");
+            }
+            if (sortBy === "don_vi") {
+                const uA = allUnitLookup.get(a.ma_don_vi) || "";
+                const uB = allUnitLookup.get(b.ma_don_vi) || "";
+                return uA.localeCompare(uB, "vi");
+            }
+            if (sortBy === "tinh_trang") {
+                const sA = phieuMap[a.ma_quan_nhan]?.trang_thai || "";
+                const sB = phieuMap[b.ma_quan_nhan]?.trang_thai || "";
+                return sA.localeCompare(sB);
+            }
+            if (sortBy === "ma_lay_mau") {
+                const mA = phieuMap[a.ma_quan_nhan]?.ma_lay_mau || "";
+                const mB = phieuMap[b.ma_quan_nhan]?.ma_lay_mau || "";
+                if (!mA) return mB ? 1 : 0;
+                if (!mB) return -1;
+                return mA.localeCompare(mB);
+            }
+            return 0;
+        });
+        return arr;
+    }, [soldiers, sortBy, phieuMap, allUnitLookup]);
+
     return (
         <Card sx={{ borderRadius: 3 }}>
             <CardContent>
@@ -156,24 +191,46 @@ export default function BangQuanNhan({
                         onSearch={onSearch}
                         placeholder="Tìm kiếm quân nhân..."
                     />
-                    <StatusFilter
-                        value={statusFilter}
-                        onChange={onStatusFilterChange}
-                        statusMap={TRANG_THAI_STATUS_FILTER}
-                        label="Trạng thái"
-                        minWidth={160}
-                    />
+                    <Stack direction="row" spacing={1}>
+                        <StatusFilter
+                            value={statusFilter}
+                            onChange={onStatusFilterChange}
+                            statusMap={TRANG_THAI_STATUS_FILTER}
+                            label="Trạng thái"
+                            minWidth={160}
+                        />
+                        <FormControl size="small" sx={{ minWidth: 160 }}>
+                            <InputLabel id="sort-filter-label">
+                                Sắp xếp
+                            </InputLabel>
+                            <Select
+                                labelId="sort-filter-label"
+                                value={sortBy}
+                                label="Sắp xếp"
+                                onChange={(e) => setSortBy(e.target.value)}
+                            >
+                                <MenuItem value="ho_ten">Theo tên</MenuItem>
+                                <MenuItem value="don_vi">Theo đơn vị</MenuItem>
+                                <MenuItem value="tinh_trang">
+                                    Theo tình trạng
+                                </MenuItem>
+                                <MenuItem value="ma_lay_mau">
+                                    Theo mã lấy máu
+                                </MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Stack>
                 </Stack>
                 <DataTable
                     columns={columns}
-                    rows={soldiers}
+                    rows={sortedSoldiers}
                     loading={loading}
                     emptyMessage="Không có quân nhân nào."
                     getRowKey={(qn) => qn.ma_quan_nhan}
                     minWidth={800}
                 >
                     <SoldierRows
-                        soldiers={soldiers}
+                        soldiers={sortedSoldiers}
                         phieuMap={phieuMap}
                         allUnitLookup={allUnitLookup}
                         onEdit={onEdit}
