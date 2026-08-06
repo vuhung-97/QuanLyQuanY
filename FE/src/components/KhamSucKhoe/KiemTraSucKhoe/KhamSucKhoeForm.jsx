@@ -161,6 +161,31 @@ export default function KhamSucKhoeForm({
         [quanNhan, unitLookup, existingPhieu],
     );
 
+    const tabPanels = [
+        {
+            index: 0,
+            Component: TongQuanTab,
+            tabRef: tsRef,
+            initialData: initialTS,
+            gioiTinh: quanNhan?.gioi_tinh,
+        },
+        { index: 1, Component: LamSangTab, tabRef: lsRef, initialData: initialLS },
+        { index: 2, Component: XetNghiemTab, tabRef: xnRef, initialData: initialXN },
+        {
+            index: 3,
+            Component: ChanDoanHinhAnhTab,
+            tabRef: cdhaRef,
+            initialData: initialCDHA,
+        },
+        {
+            index: 4,
+            Component: KetLuanTab,
+            tabRef: klRef,
+            initialData: initialKL,
+            innerKey: klVersion,
+        },
+    ];
+
     return (
         <>
             <Dialog
@@ -202,67 +227,36 @@ export default function KhamSucKhoeForm({
                             allowedTabs={allowedTabs}
                         />
 
-                        {allowedTabs.includes(0) && (
-                            <TabPanel value={activeTab} index={0}>
-                                <TongQuanTab
-                                    ref={tsRef}
-                                    initialData={initialTS}
-                                    cardStyle={cardStyle}
-                                    readOnly={
-                                        readOnly || !editableTabs.includes(0)
-                                    }
-                                    gioiTinh={quanNhan?.gioi_tinh}
-                                />
-                            </TabPanel>
-                        )}
-                        {allowedTabs.includes(1) && (
-                            <TabPanel value={activeTab} index={1}>
-                                <LamSangTab
-                                    ref={lsRef}
-                                    initialData={initialLS}
-                                    cardStyle={cardStyle}
-                                    readOnly={
-                                        readOnly || !editableTabs.includes(1)
-                                    }
-                                />
-                            </TabPanel>
-                        )}
-                        {allowedTabs.includes(2) && (
-                            <TabPanel value={activeTab} index={2}>
-                                <XetNghiemTab
-                                    ref={xnRef}
-                                    initialData={initialXN}
-                                    cardStyle={cardStyle}
-                                    readOnly={
-                                        readOnly || !editableTabs.includes(2)
-                                    }
-                                />
-                            </TabPanel>
-                        )}
-                        {allowedTabs.includes(3) && (
-                            <TabPanel value={activeTab} index={3}>
-                                <ChanDoanHinhAnhTab
-                                    ref={cdhaRef}
-                                    initialData={initialCDHA}
-                                    cardStyle={cardStyle}
-                                    readOnly={
-                                        readOnly || !editableTabs.includes(3)
-                                    }
-                                />
-                            </TabPanel>
-                        )}
-                        {allowedTabs.includes(4) && (
-                            <TabPanel value={activeTab} index={4}>
-                                <KetLuanTab
-                                    key={klVersion}
-                                    ref={klRef}
-                                    initialData={initialKL}
-                                    cardStyle={cardStyle}
-                                    readOnly={
-                                        readOnly || !editableTabs.includes(4)
-                                    }
-                                />
-                            </TabPanel>
+                        {tabPanels.map(
+                            ({
+                                index,
+                                Component,
+                                tabRef,
+                                initialData,
+                                gioiTinh,
+                                innerKey,
+                            }) =>
+                                allowedTabs.includes(index) && (
+                                    <TabPanel
+                                        key={index}
+                                        value={activeTab}
+                                        index={index}
+                                    >
+                                        <Component
+                                            key={innerKey}
+                                            ref={tabRef}
+                                            initialData={initialData}
+                                            cardStyle={cardStyle}
+                                            readOnly={
+                                                readOnly ||
+                                                !editableTabs.includes(index)
+                                            }
+                                            {...(gioiTinh !== undefined
+                                                ? { gioiTinh }
+                                                : {})}
+                                        />
+                                    </TabPanel>
+                                ),
                         )}
                     </DialogContent>
 

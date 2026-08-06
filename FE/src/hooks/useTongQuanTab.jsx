@@ -1,4 +1,5 @@
 import { useImperativeHandle, useRef } from "react";
+import { calcBmi } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
 
 export default function useTongQuanTab(initialData, ref) {
     const dataRef = useRef({ ...initialData });
@@ -8,13 +9,7 @@ export default function useTongQuanTab(initialData, ref) {
         () => ({
             getData: () => {
                 const data = { ...dataRef.current };
-                const h = parseFloat(data.chieu_cao);
-                const w = parseFloat(data.can_nang);
-                if (h > 0 && w > 0) {
-                    data.bmi = (w / Math.pow(h / 100, 2)).toFixed(1);
-                } else {
-                    data.bmi = "";
-                }
+                data.bmi = calcBmi(data.chieu_cao, data.can_nang);
                 return data;
             },
         }),

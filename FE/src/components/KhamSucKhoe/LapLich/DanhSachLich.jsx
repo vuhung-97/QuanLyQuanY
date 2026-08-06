@@ -27,10 +27,22 @@ import {
 import DataTable from "@/components/common/DataTable.jsx";
 import PaginationWidget from "@/components/common/PaginationWidget.jsx";
 import StatusFilter from "@/components/common/StatusFilter.jsx";
-import { findNearestDetail } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
 import { formatDateTime } from "@/utils/date.js";
 import IfRole from "@/components/common/IfRole.jsx";
 import { ROLES } from "@/constants/roleConstants.js";
+import {
+    findNearestDetail,
+    getScheduleStatus,
+    statusColor,
+} from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
+
+const STATUS_UI = {
+    da_duyet: { label: "Đã duyệt", color: "success", variant: "filled" },
+    cho_duyet: { label: "Chờ duyệt", color: "warning", variant: "filled" },
+    cho_gui: { label: "Chờ gửi", color: "default", variant: "outlined" },
+    tu_choi: { label: "Từ chối", color: "error", variant: "filled" },
+    tam_hoan: { label: "Tạm hoãn", color: "secondary", variant: "filled" },
+};
 
 const columns = [
     { key: "ma_lich", label: "Mã lịch" },
@@ -52,8 +64,6 @@ function ScheduleTableRow({
     onHoan,
     isSelected,
     onSelectRow,
-    getScheduleStatus,
-    statusColor,
 }) {
     const currentStatus = getScheduleStatus(row);
     const nearest = findNearestDetail(details);
@@ -99,31 +109,9 @@ function ScheduleTableRow({
                     />
                     <Chip
                         size="small"
-                        label={
-                            row.trang_thai === "da_duyet"
-                                ? "Đã duyệt"
-                                : row.trang_thai === "cho_duyet"
-                                  ? "Chờ duyệt"
-                                  : row.trang_thai === "cho_gui"
-                                    ? "Chờ gửi"
-                                    : row.trang_thai === "tu_choi"
-                                      ? "Từ chối"
-                                      : row.trang_thai === "tam_hoan"
-                                        ? "Tạm hoãn"
-                                        : row.trang_thai || "—"
-                        }
-                        color={
-                            row.trang_thai === "da_duyet"
-                                ? "success"
-                                : row.trang_thai === "cho_duyet"
-                                  ? "warning"
-                                  : row.trang_thai === "tu_choi"
-                                    ? "error"
-                                    : row.trang_thai === "tam_hoan"
-                                      ? "secondary"
-                                      : "default"
-                        }
-                        variant={row.trang_thai === "cho_gui" ? "outlined" : "filled"}
+                        label={STATUS_UI[row.trang_thai]?.label || row.trang_thai || "—"}
+                        color={STATUS_UI[row.trang_thai]?.color || "default"}
+                        variant={STATUS_UI[row.trang_thai]?.variant || "filled"}
                         sx={{ fontWeight: 600 }}
                     />
                 </Stack>
@@ -242,8 +230,6 @@ export default function DanhSachLich({
     activeLichId,
     onSelectRow,
     onResetDefault,
-    getScheduleStatus,
-    statusColor,
 }) {
     const [year, setYear] = useState("Tất cả");
     const [status, setStatus] = useState(initialStatus || "");
@@ -374,8 +360,6 @@ export default function DanhSachLich({
                                 onHoan={onHoan}
                                 isSelected={activeLichId === row.ma_lich_kham}
                                 onSelectRow={onSelectRow}
-                                getScheduleStatus={getScheduleStatus}
-                                statusColor={statusColor}
                             />
                         ))}
                     </DataTable>

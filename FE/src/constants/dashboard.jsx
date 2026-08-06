@@ -28,7 +28,7 @@ export const STAT_META = [
         color: "#F59E0B",
         bg: "rgba(245, 158, 11, 0.1)",
     },
-    ];
+];
 
 export const STAT_META_2 = [
     {

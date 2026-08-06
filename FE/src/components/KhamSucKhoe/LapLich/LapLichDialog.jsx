@@ -40,6 +40,25 @@ function DiaDiemCell({ maDonVi, value, onChange, disabled }) {
     );
 }
 
+function TimeFields({ fields, disabled }) {
+    return (
+        <Stack spacing={1} sx={{ py: 1 }}>
+            {fields.map((f) => (
+                <ChonNgayGio
+                    key={f.label}
+                    label={f.label}
+                    value={f.value}
+                    onChange={f.onChange}
+                    disabled={disabled}
+                    defaultTime={f.defaultTime}
+                    error={Boolean(f.error)}
+                    errorMessage={f.error}
+                />
+            ))}
+        </Stack>
+    );
+}
+
 export default function LapLichDialog({
     open,
     onClose,
@@ -183,73 +202,64 @@ export default function LapLichDialog({
                 key: "thoi_gian_chinh",
                 label: "Thời gian chính",
                 sx: { width: "36%" },
-                render: (r) => {
+render: (r) => {
                     if (!checked(r.ma_don_vi)) return null;
                     const d = detailData[r.ma_don_vi] || {};
                     const errs = detailErrors[r.ma_don_vi] || {};
                     return (
-                        <Stack spacing={1} sx={{ py: 1 }}>
-                            <ChonNgayGio
-                                label="Lấy máu - bắt đầu"
-                                value={d.thoi_gian_lay_mau_bat_dau || ""}
-                                onChange={(v) =>
-                                    handleDetailChange(
-                                        r.ma_don_vi,
-                                        "thoi_gian_lay_mau_bat_dau",
-                                        v,
-                                    )
-                                }
-                                disabled={readOnly}
-                                defaultTime="06:00"
-                                error={Boolean(errs.thoi_gian_lay_mau_bat_dau)}
-                                errorMessage={errs.thoi_gian_lay_mau_bat_dau}
-                            />
-                            <ChonNgayGio
-                                label="Lấy máu - kết thúc"
-                                value={d.thoi_gian_lay_mau_ket_thuc || ""}
-                                onChange={(v) =>
-                                    handleDetailChange(
-                                        r.ma_don_vi,
-                                        "thoi_gian_lay_mau_ket_thuc",
-                                        v,
-                                    )
-                                }
-                                disabled={readOnly}
-                                defaultTime="17:00"
-                                error={Boolean(errs.thoi_gian_lay_mau_ket_thuc)}
-                                errorMessage={errs.thoi_gian_lay_mau_ket_thuc}
-                            />
-                            <ChonNgayGio
-                                label="Khám - bắt đầu"
-                                value={d.thoi_gian_bat_dau || ""}
-                                onChange={(v) =>
-                                    handleDetailChange(
-                                        r.ma_don_vi,
-                                        "thoi_gian_bat_dau",
-                                        v,
-                                    )
-                                }
-                                disabled={readOnly}
-                                defaultTime="06:00"
-                                error={Boolean(errs.thoi_gian_bat_dau)}
-                                errorMessage={errs.thoi_gian_bat_dau}
-                            />
-                            <ChonNgayGio
-                                label="Khám - kết thúc"
-                                value={d.thoi_gian_ket_thuc || ""}
-                                onChange={(v) =>
-                                    handleDetailChange(
-                                        r.ma_don_vi,
-                                        "thoi_gian_ket_thuc",
-                                        v,
-                                    )
-                                }
-                                disabled={readOnly}
-                                defaultTime="17:00"
-                                error={Boolean(errs.thoi_gian_ket_thuc)}
-                                errorMessage={errs.thoi_gian_ket_thuc}
-                            />
-                        </Stack>
+                        <TimeFields
+                            disabled={readOnly}
+                            fields={[
+                                {
+                                    label: "Lấy máu - bắt đầu",
+                                    value: d.thoi_gian_lay_mau_bat_dau || "",
+                                    defaultTime: "06:00",
+                                    error: errs.thoi_gian_lay_mau_bat_dau,
+                                    onChange: (v) =>
+                                        handleDetailChange(
+                                            r.ma_don_vi,
+                                            "thoi_gian_lay_mau_bat_dau",
+                                            v,
+                                        ),
+                                },
+                                {
+                                    label: "Lấy máu - kết thúc",
+                                    value: d.thoi_gian_lay_mau_ket_thuc || "",
+                                    defaultTime: "17:00",
+                                    error: errs.thoi_gian_lay_mau_ket_thuc,
+                                    onChange: (v) =>
+                                        handleDetailChange(
+                                            r.ma_don_vi,
+                                            "thoi_gian_lay_mau_ket_thuc",
+                                            v,
+                                        ),
+                                },
+                                {
+                                    label: "Khám - bắt đầu",
+                                    value: d.thoi_gian_bat_dau || "",
+                                    defaultTime: "06:00",
+                                    error: errs.thoi_gian_bat_dau,
+                                    onChange: (v) =>
+                                        handleDetailChange(
+                                            r.ma_don_vi,
+                                            "thoi_gian_bat_dau",
+                                            v,
+                                        ),
+                                },
+                                {
+                                    label: "Khám - kết thúc",
+                                    value: d.thoi_gian_ket_thuc || "",
+                                    defaultTime: "17:00",
+                                    error: errs.thoi_gian_ket_thuc,
+                                    onChange: (v) =>
+                                        handleDetailChange(
+                                            r.ma_don_vi,
+                                            "thoi_gian_ket_thuc",
+                                            v,
+                                        ),
+                                },
+                            ]}
+                        />
                     );
                 },
             },
@@ -257,91 +267,64 @@ export default function LapLichDialog({
                 key: "thoi_gian_du_tru",
                 label: "Thời gian dự trù",
                 sx: { width: "36%" },
-                render: (r) => {
+render: (r) => {
                     if (!checked(r.ma_don_vi)) return null;
                     const d = detailData[r.ma_don_vi] || {};
                     const errs = detailErrors[r.ma_don_vi] || {};
                     return (
-                        <Stack spacing={1} sx={{ py: 1 }}>
-                            <ChonNgayGio
-                                label="Dự trù lấy máu - bắt đầu"
-                                value={d.thoi_gian_du_tru_lay_mau_bat_dau || ""}
-                                onChange={(v) =>
-                                    handleDetailChange(
-                                        r.ma_don_vi,
-                                        "thoi_gian_du_tru_lay_mau_bat_dau",
-                                        v,
-                                    )
-                                }
-                                disabled={readOnly}
-                                defaultTime="06:00"
-                                error={Boolean(
-                                    errs.thoi_gian_du_tru_lay_mau_bat_dau,
-                                )}
-                                errorMessage={
-                                    errs.thoi_gian_du_tru_lay_mau_bat_dau
-                                }
-                            />
-                            <ChonNgayGio
-                                label="Dự trù lấy máu - kết thúc"
-                                value={
-                                    d.thoi_gian_du_tru_lay_mau_ket_thuc || ""
-                                }
-                                onChange={(v) =>
-                                    handleDetailChange(
-                                        r.ma_don_vi,
-                                        "thoi_gian_du_tru_lay_mau_ket_thuc",
-                                        v,
-                                    )
-                                }
-                                disabled={readOnly}
-                                defaultTime="17:00"
-                                error={Boolean(
-                                    errs.thoi_gian_du_tru_lay_mau_ket_thuc,
-                                )}
-                                errorMessage={
-                                    errs.thoi_gian_du_tru_lay_mau_ket_thuc
-                                }
-                            />
-                            <ChonNgayGio
-                                label="Dự trù khám - bắt đầu"
-                                value={d.thoi_gian_du_tru_kham_bat_dau || ""}
-                                onChange={(v) =>
-                                    handleDetailChange(
-                                        r.ma_don_vi,
-                                        "thoi_gian_du_tru_kham_bat_dau",
-                                        v,
-                                    )
-                                }
-                                disabled={readOnly}
-                                defaultTime="06:00"
-                                error={Boolean(
-                                    errs.thoi_gian_du_tru_kham_bat_dau,
-                                )}
-                                errorMessage={
-                                    errs.thoi_gian_du_tru_kham_bat_dau
-                                }
-                            />
-                            <ChonNgayGio
-                                label="Dự trù khám - kết thúc"
-                                value={d.thoi_gian_du_tru_kham_ket_thuc || ""}
-                                onChange={(v) =>
-                                    handleDetailChange(
-                                        r.ma_don_vi,
-                                        "thoi_gian_du_tru_kham_ket_thuc",
-                                        v,
-                                    )
-                                }
-                                disabled={readOnly}
-                                defaultTime="17:00"
-                                error={Boolean(
-                                    errs.thoi_gian_du_tru_kham_ket_thuc,
-                                )}
-                                errorMessage={
-                                    errs.thoi_gian_du_tru_kham_ket_thuc
-                                }
-                            />
-                        </Stack>
+                        <TimeFields
+                            disabled={readOnly}
+                            fields={[
+                                {
+                                    label: "Dự trù lấy máu - bắt đầu",
+                                    value: d.thoi_gian_du_tru_lay_mau_bat_dau || "",
+                                    defaultTime: "06:00",
+                                    error: errs.thoi_gian_du_tru_lay_mau_bat_dau,
+                                    onChange: (v) =>
+                                        handleDetailChange(
+                                            r.ma_don_vi,
+                                            "thoi_gian_du_tru_lay_mau_bat_dau",
+                                            v,
+                                        ),
+                                },
+                                {
+                                    label: "Dự trù lấy máu - kết thúc",
+                                    value: d.thoi_gian_du_tru_lay_mau_ket_thuc || "",
+                                    defaultTime: "17:00",
+                                    error: errs.thoi_gian_du_tru_lay_mau_ket_thuc,
+                                    onChange: (v) =>
+                                        handleDetailChange(
+                                            r.ma_don_vi,
+                                            "thoi_gian_du_tru_lay_mau_ket_thuc",
+                                            v,
+                                        ),
+                                },
+                                {
+                                    label: "Dự trù khám - bắt đầu",
+                                    value: d.thoi_gian_du_tru_kham_bat_dau || "",
+                                    defaultTime: "06:00",
+                                    error: errs.thoi_gian_du_tru_kham_bat_dau,
+                                    onChange: (v) =>
+                                        handleDetailChange(
+                                            r.ma_don_vi,
+                                            "thoi_gian_du_tru_kham_bat_dau",
+                                            v,
+                                        ),
+                                },
+                                {
+                                    label: "Dự trù khám - kết thúc",
+                                    value: d.thoi_gian_du_tru_kham_ket_thuc || "",
+                                    defaultTime: "17:00",
+                                    error: errs.thoi_gian_du_tru_kham_ket_thuc,
+                                    onChange: (v) =>
+                                        handleDetailChange(
+                                            r.ma_don_vi,
+                                            "thoi_gian_du_tru_kham_ket_thuc",
+                                            v,
+                                        ),
+                                },
+                            ]}
+                        />
                     );
                 },
             },

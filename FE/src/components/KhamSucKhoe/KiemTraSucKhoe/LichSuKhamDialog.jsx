@@ -8,7 +8,7 @@ import {
     Typography,
 } from "@mui/material";
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
-import { getPhanLoai } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
+import { getPhanLoai, getStatus } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
 import useLichSuKham from "@/hooks/useLichSuKham.jsx";
 
 export default function LichSuKhamDialog({
@@ -44,14 +44,7 @@ export default function LichSuKhamDialog({
                 )}
                 <List disablePadding>
                     {phieuList.map((phieu) => {
-                        const tt =
-                            phieu?.trang_thai === "da_kham"
-                                ? "Đã khám"
-                                : phieu?.trang_thai === "dang_kham"
-                                  ? "Đang khám"
-                                  : phieu?.trang_thai === "da_lay_mau"
-                                    ? "Đã lấy máu"
-                                    : "Chưa lấy máu";
+                        const tt = getStatus(phieu);
                         const pl = getPhanLoai(phieu);
                         return (
                             <ListItemButton

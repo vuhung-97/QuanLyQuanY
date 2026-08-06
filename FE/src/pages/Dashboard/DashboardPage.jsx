@@ -6,8 +6,8 @@ import SoSanhThangTruoc from "@/components/Dashboard/SoSanhThangTruoc.jsx";
 import PhanBoBenhCard from "@/components/Dashboard/PhanBoBenhCard.jsx";
 import SucKhoeDonViWidget from "@/components/Dashboard/SucKhoeDonViWidget.jsx";
 import DotKhamSucKhoeWidget from "@/components/Dashboard/DotKhamSucKhoeWidget.jsx";
-import useKhoList from "@/hooks/useKhoList.js";
 import useThresholdSettings from "@/hooks/useThresholdSettings.js";
+import useThuocTonKhoThap from "@/hooks/useThuocTonKhoThap.js";
 import { WarningAmber as WarningAmberIcon } from "@mui/icons-material";
 import useDashboardStats from "@/hooks/useDashboardStats.js";
 import useBaoCaoThang from "@/hooks/useBaoCaoThang.js";
@@ -22,7 +22,8 @@ export default function DashboardPage() {
     const canXemChoXuLy =
         role === ROLES.ADMIN || role === ROLES.CNQY;
     const { thresholds } = useThresholdSettings();
-    const kho = useKhoList(thresholds);
+    const { value: thuocTonKhoThap, loading: thuocLoading } =
+        useThuocTonKhoThap(thresholds);
     const {
         thang,
         setThang,
@@ -62,9 +63,7 @@ export default function DashboardPage() {
         })),
         {
             label: "Thuốc sắp hết",
-            value:
-                kho.statItems.find((s) => s.filterKey === "low-stock")?.value ??
-                "--",
+            value: thuocTonKhoThap ?? "--",
             icon: <WarningAmberIcon />,
             color: "#F59E0B",
             bg: "#FEF3C7",
@@ -79,7 +78,7 @@ export default function DashboardPage() {
         color: m.color,
         bg: m.bg,
         filterKey: m.key,
-    }));
+    })).filter((item) => typeof item.value === "number" && item.value > 0);
 
     return (
         <Stack spacing={3}>
@@ -92,7 +91,7 @@ export default function DashboardPage() {
                 </Typography>
                 <StatCardGrid
                     items={statItems}
-                    loading={statsLoading || kho.loading}
+                    loading={statsLoading || thuocLoading}
                     onCardClick={handleCardClick}
                 />
             </Box>

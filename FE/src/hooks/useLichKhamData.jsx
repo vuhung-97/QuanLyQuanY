@@ -1,11 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import {
-    CalendarMonth as CalendarIcon,
-    Groups as GroupsIcon,
-} from "@mui/icons-material";
 import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
 import { fallbackSchedules } from "@/constants/khamSucKhoeConstants.js";
-import { formatDate } from "@/utils/date.js";
 import { getScheduleStatus } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
 
 export default function useLichKhamData() {
@@ -95,42 +90,6 @@ export default function useLichKhamData() {
         ? getScheduleStatus(latestSchedule)
         : "";
 
-    const scheduleStats = useMemo(() => {
-        const tong = schedules.length;
-        const dangThucHien = schedules.filter(
-            (s) => getScheduleStatus(s) === "Đang thực hiện",
-        ).length;
-        return { tong, dangThucHien };
-    }, [schedules]);
-
-    const summaryItems = useMemo(() => {
-        const totalQn = unitStats
-            ? unitStats.reduce((s, u) => s + (u.quan_so || 0), 0)
-            : 0;
-
-        const thoiGian = latestSchedule
-            ? `${formatDate(latestSchedule.thoi_gian_bat_dau)} - ${formatDate(latestSchedule.thoi_gian_ket_thuc)}`
-            : "Chưa có";
-
-        return [
-            {
-                label: "Tổng quân số",
-                value: totalQn,
-                color: "primary.main",
-                bg: "rgba(11, 59, 96, 0.1)",
-                icon: <GroupsIcon />,
-            },
-            {
-                label: "Thời gian khám",
-                value: thoiGian,
-                note: "",
-                color: "success.main",
-                bg: "rgba(16, 185, 129, 0.12)",
-                icon: <CalendarIcon />,
-            },
-        ];
-    }, [unitStats, latestSchedule]);
-
     const unitOptions = useMemo(
         () => (unitStats ?? []).filter((u) => !u.ma_don_vi_truc_thuoc),
         [unitStats],
@@ -146,8 +105,6 @@ export default function useLichKhamData() {
         setError,
         latestSchedule,
         latestStatus,
-        scheduleStats,
-        summaryItems,
         loadSchedules,
         refreshCounter,
     };

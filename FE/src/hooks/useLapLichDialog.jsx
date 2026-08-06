@@ -3,6 +3,11 @@ import dayjs from "dayjs";
 import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
 import { getScheduleTimeWindow } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
 import { formatDateTime } from "@/utils/date.js";
+import {
+    applyOverlap,
+    detailRangeError,
+    detailBoundsError,
+} from "@/utils/scheduleTimeValidation.js";
 
 export default function useLapLichDialog({
     open,
@@ -370,81 +375,25 @@ export default function useLapLichDialog({
             "Dự trù khám",
         );
 
-        if (layMauBd && layMauKt && khamBd && khamKt) {
-            if (layMauBd.isBefore(khamKt) && khamBd.isBefore(layMauKt)) {
-                const msgLm = "Thời gian lấy máu trùng với thời gian khám";
-                const msgKh = "Thời gian khám trùng với thời gian lấy máu";
-                addErr("thoi_gian_lay_mau_bat_dau", msgLm);
-                addErr("thoi_gian_lay_mau_ket_thuc", msgLm);
-                addErr("thoi_gian_bat_dau", msgKh);
-                addErr("thoi_gian_ket_thuc", msgKh);
-            }
-        } else {
-            if (layMauBd && layMauKt && khamBd) {
-                if ((khamBd.isAfter(layMauBd) || khamBd.isSame(layMauBd)) && khamBd.isBefore(layMauKt)) {
-                    addErr(
-                        "thoi_gian_bat_dau",
-                        "Thời gian khám trùng với thời gian lấy máu",
-                    );
-                    addErr(
-                        "thoi_gian_lay_mau_bat_dau",
-                        "Thời gian lấy máu trùng với thời gian khám",
-                    );
-                    addErr(
-                        "thoi_gian_lay_mau_ket_thuc",
-                        "Thời gian lấy máu trùng với thời gian khám",
-                    );
-                }
-            }
-            if (layMauBd && layMauKt && khamKt) {
-                if (khamKt.isAfter(layMauBd) && (khamKt.isBefore(layMauKt) || khamKt.isSame(layMauKt))) {
-                    addErr(
-                        "thoi_gian_ket_thuc",
-                        "Thời gian khám trùng với thời gian lấy máu",
-                    );
-                    addErr(
-                        "thoi_gian_lay_mau_bat_dau",
-                        "Thời gian lấy máu trùng với thời gian khám",
-                    );
-                    addErr(
-                        "thoi_gian_lay_mau_ket_thuc",
-                        "Thời gian lấy máu trùng với thời gian khám",
-                    );
-                }
-            }
-            if (khamBd && khamKt && layMauBd) {
-                if ((layMauBd.isAfter(khamBd) || layMauBd.isSame(khamBd)) && layMauBd.isBefore(khamKt)) {
-                    addErr(
-                        "thoi_gian_lay_mau_bat_dau",
-                        "Thời gian lấy máu trùng với thời gian khám",
-                    );
-                    addErr(
-                        "thoi_gian_bat_dau",
-                        "Thời gian khám trùng với thời gian lấy máu",
-                    );
-                    addErr(
-                        "thoi_gian_ket_thuc",
-                        "Thời gian khám trùng với thời gian lấy máu",
-                    );
-                }
-            }
-            if (khamBd && khamKt && layMauKt) {
-                if (layMauKt.isAfter(khamBd) && (layMauKt.isBefore(khamKt) || layMauKt.isSame(khamKt))) {
-                    addErr(
-                        "thoi_gian_lay_mau_ket_thuc",
-                        "Thời gian lấy máu trùng với thời gian khám",
-                    );
-                    addErr(
-                        "thoi_gian_bat_dau",
-                        "Thời gian khám trùng với thời gian lấy máu",
-                    );
-                    addErr(
-                        "thoi_gian_ket_thuc",
-                        "Thời gian khám trùng với thời gian lấy máu",
-                    );
-                }
-            }
-        }
+        const layMau = {
+            bd: layMauBd,
+            kt: layMauKt,
+            bdF: "thoi_gian_lay_mau_bat_dau",
+            ktF: "thoi_gian_lay_mau_ket_thuc",
+        };
+        const kham = {
+            bd: khamBd,
+            kt: khamKt,
+            bdF: "thoi_gian_bat_dau",
+            ktF: "thoi_gian_ket_thuc",
+        };
+        applyOverlap(
+            (field, msg) => addErr(field, msg),
+            layMau,
+            kham,
+            "Thời gian lấy máu trùng với thời gian khám",
+            "Thời gian khám trùng với thời gian lấy máu",
+        );
 
         for (const [bdF, ktF, bdV, ktV, label] of [
             [
@@ -474,81 +423,25 @@ export default function useLapLichDialog({
             }
         }
 
-        if (duTruLMBd && duTruLMKt && duTruKBd && duTruKKt) {
-            if (duTruLMBd.isBefore(duTruKKt) && duTruKBd.isBefore(duTruLMKt)) {
-                const msgLm = "Dự trù lấy máu trùng với dự trù khám";
-                const msgKh = "Dự trù khám trùng với dự trù lấy máu";
-                addErr("thoi_gian_du_tru_lay_mau_bat_dau", msgLm);
-                addErr("thoi_gian_du_tru_lay_mau_ket_thuc", msgLm);
-                addErr("thoi_gian_du_tru_kham_bat_dau", msgKh);
-                addErr("thoi_gian_du_tru_kham_ket_thuc", msgKh);
-            }
-        } else {
-            if (duTruLMBd && duTruLMKt && duTruKBd) {
-                if ((duTruKBd.isAfter(duTruLMBd) || duTruKBd.isSame(duTruLMBd)) && duTruKBd.isBefore(duTruLMKt)) {
-                    addErr(
-                        "thoi_gian_du_tru_kham_bat_dau",
-                        "Dự trù khám trùng với dự trù lấy máu",
-                    );
-                    addErr(
-                        "thoi_gian_du_tru_lay_mau_bat_dau",
-                        "Dự trù lấy máu trùng với dự trù khám",
-                    );
-                    addErr(
-                        "thoi_gian_du_tru_lay_mau_ket_thuc",
-                        "Dự trù lấy máu trùng với dự trù khám",
-                    );
-                }
-            }
-            if (duTruLMBd && duTruLMKt && duTruKKt) {
-                if (duTruKKt.isAfter(duTruLMBd) && (duTruKKt.isBefore(duTruLMKt) || duTruKKt.isSame(duTruLMKt))) {
-                    addErr(
-                        "thoi_gian_du_tru_kham_ket_thuc",
-                        "Dự trù khám trùng với dự trù lấy máu",
-                    );
-                    addErr(
-                        "thoi_gian_du_tru_lay_mau_bat_dau",
-                        "Dự trù lấy máu trùng với dự trù khám",
-                    );
-                    addErr(
-                        "thoi_gian_du_tru_lay_mau_ket_thuc",
-                        "Dự trù lấy máu trùng với dự trù khám",
-                    );
-                }
-            }
-            if (duTruKBd && duTruKKt && duTruLMBd) {
-                if ((duTruLMBd.isAfter(duTruKBd) || duTruLMBd.isSame(duTruKBd)) && duTruLMBd.isBefore(duTruKKt)) {
-                    addErr(
-                        "thoi_gian_du_tru_lay_mau_bat_dau",
-                        "Dự trù lấy máu trùng với dự trù khám",
-                    );
-                    addErr(
-                        "thoi_gian_du_tru_kham_bat_dau",
-                        "Dự trù khám trùng với dự trù lấy máu",
-                    );
-                    addErr(
-                        "thoi_gian_du_tru_kham_ket_thuc",
-                        "Dự trù khám trùng với dự trù lấy máu",
-                    );
-                }
-            }
-            if (duTruKBd && duTruKKt && duTruLMKt) {
-                if (duTruLMKt.isAfter(duTruKBd) && (duTruLMKt.isBefore(duTruKKt) || duTruLMKt.isSame(duTruKKt))) {
-                    addErr(
-                        "thoi_gian_du_tru_lay_mau_ket_thuc",
-                        "Dự trù lấy máu trùng với dự trù khám",
-                    );
-                    addErr(
-                        "thoi_gian_du_tru_kham_bat_dau",
-                        "Dự trù khám trùng với dự trù lấy máu",
-                    );
-                    addErr(
-                        "thoi_gian_du_tru_kham_ket_thuc",
-                        "Dự trù khám trùng với dự trù lấy máu",
-                    );
-                }
-            }
-        }
+        const duTruLM = {
+            bd: duTruLMBd,
+            kt: duTruLMKt,
+            bdF: "thoi_gian_du_tru_lay_mau_bat_dau",
+            ktF: "thoi_gian_du_tru_lay_mau_ket_thuc",
+        };
+        const duTruK = {
+            bd: duTruKBd,
+            kt: duTruKKt,
+            bdF: "thoi_gian_du_tru_kham_bat_dau",
+            ktF: "thoi_gian_du_tru_kham_ket_thuc",
+        };
+        applyOverlap(
+            (field, msg) => addErr(field, msg),
+            duTruLM,
+            duTruK,
+            "Dự trù lấy máu trùng với dự trù khám",
+            "Dự trù khám trùng với dự trù lấy máu",
+        );
 
         return e;
     }, [
@@ -565,35 +458,6 @@ export default function useLapLichDialog({
     const detailErrors = useMemo(() => {
         const errors = {};
 
-        const checkBounds = (valStr, masterBdStr, masterKtStr, label) => {
-            if (!valStr) return "";
-            const val = dayjs(valStr);
-            if (masterBdStr) {
-                const masterBd = dayjs(masterBdStr);
-                if (val.isBefore(masterBd)) {
-                    return `Không được trước thời gian bắt đầu ${label} của lịch năm`;
-                }
-            }
-            if (masterKtStr) {
-                const masterKt = dayjs(masterKtStr);
-                if (val.isAfter(masterKt)) {
-                    return `Không được sau thời gian kết thúc ${label} của lịch năm`;
-                }
-            }
-            return "";
-        };
-
-        const checkRange = (bdStr, ktStr, label) => {
-            if (bdStr && ktStr) {
-                const bd = dayjs(bdStr);
-                const kt = dayjs(ktStr);
-                if (kt.isBefore(bd) || kt.isSame(bd)) {
-                    return `Thời gian kết thúc ${label} phải sau thời gian bắt đầu`;
-                }
-            }
-            return "";
-        };
-
         Object.keys(selectedUnits).forEach((maDonVi) => {
             if (!selectedUnits[maDonVi]) return;
             const d = detailData[maDonVi] || {};
@@ -608,45 +472,45 @@ export default function useLapLichDialog({
                 thoi_gian_du_tru_kham_ket_thuc: "",
             };
 
-            const rangeLm = checkRange(d.thoi_gian_lay_mau_bat_dau, d.thoi_gian_lay_mau_ket_thuc, "lấy máu");
+            const rangeLm = detailRangeError(d.thoi_gian_lay_mau_bat_dau, d.thoi_gian_lay_mau_ket_thuc, "lấy máu");
             if (rangeLm) {
                 unitErrs.thoi_gian_lay_mau_bat_dau = rangeLm;
                 unitErrs.thoi_gian_lay_mau_ket_thuc = rangeLm;
             }
-            const rangeKh = checkRange(d.thoi_gian_bat_dau, d.thoi_gian_ket_thuc, "khám");
+            const rangeKh = detailRangeError(d.thoi_gian_bat_dau, d.thoi_gian_ket_thuc, "khám");
             if (rangeKh) {
                 unitErrs.thoi_gian_bat_dau = rangeKh;
                 unitErrs.thoi_gian_ket_thuc = rangeKh;
             }
-            const rangeDtLm = checkRange(d.thoi_gian_du_tru_lay_mau_bat_dau, d.thoi_gian_du_tru_lay_mau_ket_thuc, "dự trù lấy máu");
+            const rangeDtLm = detailRangeError(d.thoi_gian_du_tru_lay_mau_bat_dau, d.thoi_gian_du_tru_lay_mau_ket_thuc, "dự trù lấy máu");
             if (rangeDtLm) {
                 unitErrs.thoi_gian_du_tru_lay_mau_bat_dau = rangeDtLm;
                 unitErrs.thoi_gian_du_tru_lay_mau_ket_thuc = rangeDtLm;
             }
-            const rangeDtKh = checkRange(d.thoi_gian_du_tru_kham_bat_dau, d.thoi_gian_du_tru_kham_ket_thuc, "dự trù khám");
+            const rangeDtKh = detailRangeError(d.thoi_gian_du_tru_kham_bat_dau, d.thoi_gian_du_tru_kham_ket_thuc, "dự trù khám");
             if (rangeDtKh) {
                 unitErrs.thoi_gian_du_tru_kham_bat_dau = rangeDtKh;
                 unitErrs.thoi_gian_du_tru_kham_ket_thuc = rangeDtKh;
             }
 
-            const bLmBd = checkBounds(d.thoi_gian_lay_mau_bat_dau, thoiGianLayMauBatDau, thoiGianLayMauKetThuc, "lấy máu");
+            const bLmBd = detailBoundsError(d.thoi_gian_lay_mau_bat_dau, thoiGianLayMauBatDau, thoiGianLayMauKetThuc, "lấy máu");
             if (bLmBd) unitErrs.thoi_gian_lay_mau_bat_dau = bLmBd;
-            const bLmKt = checkBounds(d.thoi_gian_lay_mau_ket_thuc, thoiGianLayMauBatDau, thoiGianLayMauKetThuc, "lấy máu");
+            const bLmKt = detailBoundsError(d.thoi_gian_lay_mau_ket_thuc, thoiGianLayMauBatDau, thoiGianLayMauKetThuc, "lấy máu");
             if (bLmKt) unitErrs.thoi_gian_lay_mau_ket_thuc = bLmKt;
 
-            const bKhBd = checkBounds(d.thoi_gian_bat_dau, thoiGianBatDau, thoiGianKetThuc, "khám");
+            const bKhBd = detailBoundsError(d.thoi_gian_bat_dau, thoiGianBatDau, thoiGianKetThuc, "khám");
             if (bKhBd) unitErrs.thoi_gian_bat_dau = bKhBd;
-            const bKhKt = checkBounds(d.thoi_gian_ket_thuc, thoiGianBatDau, thoiGianKetThuc, "khám");
+            const bKhKt = detailBoundsError(d.thoi_gian_ket_thuc, thoiGianBatDau, thoiGianKetThuc, "khám");
             if (bKhKt) unitErrs.thoi_gian_ket_thuc = bKhKt;
 
-            const bDtLmBd = checkBounds(d.thoi_gian_du_tru_lay_mau_bat_dau, thoiGianDuTruLayMauBatDau, thoiGianDuTruLayMauKetThuc, "dự trù lấy máu");
+            const bDtLmBd = detailBoundsError(d.thoi_gian_du_tru_lay_mau_bat_dau, thoiGianDuTruLayMauBatDau, thoiGianDuTruLayMauKetThuc, "dự trù lấy máu");
             if (bDtLmBd) unitErrs.thoi_gian_du_tru_lay_mau_bat_dau = bDtLmBd;
-            const bDtLmKt = checkBounds(d.thoi_gian_du_tru_lay_mau_ket_thuc, thoiGianDuTruLayMauBatDau, thoiGianDuTruLayMauKetThuc, "dự trù lấy máu");
+            const bDtLmKt = detailBoundsError(d.thoi_gian_du_tru_lay_mau_ket_thuc, thoiGianDuTruLayMauBatDau, thoiGianDuTruLayMauKetThuc, "dự trù lấy máu");
             if (bDtLmKt) unitErrs.thoi_gian_du_tru_lay_mau_ket_thuc = bDtLmKt;
 
-            const bDtKhBd = checkBounds(d.thoi_gian_du_tru_kham_bat_dau, thoiGianDuTruKhamBatDau, thoiGianDuTruKhamKetThuc, "dự trù khám");
+            const bDtKhBd = detailBoundsError(d.thoi_gian_du_tru_kham_bat_dau, thoiGianDuTruKhamBatDau, thoiGianDuTruKhamKetThuc, "dự trù khám");
             if (bDtKhBd) unitErrs.thoi_gian_du_tru_kham_bat_dau = bDtKhBd;
-            const bDtKhKt = checkBounds(d.thoi_gian_du_tru_kham_ket_thuc, thoiGianDuTruKhamBatDau, thoiGianDuTruKhamKetThuc, "dự trù khám");
+            const bDtKhKt = detailBoundsError(d.thoi_gian_du_tru_kham_ket_thuc, thoiGianDuTruKhamBatDau, thoiGianDuTruKhamKetThuc, "dự trù khám");
             if (bDtKhKt) unitErrs.thoi_gian_du_tru_kham_ket_thuc = bDtKhKt;
 
             if (Object.values(unitErrs).some(x => x !== "")) {

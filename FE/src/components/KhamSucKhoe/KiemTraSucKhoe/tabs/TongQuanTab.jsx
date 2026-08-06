@@ -14,6 +14,7 @@ import {
     classifyTheLuc,
     classifySinhTon,
     classifyMat,
+    calcBmi,
 } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
 import SectionTitle from "@/components/KhamSucKhoe/common/SectionTitle.jsx";
 import PhanLoaiSelect from "../common/PhanLoaiSelect.jsx";
@@ -127,12 +128,7 @@ const MatNumberFieldSM = memo(
 );
 
 const BmiDisplaySM = memo(({ dataRef, tick }) => {
-    const h = parseFloat(dataRef.current.chieu_cao);
-    const w = parseFloat(dataRef.current.can_nang);
-    let bmi = "";
-    if (h > 0 && w > 0) {
-        bmi = (w / Math.pow(h / 100, 2)).toFixed(1);
-    }
+    const bmi = calcBmi(dataRef.current.chieu_cao, dataRef.current.can_nang);
     const info = getBmiStatus(bmi);
     return (
         <>
@@ -212,13 +208,10 @@ const TongQuanTab = memo(
         const [classTick, setClassTick] = useState(0);
 
         const onTheLucFieldChange = useCallback(() => {
-            const h = parseFloat(dataRef.current.chieu_cao);
-            const w = parseFloat(dataRef.current.can_nang);
-            if (h > 0 && w > 0) {
-                dataRef.current.bmi = (w / Math.pow(h / 100, 2)).toFixed(1);
-            } else {
-                dataRef.current.bmi = "";
-            }
+            dataRef.current.bmi = calcBmi(
+                dataRef.current.chieu_cao,
+                dataRef.current.can_nang,
+            );
             setBmiTick((t) => t + 1);
             dataRef.current.the_luc_loai = classifyTheLuc(
                 dataRef.current,

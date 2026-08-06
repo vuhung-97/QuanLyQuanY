@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Alert, Box, Button, Stack, Typography } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
@@ -6,10 +6,7 @@ import { CheckCircle as CheckCircleIcon, DoDisturb as DoDisturbIcon } from "@mui
 import { Update as UpdateIcon } from "@mui/icons-material";
 import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
 import useLichKhamData from "@/hooks/useLichKhamData";
-import {
-    getScheduleStatus,
-    statusColor,
-} from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
+import { getScheduleStatus } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
 import DanhSachLich from "@/components/KhamSucKhoe/LapLich/DanhSachLich.jsx";
 import LapLichDialog from "@/components/KhamSucKhoe/LapLich/LapLichDialog.jsx";
 import TongQuanDonVi from "@/components/KhamSucKhoe/LapLich/TongQuanDonVi.jsx";
@@ -34,7 +31,7 @@ export default function LapLichPage() {
         refreshCounter,
     } = useLichKhamData();
 
-    const [query, setQuery] = useState("");    const [searchParams] = useSearchParams();
+    const [searchParams] = useSearchParams();
     const [dialog, setDialog] = useState({
         open: false,
         schedule: null,
@@ -65,21 +62,6 @@ export default function LapLichPage() {
     const displayStatus = displaySchedule
         ? getScheduleStatus(displaySchedule)
         : latestStatus;
-
-    const filteredSchedules = schedules.filter((row) => {
-        const keyword = query.trim().toLowerCase();
-        const details = chiTietMap[row.ma_lich_kham] || [];
-        const detailMatches = details.some(
-            (d) =>
-                (d.ma_don_vi && d.ma_don_vi.toLowerCase().includes(keyword)) ||
-                (d.dia_diem && d.dia_diem.toLowerCase().includes(keyword)),
-        );
-        const masterMatch = [row.ma_lich_kham]
-            .filter(Boolean)
-            .some((v) => v.toLowerCase().includes(keyword));
-        const matchedKeyword = !keyword || masterMatch || detailMatches;
-        return matchedKeyword;
-    });
 
     const handleEdit = (schedule) => {
         setDialog({
@@ -232,7 +214,7 @@ export default function LapLichPage() {
             )}
 
             <DanhSachLich
-                schedules={filteredSchedules}
+                schedules={schedules}
                 chiTietMap={chiTietMap}
                 loading={loading}
                 initialStatus={searchParams.get("filter") || ""}
@@ -258,8 +240,6 @@ export default function LapLichPage() {
                 activeLichId={activeLichId}
                 onSelectRow={handleSelectRow}
                 onResetDefault={handleResetDefault}
-                getScheduleStatus={getScheduleStatus}
-                statusColor={statusColor}
             />
 
             <ThoiGianKham

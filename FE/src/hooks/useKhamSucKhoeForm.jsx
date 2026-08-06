@@ -27,6 +27,12 @@ function getDirty(current, initial) {
     return dirty;
 }
 
+function buildSection(canEdit, tabRef, initial) {
+    return canEdit
+        ? getDirty(tabRef.current?.getData() ?? initial, initial)
+        : {};
+}
+
 export default function useKhamSucKhoeForm({
     open,
     quanNhan,
@@ -112,24 +118,11 @@ export default function useKhamSucKhoeForm({
             }
 
             // Chỉ gửi field thay đổi (dirty) từ tab được edit
-            const ts = canEdit(0)
-                ? getDirty(tsRef.current?.getData() ?? initialTS, initialTS)
-                : {};
-            const ls = canEdit(1)
-                ? getDirty(lsRef.current?.getData() ?? initialLS, initialLS)
-                : {};
-            const xn = canEdit(2)
-                ? getDirty(xnRef.current?.getData() ?? initialXN, initialXN)
-                : {};
-            const cdha = canEdit(3)
-                ? getDirty(
-                      cdhaRef.current?.getData() ?? initialCDHA,
-                      initialCDHA,
-                  )
-                : {};
-            const kl = canEdit(4)
-                ? getDirty(klRef.current?.getData() ?? initialKL, initialKL)
-                : {};
+            const ts = buildSection(canEdit(0), tsRef, initialTS);
+            const ls = buildSection(canEdit(1), lsRef, initialLS);
+            const xn = buildSection(canEdit(2), xnRef, initialXN);
+            const cdha = buildSection(canEdit(3), cdhaRef, initialCDHA);
+            const kl = buildSection(canEdit(4), klRef, initialKL);
 
             const tsFull = tsRef.current?.getData() ?? initialTS;
             const lsFull = lsRef.current?.getData() ?? initialLS;

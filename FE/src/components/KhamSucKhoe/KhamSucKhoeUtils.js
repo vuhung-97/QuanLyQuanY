@@ -1,3 +1,8 @@
+import {
+    DEFAULT_TS, DEFAULT_LS, DEFAULT_XN, DEFAULT_CDHA, DEFAULT_KL,
+    DEFAULT_PHAN_LOAI, TRANG_THAI_LABEL,
+} from "@/constants/khamSucKhoeConstants.js";
+
 export function getScheduleTimeWindow(row) {
     const startCandidates = [
         row.thoi_gian_lay_mau_bat_dau,
@@ -96,17 +101,12 @@ export function findNearestDetail(details) {
     return nearest;
 }
 
-import {
-    DEFAULT_TS, DEFAULT_LS, DEFAULT_XN, DEFAULT_CDHA, DEFAULT_KL,
-    DEFAULT_PHAN_LOAI, TRANG_THAI_LABEL,
-} from "@/constants/khamSucKhoeConstants.js";
-
 export function getStatus(phieu) {
     if (!phieu) return "Chưa lấy máu";
     return TRANG_THAI_LABEL[phieu.trang_thai] || "Chưa lấy máu";
 }
 
-function parseWithDefault(data, defaultObj, fallbackKey) {
+function parseWithDefault(data, defaultObj) {
     if (!data) return { ...defaultObj };
     try {
         const parsed = typeof data === "string" ? JSON.parse(data) : data;
@@ -124,14 +124,14 @@ function parseWithDefault(data, defaultObj, fallbackKey) {
 }
 
 export const parseTienSu = (str) =>
-    parseWithDefault(str, DEFAULT_TS, "ban_than");
-export const parseLamSang = (str) => parseWithDefault(str, DEFAULT_LS, "khac");
+    parseWithDefault(str, DEFAULT_TS);
+export const parseLamSang = (str) => parseWithDefault(str, DEFAULT_LS);
 export const parseXetNghiem = (str) =>
-    parseWithDefault(str, DEFAULT_XN, "nuoc_tieu_te_bao");
+    parseWithDefault(str, DEFAULT_XN);
 export const parseChanDoanHinhAnh = (str) =>
-    parseWithDefault(str, DEFAULT_CDHA, "khac");
+    parseWithDefault(str, DEFAULT_CDHA);
 export const parseKetLuan = (str) =>
-    parseWithDefault(str, DEFAULT_KL, "benh_tat_theo_doi");
+    parseWithDefault(str, DEFAULT_KL);
 
 /* ─── Thể lực helpers ─── */
 
@@ -196,15 +196,19 @@ function loaiTuBMI(bmi) {
     return 4;
 }
 
+export function calcBmi(chieuCao, canNang) {
+    const h = parseFloat(chieuCao);
+    const w = parseFloat(canNang);
+    if (h > 0 && w > 0) return (w / Math.pow(h / 100, 2)).toFixed(1);
+    return "";
+}
+
 export function classifyTheLuc(data, gioiTinh) {
     const isNam = gioiTinh !== false;
     const loaiCC = loaiTuCao(data?.chieu_cao, isNam);
     const loaiCN = loaiTuNang(data?.can_nang, isNam);
     const loaiVN = isNam ? loaiTuVongNguc(data?.vong_nguc) : 1;
-    const h = parseFloat(data?.chieu_cao);
-    const w = parseFloat(data?.can_nang);
-    let bmi = "";
-    if (h > 0 && w > 0) bmi = (w / Math.pow(h / 100, 2)).toFixed(1);
+    const bmi = calcBmi(data?.chieu_cao, data?.can_nang);
     const loaiBMI = loaiTuBMI(bmi);
     return `Loại ${Math.max(loaiCC, loaiCN, loaiVN, loaiBMI)}`;
 }
