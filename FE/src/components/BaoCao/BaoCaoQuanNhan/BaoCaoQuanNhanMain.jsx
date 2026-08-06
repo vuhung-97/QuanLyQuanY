@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import {
     Stack,
     Button,
@@ -142,6 +142,7 @@ const BA_COLUMNS = [
 
 const CT_COLUMNS = [
     { key: "ngay_di", label: "Ngày đi", sx: { width: "15%" } },
+    { key: "ngay_ve", label: "Ngày về", sx: { width: "15%" } },
     { key: "ten_benh_vien", label: "Bệnh viện", sx: { width: "25%" } },
     { key: "y_kien_de_nghi", label: "Lý do", sx: { width: "35%" } },
     {
@@ -210,7 +211,42 @@ export default function BaoCaoQuanNhanMain({ maQuanNhan }) {
     const [dialogKsk, setDialogKsk] = useState({ open: false, record: null });
     const [dialogKb, setDialogKb] = useState({ open: false, record: null });
     const [dialogBa, setDialogBa] = useState({ open: false, record: null });
-    const [dialogCt, setDialogCt] = useState({ open: false, record: null });
+    const [dialogCt, setDialogCt] = useState({
+        open: false,
+        record: null,
+        examDetail: null,
+        giayGt: null,
+        diTuyen: null,
+    });
+    const [ctDetailLoading, setCtDetailLoading] = useState(false);
+
+    const handleViewChuyenTuyen = useCallback(async (row) => {
+        if (!row?.ma_kham_benh) return;
+        setCtDetailLoading(true);
+        try {
+            const [detailRes, ctRes] = await Promise.all([
+                khamBenhService.getDetail(row.ma_kham_benh),
+                khamBenhService.getChiTietChuyenTuyen(row.ma_kham_benh),
+            ]);
+            setDialogCt({
+                open: true,
+                record: row,
+                examDetail: detailRes.data,
+                giayGt: ctRes.data?.giay_chuyen_tuyen || null,
+                diTuyen: ctRes.data?.di_tuyen || null,
+            });
+        } catch (err) {
+            setDialogCt({
+                open: false,
+                record: null,
+                examDetail: null,
+                giayGt: null,
+                diTuyen: null,
+            });
+        } finally {
+            setCtDetailLoading(false);
+        }
+    }, []);
 
     const kskRows = useMemo(
         () =>
@@ -266,15 +302,29 @@ export default function BaoCaoQuanNhanMain({ maQuanNhan }) {
                     if (baThang && d.getMonth() + 1 !== baThang) return false;
                     return true;
                 })
-                .map((p) => ({
-                    ...p,
-                    ngay_nhap_vien: formatDateShort(p.ngay_nhap_vien),
-                    ngay_ra_vien: formatDateShort(p.ngay_ra_vien),
-                    phong_giuong:
-                        [p.ten_buong, p.ten_giuong]
-                            .filter(Boolean)
-                            .join(" / ") || "\u2014",
-                })),
+                .map((p) => {
+                    let ngayRaVien = null;
+                    if (p.tong_ket_benh_an) {
+                        try {
+                            const t =
+                                typeof p.tong_ket_benh_an === "string"
+                                    ? JSON.parse(p.tong_ket_benh_an)
+                                    : p.tong_ket_benh_an;
+                            ngayRaVien = t?.ngay_ra || null;
+                        } catch {
+                            ngayRaVien = null;
+                        }
+                    }
+                    return {
+                        ...p,
+                        ngay_nhap_vien: formatDateShort(p.ngay_nhap_vien),
+                        ngay_ra_vien: formatDateShort(ngayRaVien),
+                        phong_giuong:
+                            [p.ten_buong, p.ten_giuong]
+                                .filter(Boolean)
+                                .join(" / ") || "\u2014",
+                    };
+                }),
         [benhAnList, baNam, baThang],
     );
 
@@ -292,6 +342,7 @@ export default function BaoCaoQuanNhanMain({ maQuanNhan }) {
                 .map((p) => ({
                     ...p,
                     ngay_di: formatDateShort(p.ngay_di),
+                    ngay_ve: formatDateShort(p.ngay_ve),
                 })),
         [chuyenTuyenList, ctNam, ctThang],
     );
@@ -482,9 +533,7 @@ export default function BaoCaoQuanNhanMain({ maQuanNhan }) {
                                 <DataTable
                                     columns={CT_COLUMNS}
                                     rows={ctRows}
-                                    onRowClick={(row) =>
-                                        setDialogCt({ open: true, record: row })
-                                    }
+                                    onRowClick={handleViewChuyenTuyen}
                                     sx={DATA_TABLE_SX}
                                     emptyMessage="Không có dữ liệu chuyển tuyến."
                                 />
@@ -536,8 +585,20 @@ export default function BaoCaoQuanNhanMain({ maQuanNhan }) {
             {dialogCt.open && (
                 <ChuyenTuyenForm
                     open={dialogCt.open}
-                    giayGt={dialogCt.record}
-                    onClose={() => setDialogCt({ open: false, record: null })}
+                    selectedExam={dialogCt.record}
+                    examDetail={dialogCt.examDetail}
+                    loading={ctDetailLoading}
+                    giayGt={dialogCt.giayGt}
+                    diTuyen={dialogCt.diTuyen}
+                    onClose={() =>
+                        setDialogCt({
+                            open: false,
+                            record: null,
+                            examDetail: null,
+                            giayGt: null,
+                            diTuyen: null,
+                        })
+                    }
                     readOnly={true}
                 />
             )}

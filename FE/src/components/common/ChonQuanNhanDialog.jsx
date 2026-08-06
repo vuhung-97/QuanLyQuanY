@@ -25,11 +25,11 @@ const QN_COLUMNS = [
         sx: { color: "primary.main" },
     },
     { key: "ho_ten", label: "Họ tên" },
-    { key: "ngay_sinh", label: "Ngày sinh" },
+    { key: "ngay_sinh", label: "Ngày sinh", render: (row) => formatDate(row.ngay_sinh) || "--" },
     { key: "ten_don_vi", label: "Đơn vị" },
     { key: "cap_bac", label: "Cấp bậc" },
     { key: "chuc_vu", label: "Chức vụ" },
-    { key: "ngay_nhap_ngu", label: "Nhập ngũ" },
+    { key: "ngay_nhap_ngu", label: "Nhập ngũ", render: (row) => formatDate(row.ngay_nhap_ngu) || "--" },
     { key: "so_the_bhyt", label: "Mã thẻ BHYT" },
 ];
 
@@ -103,9 +103,7 @@ export default function ChonQuanNhanDialog({
         return pageData.map((qn, idx) => ({
             ...qn,
             stt: page * ROWS_PER_PAGE + idx + 1,
-            ngay_sinh: formatDate(qn.ngay_sinh),
             ten_don_vi: getTenDonVi(qn.ma_don_vi),
-            ngay_nhap_ngu: formatDate(qn.ngay_nhap_ngu),
         }));
     }, [filtered, page, getTenDonVi]);
 
