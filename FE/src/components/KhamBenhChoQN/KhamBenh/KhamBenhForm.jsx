@@ -17,15 +17,9 @@ import SymptomsSection from "./KhamBenhSections/SymptomsSection.jsx";
 import PredictionPanel from "./KhamBenhSections/PredictionPanel.jsx";
 import DiagnosisSection from "./KhamBenhSections/DiagnosisSection.jsx";
 import FormActions from "./KhamBenhSections/FormActions.jsx";
+import { PATIENT_FIELDS_KHAM_BENH } from "@/components/KhamBenhChoQN/constants.js";
 
-const PATIENT_FIELDS = [
-    "ho_ten",
-    "ten_don_vi",
-    "cap_bac",
-    "chuc_vu",
-    "ngay_kham",
-    "bac_si",
-];
+const PATIENT_FIELDS = PATIENT_FIELDS_KHAM_BENH;
 
 export default function KhamBenhForm({
     open,
@@ -63,14 +57,11 @@ export default function KhamBenhForm({
         handleChipClick,
         openPrescription,
         setOpenPrescription,
-        openReferral,
-        setOpenReferral,
         confirmReferral,
         setConfirmReferral,
         referring,
         handleReferClick,
         handleReferConfirm,
-        handleReferSaved,
         confirmAdmission,
         setConfirmAdmission,
         handleAdmissionClick,

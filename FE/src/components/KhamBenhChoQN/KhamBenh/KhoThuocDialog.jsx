@@ -194,7 +194,7 @@ export default function KhoThuocDialog({
             onClose={onClose}
             maxWidth="md"
             fullWidth
-            height="90vh"
+            slotProps={{ paper: { sx: { height: "90vh" } } }}
         >
             <DialogTitleWrapper wrap={false}>Kho thuốc</DialogTitleWrapper>
             <DialogContent dividers sx={{ overflow: "hidden", pb: 0 }}>

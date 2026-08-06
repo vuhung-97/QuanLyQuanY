@@ -44,7 +44,6 @@ export default function useKhamBenhForm({
     });
     const [prescriptionItems, setPrescriptionItems] = useState([]);
     const [openPrescription, setOpenPrescription] = useState(false);
-    const [openReferral, setOpenReferral] = useState(false);
     const [confirmReferral, setConfirmReferral] = useState({ open: false });
     const [referring, setReferring] = useState(false);
     const [confirmAdmission, setConfirmAdmission] = useState({ open: false });
@@ -376,12 +375,6 @@ export default function useKhamBenhForm({
         onClose,
     ]);
 
-    const handleReferSaved = useCallback(() => {
-        setOpenReferral(false);
-        onSaved?.();
-        onClose();
-    }, [onSaved, onClose]);
-
     const handleAdmissionClick = useCallback(() => {
         setConfirmAdmission({ open: true });
     }, []);
@@ -447,14 +440,11 @@ export default function useKhamBenhForm({
         handleChipClick,
         openPrescription,
         setOpenPrescription,
-        openReferral,
-        setOpenReferral,
         confirmReferral,
         setConfirmReferral,
         referring,
         handleReferClick,
         handleReferConfirm,
-        handleReferSaved,
         confirmAdmission,
         setConfirmAdmission,
         handleAdmissionClick,

@@ -5,11 +5,6 @@ import { UNIT_NAME } from "@/components/layout/common/constants.js";
 import PrintHeaderDonVi from "@/components/common/print/PrintHeaderDonVi.jsx";
 import PrintSignature from "@/components/common/print/PrintSignature.jsx";
 
-const dottedStyle = {
-    borderBottom: "1px dotted #000",
-    display: "inline-block",
-};
-
 function DottedField({ label, value, numrows = 2 }) {
     return (
         <div style={{ marginBottom: "12pt" }}>

@@ -22,6 +22,7 @@ export default function useStaticList(url, { params, transform, pageSize, versio
     const prevVersion = useRef(version);
 
     useEffect(() => {
+        if (!url) return;
         if (version !== prevVersion.current) {
             prevVersion.current = version;
             _cache.delete(url);
@@ -71,6 +72,7 @@ async function fetchAllPages(url, params, pageSize) {
 }
 
 export async function ensureCached(url, params, pageSize) {
+    if (!url) return [];
     if (_cache.has(url)) return _cache.get(url);
     if (_pending.has(url)) return _pending.get(url);
     const promise = fetchAllPages(url, params, pageSize)

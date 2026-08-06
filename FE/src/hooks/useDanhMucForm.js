@@ -23,9 +23,6 @@ export default function useDanhMucForm({
     const errorsRef = useRef(errors);
     errorsRef.current = errors;
 
-    const isView = mode === "view";
-    const isEdit = mode === "edit";
-
     const loadData = useCallback(async () => {
         if (!itemId) return;
         setLoading(true);
@@ -114,13 +111,10 @@ export default function useDanhMucForm({
 
     return {
         getFieldDefault,
-        fieldVersion: {},
         loading,
         saving,
         snackbar,
         errors,
-        isView,
-        isEdit,
         updateField,
         handleSave,
         handleClose,

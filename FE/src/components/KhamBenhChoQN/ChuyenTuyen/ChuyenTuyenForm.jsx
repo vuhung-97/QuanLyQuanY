@@ -16,7 +16,7 @@ import FormTextField from "@/components/common/FormTextField.jsx";
 import FormDatePicker from "@/components/common/FormDatePicker.jsx";
 import LoadingAlert from "@/components/common/LoadingAlert.jsx";
 import ChuyenTuyenPrint from "./ChuyenTuyenPrint.jsx";
-import { PATIENT_FIELDS } from "./constants.js";
+import { PATIENT_FIELDS_CHUYEN_TUYEN } from "@/components/KhamBenhChoQN/constants.js";
 import useChuyenTuyenForm from "@/hooks/useChuyenTuyenForm.js";
 import { parseDonThuocToRows } from "@/utils/khamBenhUtils.js";
 import {
@@ -57,6 +57,107 @@ export default function ChuyenTuyenForm({
         [examDetail],
     );
 
+    const fieldConfig = useMemo(() => {
+        return [
+            {
+                type: "text",
+                name: "tenBenhVien",
+                initialValue: tenBenhVien,
+                label: "Đơn vị chuyển đến",
+            },
+            {
+                type: "text",
+                name: "yKienDeNghi",
+                initialValue: yKienDeNghi,
+                label: "Ý kiến đề nghị",
+                multiline: true,
+                minRows: 2,
+            },
+            { type: "date", name: "ngayDi", initialValue: ngayDi, label: "Ngày đi" },
+            {
+                type: "date",
+                name: "thoiGianDen",
+                initialValue: thoiGianDen,
+                label: "Thời gian đến bệnh viện, bệnh xá",
+            },
+            {
+                type: "text",
+                name: "chanDoan",
+                initialValue: chanDoan,
+                label: "Chẩn đoán của Y sinh",
+                multiline: true,
+                minRows: 2,
+            },
+            {
+                type: "text",
+                name: "quyetDinhYSinh",
+                initialValue: quyetDinhYSinh,
+                label: "Quyết định của y sinh",
+                multiline: true,
+                minRows: 2,
+            },
+            { type: "heading", label: "Sau khi quân nhân về" },
+            { type: "date", name: "ngayVe", initialValue: ngayVe, label: "Ngày về" },
+            {
+                type: "text",
+                name: "chanDoanLucVe",
+                initialValue: chanDoanLucVe,
+                label: "Chẩn đoán lúc về",
+                multiline: true,
+                minRows: 2,
+            },
+            {
+                type: "text",
+                name: "ketQuaDieuTri",
+                initialValue: ketQuaDieuTri,
+                label: "Kết quả hướng điều trị",
+                multiline: true,
+                minRows: 2,
+            },
+        ];
+    }, [tenBenhVien, yKienDeNghi, ngayDi, thoiGianDen, chanDoan, quyetDinhYSinh, ngayVe, chanDoanLucVe, ketQuaDieuTri]);
+
+    const renderField = (cfg) => {
+        if (cfg.type === "heading") {
+            return <SectionHeading key={cfg.label}>{cfg.label}</SectionHeading>;
+        }
+        if (cfg.type === "date") {
+            return (
+                <Stack
+                    key={cfg.name}
+                    direction="row"
+                    spacing={2}
+                    sx={{ alignItems: "center" }}
+                >
+                    <Typography variant="body2" sx={{ minWidth: 220 }}>
+                        {cfg.label}:
+                    </Typography>
+                    <FormDatePicker
+                        name={cfg.name}
+                        initialValue={cfg.initialValue}
+                        onUpdateRef={updateField}
+                        onBlurSync={blurSync}
+                        size="small"
+                    />
+                </Stack>
+            );
+        }
+        return (
+            <FormTextField
+                key={cfg.name}
+                name={cfg.name}
+                initialValue={cfg.initialValue}
+                onUpdateRef={updateField}
+                onBlurSync={blurSync}
+                label={cfg.label}
+                multiline={cfg.multiline}
+                minRows={cfg.minRows}
+                fullWidth
+                size="small"
+            />
+        );
+    };
+
     return (
         <>
             <style>{PRINT_STYLES}</style>
@@ -95,43 +196,28 @@ export default function ChuyenTuyenForm({
                                 <Stack spacing={2.5}>
                                     <PatientInfoCard
                                         data={selectedExam}
-                                        fields={PATIENT_FIELDS}
+                                        fields={PATIENT_FIELDS_CHUYEN_TUYEN}
                                     />
 
-                                    {examDetail?.trieu_chung && (
-                                        <Box>
-                                            <SectionHeading>
-                                                Triệu chứng
-                                            </SectionHeading>
-                                            <Typography variant="body1">
-                                                {examDetail.trieu_chung}
-                                            </Typography>
-                                        </Box>
-                                    )}
-
-                                    {examDetail?.chan_doan && (
-                                        <Box>
-                                            <SectionHeading>
-                                                Chẩn đoán
-                                            </SectionHeading>
-                                            <Typography variant="body1">
-                                                {examDetail.chan_doan}
-                                            </Typography>
-                                        </Box>
-                                    )}
-
-                                    {examDetail?.phuong_phap_dieu_tri && (
-                                        <Box>
-                                            <SectionHeading>
-                                                Phương pháp điều trị
-                                            </SectionHeading>
-                                            <Typography variant="body1">
-                                                {
-                                                    examDetail.phuong_phap_dieu_tri
-                                                }
-                                            </Typography>
-                                        </Box>
-                                    )}
+                                    {[
+                                        ["trieu_chung", "Triệu chứng"],
+                                        ["chan_doan", "Chẩn đoán"],
+                                        [
+                                            "phuong_phap_dieu_tri",
+                                            "Phương pháp điều trị",
+                                        ],
+                                    ]
+                                        .filter(([key]) => examDetail?.[key])
+                                        .map(([key, label]) => (
+                                            <Box key={key}>
+                                                <SectionHeading>
+                                                    {label}
+                                                </SectionHeading>
+                                                <Typography variant="body1">
+                                                    {examDetail[key]}
+                                                </Typography>
+                                            </Box>
+                                        ))}
 
                                     <DonThuocTable
                                         rows={prescriptionRows}
@@ -144,137 +230,7 @@ export default function ChuyenTuyenForm({
                                             Chuyển tuyến
                                         </SectionHeading>
                                         <Stack spacing={2}>
-                                            <FormTextField
-                                                name="tenBenhVien"
-                                                initialValue={tenBenhVien}
-                                                onUpdateRef={updateField}
-                                                onBlurSync={blurSync}
-                                                label="Đơn vị chuyển đến"
-                                                fullWidth
-                                                size="small"
-                                            />
-                                            <FormTextField
-                                                name="yKienDeNghi"
-                                                initialValue={yKienDeNghi}
-                                                onUpdateRef={updateField}
-                                                onBlurSync={blurSync}
-                                                label="Ý kiến đề nghị"
-                                                multiline
-                                                minRows={2}
-                                                fullWidth
-                                                size="small"
-                                            />
-                                            <Stack
-                                                direction="row"
-                                                spacing={2}
-                                                sx={{ alignItems: "center" }}
-                                            >
-                                                <Typography
-                                                    variant="body2"
-                                                    sx={{ minWidth: 220 }}
-                                                >
-                                                    Ngày đi:
-                                                </Typography>
-                                                <FormDatePicker
-                                                    name="ngayDi"
-                                                    initialValue={ngayDi}
-                                                    onUpdateRef={updateField}
-                                                    onBlurSync={blurSync}
-                                                    size="small"
-                                                />
-                                            </Stack>
-                                        </Stack>
-                                    </Box>
-
-                                    <Box>
-                                        <Stack spacing={2}>
-                                            <Stack
-                                                direction="row"
-                                                spacing={2}
-                                                sx={{ alignItems: "center" }}
-                                            >
-                                                <Typography
-                                                    variant="body2"
-                                                    sx={{ minWidth: 220 }}
-                                                >
-                                                    Thời gian đến bệnh viện,
-                                                    bệnh xá:
-                                                </Typography>
-                                                <FormDatePicker
-                                                    name="thoiGianDen"
-                                                    initialValue={thoiGianDen}
-                                                    onUpdateRef={updateField}
-                                                    onBlurSync={blurSync}
-                                                    size="small"
-                                                />
-                                            </Stack>
-                                            <FormTextField
-                                                name="chanDoan"
-                                                initialValue={chanDoan}
-                                                onUpdateRef={updateField}
-                                                onBlurSync={blurSync}
-                                                label="Chẩn đoán của Y sinh"
-                                                multiline
-                                                minRows={2}
-                                                fullWidth
-                                                size="small"
-                                            />
-                                            <FormTextField
-                                                name="quyetDinhYSinh"
-                                                initialValue={quyetDinhYSinh}
-                                                onUpdateRef={updateField}
-                                                onBlurSync={blurSync}
-                                                label="Quyết định của y sinh"
-                                                multiline
-                                                minRows={2}
-                                                fullWidth
-                                                size="small"
-                                            />
-
-                                            <SectionHeading>
-                                                Sau khi quân nhân về
-                                            </SectionHeading>
-                                            <Stack
-                                                direction="row"
-                                                spacing={2}
-                                                sx={{ alignItems: "center" }}
-                                            >
-                                                <Typography
-                                                    variant="body2"
-                                                    sx={{ minWidth: 220 }}
-                                                >
-                                                    Ngày về:
-                                                </Typography>
-                                                <FormDatePicker
-                                                    name="ngayVe"
-                                                    initialValue={ngayVe}
-                                                    onUpdateRef={updateField}
-                                                    onBlurSync={blurSync}
-                                                    size="small"
-                                                />
-                                            </Stack>
-                                            <FormTextField
-                                                name="chanDoanLucVe"
-                                                initialValue={chanDoanLucVe}
-                                                onUpdateRef={updateField}
-                                                onBlurSync={blurSync}
-                                                label="Chẩn đoán lúc về"
-                                                multiline
-                                                minRows={2}
-                                                fullWidth
-                                                size="small"
-                                            />
-                                            <FormTextField
-                                                name="ketQuaDieuTri"
-                                                initialValue={ketQuaDieuTri}
-                                                onUpdateRef={updateField}
-                                                onBlurSync={blurSync}
-                                                label="Kết quả hướng điều trị"
-                                                multiline
-                                                minRows={2}
-                                                fullWidth
-                                                size="small"
-                                            />
+                                            {fieldConfig.map(renderField)}
                                         </Stack>
                                     </Box>
                                 </Stack>

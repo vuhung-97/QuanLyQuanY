@@ -1,30 +1,61 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import { khamBenhService } from "@/services/khamBenhService.js";
-
-const ROWS_PER_PAGE = 50;
+import useExamList from "./useExamList.jsx";
 
 export default function useChuyenTuyen() {
     const [searchParams] = useSearchParams();
-    const [examinations, setExaminations] = useState([]);
-    const [initialLoading, setInitialLoading] = useState(true);
-    const [refreshing, setRefreshing] = useState(false);
-    const [searchText, setSearchText] = useState("");
-    const [statusFilter, setStatusFilter] = useState(
-        () => searchParams.get("filter") || "",
-    );
-    const [nam, setNam] = useState(null);
-    const [thang, setThang] = useState(null);
 
-    const [isLeft, setIsLeft] = useState(() => searchParams.get("all") === "1");
-    const [page, setPage] = useState(1);
-    const [totalRecords, setTotalRecords] = useState(0);
-
-    const [snackbar, setSnackbar] = useState({
-        open: false,
-        message: "",
-        severity: "success",
+    const {
+        examinations,
+        baseList,
+        initialLoading,
+        refreshing,
+        setSearchText,
+        statusFilter,
+        setStatusFilter,
+        filtered,
+        snackbar,
+        setSnackbar,
+        loadData,
+        isLeft,
+        handleFilterModeChange,
+        page,
+        setPage,
+        totalRecords,
+        ROWS_PER_PAGE,
+        offset,
+        nam,
+        setNam,
+        thang,
+        setThang,
+    } = useExamList({
+        rowsPerPage: 50,
+        statusField: "chuyen_tuyen_status",
+        hasDateMode: false,
+        initialIsLeft: searchParams.get("all") === "1",
+        initialStatus: searchParams.get("filter") || "",
+        fetchData: async ({ offset, limit, nam, thang }) => {
+            const params = { limit, offset };
+            if (nam) params.nam = nam;
+            if (thang) params.thang = thang;
+            const res = await khamBenhService.getChuyenTuyenList(params);
+            return {
+                list: res.data?.data || [],
+                total: res.data?.total || 0,
+            };
+        },
+        subset: (list, isLeft) => {
+            if (!isLeft) {
+                return list.filter(
+                    (e) =>
+                        e.chuyen_tuyen_status === "đề_nghị_chuyển_tuyến" ||
+                        e.chuyen_tuyen_status === "chờ_chuyển_tuyến",
+                );
+            }
+            return list;
+        },
     });
 
     const [selectedExam, setSelectedExam] = useState(null);
@@ -37,92 +68,24 @@ export default function useChuyenTuyen() {
     const [openForm, setOpenForm] = useState(false);
     const [saving, setSaving] = useState(false);
 
-    const offset = useMemo(() => (page - 1) * ROWS_PER_PAGE, [page]);
-
-    const handleFilterModeChange = useCallback(() => {
-        setIsLeft((prev) => !prev);
-        setPage(1);
-    }, []);
-
-    const loadData = useCallback(async () => {
-        setRefreshing(true);
-        try {
-            const params = { limit: ROWS_PER_PAGE, offset };
-            if (nam) params.nam = nam;
-            if (thang) params.thang = thang;
-            const res = await khamBenhService.getChuyenTuyenList(params);
-            const data = res.data?.data || [];
-            setExaminations(data);
-            setTotalRecords(res.data?.total || 0);
-        } catch (err) {
-            setSnackbar({
-                open: true,
-                message: err.response?.data?.detail || "Lỗi tải danh sách.",
-                severity: "error",
-            });
-        } finally {
-            setRefreshing(false);
-            setInitialLoading(false);
-        }
-    }, [offset, nam, thang]);
-
-    useEffect(() => {
-        loadData();
-    }, [loadData]);
-
-    const patients = useMemo(() => {
-        if (!isLeft) {
-            return examinations.filter(
-                (e) =>
-                    e.chuyen_tuyen_status === "đề_nghị_chuyển_tuyến" ||
-                    e.chuyen_tuyen_status === "chờ_chuyển_tuyến",
-            );
-        }
-        return examinations;
-    }, [examinations, isLeft]);
-
-    const stats = useMemo(() => {
-        const deNghi = examinations.filter(
+    const stats = {
+        tongSo: examinations.length,
+        deNghi: examinations.filter(
             (e) => e.chuyen_tuyen_status === "đề_nghị_chuyển_tuyến",
-        ).length;
-        const choChuyenTuyen = examinations.filter(
+        ).length,
+        choChuyenTuyen: examinations.filter(
             (e) => e.chuyen_tuyen_status === "chờ_chuyển_tuyến",
-        ).length;
-        const daChuyenTuyen = examinations.filter(
+        ).length,
+        daChuyenTuyen: examinations.filter(
             (e) => e.chuyen_tuyen_status === "đã_chuyển_tuyến",
-        ).length;
-        const daVe = examinations.filter(
-            (e) => e.chuyen_tuyen_status === "đã_về",
-        ).length;
-        return {
-            tongSo: examinations.length,
-            deNghi,
-            choChuyenTuyen,
-            daChuyenTuyen,
-            daVe,
-        };
-    }, [examinations]);
-
-    const filtered = useMemo(() => {
-        let result = patients;
-        if (statusFilter) {
-            result = result.filter((e) => e.chuyen_tuyen_status === statusFilter);
-        }
-        if (searchText) {
-            const q = searchText.toLowerCase();
-            result = result.filter(
-                (e) =>
-                    (e.ma_kham_benh || "").toLowerCase().includes(q) ||
-                    (e.ho_ten || "").toLowerCase().includes(q) ||
-                    (e.ten_don_vi || "").toLowerCase().includes(q),
-            );
-        }
-        return result;
-    }, [patients, searchText, statusFilter]);
+        ).length,
+        daVe: examinations.filter((e) => e.chuyen_tuyen_status === "đã_về")
+            .length,
+    };
 
     const handleViewDetail = useCallback(
         async (id) => {
-            const exam = patients.find((e) => e.ma_kham_benh === id);
+            const exam = baseList.find((e) => e.ma_kham_benh === id);
             if (!exam) return;
             setSelectedExam(exam);
             setDetailLoading(true);
@@ -147,7 +110,7 @@ export default function useChuyenTuyen() {
                 setDetailLoading(false);
             }
         },
-        [patients],
+        [baseList, setSnackbar],
     );
 
     const handleApproveChuyenTuyen = useCallback(
@@ -164,7 +127,7 @@ export default function useChuyenTuyen() {
                 });
             }
         },
-        [loadData],
+        [loadData, setSnackbar],
     );
 
     const handleRejectChuyenTuyen = useCallback(
@@ -182,7 +145,7 @@ export default function useChuyenTuyen() {
                 });
             }
         },
-        [loadData],
+        [loadData, setSnackbar],
     );
 
     const handleCloseForm = useCallback(() => {
@@ -256,15 +219,16 @@ export default function useChuyenTuyen() {
             selectedExam,
             selectedGiayGt,
             selectedDiTuyen,
+            examDetail,
             handleCloseForm,
             loadData,
+            setSnackbar,
         ],
     );
 
     return {
         initialLoading,
         refreshing,
-        searchText,
         setSearchText,
         statusFilter,
         setStatusFilter,

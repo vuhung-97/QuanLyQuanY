@@ -2,8 +2,6 @@ import dayjs from "dayjs";
 import { useMemo } from "react";
 import {
     Button,
-    Card,
-    CardContent,
     Chip,
     Stack,
     Typography,
@@ -22,12 +20,9 @@ import FilterModeToggle from "@/components/common/FilterModeToggle.jsx";
 import YearMonthFilter from "@/components/common/YearMonthFilter.jsx";
 import useDanhSachKhamBenh from "@/hooks/useDanhSachKhamBenh.jsx";
 import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
-import DataTable from "@/components/common/DataTable.jsx";
+import ExamListPage from "@/components/common/ExamListPage.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
-import PaginationWidget from "@/components/common/PaginationWidget.jsx";
-import SearchBarDebounced from "@/components/common/SearchBarDebounced.jsx";
 import StatusFilter from "@/components/common/StatusFilter.jsx";
-import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import KhamBenhForm from "./KhamBenhForm.jsx";
 import TiepNhanQnDialog from "./TiepNhanQnDialog.jsx";
 import { STATUS_MAP } from "@/constants/khamBenhConstants.js";
@@ -90,7 +85,7 @@ const columns = [
     },
 ];
 
-function Toolbar({ onReceive, onRefresh }) {
+function ToolbarRight({ onReceive, onRefresh }) {
     return (
         <Stack direction="row" spacing={1.5}>
             <Button
@@ -185,87 +180,75 @@ export default function DanhSachKhamBenh() {
         [statusCounts],
     );
 
+    const toolbar = (
+        <Stack
+            direction={{ xs: "column", md: "row" }}
+            spacing={2}
+            sx={{
+                mb: 2,
+                justifyContent: "space-between",
+                alignItems: { md: "center" },
+            }}
+        >
+            <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+                <FilterModeToggle
+                    isLeft={isLeft}
+                    onChange={handleFilterModeChange}
+                    selectedDate={selectedDate}
+                    onDateChange={setSelectedDate}
+                />
+                {isLeft && (
+                    <YearMonthFilter
+                        nam={nam}
+                        onNamChange={(v) => {
+                            setNam(v);
+                            setPage(1);
+                        }}
+                        thang={thang}
+                        onThangChange={handleFilterThangChange}
+                    />
+                )}
+                <StatusFilter
+                    value={statusFilter}
+                    onChange={setStatusFilter}
+                    statusMap={STATUS_MAP}
+                />
+            </Stack>
+            <ToolbarRight
+                onReceive={() => setOpenReceiveDialog(true)}
+                onRefresh={loadData}
+            />
+        </Stack>
+    );
+
     return (
-        <>
-            <StatCardGrid items={statItems} loading={initialLoading} />
-
-            <Card sx={{ borderRadius: 3 }}>
-                <CardContent>
-                    <Stack
-                        direction={{ xs: "column", md: "row" }}
-                        spacing={2}
-                        sx={{
-                            mb: 2,
-                            justifyContent: "space-between",
-                            alignItems: { md: "center" },
-                        }}
-                    >
-                        <Stack
-                            direction="row"
-                            spacing={1}
-                            sx={{ alignItems: "center" }}
-                        >
-                            <FilterModeToggle
-                                isLeft={isLeft}
-                                onChange={handleFilterModeChange}
-                                selectedDate={selectedDate}
-                                onDateChange={setSelectedDate}
-                            />
-                            {isLeft && (
-                                <YearMonthFilter
-                                    nam={nam}
-                                    onNamChange={(v) => {
-                                        setNam(v);
-                                        setPage(1);
-                                    }}
-                                    thang={thang}
-                                    onThangChange={handleFilterThangChange}
-                                />
-                            )}
-                            <StatusFilter
-                                value={statusFilter}
-                                onChange={setStatusFilter}
-                                statusMap={STATUS_MAP}
-                            />
-                        </Stack>
-                        <Toolbar
-                            onReceive={() => setOpenReceiveDialog(true)}
-                            onRefresh={loadData}
-                        />
-                    </Stack>
-                    <SearchBarDebounced
-                        onSearch={setSearchText}
-                        placeholder="Tìm kiếm ca khám..."
-                    />
-                    <DataTable
-                        columns={columns}
-                        rows={filtered}
-                        loading={initialLoading || refreshing}
-                        emptyMessage={
-                            isLeft
-                                ? "Không có ca khám nào."
-                                : selectedDate.isSame(dayjs(), "day")
-                                  ? "Chưa có ca khám nào hôm nay."
-                                  : `Không có ca khám nào ngày ${selectedDate.format("DD/MM/YYYY")}.`
-                        }
-                        rowExtra={{
-                            onExam: handleOpenExamForm,
-                            onDelete: handleDeleteClick,
-                            offset,
-                        }}
-                    />
-                    {isLeft && totalRecords > 0 && (
-                        <PaginationWidget
-                            page={page}
-                            totalRecords={totalRecords}
-                            rowsPerPage={ROWS_PER_PAGE}
-                            onChange={setPage}
-                            sx={{ mt: 2 }}
-                        />
-                    )}
-                </CardContent>
-            </Card>
-
+        <ExamListPage
+            statItems={statItems}
+            loading={initialLoading}
+            refreshing={refreshing}
+            toolbar={toolbar}
+            searchPlaceholder="Tìm kiếm ca khám..."
+            onSearch={setSearchText}
+            columns={columns}
+            rows={filtered}
+            emptyMessage={
+                isLeft
+                    ? "Không có ca khám nào."
+                    : selectedDate.isSame(dayjs(), "day")
+                      ? "Chưa có ca khám nào hôm nay."
+                      : `Không có ca khám nào ngày ${selectedDate.format("DD/MM/YYYY")}.`
+            }
+            rowExtra={{
+                onExam: handleOpenExamForm,
+                onDelete: handleDeleteClick,
+                offset,
+            }}
+            showPagination={isLeft && totalRecords > 0}
+            page={page}
+            totalRecords={totalRecords}
+            rowsPerPage={ROWS_PER_PAGE}
+            onPageChange={setPage}
+        >
             <TiepNhanQnDialog
                 open={openReceiveDialog}
                 onClose={() => setOpenReceiveDialog(false)}
@@ -298,6 +281,6 @@ export default function DanhSachKhamBenh() {
                 severity={snackbar.severity}
                 onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
             />
-        </>
+        </ExamListPage>
     );
 }

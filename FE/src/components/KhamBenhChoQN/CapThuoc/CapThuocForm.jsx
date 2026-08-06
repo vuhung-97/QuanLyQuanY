@@ -13,6 +13,7 @@ import DonThuocTable from "@/components/common/DonThuoc.jsx";
 import { parseDonThuocToRows } from "@/utils/khamBenhUtils.js";
 import DonThuocPrint from "./DonThuocPrint.jsx";
 import { PRINT_STYLES, PRINT_DIALOG_CONTENT_SX, triggerPrint } from "@/utils/printUtils.js";
+import { PATIENT_FIELDS_CAP_THUOC } from "@/components/KhamBenhChoQN/constants.js";
 
 export default function CapThuocForm({
     open,
@@ -80,49 +81,31 @@ export default function CapThuocForm({
                     >
                         <PatientInfoCard
                             data={selectedExam}
-                            fields={[
-                                "ho_ten",
-                                "ten_don_vi",
-                                "ma_kham_benh",
-                                "ngay_kham",
-                            ]}
+                            fields={PATIENT_FIELDS_CAP_THUOC}
                         />
 
-                        {examDetail?.chan_doan && (
-                            <Box>
-                                <Typography
-                                    variant="h4"
-                                    sx={{
-                                        mb: 0.5,
-                                        fontWeight: 600,
-                                        color: "text.primary",
-                                    }}
-                                >
-                                    Chẩn đoán
-                                </Typography>
-                                <Typography variant="body1">
-                                    {examDetail.chan_doan}
-                                </Typography>
-                            </Box>
-                        )}
-
-                        {examDetail?.phuong_phap_dieu_tri && (
-                            <Box>
-                                <Typography
-                                    variant="h4"
-                                    sx={{
-                                        mb: 0.5,
-                                        fontWeight: 600,
-                                        color: "text.primary",
-                                    }}
-                                >
-                                    Phương pháp điều trị
-                                </Typography>
-                                <Typography variant="body1">
-                                    {examDetail.phuong_phap_dieu_tri}
-                                </Typography>
-                            </Box>
-                        )}
+                        {[
+                            ["chan_doan", "Chẩn đoán"],
+                            ["phuong_phap_dieu_tri", "Phương pháp điều trị"],
+                        ]
+                            .filter(([key]) => examDetail?.[key])
+                            .map(([key, label]) => (
+                                <Box key={key}>
+                                    <Typography
+                                        variant="h4"
+                                        sx={{
+                                            mb: 0.5,
+                                            fontWeight: 600,
+                                            color: "text.primary",
+                                        }}
+                                    >
+                                        {label}
+                                    </Typography>
+                                    <Typography variant="body1">
+                                        {examDetail[key]}
+                                    </Typography>
+                                </Box>
+                            ))}
 
                         <DonThuocTable
                             rows={prescriptionRows}

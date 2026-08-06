@@ -1,115 +1,90 @@
-import dayjs from "dayjs";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 
-import useFilterModePagination from "./useFilterModePagination.jsx";
 import { khamBenhService } from "@/services/khamBenhService.js";
 import { clearThuocCache } from "./useThuocList.jsx";
+import useExamList from "./useExamList.jsx";
+
+const STATUSES = ["chờ_nhận_thuốc", "đã_nhận_thuốc"];
 
 export default function useCapThuoc() {
-    const [examinations, setExaminations] = useState([]);
-    const [initialLoading, setInitialLoading] = useState(true);
-    const [refreshing, setRefreshing] = useState(false);
-    const [selectedDate, setSelectedDate] = useState(dayjs());
-    const [searchText, setSearchText] = useState("");
-    const [statusFilter, setStatusFilter] = useState("");
-    const [nam, setNam] = useState(null);
-    const [thang, setThang] = useState(null);
     const {
+        examinations,
+        baseList,
+        initialLoading,
+        refreshing,
+        setSearchText,
+        statusFilter,
+        setStatusFilter,
+        filtered,
+        snackbar,
+        setSnackbar,
+        loadData,
         isLeft,
         handleFilterModeChange,
         page,
         setPage,
         totalRecords,
-        setTotalRecords,
         ROWS_PER_PAGE,
         offset,
-    } = useFilterModePagination();
-    const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+        selectedDate,
+        setSelectedDate,
+        nam,
+        setNam,
+        thang,
+        setThang,
+    } = useExamList({
+        fetchData: async ({ isLeft, selectedDate, offset, limit, nam, thang }) => {
+            if (!isLeft) {
+                const ngay = selectedDate.format("YYYY-MM-DD");
+                const res = await khamBenhService.getHomNay(ngay);
+                return { list: res.data || [], total: 0 };
+            }
+            const params = { limit, offset };
+            if (nam) params.nam = nam;
+            if (thang) params.thang = thang;
+            const res = await khamBenhService.getAll(params);
+            return { list: res.data.data || [], total: res.data.total || 0 };
+        },
+        subset: (list) => list.filter((e) => STATUSES.includes(e.trang_thai)),
+    });
+
     const [selectedExam, setSelectedExam] = useState(null);
     const [examDetail, setExamDetail] = useState(null);
     const [detailLoading, setDetailLoading] = useState(false);
     const [openForm, setOpenForm] = useState(false);
     const [dispensing, setDispensing] = useState(false);
 
-    const loadData = useCallback(async () => {
-        setRefreshing(true);
-        try {
-            if (!isLeft) {
-                const ngay = selectedDate.format("YYYY-MM-DD");
-                const res = await khamBenhService.getHomNay(ngay);
-                setExaminations(res.data || []);
-                setTotalRecords(0);
-            } else {
-                const params = { limit: ROWS_PER_PAGE, offset };
-                if (nam) params.nam = nam;
-                if (thang) params.thang = thang;
-                const res = await khamBenhService.getAll(params);
-                setExaminations(res.data.data || []);
-                setTotalRecords(res.data.total || 0);
+    const stats = {
+        choCap: baseList.filter((e) => e.trang_thai === "chờ_nhận_thuốc")
+            .length,
+        daNhan: baseList.filter((e) => e.trang_thai === "đã_nhận_thuốc")
+            .length,
+    };
+
+    const handleOpenForm = useCallback(
+        async (id) => {
+            const exam = examinations.find((e) => e.ma_kham_benh === id);
+            setSelectedExam(exam);
+            setDetailLoading(true);
+            setOpenForm(true);
+            try {
+                const res = await khamBenhService.getDetail(id);
+                setExamDetail(res.data);
+            } catch (err) {
+                setSnackbar({
+                    open: true,
+                    message:
+                        err.response?.data?.detail ||
+                        "Lỗi tải chi tiết đơn thuốc.",
+                    severity: "error",
+                });
+                setOpenForm(false);
+            } finally {
+                setDetailLoading(false);
             }
-        } catch (err) {
-            setSnackbar({
-                open: true,
-                message: err.response?.data?.detail || "Lỗi tải danh sách.",
-                severity: "error",
-            });
-        } finally {
-            setRefreshing(false);
-            setInitialLoading(false);
-        }
-    }, [isLeft, selectedDate, offset, ROWS_PER_PAGE, nam, thang]);
-
-    useEffect(() => { loadData(); }, [loadData]);
-
-    const patients = useMemo(() => {
-        return examinations.filter(
-            (e) => e.trang_thai === "chờ_nhận_thuốc" || e.trang_thai === "đã_nhận_thuốc",
-        );
-    }, [examinations]);
-
-    const stats = useMemo(() => {
-        return {
-            choCap: patients.filter((e) => e.trang_thai === "chờ_nhận_thuốc").length,
-            daNhan: patients.filter((e) => e.trang_thai === "đã_nhận_thuốc").length,
-        };
-    }, [patients]);
-
-    const filtered = useMemo(() => {
-        let result = patients;
-        if (statusFilter) {
-            result = result.filter((e) => e.trang_thai === statusFilter);
-        }
-        if (searchText) {
-            const q = searchText.toLowerCase();
-            result = result.filter(
-                (e) =>
-                    (e.ma_kham_benh || "").toLowerCase().includes(q) ||
-                    (e.ho_ten || "").toLowerCase().includes(q) ||
-                    (e.ten_don_vi || "").toLowerCase().includes(q),
-            );
-        }
-        return result;
-    }, [patients, searchText, statusFilter]);
-
-    const handleOpenForm = useCallback(async (id) => {
-        const exam = examinations.find((e) => e.ma_kham_benh === id);
-        setSelectedExam(exam);
-        setDetailLoading(true);
-        setOpenForm(true);
-        try {
-            const res = await khamBenhService.getDetail(id);
-            setExamDetail(res.data);
-        } catch (err) {
-            setSnackbar({
-                open: true,
-                message: err.response?.data?.detail || "Lỗi tải chi tiết đơn thuốc.",
-                severity: "error",
-            });
-            setOpenForm(false);
-        } finally {
-            setDetailLoading(false);
-        }
-    }, [examinations]);
+        },
+        [examinations, setSnackbar],
+    );
 
     const handleCloseForm = useCallback(() => {
         setOpenForm(false);
@@ -139,14 +114,13 @@ export default function useCapThuoc() {
         } finally {
             setDispensing(false);
         }
-    }, [selectedExam, handleCloseForm, loadData]);
+    }, [selectedExam, handleCloseForm, loadData, setSnackbar]);
 
     return {
         initialLoading,
         refreshing,
         selectedDate,
         setSelectedDate,
-        searchText,
         setSearchText,
         statusFilter,
         setStatusFilter,

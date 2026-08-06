@@ -2,15 +2,11 @@ import dayjs from "dayjs";
 import { useMemo } from "react";
 import {
     Button,
-    Card,
-    CardContent,
     Chip,
     Stack,
-    Typography,
 } from "@mui/material";
 import ActionIcon from "@/components/common/ActionIcon.jsx";
 import FilterModeToggle from "@/components/common/FilterModeToggle.jsx";
-import PaginationWidget from "@/components/common/PaginationWidget.jsx";
 import YearMonthFilter from "@/components/common/YearMonthFilter.jsx";
 import {
     Download as DownloadIcon,
@@ -21,11 +17,9 @@ import {
 } from "@mui/icons-material";
 import useCapThuoc from "@/hooks/useCapThuoc.jsx";
 import CapThuocForm from "./CapThuocForm.jsx";
-import DataTable from "@/components/common/DataTable.jsx";
+import ExamListPage from "@/components/common/ExamListPage.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
-import SearchBarDebounced from "@/components/common/SearchBarDebounced.jsx";
 import StatusFilter from "@/components/common/StatusFilter.jsx";
-import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import { STATUS_MAP } from "@/constants/khamBenhConstants.js";
 import { formatDate } from "@/utils/date.js";
 
@@ -67,13 +61,22 @@ const columns = [
     {
         key: "thao_tac",
         label: "Thao tác",
-        render: (row, _idx, { onDispense }) => (
+        render: (row, _idx, { onDispense }) =>
             row.trang_thai === "chờ_nhận_thuốc" ? (
-                <ActionIcon title="Cấp thuốc" icon={<LocalPharmacyIcon />} color="primary" onClick={() => onDispense(row.ma_kham_benh)} />
+                <ActionIcon
+                    title="Cấp thuốc"
+                    icon={<LocalPharmacyIcon />}
+                    color="primary"
+                    onClick={() => onDispense(row.ma_kham_benh)}
+                />
             ) : (
-                <ActionIcon title="Xem" icon={<VisibilityIcon />} color="default" onClick={() => onDispense(row.ma_kham_benh)} />
-            )
-        ),
+                <ActionIcon
+                    title="Xem"
+                    icon={<VisibilityIcon />}
+                    color="default"
+                    onClick={() => onDispense(row.ma_kham_benh)}
+                />
+            ),
     },
 ];
 
@@ -132,92 +135,80 @@ export default function CapThuocList() {
         [stats],
     );
 
-    return (
-        <>
-            <StatCardGrid items={statItems} loading={initialLoading} />
-
-            <Card sx={{ borderRadius: 3 }}>
-                <CardContent>
-                    <Stack
-                        direction={{ xs: "column", md: "row" }}
-                        spacing={2}
-                        sx={{
-                            mb: 2,
-                            justifyContent: "space-between",
-                            alignItems: { md: "center" },
+    const toolbar = (
+        <Stack
+            direction={{ xs: "column", md: "row" }}
+            spacing={2}
+            sx={{
+                mb: 2,
+                justifyContent: "space-between",
+                alignItems: { md: "center" },
+            }}
+        >
+            <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+                <FilterModeToggle
+                    isLeft={isLeft}
+                    onChange={handleFilterModeChange}
+                    selectedDate={selectedDate}
+                    onDateChange={setSelectedDate}
+                />
+                {isLeft && (
+                    <YearMonthFilter
+                        nam={nam}
+                        onNamChange={(v) => {
+                            setNam(v);
+                            setPage(1);
                         }}
-                    >
-                        <Stack
-                            direction="row"
-                            spacing={1}
-                            sx={{ alignItems: "center" }}
-                        >
-                            <FilterModeToggle
-                                isLeft={isLeft}
-                                onChange={handleFilterModeChange}
-                                selectedDate={selectedDate}
-                                onDateChange={setSelectedDate}
-                            />
-                            {isLeft && (
-                                <YearMonthFilter
-                                    nam={nam}
-                                    onNamChange={(v) => {
-                                        setNam(v);
-                                        setPage(1);
-                                    }}
-                                    thang={thang}
-                                    onThangChange={(v) => {
-                                        setThang(v);
-                                        setPage(1);
-                                    }}
-                                />
-                            )}
-                            <StatusFilter
-                                value={statusFilter}
-                                onChange={setStatusFilter}
-                                statusMap={CAP_THUOC_STATUS_MAP}
-                            />
-                        </Stack>
-                        <Stack direction="row" spacing={1.5}>
-                            <Button
-                                variant="outlined"
-                                startIcon={<RefreshIcon />}
-                                onClick={loadData}
-                                sx={{ textTransform: "none" }}
-                            >
-                                Refresh
-                            </Button>
-                        </Stack>
-                    </Stack>
-                    <SearchBarDebounced
-                        onSearch={setSearchText}
-                        placeholder="Tìm kiếm quân nhân..."
+                        thang={thang}
+                        onThangChange={(v) => {
+                            setThang(v);
+                            setPage(1);
+                        }}
                     />
-                    <DataTable
-                        columns={columns}
-                        rows={filtered}
-                        loading={initialLoading || refreshing}
-                        emptyMessage={
-                            isLeft
-                                ? "Không có quân nhân cấp thuốc."
-                                : selectedDate.isSame(dayjs(), "day")
-                                  ? "Không có quân nhân chờ cấp thuốc."
-                                  : `Không có quân nhân chờ cấp thuốc ngày ${selectedDate.format("DD/MM/YYYY")}.`
-                        }
-                        rowExtra={{ onDispense: handleOpenForm, offset }}
-                    />
-                    {isLeft && totalRecords > 0 && (
-                        <PaginationWidget
-                            page={page}
-                            totalRecords={totalRecords}
-                            rowsPerPage={ROWS_PER_PAGE}
-                            onChange={setPage}
-                            sx={{ mt: 2 }}
-                        />
-                    )}
-                </CardContent>
-            </Card>
+                )}
+                <StatusFilter
+                    value={statusFilter}
+                    onChange={setStatusFilter}
+                    statusMap={CAP_THUOC_STATUS_MAP}
+                />
+            </Stack>
+            <Stack direction="row" spacing={1.5}>
+                <Button
+                    variant="outlined"
+                    startIcon={<RefreshIcon />}
+                    onClick={loadData}
+                    sx={{ textTransform: "none" }}
+                >
+                    Refresh
+                </Button>
+            </Stack>
+        </Stack>
+    );
 
+    return (
+        <ExamListPage
+            statItems={statItems}
+            loading={initialLoading}
+            refreshing={refreshing}
+            toolbar={toolbar}
+            searchPlaceholder="Tìm kiếm quân nhân..."
+            onSearch={setSearchText}
+            columns={columns}
+            rows={filtered}
+            emptyMessage={
+                isLeft
+                    ? "Không có quân nhân cấp thuốc."
+                    : selectedDate.isSame(dayjs(), "day")
+                      ? "Không có quân nhân chờ cấp thuốc."
+                      : `Không có quân nhân chờ cấp thuốc ngày ${selectedDate.format("DD/MM/YYYY")}.`
+            }
+            rowExtra={{ onDispense: handleOpenForm, offset }}
+            showPagination={isLeft && totalRecords > 0}
+            page={page}
+            totalRecords={totalRecords}
+            rowsPerPage={ROWS_PER_PAGE}
+            onPageChange={setPage}
+        >
             <CapThuocForm
                 open={openForm}
                 selectedExam={selectedExam}
@@ -234,6 +225,6 @@ export default function CapThuocList() {
                 severity={snackbar.severity}
                 onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
             />
-        </>
+        </ExamListPage>
     );
 }

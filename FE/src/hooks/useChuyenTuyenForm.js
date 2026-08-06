@@ -59,12 +59,7 @@ export default function useChuyenTuyenForm({ open, giayGt, diTuyen, onSave }) {
         settersRef.current[name]?.(value);
     }, []);
 
-    const blurSync = useCallback((name, value) => {
-        formRef.current[name] = value;
-        settersRef.current[name]?.(value);
-    }, []);
-
-    const isNew = !giayGt?.ma_giay_gt;
+    const blurSync = updateField;
 
     const handleSave = useCallback(() => {
         const d = formRef.current;
@@ -84,7 +79,6 @@ export default function useChuyenTuyenForm({ open, giayGt, diTuyen, onSave }) {
     }, [onSave]);
 
     return {
-        formRef,
         tenBenhVien,
         yKienDeNghi,
         ngayDi,
@@ -97,6 +91,5 @@ export default function useChuyenTuyenForm({ open, giayGt, diTuyen, onSave }) {
         updateField,
         blurSync,
         handleSave,
-        isNew,
     };
 }
