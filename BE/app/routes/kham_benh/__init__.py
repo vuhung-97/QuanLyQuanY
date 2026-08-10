@@ -12,6 +12,7 @@ from app.routes.kham_benh.phieu_cham_soc import router as phieu_cham_soc_router
 from app.routes.kham_benh.phieu_kham_suc_khoe import router as phieu_kham_suc_khoe_router
 from app.routes.kham_benh.prediction import router as prediction_router
 from app.routes.kham_benh.xet_nghiem_ocr import router as xet_nghiem_ocr_router
+from app.routes.kham_benh.upload_cdha import router as upload_cdha_router
 
 routers = [
     benh_an_router,
@@ -28,4 +29,5 @@ routers = [
     phieu_kham_suc_khoe_router,
     prediction_router,
     xet_nghiem_ocr_router,
+    upload_cdha_router,
 ]

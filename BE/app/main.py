@@ -1,8 +1,11 @@
 from __future__ import annotations
 
-from fastapi import FastAPI
+from pathlib import Path
 
-from .core.config import setup_cors
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+
+from .core.config import setup_cors, settings
 from .core.error_handlers import register_error_handlers
 from .database.session import create_db
 from .routes import RESOURCE_ROUTERS, system_router, auth
@@ -21,6 +24,10 @@ register_error_handlers(api)
 
 # Đăng ký cấu hình CORS
 setup_cors(api)
+
+# Phục vụ file tĩnh (ảnh/PDF chẩn đoán hình ảnh)
+Path(settings.UPLOAD_DIR).mkdir(parents=True, exist_ok=True)
+api.mount("/uploads", StaticFiles(directory=settings.UPLOAD_DIR), name="uploads")
 
 # Đăng ký router don_vi
 for router in RESOURCE_ROUTERS:

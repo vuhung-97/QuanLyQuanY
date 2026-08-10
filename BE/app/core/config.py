@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     ADMIN_PASSWORD: str = "admin123"
     BACKUP_DIR: str = "backups"
+    UPLOAD_DIR: str = "uploads"
 
 
 settings = Settings()

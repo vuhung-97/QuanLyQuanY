@@ -43,6 +43,17 @@ export const khamSucKhoeService = {
     getPhieuByMaQuanNhan: (maQuanNhan) =>
         api.get(`/phieu_kham_suc_khoe/quan-nhan/${maQuanNhan}`),
 
+    uploadCdha: (nam, file) => {
+        const formData = new FormData();
+        formData.append("nam", nam);
+        formData.append("file", file);
+        return api.post("/upload/cdha", formData, {
+            headers: { "Content-Type": undefined },
+        });
+    },
+
+    deleteCdha: (path) => api.delete("/upload/cdha", { params: { path } }),
+
     createPhieu: (data) => api.post("/phieu_kham_suc_khoe", data),
 
     updatePhieu: (id, data) => api.patch(`/phieu_kham_suc_khoe/${id}`, data),

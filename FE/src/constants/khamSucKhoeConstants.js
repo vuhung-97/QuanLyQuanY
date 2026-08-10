@@ -111,12 +111,16 @@ export const DEFAULT_XN = {
 export const DEFAULT_CDHA = {
     dien_tim: "",
     dien_tim_loai: DEFAULT_PHAN_LOAI,
+    dien_tim_anh: "",
     x_quang: "",
     x_quang_loai: DEFAULT_PHAN_LOAI,
+    x_quang_anh: "",
     sieu_am: "",
     sieu_am_loai: DEFAULT_PHAN_LOAI,
+    sieu_am_anh: "",
     khac: "",
     khac_loai: DEFAULT_PHAN_LOAI,
+    khac_anh: "",
 };
 
 export const DEFAULT_KL = {

@@ -5,6 +5,7 @@ venv/
 alembic.ini
 review.md
 backups/
+uploads/
 be_serve.log
 be_serve_err.log
 scripts/
