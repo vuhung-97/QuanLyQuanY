@@ -5,12 +5,16 @@ import {
 
 export function getScheduleTimeWindow(row) {
     const startCandidates = [
-        row.thoi_gian_lay_mau_bat_dau,
-        row.thoi_gian_bat_dau,
+        row?.thoi_gian_lay_mau_bat_dau,
+        row?.thoi_gian_du_tru_lay_mau_bat_dau,
+        row?.thoi_gian_bat_dau,
+        row?.thoi_gian_du_tru_kham_bat_dau,
     ].filter(Boolean);
     const endCandidates = [
-        row.thoi_gian_ket_thuc,
-        row.thoi_gian_du_tru_kham_ket_thuc,
+        row?.thoi_gian_lay_mau_ket_thuc,
+        row?.thoi_gian_du_tru_lay_mau_ket_thuc,
+        row?.thoi_gian_ket_thuc,
+        row?.thoi_gian_du_tru_kham_ket_thuc,
     ].filter(Boolean);
     return {
         start: startCandidates.length
@@ -47,14 +51,36 @@ function isInWindow(batDau, ketThuc, now) {
 
 export function isInLayMauWindow(row, now = new Date()) {
     return isInWindow(
-        row?.thoi_gian_lay_mau_bat_dau,
-        row?.thoi_gian_lay_mau_ket_thuc,
+        minOf(row?.thoi_gian_lay_mau_bat_dau, row?.thoi_gian_du_tru_lay_mau_bat_dau),
+        maxOf(row?.thoi_gian_lay_mau_ket_thuc, row?.thoi_gian_du_tru_lay_mau_ket_thuc),
         now,
     );
 }
 
 export function isInKhamWindow(row, now = new Date()) {
-    return isInWindow(row?.thoi_gian_bat_dau, row?.thoi_gian_ket_thuc, now);
+    return isInWindow(
+        minOf(row?.thoi_gian_bat_dau, row?.thoi_gian_du_tru_kham_bat_dau),
+        maxOf(row?.thoi_gian_ket_thuc, row?.thoi_gian_du_tru_kham_ket_thuc),
+        now,
+    );
+}
+
+export function isScheduleActive(row, now = new Date()) {
+    const { start, end } = getScheduleTimeWindow(row);
+    const t = now.getTime();
+    if (end && end.getTime() < t) return false;
+    if (start && start.getTime() > t) return false;
+    return true;
+}
+
+function minOf(...vals) {
+    const times = vals.filter(Boolean).map((v) => new Date(v).getTime());
+    return times.length ? new Date(Math.min(...times)) : null;
+}
+
+function maxOf(...vals) {
+    const times = vals.filter(Boolean).map((v) => new Date(v).getTime());
+    return times.length ? new Date(Math.max(...times)) : null;
 }
 
 export function statusColor(status) {

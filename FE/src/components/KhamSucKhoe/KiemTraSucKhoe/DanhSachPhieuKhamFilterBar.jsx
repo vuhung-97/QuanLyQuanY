@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, Card, CardContent, Menu, MenuItem, Stack, TextField } from "@mui/material";
-import { Print as PrintIcon } from "@mui/icons-material";
+import { Print as PrintIcon, UploadFile as UploadFileIcon } from "@mui/icons-material";
 import FilterModeToggle from "@/components/common/FilterModeToggle.jsx";
 import { formatDate } from "@/utils/date.js";
 
@@ -15,6 +15,8 @@ export default function DanhSachPhieuKhamFilterBar({
     onUnitChange,
     exportEnabled,
     onExport,
+    ocrEnabled,
+    onOpenOcr,
 }) {
     const [anchorEl, setAnchorEl] = useState(null);
     return (
@@ -89,6 +91,17 @@ export default function DanhSachPhieuKhamFilterBar({
                                 </MenuItem>
                             )}
                     </TextField>
+                    {exportEnabled && ocrEnabled && (
+                        <Button
+                            variant="contained"
+                            size="small"
+                            startIcon={<UploadFileIcon />}
+                            onClick={onOpenOcr}
+                            sx={{ whiteSpace: "nowrap" }}
+                        >
+                            Điền KQ xét nghiệm
+                        </Button>
+                    )}
                     {exportEnabled && (
                         <>
                             <Button

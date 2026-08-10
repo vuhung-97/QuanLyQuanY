@@ -55,6 +55,7 @@ const SoldierRows = memo(function SoldierRows({
     isXetNghiem,
     isLayMauWindow = true,
     isKhamWindow = true,
+    scheduleActive = true,
 }) {
     return soldiers.map((qn, idx) => {
         const phieu = phieuMap[qn.ma_quan_nhan];
@@ -108,11 +109,19 @@ const SoldierRows = memo(function SoldierRows({
                         {tt === "Chưa lấy máu" && maCode && isXetNghiem && isLayMauWindow && (
                             <ActionIcon title="Xác nhận đã lấy máu" icon={<BloodtypeIcon />} color="secondary" onClick={() => onConfirmBloodDraw(qn)} />
                         )}
-                        {tt === "Đã lấy máu" && isKhamWindow && (
-                            <ActionIcon title="Khám" icon={<MedicalServicesIcon />} onClick={() => { document.activeElement?.blur(); onEdit(qn); }} />
+                        {tt === "Đã lấy máu" && (
+                            (isKhamWindow || (isXetNghiem && scheduleActive)) ? (
+                                <ActionIcon title="Khám" icon={<MedicalServicesIcon />} onClick={() => { document.activeElement?.blur(); onEdit(qn); }} />
+                            ) : (
+                                <ActionIcon title="Xem" icon={<VisibilityIcon />} color="info" onClick={() => { document.activeElement?.blur(); onEdit(qn); }} />
+                            )
                         )}
-                        {tt === "Đang khám" && isKhamWindow && (
-                            <ActionIcon title="Tiếp tục" icon={<EditIcon />} onClick={() => { document.activeElement?.blur(); onEdit(qn); }} />
+                        {tt === "Đang khám" && (
+                            (isKhamWindow || (isXetNghiem && scheduleActive)) ? (
+                                <ActionIcon title="Tiếp tục" icon={<EditIcon />} onClick={() => { document.activeElement?.blur(); onEdit(qn); }} />
+                            ) : (
+                                <ActionIcon title="Xem" icon={<VisibilityIcon />} color="info" onClick={() => { document.activeElement?.blur(); onEdit(qn); }} />
+                            )
                         )}
                         {tt === "Đã khám" && (
                             <ActionIcon title="Xem" icon={<VisibilityIcon />} color="info" onClick={() => { document.activeElement?.blur(); onEdit(qn); }} />
@@ -140,6 +149,7 @@ export default function BangQuanNhan({
     isXetNghiem,
     isLayMauWindow,
     isKhamWindow,
+    scheduleActive,
 }) {
     const [sortBy, setSortBy] = useState("ho_ten");
 
@@ -241,6 +251,7 @@ export default function BangQuanNhan({
                         isXetNghiem={isXetNghiem}
                         isLayMauWindow={isLayMauWindow}
                         isKhamWindow={isKhamWindow}
+                        scheduleActive={scheduleActive}
                     />
                 </DataTable>
             </CardContent>

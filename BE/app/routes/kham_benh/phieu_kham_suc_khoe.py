@@ -57,8 +57,16 @@ def _require_xet_nghiem(current_user: NguoiDung, db: Session, ma_lich_kham: str)
 
 
 _WINDOW_LABEL = {
-    "lay_mau": ("thời gian lấy máu", "thoi_gian_lay_mau_bat_dau", "thoi_gian_lay_mau_ket_thuc"),
-    "kham": ("thời gian khám", "thoi_gian_bat_dau", "thoi_gian_ket_thuc"),
+    "lay_mau": (
+        "thời gian lấy máu",
+        ("thoi_gian_lay_mau_bat_dau", "thoi_gian_du_tru_lay_mau_bat_dau"),
+        ("thoi_gian_lay_mau_ket_thuc", "thoi_gian_du_tru_lay_mau_ket_thuc"),
+    ),
+    "kham": (
+        "thời gian khám",
+        ("thoi_gian_bat_dau", "thoi_gian_du_tru_kham_bat_dau"),
+        ("thoi_gian_ket_thuc", "thoi_gian_du_tru_kham_ket_thuc"),
+    ),
 }
 
 
@@ -75,16 +83,73 @@ def _require_window(db: Session, ma_lich_kham: str, loai: str, current_user: Ngu
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Không tìm thấy lịch khám.",
         )
-    label, bd_attr, kt_attr = _WINDOW_LABEL[loai]
-    bat_dau = getattr(lich, bd_attr)
-    ket_thuc = getattr(lich, kt_attr)
-    if bat_dau is None or ket_thuc is None:
+    label, bd_attrs, kt_attrs = _WINDOW_LABEL[loai]
+    bat_dau_list = [getattr(lich, attr) for attr in bd_attrs if getattr(lich, attr) is not None]
+    ket_thuc_list = [getattr(lich, attr) for attr in kt_attrs if getattr(lich, attr) is not None]
+    if not bat_dau_list or not ket_thuc_list:
         return
+    bat_dau = min(bat_dau_list)
+    ket_thuc = max(ket_thuc_list)
     now = datetime.now()
     if not (bat_dau <= now <= ket_thuc):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=f"Chỉ được thao tác trong {label} {bat_dau:%H:%M ngày %d/%m/%Y} – {ket_thuc:%H:%M ngày %d/%m/%Y}.",
+        )
+
+
+def _user_is_xet_nghiem(db: Session, ma_lich_kham: str, current_user: NguoiDung) -> bool:
+    if current_user.id_vai_tro == "ROLE_ADMIN":
+        return True
+    has_assignment = (
+        db.query(PhanCongNhiemVu.id)
+        .filter(
+            PhanCongNhiemVu.ma_lich_kham == ma_lich_kham,
+            PhanCongNhiemVu.id_nguoi_dung == current_user.id,
+            PhanCongNhiemVu.ma_vai_tro == MA_VA_TRO_XET_NGHIEM,
+        )
+        .first()
+    )
+    return has_assignment is not None
+
+
+def _require_lich_con_hoat_dong(db: Session, ma_lich_kham: str, current_user: NguoiDung) -> None:
+    if current_user.id_vai_tro == "ROLE_ADMIN":
+        return
+    lich = (
+        db.query(LichKhamSkNam)
+        .filter(LichKhamSkNam.ma_lich_kham == ma_lich_kham)
+        .first()
+    )
+    if not lich:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Không tìm thấy lịch khám.",
+        )
+    starts = [
+        lich.thoi_gian_lay_mau_bat_dau,
+        lich.thoi_gian_du_tru_lay_mau_bat_dau,
+        lich.thoi_gian_bat_dau,
+        lich.thoi_gian_du_tru_kham_bat_dau,
+    ]
+    ends = [
+        lich.thoi_gian_lay_mau_ket_thuc,
+        lich.thoi_gian_du_tru_lay_mau_ket_thuc,
+        lich.thoi_gian_ket_thuc,
+        lich.thoi_gian_du_tru_kham_ket_thuc,
+    ]
+    starts = [s for s in starts if s is not None]
+    ends = [e for e in ends if e is not None]
+    now = datetime.now()
+    if starts and now < min(starts):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Lịch khám chưa diễn ra.",
+        )
+    if ends and now > max(ends):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Lịch khám đã kết thúc.",
         )
 
 
@@ -223,7 +288,10 @@ def create_phieu_kham_suc_khoe(
     db: Session = Depends(get_db),
 ):
     if payload.ma_lich_kham:
-        _require_window(db, payload.ma_lich_kham, "kham", current_user)
+        if _user_is_xet_nghiem(db, payload.ma_lich_kham, current_user):
+            _require_lich_con_hoat_dong(db, payload.ma_lich_kham, current_user)
+        else:
+            _require_window(db, payload.ma_lich_kham, "kham", current_user)
     record = _run_crud(
         lambda: phieu_kham_suc_khoe_crud.create(
             db, payload, nguoi_dung_id=current_user.id
@@ -247,7 +315,10 @@ def update_phieu_kham_suc_khoe(
         lambda: phieu_kham_suc_khoe_crud.get(db, ma_phieu_kham)
     )
     if existing and existing.ma_lich_kham:
-        _require_window(db, existing.ma_lich_kham, "kham", current_user)
+        if _user_is_xet_nghiem(db, existing.ma_lich_kham, current_user):
+            _require_lich_con_hoat_dong(db, existing.ma_lich_kham, current_user)
+        else:
+            _require_window(db, existing.ma_lich_kham, "kham", current_user)
     record = _run_crud(
         lambda: phieu_kham_suc_khoe_crud.update(
             db, ma_phieu_kham, payload, nguoi_dung_id=current_user.id

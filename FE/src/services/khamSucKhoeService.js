@@ -31,6 +31,15 @@ export const khamSucKhoeService = {
 
     xacNhanLayMau: (data) => api.post("/phieu_kham_suc_khoe/xac-nhan-lay-mau", data),
 
+    dienKetQuaXetNghiem: (maLichKham, file) => {
+        const formData = new FormData();
+        formData.append("ma_lich_kham", maLichKham);
+        formData.append("file", file);
+        return api.post("/xet_nghiem_ocr/dien-ket-qua", formData, {
+            headers: { "Content-Type": undefined },
+        });
+    },
+
     getPhieuByMaQuanNhan: (maQuanNhan) =>
         api.get(`/phieu_kham_suc_khoe/quan-nhan/${maQuanNhan}`),
 

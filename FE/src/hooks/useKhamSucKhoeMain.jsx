@@ -10,7 +10,11 @@ import useKhamSucKhoeData from "@/hooks/useKhamSucKhoeData";
 import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
 import { fetchAllPages } from "@/utils/fetchAll.js";
 import { filterSoldiers } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
-import { isInKhamWindow, isInLayMauWindow } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
+import {
+    isInKhamWindow,
+    isInLayMauWindow,
+    isScheduleActive,
+} from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
 import { ALL_TABS, ROLE_TAB_ACCESS } from "@/constants/khamSucKhoeConstants.js";
 import { getCurrentUser } from "@/services/api.js";
 import { ROLES } from "@/constants/roleConstants.js";
@@ -88,6 +92,11 @@ export default function useKhamSucKhoeMain() {
 
     const isKhamWindow = useMemo(
         () => isInKhamWindow(selectedScheduleObj),
+        [selectedScheduleObj],
+    );
+
+    const scheduleActive = useMemo(
+        () => isScheduleActive(selectedScheduleObj),
         [selectedScheduleObj],
     );
 
@@ -249,8 +258,15 @@ export default function useKhamSucKhoeMain() {
 
     const handleEdit = useCallback((qn) => {
         document.activeElement?.blur();
-        setFormDialog({ open: true, qn, phieu: null, readOnly: isAdmin ? false : !isKhamWindow });
-    }, [isKhamWindow, isAdmin]);
+        const canEdit =
+            isKhamWindow || (isXetNghiem && scheduleActive);
+        setFormDialog({
+            open: true,
+            qn,
+            phieu: null,
+            readOnly: isAdmin ? false : !canEdit,
+        });
+    }, [isKhamWindow, isXetNghiem, scheduleActive, isAdmin]);
 
     const handleViewHistory = useCallback((qn) => {
         setHistoryDialog({ open: true, qn });
@@ -311,6 +327,29 @@ export default function useKhamSucKhoeMain() {
         }
     }, [selectedSchedule, setPhieuMap, setAllPhieuMap, isLayMauWindow]);
 
+    const handleOcrTrichXuat = useCallback(
+        async (file) => {
+            if (!selectedSchedule) {
+                throw new Error("Chưa chọn lịch khám.");
+            }
+            const res = await khamSucKhoeService.dienKetQuaXetNghiem(
+                selectedSchedule,
+                file,
+            );
+            const pList = await fetchAllPages(
+                `/phieu_kham_suc_khoe/lich-kham/${selectedSchedule}`,
+            );
+            const pm = (Array.isArray(pList) ? pList : []).reduce((acc, p) => {
+                acc[p.ma_quan_nhan] = p;
+                return acc;
+            }, {});
+            setAllPhieuMap(pm);
+            refreshStats();
+            return res;
+        },
+        [selectedSchedule, setAllPhieuMap, refreshStats],
+    );
+
     const handleSearchChange = useCallback((v) => {
         setSearchText(v);
     }, []);
@@ -340,6 +379,7 @@ export default function useKhamSucKhoeMain() {
         isXetNghiem,
         isLayMauWindow,
         isKhamWindow,
+        scheduleActive,
         allowedTabs,
         editableTabs,
         noRoleNotice,
@@ -354,6 +394,7 @@ export default function useKhamSucKhoeMain() {
         closeHistoryDialog,
         handleGenerateBloodCode,
         handleConfirmBloodDraw,
+        handleOcrTrichXuat,
         handleSearchChange,
     };
 }

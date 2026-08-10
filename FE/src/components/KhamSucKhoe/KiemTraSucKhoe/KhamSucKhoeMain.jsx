@@ -10,6 +10,7 @@ import DanhSachPhieuKhamFilterBar from "./DanhSachPhieuKhamFilterBar.jsx";
 import LichSuKhamDialog from "./LichSuKhamDialog.jsx";
 import KhamSucKhoePrint from "./KhamSucKhoePrint.jsx";
 import PrintDialog from "@/components/common/print/PrintDialog.jsx";
+import DienKetQuaXetNghiemDialog from "./DienKetQuaXetNghiemDialog.jsx";
 
 function EmptyState({ show, message }) {
     if (!show) return null;
@@ -28,6 +29,7 @@ export default function KhamSucKhoeMain() {
     });
     const [generatingCodes, setGeneratingCodes] = useState(new Set());
     const [confirmDrawQn, setConfirmDrawQn] = useState(null);
+    const [ocrDialogOpen, setOcrDialogOpen] = useState(false);
     const {
         soldiers,
         phieuMap,
@@ -53,6 +55,7 @@ export default function KhamSucKhoeMain() {
         isXetNghiem,
         isLayMauWindow,
         isKhamWindow,
+        scheduleActive,
         allowedTabs,
         editableTabs,
         noRoleNotice,
@@ -67,6 +70,7 @@ export default function KhamSucKhoeMain() {
         closeHistoryDialog,
         handleGenerateBloodCode,
         handleConfirmBloodDraw,
+        handleOcrTrichXuat,
         handleSearchChange,
     } = useKhamSucKhoeMain();
 
@@ -131,6 +135,8 @@ export default function KhamSucKhoeMain() {
                 onUnitChange={setSelectedUnit}
                 exportEnabled={!!selectedSchedule}
                 onExport={handlePrint}
+                ocrEnabled={isXetNghiem}
+                onOpenOcr={() => setOcrDialogOpen(true)}
             />
 
             {stats && (
@@ -159,6 +165,7 @@ export default function KhamSucKhoeMain() {
                     isXetNghiem={isXetNghiem}
                     isLayMauWindow={isLayMauWindow}
                     isKhamWindow={isKhamWindow}
+                    scheduleActive={scheduleActive}
                 />
             )}
 
@@ -221,6 +228,13 @@ export default function KhamSucKhoeMain() {
                     <KhamSucKhoePrint data={printDialog.data} />
                 )}
             </PrintDialog>
+
+            <DienKetQuaXetNghiemDialog
+                open={ocrDialogOpen}
+                onClose={() => setOcrDialogOpen(false)}
+                maLichKham={selectedSchedule}
+                onTrichXuat={handleOcrTrichXuat}
+            />
 
             <FeedbackSnackbar
                 open={snackbar.open}
