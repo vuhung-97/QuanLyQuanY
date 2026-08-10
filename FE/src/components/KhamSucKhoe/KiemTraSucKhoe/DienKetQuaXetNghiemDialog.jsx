@@ -32,6 +32,7 @@ export default function DienKetQuaXetNghiemDialog({
     onClose,
     maLichKham,
     onTrichXuat,
+    onEditXetNghiem,
 }) {
     const fileInputRef = useRef(null);
     const [file, setFile] = useState(null);
@@ -279,6 +280,15 @@ export default function DienKetQuaXetNghiemDialog({
                                                 {da_cap_nhat.map((item) => (
                                                     <TableRow
                                                         key={item.ma_lay_mau}
+                                                        hover
+                                                        onClick={() =>
+                                                            onEditXetNghiem?.(
+                                                                item,
+                                                            )
+                                                        }
+                                                        sx={{
+                                                            cursor: "pointer",
+                                                        }}
                                                     >
                                                         <TableCell>
                                                             {item.ma_quan_nhan}

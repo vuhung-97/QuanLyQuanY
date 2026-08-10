@@ -66,6 +66,7 @@ export default function KhamSucKhoeMain() {
         handleEdit,
         handleViewHistory,
         handleViewPhieu,
+        handleEditXetNghiem,
         closeFormDialog,
         closeHistoryDialog,
         handleGenerateBloodCode,
@@ -212,9 +213,10 @@ export default function KhamSucKhoeMain() {
                               ).getFullYear()
                             : null
                     }
-                    readOnly={formDialog.readOnly || !!formDialog.phieu}
+                    readOnly={formDialog.readOnly ?? !!formDialog.phieu}
                     allowedTabs={allowedTabs}
                     editableTabs={editableTabs}
+                    initialTab={formDialog.activeTab}
                 />
             )}
 
@@ -234,6 +236,7 @@ export default function KhamSucKhoeMain() {
                 onClose={() => setOcrDialogOpen(false)}
                 maLichKham={selectedSchedule}
                 onTrichXuat={handleOcrTrichXuat}
+                onEditXetNghiem={handleEditXetNghiem}
             />
 
             <FeedbackSnackbar

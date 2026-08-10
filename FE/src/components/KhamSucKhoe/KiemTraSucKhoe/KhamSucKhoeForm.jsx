@@ -115,6 +115,7 @@ export default function KhamSucKhoeForm({
     readOnly = false,
     allowedTabs: allowedTabsProp,
     editableTabs: editableTabsProp,
+    initialTab,
 }) {
     const allowedTabs = allowedTabsProp ?? ALL_TABS;
     const editableTabs = editableTabsProp ?? ALL_TABS;
@@ -147,6 +148,7 @@ export default function KhamSucKhoeForm({
         onClose,
         allowedTabs,
         editableTabs,
+        initialTab,
     });
 
     const cardData = useMemo(

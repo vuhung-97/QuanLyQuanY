@@ -56,6 +56,7 @@ export default function useKhamSucKhoeMain() {
         open: false,
         qn: null,
         phieu: null,
+        activeTab: undefined,
     });
     const [historyDialog, setHistoryDialog] = useState({
         open: false,
@@ -203,7 +204,7 @@ export default function useKhamSucKhoeMain() {
                 setPhieuMap((prev) => ({ ...prev, [qn.ma_quan_nhan]: savedPhieu }));
                 setAllPhieuMap((prev) => ({ ...prev, [qn.ma_quan_nhan]: savedPhieu }));
             }
-            setFormDialog({ open: false, qn: null, phieu: null });
+            setFormDialog({ open: false, qn: null, phieu: null, activeTab: undefined });
             refreshStats();
         },
         [formDialog.qn, setPhieuMap, setAllPhieuMap, refreshStats],
@@ -265,6 +266,7 @@ export default function useKhamSucKhoeMain() {
             qn,
             phieu: null,
             readOnly: isAdmin ? false : !canEdit,
+            activeTab: undefined,
         });
     }, [isKhamWindow, isXetNghiem, scheduleActive, isAdmin]);
 
@@ -274,18 +276,40 @@ export default function useKhamSucKhoeMain() {
 
     const handleViewPhieu = useCallback(
         (phieu) => {
-            setFormDialog({ open: true, qn: historyDialog.qn, phieu });
+            setFormDialog({ open: true, qn: historyDialog.qn, phieu, activeTab: undefined });
             setHistoryDialog({ open: false, qn: null });
         },
         [historyDialog.qn],
     );
-
     const closeFormDialog = useCallback(() => {
-        setFormDialog({ open: false, qn: null, phieu: null });
+        setFormDialog({ open: false, qn: null, phieu: null, activeTab: undefined });
     }, []);
     const closeHistoryDialog = useCallback(() => {
         setHistoryDialog({ open: false, qn: null });
     }, []);
+
+    const handleEditXetNghiem = useCallback(
+        (item) => {
+            document.activeElement?.blur();
+            const phieu =
+                allPhieuMap[item.ma_quan_nhan] ||
+                phieuMap[item.ma_quan_nhan] ||
+                null;
+            const qn =
+                soldiers.find((s) => s.ma_quan_nhan === item.ma_quan_nhan) || {
+                    ma_quan_nhan: item.ma_quan_nhan,
+                    ho_ten: item.ho_ten,
+                };
+            setFormDialog({
+                open: true,
+                qn,
+                phieu,
+                readOnly: false,
+                activeTab: 2,
+            });
+        },
+        [allPhieuMap, phieuMap, soldiers],
+    );
 
     const handleGenerateBloodCode = useCallback(async (qn) => {
         if (!isLayMauWindow) {
@@ -390,6 +414,7 @@ export default function useKhamSucKhoeMain() {
         handleEdit,
         handleViewHistory,
         handleViewPhieu,
+        handleEditXetNghiem,
         closeFormDialog,
         closeHistoryDialog,
         handleGenerateBloodCode,

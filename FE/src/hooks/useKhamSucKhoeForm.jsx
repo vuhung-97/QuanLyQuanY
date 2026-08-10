@@ -43,6 +43,7 @@ export default function useKhamSucKhoeForm({
     onClose,
     allowedTabs = ALL_TABS,
     editableTabs = ALL_TABS,
+    initialTab,
 }) {
     const [activeTab, setActiveTab] = useState(0);
     const [ngayNhapNgu, setNgayNhapNgu] = useState("");
@@ -85,13 +86,13 @@ export default function useKhamSucKhoeForm({
                 setInitialKL({ ...DEFAULT_KL });
             }
             setSnackbar({ open: false, message: "", severity: "error" });
-            setActiveTab(allowedTabs[0] ?? 0);
+            setActiveTab(initialTab ?? allowedTabs[0] ?? 0);
         }
-    }, [open, quanNhan, existingPhieu]);
+    }, [open, quanNhan, existingPhieu, initialTab, allowedTabs]);
 
     useEffect(() => {
-        setActiveTab(allowedTabs[0] ?? 0);
-    }, [allowedTabs]);
+        setActiveTab(initialTab ?? allowedTabs[0] ?? 0);
+    }, [allowedTabs, initialTab]);
 
     useEffect(() => {
         if (activeTab !== 4) return;
