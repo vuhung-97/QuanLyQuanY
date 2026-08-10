@@ -1,6 +1,7 @@
 """Giao diện dòng lệnh (CLI) cho hệ thống trích xuất dữ liệu PDF xét nghiệm."""
 
 import argparse
+import json
 import logging
 import sys
 
@@ -30,11 +31,6 @@ def main() -> None:
         nargs="?",
         help="Đường dẫn đến tệp PDF cục bộ hoặc liên kết URL mạng.",
     )
-    trinh_phan_tich.add_argument(
-        "--thu-muc-ket-qua",
-        default="results",
-        help="Thư mục để lưu tệp JSON kết quả (mặc định: results).",
-    )
 
     cac_doi_so = trinh_phan_tich.parse_args()
     duong_dan = cac_doi_so.duong_dan
@@ -51,10 +47,9 @@ def main() -> None:
         print("Lỗi: Đường dẫn trống. Không thể tiến hành xử lý.")
         sys.exit(1)
 
-    bo_trich_xuat = ExtractorPDF(
-        thu_muc_ket_qua=cac_doi_so.thu_muc_ket_qua,
-    )
-    bo_trich_xuat.xu_ly(duong_dan)
+    bo_trich_xuat = ExtractorPDF()
+    ket_qua = bo_trich_xuat.trich_xuat_ket_qua(duong_dan)
+    print(json.dumps(ket_qua, ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":

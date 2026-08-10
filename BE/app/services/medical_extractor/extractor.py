@@ -1,6 +1,5 @@
 """Bộ trích xuất dữ liệu xét nghiệm y tế chính."""
 
-import json
 import logging
 import re
 from pathlib import Path
@@ -16,7 +15,6 @@ from .config import (
     NGO_LENH_CUNG_DONG,
     REGEX_MA_MAU,
     REGEX_SO_PHIEU,
-    TEN_FILE_KET_QUA,
     TU_KHOA_KET_QUA_HOP_LE,
     TU_KHOA_LOAI_BO,
     chuan_hoa_ten,
@@ -29,33 +27,6 @@ logger = logging.getLogger(__name__)
 
 class ExtractorPDF:
     """Lớp xử lý trích xuất dữ liệu phiếu xét nghiệm y tế từ file PDF."""
-
-    def __init__(self, thu_muc_ket_qua: str = "results"):
-        self.thu_muc_ket_qua = Path(thu_muc_ket_qua).resolve()
-        self._khoi_tao_thu_muc()
-
-    def _khoi_tao_thu_muc(self) -> None:
-        """Đảm bảo thư mục đầu ra tồn tại trên ổ đĩa."""
-        self.thu_muc_ket_qua.mkdir(parents=True, exist_ok=True)
-
-    def xu_ly(self, duong_dan_pdf: str | Path) -> None:
-        """Thực thi toàn bộ quy trình trích xuất."""
-        pdf_path, la_file_tam = self._chuan_bi_tai_lieu(duong_dan_pdf)
-        if not pdf_path:
-            return
-
-        logger.info("Bắt đầu xử lý file: %s...", pdf_path)
-        try:
-            cac_trang_ket_qua = self._trich_xuat_tai_lieu(pdf_path)
-            cac_mau_gop = self._gom_theo_ma_so_mau(cac_trang_ket_qua)
-            self._luu_file_json(cac_mau_gop)
-        finally:
-            if la_file_tam and pdf_path.exists():
-                try:
-                    pdf_path.unlink()
-                    logger.debug("Đã dọn dẹp file tạm: %s", pdf_path)
-                except Exception as e:
-                    logger.warning("Không thể xóa file tạm %s: %s", pdf_path, e)
 
     def trich_xuat_ket_qua(self, duong_dan_pdf: str | Path) -> list[dict]:
         """Trích xuất danh sách kết quả xét nghiệm, trả về list dict trực tiếp.
@@ -289,13 +260,3 @@ class ExtractorPDF:
             return float(gia_tri)
         except ValueError:
             return None
-
-    def _luu_file_json(self, cac_trang: list[MauXetNghiem]) -> None:
-        """Ghi đè kết quả trích xuất cấu trúc vào tệp tin JSON."""
-        duong_dan_json = self.thu_muc_ket_qua / TEN_FILE_KET_QUA
-        du_lieu_json = [trang.to_dict() for trang in cac_trang]
-
-        with open(duong_dan_json, "w", encoding="utf-8") as f:
-            json.dump(du_lieu_json, f, ensure_ascii=False, indent=4)
-
-        logger.info("Đã ghi thành công kết quả trích xuất vào: %s", duong_dan_json)

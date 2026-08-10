@@ -69,7 +69,6 @@ REGEX_SO_PHIEU = r"(Số phiếu|Số phiu|SID)[:\s\n]+([A-Z0-9\-]+)"
 # Giá trị mặc định cho dữ liệu trống
 GIA_TRI_MAC_DINH = "N/A"
 MA_MAU_MAC_DINH = "Không xác định"
-TEN_FILE_KET_QUA = "ket_qua_xet_nghiem.json"
 KHOA_FILE_TAM = "downloaded_temp"
 KHOA_URL_PDF = "url_pdf"
 
@@ -89,7 +88,7 @@ ANH_XA_CHI_SO = (
 
 # Các chỉ số tính gộp từ nhiều dòng: key -> (các pattern dòng con)
 ANH_XA_GOP = (
-    ("nuoc_tieu_te_bao", ("bach cau (leu)")),
+    ("nuoc_tieu_te_bao", ("bach cau (leu)",)),
 )
 
 # Các chỉ số nước tiểu chỉ nhận giá trị Âm tính / Dương tính
