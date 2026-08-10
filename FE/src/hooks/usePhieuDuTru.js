@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import dayjs from "dayjs";
 import { khoDuocService } from "@/services/khoDuocService.js";
 import { getCurrentUser } from "@/services/api.js";
+import { STORAGE_KEY_THRESHOLDS, DEFAULT_THRESHOLDS } from "@/constants/khoConstant.js";
 
 const EMPTY_ITEM = { tenThuoc: "", donViTinh: "", soLuong: 1, maThuocVtyt: null };
 let _rowKey = 0;
@@ -129,10 +130,27 @@ export default function usePhieuDuTru({ open, phieuId = null, mode = "create", o
         if (isView) return;
         setLoadingAuto(true);
         try {
+            // Lấy ngưỡng tồn kho tối thiểu từ localStorage hoặc dùng mặc định
+            let thresholds = { ...DEFAULT_THRESHOLDS };
+            try {
+                const stored = localStorage.getItem(STORAGE_KEY_THRESHOLDS);
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    thresholds = {
+                        thuoc: parsed.thuoc ?? DEFAULT_THRESHOLDS.thuoc,
+                        vat_tu: parsed.vat_tu ?? DEFAULT_THRESHOLDS.vat_tu,
+                    };
+                }
+            } catch (e) {
+                /* ignore */
+            }
+
             const allItems = await khoDuocService.fetchAllThuocVtyt();
             const lowStock = (allItems || []).filter((i) => {
                 const qty = i.so_luong ?? 0;
-                return i.loai !== "vat_tu" ? qty < 100 : qty < 30;
+                const isThuoc = i.loai !== "vat_tu";
+                const limit = isThuoc ? thresholds.thuoc : thresholds.vat_tu;
+                return qty < limit;
             });
             if (lowStock.length === 0) {
                 setSnackbar({
@@ -144,11 +162,12 @@ export default function usePhieuDuTru({ open, phieuId = null, mode = "create", o
             }
             itemsRef.current = lowStock.map((i) => {
                 const qty = i.so_luong ?? 0;
-                const target = i.loai !== "vat_tu" ? 100 : 30;
+                const isThuoc = i.loai !== "vat_tu";
+                const limit = isThuoc ? thresholds.thuoc : thresholds.vat_tu;
                 return {
                     tenThuoc: i.ten_thuoc_vtyt || "",
                     donViTinh: i.don_vi_tinh || "",
-                    soLuong: Math.max(1, target - qty),
+                    soLuong: Math.max(1, limit - qty),
                     maThuocVtyt: i.ma_thuoc_vtyt,
                 };
             });

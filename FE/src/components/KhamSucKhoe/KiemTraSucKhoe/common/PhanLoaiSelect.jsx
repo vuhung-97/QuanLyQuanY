@@ -17,6 +17,7 @@ const PhanLoaiSelect = memo(({
     readOnly = false,
     options = PHAN_LOAI_OPTIONS,
     gridProps = { xs: 6, sm: 4, md: true },
+    onChange,
 }) => {
     const [val, setVal] = useState(() => {
         const existing = dataRef.current?.[name];
@@ -29,7 +30,8 @@ const PhanLoaiSelect = memo(({
         const v = e.target.value;
         setVal(v);
         dataRef.current[name] = v;
-    }, [name, dataRef]);
+        onChange?.(v);
+    }, [name, dataRef, onChange]);
 
     const renderOptions = () => {
         if (isStringArray(options)) {

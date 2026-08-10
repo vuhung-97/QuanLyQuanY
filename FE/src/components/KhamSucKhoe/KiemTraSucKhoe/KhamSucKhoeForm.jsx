@@ -119,6 +119,8 @@ export default function KhamSucKhoeForm({
 }) {
     const allowedTabs = allowedTabsProp ?? ALL_TABS;
     const editableTabs = editableTabsProp ?? ALL_TABS;
+    const examYear =
+        nam || existingPhieu?.nam || new Date().getFullYear();
     const {
         activeTab,
         setActiveTab,
@@ -143,7 +145,7 @@ export default function KhamSucKhoeForm({
         quanNhan,
         existingPhieu,
         maLichKham,
-        nam,
+        nam: examYear,
         onSaved,
         onClose,
         allowedTabs,
@@ -178,6 +180,7 @@ export default function KhamSucKhoeForm({
             Component: ChanDoanHinhAnhTab,
             tabRef: cdhaRef,
             initialData: initialCDHA,
+            nam: examYear,
         },
         {
             index: 4,
@@ -237,6 +240,7 @@ export default function KhamSucKhoeForm({
                                 initialData,
                                 gioiTinh,
                                 innerKey,
+                                nam: cdhaNam,
                             }) =>
                                 allowedTabs.includes(index) && (
                                     <TabPanel
@@ -255,6 +259,9 @@ export default function KhamSucKhoeForm({
                                             }
                                             {...(gioiTinh !== undefined
                                                 ? { gioiTinh }
+                                                : {})}
+                                            {...(cdhaNam !== undefined
+                                                ? { nam: cdhaNam }
                                                 : {})}
                                         />
                                     </TabPanel>
