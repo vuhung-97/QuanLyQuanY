@@ -20,6 +20,10 @@ export default defineConfig({
                 changeOrigin: true,
                 rewrite: (p) => p.replace(/^\/api/, ""),
             },
+            "/uploads": {
+                target: "http://localhost:8000",
+                changeOrigin: true,
+            },
         },
     },
     build: {
@@ -27,6 +31,8 @@ export default defineConfig({
             output: {
                 manualChunks(id) {
                     if (id.includes("node_modules/react")) return "vendor";
+                    if (id.includes("node_modules/recharts")) return "recharts";
+                    if (id.includes("@mui/icons-material")) return "mui-icons";
                     if (id.includes("@mui/")) return "mui";
                 },
             },
