@@ -6,7 +6,14 @@ from sqlalchemy.orm import Session
 
 from app.core.dependencies import get_current_user
 from app.database.session import get_db
-from app.services.report_service import ReportService
+from app.services.reports import (
+    ChiTietNhomBenhService,
+    DashboardService,
+    InventoryReportService,
+    QuanSoKhoeService,
+    QuanYReportService,
+    VisitStatsService,
+)
 from app.services.report_export_service import ReportExportService
 
 router = APIRouter(prefix="/bao-cao", tags=["bao-cao"])
@@ -17,7 +24,7 @@ def get_tong_quan(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user),
 ):
-    service = ReportService(db)
+    service = DashboardService(db)
     return service.daily_stats()
 
 
@@ -28,7 +35,7 @@ def get_quan_y_thang(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user),
 ):
-    service = ReportService(db)
+    service = QuanYReportService(db)
     return service.monthly_medical_report(thang, nam)
 
 
@@ -38,7 +45,7 @@ def get_quan_y_nam(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user),
 ):
-    service = ReportService(db)
+    service = QuanYReportService(db)
     return service.yearly_medical_report(nam)
 
 
@@ -51,7 +58,7 @@ def get_chi_tiet_nhom_benh(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user),
 ):
-    service = ReportService(db)
+    service = ChiTietNhomBenhService(db)
     return service.get_chi_tiet_nhom_benh(loai, ma_nhom, thang, nam)
 
 
@@ -62,7 +69,7 @@ def get_quan_so_khoe(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user),
 ):
-    service = ReportService(db)
+    service = QuanSoKhoeService(db)
     return service.quan_so_khoe(thang, nam)
 
 
@@ -74,7 +81,7 @@ def get_quan_so_khoe_chi_tiet_don_vi(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user),
 ):
-    service = ReportService(db)
+    service = QuanSoKhoeService(db)
     return service.quan_so_khoe_chi_tiet_don_vi(ma_don_vi, thang, nam)
 
 
@@ -85,7 +92,7 @@ def get_ton_kho(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user),
 ):
-    service = ReportService(db)
+    service = InventoryReportService(db)
     return service.inventory_report(thang, nam)
 
 
@@ -96,7 +103,7 @@ def export_ton_kho(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user),
 ):
-    service = ReportService(db)
+    service = InventoryReportService(db)
     data = service.inventory_report(thang, nam)
     export_service = ReportExportService()
     wb = export_service.export_inventory_report(data)
@@ -111,7 +118,7 @@ def get_quan_so_kham_chua_benh(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user),
 ):
-    service = ReportService(db)
+    service = VisitStatsService(db)
     if mode == "month":
         nam_value = nam or date.today().year
         data = service.monthly_visit_stats(nam_value)

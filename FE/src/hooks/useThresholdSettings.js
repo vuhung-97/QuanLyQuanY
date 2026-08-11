@@ -13,6 +13,9 @@ export default function useThresholdSettings() {
                 return {
                     thuoc: parsed.thuoc ?? DEFAULT_THRESHOLDS.thuoc,
                     vat_tu: parsed.vat_tu ?? DEFAULT_THRESHOLDS.vat_tu,
+                    sapHetHanNgay:
+                        parsed.sapHetHanNgay ??
+                        DEFAULT_THRESHOLDS.sapHetHanNgay,
                 };
             }
         } catch {
@@ -22,15 +25,15 @@ export default function useThresholdSettings() {
     });
 
     useEffect(() => {
-        localStorage.setItem(STORAGE_KEY_THRESHOLDS, JSON.stringify(thresholds));
+        localStorage.setItem(
+            STORAGE_KEY_THRESHOLDS,
+            JSON.stringify(thresholds),
+        );
     }, [thresholds]);
 
-    const updateThresholds = useCallback(
-        (key, value) => {
-            setThresholds((prev) => ({ ...prev, [key]: value }));
-        },
-        [],
-    );
+    const updateThresholds = useCallback((key, value) => {
+        setThresholds((prev) => ({ ...prev, [key]: value }));
+    }, []);
 
     return { thresholds, updateThresholds };
 }
