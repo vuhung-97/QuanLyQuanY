@@ -41,12 +41,7 @@ export const MENU_ROLE_MAP = {
     ],
 
     "kham-benh": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
-    "kham-benh-cho-quan-nhan": [
-        "ROLE_ADMIN",
-        "ROLE_CNQY",
-        "ROLE_BACSI",
-        "ROLE_YSI",
-    ],
+    "kham-benh-cho-quan-nhan": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI"],
     "cap-thuoc": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
     "chuyen-tuyen": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
     "danh-muc-benh": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
