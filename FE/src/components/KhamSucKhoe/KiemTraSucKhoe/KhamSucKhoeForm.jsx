@@ -2,11 +2,13 @@ import { useMemo } from "react";
 import {
     Box,
     Button,
+    CircularProgress,
     Dialog,
     DialogActions,
     DialogContent,
     Tab,
     Tabs,
+    Typography,
 } from "@mui/material";
 import {
     Biotech as BiotechIcon,
@@ -119,13 +121,13 @@ export default function KhamSucKhoeForm({
 }) {
     const allowedTabs = allowedTabsProp ?? ALL_TABS;
     const editableTabs = editableTabsProp ?? ALL_TABS;
-    const examYear =
-        nam || existingPhieu?.nam || new Date().getFullYear();
     const {
         activeTab,
         setActiveTab,
         ngayNhapNgu,
         saving,
+        loadingPhieu,
+        currentPhieu,
         snackbar,
         handleCloseSnackbar,
         tsRef,
@@ -145,13 +147,16 @@ export default function KhamSucKhoeForm({
         quanNhan,
         existingPhieu,
         maLichKham,
-        nam: examYear,
+        nam,
         onSaved,
         onClose,
         allowedTabs,
         editableTabs,
         initialTab,
     });
+
+    const examYear =
+        nam || currentPhieu?.nam || new Date().getFullYear();
 
     const cardData = useMemo(
         () => ({
@@ -160,9 +165,9 @@ export default function KhamSucKhoeForm({
                 unitLookup?.get(quanNhan?.ma_don_vi) ||
                 quanNhan?.ma_don_vi ||
                 undefined,
-            ma_lay_mau: existingPhieu?.ma_lay_mau,
+            ma_lay_mau: currentPhieu?.ma_lay_mau,
         }),
-        [quanNhan, unitLookup, existingPhieu],
+        [quanNhan, unitLookup, currentPhieu],
     );
 
     const tabPanels = [
@@ -226,46 +231,70 @@ export default function KhamSucKhoeForm({
                             columnsPerRow={6}
                         />
 
-                        <FormTabBar
-                            activeTab={activeTab}
-                            onTabChange={(_, val) => setActiveTab(val)}
-                            allowedTabs={allowedTabs}
-                        />
+                        {loadingPhieu ? (
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    py: 10,
+                                    gap: 2,
+                                }}
+                            >
+                                <CircularProgress />
+                                <Typography color="text.secondary">
+                                    Đang tải dữ liệu phiếu khám mới nhất...
+                                </Typography>
+                            </Box>
+                        ) : (
+                            <>
+                                <FormTabBar
+                                    activeTab={activeTab}
+                                    onTabChange={(_, val) =>
+                                        setActiveTab(val)
+                                    }
+                                    allowedTabs={allowedTabs}
+                                />
 
-                        {tabPanels.map(
-                            ({
-                                index,
-                                Component,
-                                tabRef,
-                                initialData,
-                                gioiTinh,
-                                innerKey,
-                                nam: cdhaNam,
-                            }) =>
-                                allowedTabs.includes(index) && (
-                                    <TabPanel
-                                        key={index}
-                                        value={activeTab}
-                                        index={index}
-                                    >
-                                        <Component
-                                            key={innerKey}
-                                            ref={tabRef}
-                                            initialData={initialData}
-                                            cardStyle={cardStyle}
-                                            readOnly={
-                                                readOnly ||
-                                                !editableTabs.includes(index)
-                                            }
-                                            {...(gioiTinh !== undefined
-                                                ? { gioiTinh }
-                                                : {})}
-                                            {...(cdhaNam !== undefined
-                                                ? { nam: cdhaNam }
-                                                : {})}
-                                        />
-                                    </TabPanel>
-                                ),
+                                {tabPanels.map(
+                                    ({
+                                        index,
+                                        Component,
+                                        tabRef,
+                                        initialData,
+                                        gioiTinh,
+                                        innerKey,
+                                        nam: cdhaNam,
+                                    }) =>
+                                        allowedTabs.includes(index) && (
+                                            <TabPanel
+                                                key={index}
+                                                value={activeTab}
+                                                index={index}
+                                            >
+                                                <Component
+                                                    key={`${innerKey || 0}`}
+                                                    ref={tabRef}
+                                                    initialData={initialData}
+                                                    cardStyle={cardStyle}
+                                                    readOnly={
+                                                        readOnly ||
+                                                        !editableTabs.includes(
+                                                            index,
+                                                        )
+                                                    }
+                                                    {...(gioiTinh !== undefined
+                                                        ? { gioiTinh }
+                                                        : {})}
+                                                    {...(cdhaNam !== undefined
+                                                        ? { nam: cdhaNam }
+                                                        : {})}
+                                                />
+                                            </TabPanel>
+                                        ),
+                                )}
+                            </>
                         )}
                     </DialogContent>
 
@@ -288,7 +317,7 @@ export default function KhamSucKhoeForm({
                             type="submit"
                             variant="contained"
                             color="primary"
-                            disabled={saving || readOnly}
+                            disabled={saving || readOnly || loadingPhieu}
                         >
                             {readOnly
                                 ? "Đã xem"

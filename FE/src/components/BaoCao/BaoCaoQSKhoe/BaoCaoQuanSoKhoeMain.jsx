@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Stack, Typography, Card, CardContent, Grid } from "@mui/material";
 import DataTable from "@/components/common/DataTable.jsx";
 import LoadingAlert from "@/components/common/LoadingAlert.jsx";
@@ -20,6 +21,7 @@ import {
 import useBaoCaoQuanSoKhoe from "@/hooks/useBaoCaoQuanSoKhoe.jsx";
 import BaoCaoToolbar from "../BaoCaoToolbar.jsx";
 import BaoCaoQuanSoKhoePrintDialog from "./BaoCaoQuanSoKhoePrintDialog.jsx";
+import ChiTietQuanNhanOmDialog from "./ChiTietQuanNhanOmDialog.jsx";
 import { QUAN_SO_KHOE_COLUMNS, CHART_COLORS } from "@/constants/bao_cao.js";
 
 export default function BaoCaoQuanSoKhoeMain({ hidePrint = false }) {
@@ -29,6 +31,13 @@ export default function BaoCaoQuanSoKhoeMain({ hidePrint = false }) {
         fetchData, treeRows, chartData,
         printOpen, setPrintOpen,
     } = useBaoCaoQuanSoKhoe();
+
+    const [detailUnit, setDetailUnit] = useState(null);
+
+    const handleRowClick = (row) => {
+        if (!row || row.ma_don_vi === "__total__") return;
+        setDetailUnit(row);
+    };
 
     return (
         <Stack spacing={3}>
@@ -101,7 +110,11 @@ export default function BaoCaoQuanSoKhoeMain({ hidePrint = false }) {
                                 minWidth={900}
                                 emptyMessage="Không có dữ liệu đơn vị."
                                 sx={{ maxHeight: 600, overflow: "auto" }}
-                                rowSx={(row) => row._rowStyle}
+                                onRowClick={handleRowClick}
+                                rowSx={(row) => ({
+                                    ...row._rowStyle,
+                                    cursor: row.ma_don_vi === "__total__" ? "default" : "pointer",
+                                })}
                             />
                         </CardContent>
                     </Card>
@@ -154,6 +167,14 @@ export default function BaoCaoQuanSoKhoeMain({ hidePrint = false }) {
                 open={printOpen}
                 onClose={() => setPrintOpen(false)}
                 data={data}
+            />
+
+            <ChiTietQuanNhanOmDialog
+                open={Boolean(detailUnit)}
+                onClose={() => setDetailUnit(null)}
+                unitInfo={detailUnit}
+                thang={thang}
+                nam={nam}
             />
         </Stack>
     );

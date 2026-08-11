@@ -61,23 +61,34 @@ export default function useKhamSucKhoeForm({
     const [initialKL, setInitialKL] = useState(null);
     const [klVersion, setKlVersion] = useState(0);
 
-    const isEdit = Boolean(existingPhieu);
+    const [loadingPhieu, setLoadingPhieu] = useState(false);
+    const [currentPhieu, setCurrentPhieu] = useState(existingPhieu || null);
+
+    const isEdit = Boolean(currentPhieu);
 
     const handleCloseSnackbar = useCallback(() => {
         setSnackbar((s) => ({ ...s, open: false }));
     }, []);
 
     useEffect(() => {
-        if (open && quanNhan) {
-            setNgayNhapNgu(quanNhan.ngay_nhap_ngu || "");
-            if (existingPhieu) {
-                setInitialTS(parseTienSu(existingPhieu.tong_quan));
-                setInitialLS(parseLamSang(existingPhieu.kham_lam_sang));
-                setInitialXN(parseXetNghiem(existingPhieu.xet_nghiem));
+        if (!open || !quanNhan) return;
+
+        let ignore = false;
+        setNgayNhapNgu(quanNhan.ngay_nhap_ngu || "");
+        setSnackbar({ open: false, message: "", severity: "error" });
+        setActiveTab(initialTab ?? allowedTabs[0] ?? 0);
+        setLoadingPhieu(false);
+
+        const applyPhieuData = (p) => {
+            setCurrentPhieu(p || null);
+            if (p) {
+                setInitialTS(parseTienSu(p.tong_quan));
+                setInitialLS(parseLamSang(p.kham_lam_sang));
+                setInitialXN(parseXetNghiem(p.xet_nghiem));
                 setInitialCDHA(
-                    parseChanDoanHinhAnh(existingPhieu.chan_doan_hinh_anh),
+                    parseChanDoanHinhAnh(p.chan_doan_hinh_anh),
                 );
-                setInitialKL(parseKetLuan(existingPhieu.ket_luan));
+                setInitialKL(parseKetLuan(p.ket_luan));
             } else {
                 setInitialTS({ ...DEFAULT_TS });
                 setInitialLS({ ...DEFAULT_LS });
@@ -85,10 +96,36 @@ export default function useKhamSucKhoeForm({
                 setInitialCDHA({ ...DEFAULT_CDHA });
                 setInitialKL({ ...DEFAULT_KL });
             }
-            setSnackbar({ open: false, message: "", severity: "error" });
-            setActiveTab(initialTab ?? allowedTabs[0] ?? 0);
+        };
+
+        if (maLichKham && quanNhan.ma_quan_nhan) {
+            setLoadingPhieu(true);
+            khamSucKhoeService
+                .getPhieuByQuanNhanAndSchedule(
+                    quanNhan.ma_quan_nhan,
+                    maLichKham,
+                )
+                .then((res) => {
+                    if (!ignore) {
+                        applyPhieuData(res.data);
+                    }
+                })
+                .catch(() => {
+                    if (!ignore) {
+                        applyPhieuData(existingPhieu);
+                    }
+                })
+                .finally(() => {
+                    if (!ignore) setLoadingPhieu(false);
+                });
+        } else {
+            applyPhieuData(existingPhieu);
         }
-    }, [open, quanNhan, existingPhieu, initialTab, allowedTabs]);
+
+        return () => {
+            ignore = true;
+        };
+    }, [open, quanNhan, maLichKham, existingPhieu, initialTab, allowedTabs]);
 
     useEffect(() => {
         setActiveTab(initialTab ?? allowedTabs[0] ?? 0);
@@ -154,7 +191,7 @@ export default function useKhamSucKhoeForm({
             let saved;
             if (isEdit) {
                 saved = await khamSucKhoeService.updatePhieu(
-                    existingPhieu.ma_phieu_kham,
+                    currentPhieu.ma_phieu_kham,
                     phieuData,
                 );
             } else {
@@ -178,6 +215,8 @@ export default function useKhamSucKhoeForm({
         setActiveTab,
         ngayNhapNgu,
         saving,
+        loadingPhieu,
+        currentPhieu,
         snackbar,
         handleCloseSnackbar,
         tsRef,

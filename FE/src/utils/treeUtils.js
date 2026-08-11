@@ -25,9 +25,11 @@ export function aggregateTree(tree) {
     function walk(node) {
         for (const child of node.children) {
             walk(child);
-            node.quan_so += child.quan_so;
-            node.so_nguoi_om += child.so_nguoi_om;
-            node.so_luot_om += child.so_luot_om;
+            node.quan_so = (node.quan_so || 0) + (child.quan_so || 0);
+            node.so_nguoi_om = (node.so_nguoi_om || 0) + (child.so_nguoi_om || 0);
+            node.so_luot_nhap_benh_xa = (node.so_luot_nhap_benh_xa || 0) + (child.so_luot_nhap_benh_xa || 0);
+            node.so_luot_chuyen_tuyen = (node.so_luot_chuyen_tuyen || 0) + (child.so_luot_chuyen_tuyen || 0);
+            node.so_luot_om = (node.so_luot_om || 0) + (child.so_luot_om || 0);
         }
         node.quan_so_khoe = Math.max(0, node.quan_so - node.so_nguoi_om);
         node.ty_le_khoe = node.quan_so > 0

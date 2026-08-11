@@ -43,6 +43,9 @@ export const khamSucKhoeService = {
     getPhieuByMaQuanNhan: (maQuanNhan) =>
         api.get(`/phieu_kham_suc_khoe/quan-nhan/${maQuanNhan}`),
 
+    getPhieuByQuanNhanAndSchedule: (maQuanNhan, scheduleId) =>
+        api.get(`/phieu_kham_suc_khoe/quan-nhan/${maQuanNhan}/lich-kham/${scheduleId}`),
+
     uploadCdha: (nam, file) => {
         const formData = new FormData();
         formData.append("nam", nam);

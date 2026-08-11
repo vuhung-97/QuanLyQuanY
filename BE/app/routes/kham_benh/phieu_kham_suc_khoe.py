@@ -276,6 +276,22 @@ def get_phieu_by_lich_kham(ma_lich_kham: str, db: Session = Depends(get_db)):
     )
 
 
+@pre_router.get(
+    "/quan-nhan/{ma_quan_nhan}/lich-kham/{ma_lich_kham}",
+    dependencies=[Depends(require_permissions("phieu_kham_suc_khoe:read"))],
+    response_model=PhieuKhamSucKhoeRead | None,
+)
+def get_phieu_by_qn_and_lich(ma_quan_nhan: str, ma_lich_kham: str, db: Session = Depends(get_db)):
+    return (
+        db.query(PhieuKhamSucKhoe)
+        .filter(
+            PhieuKhamSucKhoe.ma_quan_nhan == ma_quan_nhan,
+            PhieuKhamSucKhoe.ma_lich_kham == ma_lich_kham,
+        )
+        .first()
+    )
+
+
 @pre_router.post(
     "",
     dependencies=[Depends(require_permissions("phieu_kham_suc_khoe:create"))],

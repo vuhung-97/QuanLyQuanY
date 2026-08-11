@@ -24,12 +24,13 @@ export const THUOC_NHAP_COLUMNS = [
 ];
 
 export const QUAN_SO_KHOE_COLUMNS = [
-    { key: "ten_don_vi", label: "Đơn vị", sx: { minWidth: 280 } },
-    { key: "quan_so", label: "Tổng quân số", sx: { width: 140, textAlign: "center" } },
-    { key: "so_nguoi_om", label: "Người ốm", sx: { width: 120, textAlign: "center" } },
-    { key: "so_luot_om", label: "Lượt ốm", sx: { width: 120, textAlign: "center" } },
-    { key: "quan_so_khoe", label: "Quân số khỏe", sx: { width: 140, textAlign: "center" } },
-    { key: "ty_le_khoe", label: "Tỷ lệ", sx: { width: 100, textAlign: "center" } },
+    { key: "ten_don_vi", label: "Đơn vị", sx: { minWidth: 260 } },
+    { key: "quan_so", label: "Tổng quân số", sx: { width: 120, textAlign: "center" } },
+    { key: "so_nguoi_om", label: "Người ốm", sx: { width: 110, textAlign: "center" } },
+    { key: "so_luot_nhap_benh_xa", label: "Lượt nhập bệnh xá", sx: { width: 150, textAlign: "center" } },
+    { key: "so_luot_chuyen_tuyen", label: "Lượt chuyển tuyến", sx: { width: 150, textAlign: "center" } },
+    { key: "quan_so_khoe", label: "Quân số khỏe", sx: { width: 130, textAlign: "center" } },
+    { key: "ty_le_khoe", label: "Tỷ lệ", sx: { width: 90, textAlign: "center" } },
 ];
 
 export const cardStyle = {
