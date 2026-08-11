@@ -21,7 +21,13 @@ import DienBienTab from "./tabs/DienBienTab.jsx";
 import ThuocTab from "./tabs/ThuocTab.jsx";
 import PatientInfoCard from "@/components/common/PatientInfoCard.jsx";
 
-export default function ChiTietBenhAn({ open, benhAnId, onClose, onSaved, readOnly: forceReadOnly = false }) {
+export default function ChiTietBenhAn({
+    open,
+    benhAnId,
+    onClose,
+    onSaved,
+    readOnly: forceReadOnly = false,
+}) {
     const [benhAn, setBenhAn] = useState(null);
     const [loading, setLoading] = useState(false);
     const [tabIndex, setTabIndex] = useState(0);
@@ -105,9 +111,16 @@ export default function ChiTietBenhAn({ open, benhAnId, onClose, onSaved, readOn
     );
 
     const FIELDS = [
-        "ho_ten", "ma_quan_nhan", "ngay_sinh", "gioi_tinh", "cap_bac", "chuc_vu",
-        "ten_don_vi", "so_dien_thoai", "so_the_bhyt", "ma_benh_an", "ngay_nhap_vien",
-        "trang_thai", "ten_buong", "ten_giuong", "trieu_chung",
+        "ho_ten",
+        "ma_quan_nhan",
+        "ngay_sinh",
+        "gioi_tinh",
+        "cap_bac",
+        "chuc_vu",
+        "ten_don_vi",
+        "so_dien_thoai",
+        "so_the_bhyt",
+        "ma_benh_an",
     ];
 
     return (
@@ -140,7 +153,7 @@ export default function ChiTietBenhAn({ open, benhAnId, onClose, onSaved, readOn
                             <PatientInfoCard
                                 data={benhAn}
                                 fields={FIELDS}
-                                columnsPerRow={6}
+                                columnsPerRow={5}
                             />
 
                             <Tabs

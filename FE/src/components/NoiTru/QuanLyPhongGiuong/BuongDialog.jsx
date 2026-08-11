@@ -65,29 +65,35 @@ export default function BuongDialog({
                         Danh sách giường
                     </Typography>
 
-                    {editBuongGiuongList.map((g) => (
-                        <Stack
-                            key={g.ma_giuong}
-                            direction="row"
-                            spacing={1}
-                            sx={{ alignItems: "center", py: 0.5 }}
-                        >
-                            <Typography sx={{ flex: 1 }}>
-                                {g.ten_giuong}
-                            </Typography>
-                            <Chip
-                                label={g.trang_thai}
-                                size="small"
-                                color={
-                                    g.trang_thai === "có người"
-                                        ? "info"
-                                        : "default"
-                                }
-                                sx={{ fontWeight: 600 }}
-                            />
-                            <ActionIcon title="Xoá" icon={<DeleteIcon />} color="error" onClick={() => onDeleteGiuong(g.ma_giuong)} />
-                        </Stack>
-                    ))}
+                    {editBuongGiuongList.map((g) => {
+                        const isOccupied = g.trang_thai === "có người";
+                        return (
+                            <Stack
+                                key={g.ma_giuong}
+                                direction="row"
+                                spacing={1}
+                                sx={{ alignItems: "center", py: 0.5 }}
+                            >
+                                <Typography sx={{ flex: 1 }}>
+                                    {g.ten_giuong}
+                                </Typography>
+                                <Chip
+                                    label={g.trang_thai}
+                                    size="small"
+                                    color={isOccupied ? "info" : "default"}
+                                    sx={{ fontWeight: 600 }}
+                                />
+                                {!isOccupied && (
+                                    <ActionIcon
+                                        title="Xoá"
+                                        icon={<DeleteIcon />}
+                                        color="error"
+                                        onClick={() => onDeleteGiuong(g.ma_giuong)}
+                                    />
+                                )}
+                            </Stack>
+                        );
+                    })}
 
                     <Typography
                         variant="body2"

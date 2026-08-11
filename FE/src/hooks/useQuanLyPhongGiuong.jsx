@@ -136,9 +136,17 @@ export default function useQuanLyPhongGiuong() {
             setConfirmDelete({ open: false, type: "", id: null });
             loadData();
         } catch (err) {
+            const rawDetail = err.response?.data?.detail || "";
+            const isDbError =
+                rawDetail.includes("Database constraint violation") ||
+                rawDetail.includes("foreign key") ||
+                rawDetail.includes("IntegrityError");
+            const friendlyMsg = isDbError
+                ? `Không thể xóa ${confirmDelete.type === "buong" ? "phòng" : "giường"} vì đang có bệnh nhân điều trị.`
+                : rawDetail || "Lỗi xóa dữ liệu.";
             setSnackbar({
                 open: true,
-                message: err.response?.data?.detail || "Lỗi xóa.",
+                message: friendlyMsg,
                 severity: "error",
             });
         }
@@ -223,7 +231,15 @@ export default function useQuanLyPhongGiuong() {
                 setSnackbar({ open: true, message: "Đã xóa giường.", severity: "success" });
                 loadData();
             } catch (err) {
-                setSnackbar({ open: true, message: err.response?.data?.detail || "Lỗi xóa giường.", severity: "error" });
+                const rawDetail = err.response?.data?.detail || "";
+                const isDbError =
+                    rawDetail.includes("Database constraint violation") ||
+                    rawDetail.includes("foreign key") ||
+                    rawDetail.includes("IntegrityError");
+                const friendlyMsg = isDbError
+                    ? "Không thể xóa giường vì đang có bệnh nhân điều trị."
+                    : rawDetail || "Lỗi xóa giường.";
+                setSnackbar({ open: true, message: friendlyMsg, severity: "error" });
             }
         },
         [loadData],

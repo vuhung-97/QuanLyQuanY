@@ -115,6 +115,7 @@ export default function BaoCaoThangSoSanh({ mode = "month" }) {
                             nam={yearA}
                             onNamChange={setYearA}
                             showThang={mode === "month"}
+                            allowAll={false}
                         />
                     </Box>
                     <Typography>vs</Typography>
@@ -125,6 +126,7 @@ export default function BaoCaoThangSoSanh({ mode = "month" }) {
                             nam={yearB}
                             onNamChange={setYearB}
                             showThang={mode === "month"}
+                            allowAll={false}
                         />
                     </Box>
                     <Button

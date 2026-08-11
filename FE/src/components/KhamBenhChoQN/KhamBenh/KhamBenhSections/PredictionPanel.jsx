@@ -31,7 +31,7 @@ export default memo(function PredictionPanel({
     return (
         <Grid size={{ xs: 12, md: 6 }}>
             <Typography variant="h4" sx={{ mb: 1.5, color: "text.primary" }}>
-                Kết quả chẩn đoán AI
+                Dự đoán bệnh
             </Typography>
 
             <Button

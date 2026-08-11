@@ -64,6 +64,67 @@ export default function TongQuanTab({ benhAn, onEdit }) {
         }
     }, [benhAn.tong_ket_benh_an]);
 
+    const thongTinChungFields = useMemo(
+        () => [
+            {
+                label: "Trạng thái",
+                value:
+                    benhAn.trang_thai === "đang_điều_trị"
+                        ? "Đang điều trị"
+                        : benhAn.trang_thai === "đã_ra_viện"
+                          ? "Đã ra viện"
+                          : benhAn.trang_thai || "--",
+                size: { xs: 12, sm: 6, md: 2 },
+            },
+            {
+                label: "Buồng",
+                value: benhAn.ten_buong || "--",
+                size: { xs: 12, sm: 6, md: 2 },
+            },
+            {
+                label: "Giường",
+                value: benhAn.ten_giuong || "--",
+                size: { xs: 12, sm: 6, md: 2 },
+            },
+            {
+                label: "Ngày nhập viện",
+                value: formatDate(benhAn.ngay_nhap_vien),
+                size: { xs: 12, sm: 6, md: 2 },
+            },
+            {
+                label: "Ngày ra viện",
+                value: tongKet?.ngay_ra ? formatDate(tongKet.ngay_ra) : "--",
+                size: { xs: 12, sm: 6, md: 2 },
+            },
+            {
+                label: "Lý do nhập viện",
+                value: benhAn.ly_do_nhap_vien,
+                size: { xs: 12, sm: 6, md: 2 },
+            },
+            {
+                label: "Đối tượng",
+                value: benhAn.nghe_nghiep,
+                size: { xs: 12, sm: 6, md: 2 },
+            },
+            {
+                label: "Triệu chứng",
+                value: benhAn.trieu_chung,
+                size: { xs: 12, sm: 6, md: 6 },
+            },
+            {
+                label: "Chẩn đoán",
+                value: benhAn.chan_doan,
+                size: { xs: 12, sm: 6, md: 2 },
+            },
+            {
+                label: "Nhóm bệnh",
+                value: benhAn.ten_nhom || "--",
+                size: { xs: 12, sm: 6, md: 2 },
+            },
+        ],
+        [benhAn, tongKet],
+    );
+
     return (
         <Stack spacing={2}>
             {/* Card 1 — Thông tin chung */}
@@ -95,46 +156,14 @@ export default function TongQuanTab({ benhAn, onEdit }) {
                     <SectionTitle>Thông tin chung</SectionTitle>
 
                     <Grid container spacing={2}>
-                        <Grid size={{ xs: 12, sm: 6, md: 2.4 }}>
-                            <InfoItem
-                                label="Đối tượng:"
-                                value={benhAn.nghe_nghiep}
-                            />
-                        </Grid>
-                        <Grid size={{ xs: 12, sm: 6, md: 2.4 }}>
-                            <InfoItem
-                                label="Ngày nhập viện:"
-                                value={formatDate(benhAn.ngay_nhap_vien)}
-                            />
-                        </Grid>
-                        <Grid size={{ xs: 12, sm: 6, md: 2.4 }}>
-                            <InfoItem
-                                label="Lý do nhập viện:"
-                                value={benhAn.ly_do_nhap_vien}
-                            />
-                        </Grid>
-                        <Grid size={{ xs: 12, sm: 6, md: 2.4 }}>
-                            <InfoItem
-                                label="Chẩn đoán:"
-                                value={benhAn.chan_doan}
-                            />
-                        </Grid>
-                        <Grid size={{ xs: 12, sm: 6, md: 2.4 }}>
-                            <InfoItem
-                                label="Nhóm bệnh:"
-                                value={benhAn.ten_nhom || "--"}
-                            />
-                        </Grid>
-                        <Grid size={{ xs: 12, sm: 6, md: 2.4 }}>
-                            <InfoItem
-                                label="Ngày ra viện:"
-                                value={
-                                    tongKet?.ngay_ra
-                                        ? formatDate(tongKet.ngay_ra)
-                                        : "--"
-                                }
-                            />
-                        </Grid>
+                        {thongTinChungFields.map((f) => (
+                            <Grid size={f.size} key={f.label}>
+                                <InfoItem
+                                    label={`${f.label}:`}
+                                    value={f.value}
+                                />
+                            </Grid>
+                        ))}
                     </Grid>
                 </CardContent>
             </Card>

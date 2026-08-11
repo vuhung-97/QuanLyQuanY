@@ -252,6 +252,7 @@ export default function LapLichPage() {
                 unitStats={unitStats}
                 latestScheduleId={displayScheduleId}
                 latestStatus={displayStatus}
+                schedule={displaySchedule}
             />
 
             <PhanCongNhiemVu

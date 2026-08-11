@@ -202,7 +202,9 @@ const ChanDoanHinhAnhTab = memo(
                                                 <Stack
                                                     direction="row"
                                                     spacing={1.2}
-                                                    alignItems="center"
+                                                    sx={{
+                                                        alignItems: "center",
+                                                    }}
                                                 >
                                                     <Box
                                                         sx={{
@@ -346,8 +348,11 @@ const ChanDoanHinhAnhTab = memo(
                                                                 activeImg,
                                                             ) ? (
                                                                 <Stack
-                                                                    alignItems="center"
                                                                     spacing={1}
+                                                                    sx={{
+                                                                        alignItems:
+                                                                            "center",
+                                                                    }}
                                                                 >
                                                                     <PictureAsPdfIcon
                                                                         color="error"

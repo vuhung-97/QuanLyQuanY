@@ -22,7 +22,7 @@ import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import ConfirmDialog from "@/components/common/ConfirmDialog.jsx";
 import BuongDialog from "./BuongDialog.jsx";
 
-const buongColumns = (onEdit, onDelete) => [
+const buongColumns = (onEdit, onDelete, giuongList = []) => [
     { key: "stt", label: "STT", render: (row, idx) => idx + 1 },
     { key: "ten_buong", label: "Tên buồng" },
     {
@@ -34,12 +34,30 @@ const buongColumns = (onEdit, onDelete) => [
     {
         key: "thao_tac",
         label: "Thao tác",
-        render: (row) => (
-            <Stack direction="row" spacing={0.5}>
-                <ActionIcon title="Sửa" icon={<EditIcon />} color="primary" onClick={() => onEdit(row)} />
-                <ActionIcon title="Xoá" icon={<DeleteIcon />} color="error" onClick={() => onDelete("buong", row.ma_buong)} />
-            </Stack>
-        ),
+        render: (row) => {
+            const hasOccupiedBed = giuongList.some(
+                (g) =>
+                    g.ma_buong === row.ma_buong && g.trang_thai === "có người",
+            );
+            return (
+                <Stack direction="row" spacing={0.5}>
+                    <ActionIcon
+                        title="Sửa"
+                        icon={<EditIcon />}
+                        color="primary"
+                        onClick={() => onEdit(row)}
+                    />
+                    {!hasOccupiedBed && (
+                        <ActionIcon
+                            title="Xoá"
+                            icon={<DeleteIcon />}
+                            color="error"
+                            onClick={() => onDelete("buong", row.ma_buong)}
+                        />
+                    )}
+                </Stack>
+            );
+        },
     },
 ];
 
@@ -116,6 +134,7 @@ export default function QuanLyPhongGiuong() {
     const {
         loading,
         buongList,
+        giuongList,
         filteredGiuong,
         filterBuong,
         setFilterBuong,
@@ -189,6 +208,7 @@ export default function QuanLyPhongGiuong() {
                         columns={buongColumns(
                             handleOpenEditBuong,
                             handleDeleteClick,
+                            giuongList,
                         )}
                         rows={buongList}
                         loading={loading}

@@ -16,6 +16,7 @@ export default function YearMonthFilter({
     thang,
     onThangChange,
     showThang = true,
+    allowAll = true,
 }) {
     return (
         <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
@@ -27,7 +28,7 @@ export default function YearMonthFilter({
                     label="Năm"
                     onChange={(e) => onNamChange(e.target.value || null)}
                 >
-                    <MenuItem value="">Tất cả</MenuItem>
+                    {allowAll && <MenuItem value="">Tất cả</MenuItem>}
                     {NAM_OPTIONS.map((y) => (
                         <MenuItem key={y} value={y}>
                             {y}
@@ -44,7 +45,7 @@ export default function YearMonthFilter({
                         label="Tháng"
                         onChange={(e) => onThangChange(e.target.value || null)}
                     >
-                        <MenuItem value="">Tất cả</MenuItem>
+                        {allowAll && <MenuItem value="">Tất cả</MenuItem>}
                         {THANG_OPTIONS.map((m) => (
                             <MenuItem key={m} value={m}>
                                 Tháng {m}

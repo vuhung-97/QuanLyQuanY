@@ -25,6 +25,7 @@ export default function TongQuanDonVi({
     unitStats = [],
     latestScheduleId,
     latestStatus = "",
+    schedule = null,
 }) {
     const scheduleDetails = chiTietMap?.[latestScheduleId] || [];
     const unitCodes = useMemo(
@@ -36,6 +37,63 @@ export default function TongQuanDonVi({
         () => (unitStats ?? []).filter((u) => unitCodes.has(u.ma_don_vi)),
         [unitStats, unitCodes],
     );
+
+    const activePhase = useMemo(() => {
+        const getLayMauTime = (detail) => ({
+            start: detail?.thoi_gian_lay_mau_bat_dau || schedule?.thoi_gian_lay_mau_bat_dau,
+            end: detail?.thoi_gian_lay_mau_ket_thuc || schedule?.thoi_gian_lay_mau_ket_thuc,
+        });
+
+        const getKhamTime = (detail) => ({
+            start: detail?.thoi_gian_bat_dau || schedule?.thoi_gian_bat_dau,
+            end: detail?.thoi_gian_ket_thuc || schedule?.thoi_gian_ket_thuc,
+        });
+
+        const getDuTruLayMauTime = (detail) => ({
+            start: detail?.thoi_gian_du_tru_lay_mau_bat_dau || schedule?.thoi_gian_du_tru_lay_mau_bat_dau,
+            end: detail?.thoi_gian_du_tru_lay_mau_ket_thuc || schedule?.thoi_gian_du_tru_lay_mau_ket_thuc,
+        });
+
+        const getDuTruKhamTime = (detail) => ({
+            start: detail?.thoi_gian_du_tru_kham_bat_dau || schedule?.thoi_gian_du_tru_kham_bat_dau,
+            end: detail?.thoi_gian_du_tru_kham_ket_thuc || schedule?.thoi_gian_du_tru_kham_ket_thuc,
+        });
+
+        if (!schedule) {
+            return {
+                title: "Lịch lấy máu cho đơn vị",
+                getTime: getLayMauTime,
+            };
+        }
+
+        const now = new Date().getTime();
+
+        const isTimeMatch = (s, e) => {
+            if (!s || !e) return false;
+            const startTime = new Date(s).getTime();
+            const endTime = new Date(e).getTime();
+            return now >= startTime && now <= endTime;
+        };
+
+        if (isTimeMatch(schedule.thoi_gian_lay_mau_bat_dau, schedule.thoi_gian_lay_mau_ket_thuc)) {
+            return { title: "Lịch lấy máu cho đơn vị", getTime: getLayMauTime };
+        }
+
+        if (isTimeMatch(schedule.thoi_gian_bat_dau, schedule.thoi_gian_ket_thuc)) {
+            return { title: "Lịch khám sức khỏe cho đơn vị", getTime: getKhamTime };
+        }
+
+        if (isTimeMatch(schedule.thoi_gian_du_tru_lay_mau_bat_dau, schedule.thoi_gian_du_tru_lay_mau_ket_thuc)) {
+            return { title: "Lịch lấy máu dự trù cho đơn vị", getTime: getDuTruLayMauTime };
+        }
+
+        if (isTimeMatch(schedule.thoi_gian_du_tru_kham_bat_dau, schedule.thoi_gian_du_tru_kham_ket_thuc)) {
+            return { title: "Lịch khám sức khỏe dự trù cho đơn vị", getTime: getDuTruKhamTime };
+        }
+
+        // Mặc định hiển thị đợt lấy máu
+        return { title: "Lịch lấy máu cho đơn vị", getTime: getLayMauTime };
+    }, [schedule]);
 
     const totalQuanSo = useMemo(
         () => scheduleUnits.reduce((sum, u) => sum + (u.tong_quan_so || 0), 0),
@@ -69,9 +127,7 @@ export default function TongQuanDonVi({
                 >
                     <Box>
                         <Typography variant="h2">
-                            {latestStatus === "Đang thực hiện"
-                                ? "Lịch khám đơn vị đang thực hiện"
-                                : "Lịch khám đơn vị"}
+                            {activePhase.title}
                         </Typography>
                     </Box>
                 </Stack>
@@ -85,12 +141,13 @@ export default function TongQuanDonVi({
                         const detail = scheduleDetails.find(
                             (d) => d.ma_don_vi === row.ma_don_vi,
                         );
+                        const timeRange = activePhase.getTime(detail);
                         const now = new Date();
-                        const startTime = detail?.thoi_gian_bat_dau
-                            ? new Date(detail.thoi_gian_bat_dau)
+                        const startTime = timeRange.start
+                            ? new Date(timeRange.start)
                             : null;
-                        const endTime = detail?.thoi_gian_ket_thuc
-                            ? new Date(detail.thoi_gian_ket_thuc)
+                        const endTime = timeRange.end
+                            ? new Date(timeRange.end)
                             : null;
                         const isActive =
                             startTime &&
@@ -132,13 +189,13 @@ export default function TongQuanDonVi({
                                     {row.tong_quan_so ?? "--"}
                                 </TableCell>
                                 <TableCell>
-                                    {detail ? (
+                                    {timeRange.start || timeRange.end ? (
                                         <Chip
                                             size="small"
                                             color={
                                                 isActive ? "warning" : "default"
                                             }
-                                            label={`${formatDateTime(detail.thoi_gian_bat_dau)} - ${formatDateTime(detail.thoi_gian_ket_thuc)}`}
+                                            label={`${timeRange.start ? formatDateTime(timeRange.start) : "--"} - ${timeRange.end ? formatDateTime(timeRange.end) : "--"}`}
                                             sx={{ fontWeight: 600 }}
                                         />
                                     ) : (
