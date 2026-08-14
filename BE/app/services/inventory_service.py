@@ -19,7 +19,7 @@ class InventoryService:
         phieu_nhap = db.get(PhieuNhapKho, phieu_nhap_id)
         if not phieu_nhap:
             raise CRUDNotFoundError(f"Phiếu nhập {phieu_nhap_id} không tồn tại")
-
+        db.flush()
         chi_tiets = db.query(ChiTietPhieuNhapKho).filter(
             ChiTietPhieuNhapKho.ma_phieu_nhap == phieu_nhap_id
         ).all()

@@ -236,6 +236,8 @@ class MedicalExaminationService:
         kb = self.db.query(KhamBenh).filter(KhamBenh.ma_kham_benh == kb_id).first()
         if not kb:
             raise ValueError(f"KhamBenh {kb_id} not found")
+        if kb.trang_thai == "đã_nhận_thuốc":
+            return kb
         kb.trang_thai = "đã_nhận_thuốc"
         if nguoi_dung_id:
             dt = self.db.query(DonThuoc).filter(DonThuoc.ma_kham_benh == kb_id).first()
