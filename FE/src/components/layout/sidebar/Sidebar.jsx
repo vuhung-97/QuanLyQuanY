@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Drawer, List, useTheme } from "@mui/material";
+import { Collapse, Drawer, List, useTheme } from "@mui/material";
 import {
     DRAWER_WIDTH,
     COLLAPSED_DRAWER_WIDTH,
@@ -51,10 +51,8 @@ export default function Sidebar({
             flexDirection: "column",
             transition: (t) =>
                 t.transitions.create("width", {
-                    easing: t.transitions.easing.sharp,
-                    duration: open
-                        ? t.transitions.duration.enteringScreen
-                        : t.transitions.duration.leavingScreen,
+                    easing: t.transitions.easing.easeInOut,
+                    duration: open ? 300 : 280,
                 }),
         }),
         [open, width, collapsedWidth, headerHeight, theme.palette.primary.main],
@@ -90,16 +88,20 @@ export default function Sidebar({
                                 onClick={() => handleItemClick(item)}
                             />
 
-                            {expanded && item.children.map((child) => (
-                                <SidebarItem
-                                    key={child.id || child.path || child.title}
-                                    item={child}
-                                    open={open}
-                                    depth={1}
-                                    active={isActive(child.path)}
-                                    onClick={() => navigate(child.path)}
-                                />
-                            ))}
+                            {item.children?.length > 0 && (
+                                <Collapse in={expanded} timeout={250}>
+                                    {item.children.map((child) => (
+                                        <SidebarItem
+                                            key={child.id || child.path || child.title}
+                                            item={child}
+                                            open={open}
+                                            depth={1}
+                                            active={isActive(child.path)}
+                                            onClick={() => navigate(child.path)}
+                                        />
+                                    ))}
+                                </Collapse>
+                            )}
                         </div>
                     );
                 })}

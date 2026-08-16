@@ -46,6 +46,14 @@ export default function SidebarItem({
                     color: active
                         ? "background.default"
                         : alpha(theme.palette.common.white, 0.7),
+                    transition: (t) =>
+                        t.transitions.create(
+                            ["padding-left", "background-color", "color"],
+                            {
+                                easing: t.transitions.easing.easeInOut,
+                                duration: open ? 300 : 280,
+                            },
+                        ),
                     "&:hover": {
                         bgcolor: active
                             ? activeBg
@@ -66,6 +74,11 @@ export default function SidebarItem({
                         color: active
                             ? theme.palette.common.white
                             : alpha(theme.palette.common.white, 0.7),
+                        transition: (t) =>
+                            t.transitions.create("margin-right", {
+                                easing: t.transitions.easing.easeInOut,
+                                duration: open ? 300 : 280,
+                            }),
                     }}
                 >
                     {item.icon}
@@ -74,6 +87,12 @@ export default function SidebarItem({
                     primary={item.title}
                     sx={{
                         opacity: open ? 1 : 0,
+                        transform: open ? "none" : "translateX(-8px)",
+                        transition: (t) =>
+                            t.transitions.create(["opacity", "transform"], {
+                                easing: t.transitions.easing.easeInOut,
+                                duration: open ? 300 : 280,
+                            }),
                         "& .MuiTypography-root": {
                             fontWeight: active ? 600 : 400,
                             fontSize: depth > 0 ? FONT_SIZE_SM : FONT_SIZE_MD,

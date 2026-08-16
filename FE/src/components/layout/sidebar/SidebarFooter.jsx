@@ -23,7 +23,13 @@ function ActionItem({ icon, label, open, onClick }) {
                 onClick={onClick}
                 sx={{
                     borderRadius: 2,
+                    justifyContent: open ? "initial" : "center",
                     color: alpha(theme.palette.common.white, 0.7),
+                    transition: (t) =>
+                        t.transitions.create(["background-color", "color"], {
+                            easing: t.transitions.easing.easeInOut,
+                            duration: 280,
+                        }),
                     "&:hover": {
                         color: theme.palette.common.white,
                         bgcolor: alpha(theme.palette.common.white, 0.08),
@@ -36,16 +42,28 @@ function ActionItem({ icon, label, open, onClick }) {
                         mr: open ? 2 : 0,
                         color: "inherit",
                         justifyContent: "center",
+                        transition: (t) =>
+                            t.transitions.create("margin-right", {
+                                easing: t.transitions.easing.easeInOut,
+                                duration: open ? 300 : 280,
+                            }),
                     }}
                 >
                     {icon}
                 </ListItemIcon>
-                {open && (
-                    <ListItemText
-                        primary={label}
-                        slotProps={{ primaryTypography: { fontSize: FONT_SIZE_SM } }}
-                    />
-                )}
+                <ListItemText
+                    primary={label}
+                    sx={{
+                        opacity: open ? 1 : 0,
+                        transform: open ? "none" : "translateX(-8px)",
+                        transition: (t) =>
+                            t.transitions.create(["opacity", "transform"], {
+                                easing: t.transitions.easing.easeInOut,
+                                duration: open ? 300 : 280,
+                            }),
+                    }}
+                    slotProps={{ primaryTypography: { fontSize: FONT_SIZE_SM } }}
+                />
             </ListItemButton>
         </ListItem>
     );

@@ -17,7 +17,7 @@ export default function SidebarProfile({ user, open = true, sx }) {
     const [anchorEl, setAnchorEl] = useState(null);
     const { assignment } = useMyTemporaryRole();
 
-    if (!user || !open) return null;
+    if (!user) return null;
 
     const hasTemporaryRole = Boolean(assignment?.ten_vai_tro);
 
@@ -32,11 +32,42 @@ export default function SidebarProfile({ user, open = true, sx }) {
     return (
         <Stack
             direction="row"
-            spacing={2}
-            sx={{ mb: 3, px: 1, alignItems: "center", ...sx }}
+            spacing={open ? 2 : 0}
+            sx={{
+                mb: 3,
+                px: 2.5,
+                alignItems: "center",
+                ...sx,
+            }}
         >
-            <Avatar src={user.avatar} sx={{ width: 40, height: 40 }} />
-            <Box sx={{ overflow: "hidden", minWidth: 0, flexGrow: 1 }}>
+            <Avatar
+                alt={user.name}
+                sx={{
+                    width: 40,
+                    height: 40,
+                    bgcolor: "secondary.main",
+                    color: "#fff",
+                    fontWeight: 600,
+                    fontSize: 18,
+                }}
+            >
+                {user.name?.trim().charAt(0).toUpperCase() || "?"}
+            </Avatar>
+            <Box
+                sx={{
+                    overflow: "hidden",
+                    whiteSpace: "nowrap",
+                    minWidth: 0,
+                    flexGrow: 1,
+                    opacity: open ? 1 : 0,
+                    maxWidth: open ? 220 : 0,
+                    transition: (t) =>
+                        t.transitions.create(["opacity", "max-width"], {
+                            easing: t.transitions.easing.easeInOut,
+                            duration: open ? 300 : 280,
+                        }),
+                }}
+            >
                 <Typography
                     variant="subtitle2"
                     sx={{
@@ -55,7 +86,9 @@ export default function SidebarProfile({ user, open = true, sx }) {
                         sx={{
                             color: alpha(theme.palette.common.white, 0.6),
                             display: "block",
-                            whiteSpace: "normal",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
                             lineHeight: 1.2,
                         }}
                     >
@@ -71,8 +104,16 @@ export default function SidebarProfile({ user, open = true, sx }) {
                     sx={{
                         display: "inline-flex",
                         flexShrink: 0,
+                        overflow: "hidden",
                         cursor: "pointer",
                         color: theme.palette.common.white,
+                        opacity: open ? 1 : 0,
+                        maxWidth: open ? 32 : 0,
+                        transition: (t) =>
+                            t.transitions.create(["opacity", "max-width"], {
+                                easing: t.transitions.easing.easeInOut,
+                                duration: open ? 300 : 280,
+                            }),
                         "&:hover": {
                             color: theme.palette.warning.light,
                         },

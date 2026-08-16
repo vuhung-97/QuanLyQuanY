@@ -95,10 +95,8 @@ export default function Header({
                         cursor: sidebarCollapsible ? "pointer" : "default",
                         transition: (theme) =>
                             theme.transitions.create("width", {
-                                easing: theme.transitions.easing.sharp,
-                                duration: open
-                                    ? theme.transitions.duration.enteringScreen
-                                    : theme.transitions.duration.leavingScreen,
+                                easing: theme.transitions.easing.easeInOut,
+                                duration: open ? 300 : 280,
                             }),
                     }}
                 >
@@ -140,13 +138,18 @@ export default function Header({
                     <IconButton onClick={handleMenuOpen} sx={{ p: 0 }}>
                         <Avatar
                             alt={user?.name}
-                            src={user?.avatar}
                             sx={{
                                 width: 36,
                                 height: 36,
+                                bgcolor: "secondary.main",
+                                color: "#fff",
+                                fontWeight: 600,
+                                fontSize: 16,
                                 border: "2px solid rgba(255,255,255,0.2)",
                             }}
-                        />
+                        >
+                            {user?.name?.trim().charAt(0).toUpperCase() || "?"}
+                        </Avatar>
                     </IconButton>
 
                     <Menu
