@@ -5,6 +5,9 @@ import HealingIcon from "@mui/icons-material/Healing";
 import EventNoteIcon from "@mui/icons-material/EventNote";
 import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
 import InventoryIcon from "@mui/icons-material/Inventory";
+import NoteAddIcon from "@mui/icons-material/NoteAdd";
+import PendingActionsIcon from "@mui/icons-material/PendingActions";
+import { ROLES } from "@/constants/roleConstants.js";
 
 export const STAT_META = [
     {
@@ -37,6 +40,7 @@ export const STAT_META_2 = [
         iconName: "EventNote",
         color: "#F97316",
         bg: "rgba(249, 115, 22, 0.1)",
+        roles: [ROLES.ADMIN, ROLES.CNQY],
     },
     {
         key: "nhap_vien_chua_duyet",
@@ -44,6 +48,7 @@ export const STAT_META_2 = [
         iconName: "LocalHospital",
         color: "#EF4444",
         bg: "rgba(239, 68, 68, 0.1)",
+        roles: [ROLES.ADMIN, ROLES.CNQY],
     },
     {
         key: "chuyen_tuyen_chua_duyet",
@@ -51,6 +56,7 @@ export const STAT_META_2 = [
         iconName: "Healing",
         color: "#F59E0B",
         bg: "rgba(245, 158, 11, 0.1)",
+        roles: [ROLES.ADMIN, ROLES.CNQY],
     },
     {
         key: "phieu_du_tru_chua_duyet",
@@ -58,6 +64,7 @@ export const STAT_META_2 = [
         iconName: "Description",
         color: "#8B5CF6",
         bg: "rgba(139, 92, 246, 0.1)",
+        roles: [ROLES.ADMIN, ROLES.CNQY],
     },
     {
         key: "phieu_xuat_chua_duyet",
@@ -65,6 +72,23 @@ export const STAT_META_2 = [
         iconName: "Inventory",
         color: "#EC4899",
         bg: "rgba(236, 72, 153, 0.1)",
+        roles: [ROLES.ADMIN, ROLES.CNQY],
+    },
+    {
+        key: "lap_benh_an",
+        label: "Lập bệnh án nội trú",
+        iconName: "NoteAdd",
+        color: "#0EA5E9",
+        bg: "rgba(14, 165, 233, 0.1)",
+        roles: [ROLES.ADMIN, ROLES.CNQY, ROLES.BACSI, ROLES.YSI],
+    },
+    {
+        key: "chua_kham",
+        label: "Chưa khám",
+        iconName: "PendingActions",
+        color: "#F59E0B",
+        bg: "rgba(245, 158, 11, 0.1)",
+        roles: [ROLES.ADMIN, ROLES.CNQY, ROLES.BACSI, ROLES.YSI],
     },
 ];
 
@@ -76,4 +100,6 @@ export const ICON_MAP = {
     EventNote: <EventNoteIcon />,
     LocalHospital: <LocalHospitalIcon />,
     Inventory: <InventoryIcon />,
+    NoteAdd: <NoteAddIcon />,
+    PendingActions: <PendingActionsIcon />,
 };

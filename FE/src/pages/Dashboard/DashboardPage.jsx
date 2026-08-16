@@ -13,14 +13,11 @@ import useDashboardStats from "@/hooks/useDashboardStats.js";
 import useBaoCaoThang from "@/hooks/useBaoCaoThang.js";
 import { STAT_META, STAT_META_2, ICON_MAP } from "@/constants/dashboard.jsx";
 import { getCurrentUser } from "@/services/api.js";
-import { ROLES } from "@/constants/roleConstants.js";
 
 export default function DashboardPage() {
     const navigate = useNavigate();
     const { flatStats, loading: statsLoading } = useDashboardStats();
     const role = getCurrentUser()?.role;
-    const canXemChoXuLy =
-        role === ROLES.ADMIN || role === ROLES.CNQY;
     const { thresholds } = useThresholdSettings();
     const { value: thuocTonKhoThap, loading: thuocLoading } =
         useThuocTonKhoThap(thresholds);
@@ -45,6 +42,9 @@ export default function DashboardPage() {
         phieu_du_tru_chua_duyet: "/kho-duoc/du-tru?filter=chua_duyet",
         phieu_xuat_chua_duyet: "/kho-duoc/xuat?filter=cho_duyet",
         ton_kho_thap: "/kho-duoc/kho?filter=low-stock",
+        lap_benh_an: "/noi-tru/lap-benh-an",
+        chua_kham:
+            "/kham-benh/Kham-benh-cho-quan-nhan?all=1&filter=chờ",
     };
 
     const handleCardClick = (key) => {
@@ -71,14 +71,16 @@ export default function DashboardPage() {
         },
     ];
 
-    const pendingItems = STAT_META_2.map((m) => ({
-        label: m.label,
-        value: flatStats[m.key] ?? "--",
-        icon: ICON_MAP[m.iconName],
-        color: m.color,
-        bg: m.bg,
-        filterKey: m.key,
-    })).filter((item) => typeof item.value === "number" && item.value > 0);
+    const pendingItems = STAT_META_2.filter((m) => m.roles.includes(role))
+        .map((m) => ({
+            label: m.label,
+            value: flatStats[m.key] ?? "--",
+            icon: ICON_MAP[m.iconName],
+            color: m.color,
+            bg: m.bg,
+            filterKey: m.key,
+        }))
+        .filter((item) => typeof item.value === "number" && item.value > 0);
 
     return (
         <Stack spacing={3}>
@@ -96,7 +98,7 @@ export default function DashboardPage() {
                 />
             </Box>
 
-            {canXemChoXuLy && (
+            {pendingItems.length > 0 && (
                 <Box>
                     <Typography
                         variant="h4"

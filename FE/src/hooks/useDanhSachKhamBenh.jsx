@@ -1,9 +1,11 @@
 import { useCallback, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import { khamBenhService } from "@/services/khamBenhService.js";
 import useExamList from "./useExamList.jsx";
 
 export default function useDanhSachKhamBenh() {
+    const [searchParams] = useSearchParams();
     const {
         examinations,
         initialLoading,
@@ -31,6 +33,8 @@ export default function useDanhSachKhamBenh() {
         handleFilterThangChange,
     } = useExamList({
         loadErrorMessage: "Lỗi tải danh sách ca khám.",
+        initialIsLeft: searchParams.get("all") === "1",
+        initialStatus: searchParams.get("filter") || "",
         fetchData: async ({ isLeft, selectedDate, offset, limit, nam, thang }) => {
             if (!isLeft) {
                 const ngay = selectedDate.format("YYYY-MM-DD");

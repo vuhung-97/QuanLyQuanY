@@ -117,6 +117,25 @@ class DashboardService:
             or 0
         )
 
+        lap_benh_an = (
+            self.db.query(func.count(KhamBenh.ma_kham_benh))
+            .outerjoin(BenhAn, KhamBenh.ma_kham_benh == BenhAn.ma_kham_benh)
+            .filter(
+                KhamBenh.trang_thai == "nhập_viện",
+                KhamBenh.da_duyet == True,
+                BenhAn.ma_kham_benh.is_(None),
+            )
+            .scalar()
+            or 0
+        )
+
+        chua_kham = (
+            self.db.query(func.count(KhamBenh.ma_kham_benh))
+            .filter(KhamBenh.trang_thai == "chờ")
+            .scalar()
+            or 0
+        )
+
         return {
             "hom_nay": {
                 "luot_kham": luot_kham,
@@ -136,5 +155,7 @@ class DashboardService:
                 "chuyen_tuyen_chua_duyet": chuyen_tuyen_chua_duyet,
                 "phieu_du_tru_chua_duyet": phieu_du_tru_chua_duyet,
                 "phieu_xuat_chua_duyet": phieu_xuat_chua_duyet,
+                "lap_benh_an": lap_benh_an,
+                "chua_kham": chua_kham,
             },
         }
