@@ -56,7 +56,7 @@ export default memo(function FormActions({
                     onClick={onAdmission}
                     sx={{ textTransform: "none" }}
                 >
-                    Nhập viện
+                    Nhập bệnh xá
                 </Button>
             </Stack>
         </DialogActions>

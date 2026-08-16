@@ -1,11 +1,5 @@
 import { useCallback, useMemo } from "react";
-import {
-    Dialog,
-    DialogContent,
-    Grid,
-    Stack,
-    Typography,
-} from "@mui/material";
+import { Dialog, DialogContent, Grid, Stack, Typography } from "@mui/material";
 import useKhamBenhForm from "@/hooks/useKhamBenhForm.jsx";
 import PatientInfoCard from "@/components/common/PatientInfoCard.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
@@ -68,7 +62,14 @@ export default function KhamBenhForm({
         handleAdmissionConfirm,
         snackbar,
         setSnackbar,
-    } = useKhamBenhForm({ open, examinationId, rowData, onClose, onSaved, readOnly });
+    } = useKhamBenhForm({
+        open,
+        examinationId,
+        rowData,
+        onClose,
+        onSaved,
+        readOnly,
+    });
 
     const patientInfoData = useMemo(
         () => ({
@@ -194,9 +195,9 @@ export default function KhamBenhForm({
 
             <ConfirmDialog
                 open={confirmAdmission.open}
-                title="Xác nhận nhập viện"
+                title="Xác nhận nhập bệnh xá"
                 message="Xác nhận chuyển quân nhân này sang nội trú?"
-                confirmLabel="Nhập viện"
+                confirmLabel="Nhập bệnh xá"
                 confirmColor="info"
                 loading={saving}
                 onConfirm={handleAdmissionConfirm}
