@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from app.core.dependencies import get_current_user, require_permissions
 from app.crud.base import CRUDError
 from app.crud.phieu_xuat_kho import phieu_xuat_kho_crud
+from app.database.don_vi import DonVi
 from app.database.nguoi_dung import NguoiDung
 from app.database.phieu_xuat_kho import PhieuXuatKho
 from app.database.session import get_db
@@ -28,6 +29,7 @@ def get_danh_sach_phieu_xuat(
     trang_thai: str | None = Query(default=None),
     nam: int | None = Query(default=None),
     thang: int | None = Query(default=None, ge=1, le=12),
+    search: str | None = Query(default=None),
 ):
     query = db.query(PhieuXuatKho)
     if trang_thai:
@@ -36,6 +38,21 @@ def get_danh_sach_phieu_xuat(
         query = query.filter(func.extract("year", PhieuXuatKho.ngay_thang_nam) == nam)
     if thang:
         query = query.filter(func.extract("month", PhieuXuatKho.ngay_thang_nam) == thang)
+    if search:
+        q = f"%{search}%"
+        matching_user_ids = {
+            u.id
+            for u in db.query(NguoiDung).filter(NguoiDung.ho_ten.ilike(q)).all()
+        }
+        matching_don_vi_codes = {
+            dv.ma_don_vi
+            for dv in db.query(DonVi).filter(DonVi.ten_don_vi.ilike(q)).all()
+        }
+        query = query.filter(
+            PhieuXuatKho.ho_ten_nguoi_nhan.ilike(q)
+            | PhieuXuatKho.nguoi_xuat.in_(matching_user_ids)
+            | PhieuXuatKho.ma_don_vi_nhan.in_(matching_don_vi_codes)
+        )
     total = query.count()
     rows = (
         query.order_by(PhieuXuatKho.ngay_thang_nam.desc().nullslast())
@@ -52,6 +69,12 @@ def get_danh_sach_phieu_xuat(
         for u in db.query(NguoiDung).filter(NguoiDung.id.in_(user_ids)).all():
             users[u.id] = u.ho_ten
 
+    don_vi_codes = {r.ma_don_vi_nhan for r in rows if r.ma_don_vi_nhan}
+    don_vis = {}
+    if don_vi_codes:
+        for dv in db.query(DonVi).filter(DonVi.ma_don_vi.in_(don_vi_codes)).all():
+            don_vis[dv.ma_don_vi] = dv.ten_don_vi
+
     result = []
     for r in rows:
         d = {
@@ -59,6 +82,7 @@ def get_danh_sach_phieu_xuat(
         }
         d["nguoi_xuat_ho_ten"] = users.get(r.nguoi_xuat, r.nguoi_xuat or "")
         d["nguoi_duyet_ho_ten"] = users.get(r.nguoi_duyet, r.nguoi_duyet or "")
+        d["ten_don_vi_nhan"] = don_vis.get(r.ma_don_vi_nhan, r.ma_don_vi_nhan or "")
         result.append(d)
 
     return {"data": result, "total": total}

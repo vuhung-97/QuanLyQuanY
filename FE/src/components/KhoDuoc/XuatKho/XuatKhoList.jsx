@@ -26,6 +26,7 @@ import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import PaginationWidget from "@/components/common/PaginationWidget.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import StatusFilter from "@/components/common/StatusFilter.jsx";
+import SearchBarDebounced from "@/components/common/SearchBarDebounced.jsx";
 import YearMonthFilter from "@/components/common/YearMonthFilter.jsx";
 import { khoDuocService } from "@/services/khoDuocService.js";
 import { getCurrentUser } from "@/services/api.js";
@@ -63,6 +64,7 @@ export default function XuatKhoList() {
     );
     const [nam, setNam] = useState(null);
     const [thang, setThang] = useState(null);
+    const [search, setSearch] = useState("");
     const [stats, setStats] = useState(EMPTY_STATS);
     const [statsLoading, setStatsLoading] = useState(false);
     const [confirm, setConfirm] = useState({
@@ -98,6 +100,7 @@ export default function XuatKhoList() {
             if (trangThai) params.trang_thai = trangThai;
             if (nam) params.nam = nam;
             if (thang) params.thang = thang;
+            if (search.trim()) params.search = search.trim();
             const res = await khoDuocService.getDanhSachPhieuXuat(params);
             const body = res.data || {};
             const allData = body.data || [];
@@ -110,7 +113,7 @@ export default function XuatKhoList() {
         } finally {
             setLoading(false);
         }
-    }, [page, trangThai, nam, thang]);
+    }, [page, trangThai, nam, thang, search]);
 
     const fetchStats = useCallback(async () => {
         setStatsLoading(true);
@@ -218,6 +221,7 @@ export default function XuatKhoList() {
                     : "—",
         },
         { key: "ho_ten_nguoi_nhan", label: "Người nhận" },
+        { key: "ten_don_vi_nhan", label: "Đơn vị nhận" },
         {
             key: "trang_thai",
             label: "Trạng thái",
@@ -303,6 +307,13 @@ export default function XuatKhoList() {
                                 spacing={1.5}
                                 sx={{ alignItems: "center" }}
                             >
+                                <SearchBarDebounced
+                                    onSearch={(v) => {
+                                        setSearch(v);
+                                        setPage(1);
+                                    }}
+                                    placeholder="Tên người lập, người nhận, đơn vị nhận..."
+                                />
                                 <StatusFilter
                                     value={trangThai}
                                     onChange={(v) => {

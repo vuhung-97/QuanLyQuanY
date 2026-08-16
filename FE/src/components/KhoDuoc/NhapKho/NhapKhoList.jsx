@@ -156,7 +156,6 @@ export default function NhapKhoList() {
         () => [
             { key: "ma_phieu_du_tru", label: "Mã phiếu" },
             { key: "ngay_lap_phieu", label: "Ngày lập" },
-            { key: "ma_don_vi", label: "Đơn vị" },
             {
                 key: "trang_thai",
                 label: "Trạng thái",
