@@ -85,7 +85,8 @@ export const khoDuocService = {
     duyetPhieuXuat: (id) => api.post(`/phieu_xuat_kho/${id}/duyet`),
     tuChoiPhieuXuat: (id) => api.post(`/phieu_xuat_kho/${id}/tu-choi`),
     guiPhieuXuat: (id) => api.post(`/phieu_xuat_kho/${id}/gui`),
-    xuatKho: (id) => api.post(`/phieu_xuat_kho/${id}/xuat-kho`),
+    xuatKho: (id, data) => api.post(`/phieu_xuat_kho/${id}/xuat-kho`, data),
+    xuatBu: (id) => api.post(`/phieu_xuat_kho/${id}/xuat-bu`),
 
     getChiTietByPhieuXuat: (maPhieuXuat) =>
         api.get(`/chi_tiet_xuat_kho/by-phieu/${maPhieuXuat}`),

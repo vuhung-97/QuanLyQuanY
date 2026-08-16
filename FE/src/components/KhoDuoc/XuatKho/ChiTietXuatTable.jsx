@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
 
-const ChiTietXuatTable = memo(function ChiTietXuatTable({ items, isView, onAdd, onRemove, onQuantityChange }) {
+const ChiTietXuatTable = memo(function ChiTietXuatTable({ items, isView, onAdd, onRemove, onQuantityChange, thucXuatEditable = false, onThucXuatChange }) {
     return (
         <>
             <Stack
@@ -54,6 +54,14 @@ const ChiTietXuatTable = memo(function ChiTietXuatTable({ items, isView, onAdd, 
                                 >
                                     Số lượng
                                 </TableCell>
+                                {isView && (
+                                    <TableCell
+                                        sx={{ fontWeight: 600 }}
+                                        align="right"
+                                    >
+                                        Thực xuất
+                                    </TableCell>
+                                )}
                                 <TableCell sx={{ width: 50 }} />
                             </TableRow>
                         </TableHead>
@@ -93,6 +101,44 @@ const ChiTietXuatTable = memo(function ChiTietXuatTable({ items, isView, onAdd, 
                                             />
                                         )}
                                     </TableCell>
+                                    {isView && (
+                                        <TableCell align="right">
+                                            {thucXuatEditable ? (
+                                                <TextField
+                                                    type="number"
+                                                    size="small"
+                                                    value={
+                                                        item.so_luong_thuc_xuat ??
+                                                        item.so_luong
+                                                    }
+                                                    onChange={(e) =>
+                                                        onThucXuatChange(
+                                                            item.ma_thuoc_vtyt,
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                    slotProps={{
+                                                        htmlInput: {
+                                                            min: 0,
+                                                            max: Math.min(
+                                                                item.so_luong,
+                                                                item.so_luong_max ??
+                                                                    item.so_luong,
+                                                            ),
+                                                            style: {
+                                                                textAlign:
+                                                                    "right",
+                                                            },
+                                                        },
+                                                    }}
+                                                    sx={{ width: 80 }}
+                                                />
+                                            ) : (
+                                                item.so_luong_thuc_xuat ??
+                                                item.so_luong
+                                            )}
+                                        </TableCell>
+                                    )}
                                     <TableCell>
                                         {!isView && (
                                             <IconButton

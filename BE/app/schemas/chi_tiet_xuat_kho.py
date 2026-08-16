@@ -4,6 +4,7 @@ from pydantic import Field
 
 class ChiTietXuatKhoBase(SchemaBase):
     so_luong: int
+    so_luong_thuc_xuat: int | None = None
 
 
 class ChiTietXuatKhoCreate(ChiTietXuatKhoBase):
@@ -13,6 +14,7 @@ class ChiTietXuatKhoCreate(ChiTietXuatKhoBase):
 
 class ChiTietXuatKhoUpdate(SchemaBase):
     so_luong: int | None = None
+    so_luong_thuc_xuat: int | None = None
 
 
 class ChiTietXuatKhoRead(ChiTietXuatKhoBase):

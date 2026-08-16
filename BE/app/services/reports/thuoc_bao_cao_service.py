@@ -99,11 +99,11 @@ class ThuocBaoCaoService:
 
         # --- Từ phiếu xuất kho ---
         xk_filters = [
-            extract("year", PhieuXuatKho.ngay_thang_nam) == nam,
+            extract("year", PhieuXuatKho.ngay_xuat) == nam,
             PhieuXuatKho.trang_thai == "da_xuat",
         ]
         if thang is not None:
-            xk_filters.append(extract("month", PhieuXuatKho.ngay_thang_nam) == thang)
+            xk_filters.append(extract("month", PhieuXuatKho.ngay_xuat) == thang)
 
         xuat_kho_records = (
             self.db.query(
@@ -111,7 +111,7 @@ class ThuocBaoCaoService:
                 ThuocVtyt.ten_thuoc_vtyt,
                 ThuocVtyt.don_vi_tinh,
                 ThuocVtyt.phan_loai,
-                func.coalesce(func.sum(ChiTietXuatKho.so_luong), 0).label("tong_luong"),
+                func.coalesce(func.sum(ChiTietXuatKho.so_luong_thuc_xuat), 0).label("tong_luong"),
             )
             .join(ChiTietXuatKho, ThuocVtyt.ma_thuoc_vtyt == ChiTietXuatKho.ma_thuoc_vtyt)
             .join(PhieuXuatKho, ChiTietXuatKho.ma_phieu_xuat == PhieuXuatKho.ma_phieu_xuat)

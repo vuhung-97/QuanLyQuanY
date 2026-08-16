@@ -1,13 +1,13 @@
 import { memo } from "react";
+import dayjs from "dayjs";
 import {
     Button,
-    IconButton,
     MenuItem,
     Stack,
     TextField,
     Typography,
 } from "@mui/material";
-import { Close as CloseIcon, Person as PersonIcon } from "@mui/icons-material";
+import { Person as PersonIcon } from "@mui/icons-material";
 import DatePicker from "@/components/common/DatePicker.jsx";
 import FormTextField from "@/components/common/FormTextField.jsx";
 
@@ -19,14 +19,15 @@ const PhieuXuatForm = memo(function PhieuXuatForm({
     hoTenNguoiNhan,
     maQuanNhanNhan,
     onChonQN,
-    onRemoveQN,
     creatorName,
     currentUser,
     ngayXuat,
+    ngayXuatThuc,
     onNgayXuatChange,
     initialLyDoXuat,
     initialGhiChu,
     updateField,
+    nguoiNhanEditable = true,
 }) {
     return (
         <Stack spacing={2.5} sx={{ pt: 1 }}>
@@ -67,13 +68,13 @@ const PhieuXuatForm = memo(function PhieuXuatForm({
                     <Typography variant="caption" color="text.secondary">
                         Người nhận
                     </Typography>
-                    {isView ? (
+                    {!nguoiNhanEditable ? (
                         <Typography variant="body2">
                             {hoTenNguoiNhan
                                 ? `${hoTenNguoiNhan}${maQuanNhanNhan ? ` (${maQuanNhanNhan})` : ""}`
                                 : "—"}
                         </Typography>
-                    ) : !maQuanNhanNhan ? (
+                    ) : !hoTenNguoiNhan && !maQuanNhanNhan ? (
                         <Button
                             variant="outlined"
                             startIcon={<PersonIcon />}
@@ -90,15 +91,18 @@ const PhieuXuatForm = memo(function PhieuXuatForm({
                         >
                             <PersonIcon fontSize="small" />
                             <Typography variant="body2">
-                                {hoTenNguoiNhan} ({maQuanNhanNhan})
+                                {hoTenNguoiNhan}
+                                {maQuanNhanNhan
+                                    ? ` (${maQuanNhanNhan})`
+                                    : ""}
                             </Typography>
-                            <IconButton
+                            <Button
                                 size="small"
-                                color="error"
-                                onClick={onRemoveQN}
+                                variant="outlined"
+                                onClick={onChonQN}
                             >
-                                <CloseIcon fontSize="small" />
-                            </IconButton>
+                                Đổi
+                            </Button>
                         </Stack>
                     )}
                 </Stack>
@@ -122,15 +126,30 @@ const PhieuXuatForm = memo(function PhieuXuatForm({
                     </Stack>
                 </Stack>
             </Stack>
-            <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
-                <Typography variant="caption" color="text.secondary">
-                    Ngày đề nghị:
-                </Typography>
-                <DatePicker
-                    value={ngayXuat}
-                    onChange={onNgayXuatChange}
-                    size="small"
-                />
+            <Stack direction="row" spacing={2}>
+                <Stack spacing={0.5} sx={{ flex: 1 }}>
+                    <Typography variant="caption" color="text.secondary">
+                        Ngày đề nghị
+                    </Typography>
+                    <DatePicker
+                        value={ngayXuat}
+                        onChange={onNgayXuatChange}
+                        size="small"
+                    />
+                </Stack>
+                {isView && ngayXuatThuc && (
+                    <Stack spacing={0.5} sx={{ flex: 1 }}>
+                        <Typography
+                            variant="caption"
+                            color="text.secondary"
+                        >
+                            Ngày xuất
+                        </Typography>
+                        <Typography variant="body2">
+                            {dayjs(ngayXuatThuc).format("DD/MM/YYYY HH:mm")}
+                        </Typography>
+                    </Stack>
+                )}
             </Stack>
 
             <FormTextField

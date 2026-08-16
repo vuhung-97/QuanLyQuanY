@@ -37,6 +37,7 @@ def get_ct_by_phieu_xuat(ma_phieu_xuat: str, db: Session = Depends(get_db)):
             "ma_phieu_xuat": ct.ma_phieu_xuat,
             "ma_thuoc_vtyt": ct.ma_thuoc_vtyt,
             "so_luong": ct.so_luong,
+            "so_luong_thuc_xuat": ct.so_luong_thuc_xuat,
             "ten_thuoc_vtyt": ten_thuoc,
             "don_vi_tinh": don_vi,
             "so_luong_max": ton_kho,

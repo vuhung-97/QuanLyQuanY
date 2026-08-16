@@ -6,12 +6,12 @@ import {
     Stack,
     Box,
 } from "@mui/material";
-import { Print as PrintIcon, Send as SendIcon } from "@mui/icons-material";
+import { Print as PrintIcon, Replay as ReplayIcon, Send as SendIcon } from "@mui/icons-material";
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import ChonQuanNhanDialog from "@/components/common/ChonQuanNhanDialog.jsx";
 import KhoThuocDialog from "@/components/KhamBenhChoQN/KhamBenh/KhoThuocDialog.jsx";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import usePhieuXuat from "@/hooks/usePhieuXuat.js";
 import { PRINT_STYLES, PRINT_DIALOG_CONTENT_SX, triggerPrint } from "@/utils/printUtils.js";
 import PhieuXuatForm from "./PhieuXuatForm.jsx";
@@ -24,6 +24,7 @@ export default function PhieuXuatDialog({
     onSaved,
     phieuId = null,
     mode = "create",
+    onXuatBuCreated,
 }) {
     const {
         donViNhan,
@@ -39,6 +40,7 @@ export default function PhieuXuatDialog({
         selectedItems,
         creatorName,
         trangThai,
+        ngayXuatThuc,
         tenDonViNhan,
         capBac,
         chucVu,
@@ -57,11 +59,22 @@ export default function PhieuXuatDialog({
         handleChonQuanNhan,
         removeItem,
         handleUpdateQuantity,
+        handleUpdateThucXuat,
         handleSave,
         handleXuatKho,
-    } = usePhieuXuat({ open, phieuId, mode, onClose, onSaved });
+        handleXuatBu,
+    } = usePhieuXuat({ open, phieuId, mode, onClose, onSaved, onXuatBuCreated });
 
     const handleOpenKhoThuoc = useCallback(() => setOpenKhoThuoc(true), []);
+
+    const canXuatBu = useMemo(
+        () =>
+            trangThai === "da_xuat" &&
+            selectedItems.some(
+                (it) => (it.so_luong_thuc_xuat ?? it.so_luong) < it.so_luong,
+            ),
+        [trangThai, selectedItems],
+    );
 
     return (
         <>
@@ -105,17 +118,18 @@ export default function PhieuXuatDialog({
                             hoTenNguoiNhan={hoTenNguoiNhan}
                             maQuanNhanNhan={maQuanNhanNhan}
                             onChonQN={() => setOpenChonQN(true)}
-                            onRemoveQN={() => {
-                                setMaQuanNhanNhan(null);
-                                setHoTenNguoiNhan("");
-                            }}
                             creatorName={creatorName}
                             currentUser={currentUser}
                             ngayXuat={ngayXuat}
+                            ngayXuatThuc={ngayXuatThuc}
                             onNgayXuatChange={setNgayXuat}
                             initialLyDoXuat={lyDoXuat}
                             initialGhiChu={ghiChu}
                             updateField={updateField}
+                            nguoiNhanEditable={
+                                !isView ||
+                                (isView && trangThai === "da_duyet")
+                            }
                         />
                         <Stack spacing={2.5} sx={{ mt: 2.5 }}>
                             <ChiTietXuatTable
@@ -124,6 +138,8 @@ export default function PhieuXuatDialog({
                                 onAdd={handleOpenKhoThuoc}
                                 onRemove={removeItem}
                                 onQuantityChange={handleUpdateQuantity}
+                                thucXuatEditable={isView && trangThai === "da_duyet"}
+                                onThucXuatChange={handleUpdateThucXuat}
                             />
                         </Stack>
                     </Box>
@@ -132,6 +148,7 @@ export default function PhieuXuatDialog({
                             data={{
                                 maPhieu: phieuId,
                                 ngayThangNam: ngayXuat,
+                                ngayXuatThuc,
                                 hoTenNguoiNhan,
                                 capBac,
                                 chucVu,
@@ -176,14 +193,29 @@ export default function PhieuXuatDialog({
                                         </>
                                     )}
                                 {trangThai === "da_xuat" && (
-                                    <Button
-                                        variant="outlined"
-                                        startIcon={<PrintIcon />}
-                                        onClick={triggerPrint}
-                                        disabled={saving}
-                                    >
-                                        In phiếu
-                                    </Button>
+                                    <>
+                                        {canXuatBu && (
+                                            <Button
+                                                variant="outlined"
+                                                color="info"
+                                                startIcon={<ReplayIcon />}
+                                                onClick={handleXuatBu}
+                                                disabled={saving}
+                                            >
+                                                {saving
+                                                    ? "Đang xử lý..."
+                                                    : "Xuất bù"}
+                                            </Button>
+                                        )}
+                                        <Button
+                                            variant="outlined"
+                                            startIcon={<PrintIcon />}
+                                            onClick={triggerPrint}
+                                            disabled={saving}
+                                        >
+                                            In phiếu
+                                        </Button>
+                                    </>
                                 )}
                             </>
                         ) : (

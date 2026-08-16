@@ -6,11 +6,12 @@ import { getCurrentUser } from "@/services/api.js";
 import { buildTree, flattenTree } from "@/utils/treeUtils.js";
 import { clearThuocCache } from "./useThuocList.jsx";
 
-export default function usePhieuXuat({ open, phieuId, mode, onClose, onSaved }) {
+export default function usePhieuXuat({ open, phieuId, mode, onClose, onSaved, onXuatBuCreated }) {
     const [donViNhan, setDonViNhan] = useState("");
     const [maQuanNhanNhan, setMaQuanNhanNhan] = useState(null);
     const [hoTenNguoiNhan, setHoTenNguoiNhan] = useState("");
     const [ngayXuat, setNgayXuat] = useState(dayjs());
+    const [ngayXuatThuc, setNgayXuatThuc] = useState(null);
     const [lyDoXuat, setLyDoXuat] = useState("");
     const [ghiChu, setGhiChu] = useState("");
     const lyDoXuatRef = useRef("");
@@ -61,6 +62,7 @@ export default function usePhieuXuat({ open, phieuId, mode, onClose, onSaved }) 
             setMaQuanNhanNhan(null);
             setHoTenNguoiNhan("");
             setNgayXuat(dayjs());
+            setNgayXuatThuc(null);
             lyDoXuatRef.current = "";
             ghiChuRef.current = "";
             setLyDoXuat("");
@@ -81,6 +83,7 @@ export default function usePhieuXuat({ open, phieuId, mode, onClose, onSaved }) 
                 setMaQuanNhanNhan(p.ma_quan_nhan_nhan || null);
                 setHoTenNguoiNhan(p.ho_ten_nguoi_nhan || "");
                 setNgayXuat(p.ngay_thang_nam ? dayjs(p.ngay_thang_nam) : dayjs());
+                setNgayXuatThuc(p.ngay_xuat ? dayjs(p.ngay_xuat) : null);
                 lyDoXuatRef.current = p.ly_do_xuat || "";
                 ghiChuRef.current = p.ghi_chu || "";
                 setLyDoXuat(p.ly_do_xuat || "");
@@ -92,7 +95,12 @@ export default function usePhieuXuat({ open, phieuId, mode, onClose, onSaved }) 
                 const ctRes = await khoDuocService.getChiTietByPhieuXuat(phieuId);
                 const ctData = ctRes.data || [];
                 const items = Array.isArray(ctData) ? ctData : ctData.items || ctData.data || [];
-                setSelectedItems(items);
+                setSelectedItems(
+                    items.map((it) => ({
+                        ...it,
+                        so_luong_thuc_xuat: it.so_luong_thuc_xuat ?? it.so_luong,
+                    })),
+                );
             } catch {
                 setSnackbar({ open: true, message: "Không thể tải phiếu xuất.", severity: "error" });
             }
@@ -166,6 +174,20 @@ export default function usePhieuXuat({ open, phieuId, mode, onClose, onSaved }) 
         );
     }, []);
 
+    const handleUpdateThucXuat = useCallback((maThuoc, value) => {
+        setSelectedItems((prev) =>
+            prev.map((item) => {
+                if (item.ma_thuoc_vtyt !== maThuoc) return item;
+                const max = Math.min(
+                    item.so_luong,
+                    item.so_luong_max ?? item.so_luong,
+                );
+                const qty = Math.max(0, Math.min(max, parseInt(value, 10) || 0));
+                return { ...item, so_luong_thuc_xuat: qty };
+            }),
+        );
+    }, []);
+
     const handleSave = async () => {
         if (selectedItems.length === 0) return;
         setSaving(true);
@@ -221,7 +243,16 @@ export default function usePhieuXuat({ open, phieuId, mode, onClose, onSaved }) 
         if (!phieuId) return;
         setSaving(true);
         try {
-            await khoDuocService.xuatKho(phieuId);
+            const thucXuatMap = {};
+            for (const item of selectedItems) {
+                thucXuatMap[item.ma_thuoc_vtyt] =
+                    item.so_luong_thuc_xuat ?? item.so_luong;
+            }
+            await khoDuocService.xuatKho(phieuId, {
+                thuc_xuat: thucXuatMap,
+                ma_quan_nhan_nhan: maQuanNhanNhan,
+                ho_ten_nguoi_nhan: hoTenNguoiNhan,
+            });
             clearThuocCache();
             setSnackbar({ open: true, message: "Xuất kho thành công.", severity: "success" });
             onSaved?.();
@@ -233,11 +264,27 @@ export default function usePhieuXuat({ open, phieuId, mode, onClose, onSaved }) 
         }
     };
 
+    const handleXuatBu = async () => {
+        if (!phieuId) return;
+        setSaving(true);
+        try {
+            const res = await khoDuocService.xuatBu(phieuId);
+            const maPhieu = res.data?.ma_phieu_xuat;
+            setSnackbar({ open: true, message: "Đã tạo phiếu xuất bù.", severity: "success" });
+            onXuatBuCreated?.(maPhieu);
+        } catch (err) {
+            setSnackbar({ open: true, message: err.response?.data?.detail || "Không thể tạo phiếu xuất bù.", severity: "error" });
+        } finally {
+            setSaving(false);
+        }
+    };
+
     return {
         donViNhan, setDonViNhan,
         maQuanNhanNhan, setMaQuanNhanNhan,
         hoTenNguoiNhan, setHoTenNguoiNhan,
         ngayXuat, setNgayXuat,
+        ngayXuatThuc,
         lyDoXuat, ghiChu, updateField,
         donViFlat,
         selectedItems,
@@ -259,7 +306,9 @@ export default function usePhieuXuat({ open, phieuId, mode, onClose, onSaved }) 
         handleChonQuanNhan,
         removeItem,
         handleUpdateQuantity,
+        handleUpdateThucXuat,
         handleSave,
         handleXuatKho,
+        handleXuatBu,
     };
 }

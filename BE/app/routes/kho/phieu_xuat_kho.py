@@ -1,3 +1,4 @@
+from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import func
 from sqlalchemy.orm import Session
@@ -10,8 +11,9 @@ from app.database.nguoi_dung import NguoiDung
 from app.database.phieu_xuat_kho import PhieuXuatKho
 from app.database.session import get_db
 from app.routes.base import _run_crud, create_crud_router
-from app.schemas.phieu_xuat_kho import PhieuXuatKhoRead
+from app.schemas.phieu_xuat_kho import PhieuXuatKhoRead, XuatKhoRequest
 from app.services.inventory_service import InventoryService
+from app.database.chi_tiet_xuat_kho import ChiTietXuatKho
 from app.database.nhat_ky_thao_tac import NhatKyThaoTac
 
 
@@ -156,6 +158,7 @@ def tu_choi_phieu_xuat(
 def xuat_kho(
     item_id: str,
     db: Session = Depends(get_db),
+    body: XuatKhoRequest | None = None,
     current_user: NguoiDung = Depends(get_current_user),
 ):
     phieu = db.get(PhieuXuatKho, item_id)
@@ -165,15 +168,85 @@ def xuat_kho(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Chỉ xuất được phiếu đã duyệt, hiện tại: {phieu.trang_thai}")
 
     try:
-        InventoryService.export_stock(db, item_id)
+        InventoryService.export_stock(
+            db, item_id, thuc_xuat=body.thuc_xuat if body else None
+        )
     except CRUDError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
+    if body is not None and "ma_quan_nhan_nhan" in body.model_fields_set:
+        phieu.ma_quan_nhan_nhan = body.ma_quan_nhan_nhan
+    if body is not None and "ho_ten_nguoi_nhan" in body.model_fields_set:
+        phieu.ho_ten_nguoi_nhan = body.ho_ten_nguoi_nhan
+
     phieu.trang_thai = "da_xuat"
+    phieu.ngay_xuat = datetime.now()
     phieu.nguoi_xuat = current_user.id if hasattr(current_user, "id") else None
     db.commit()
     db.refresh(phieu)
     return phieu
+
+
+@pre_router.post(
+    "/{item_id}/xuat-bu",
+    dependencies=[Depends(require_permissions("phieu_xuat_kho:create"))],
+)
+def xuat_bu_phieu_xuat(
+    item_id: str,
+    db: Session = Depends(get_db),
+    current_user: NguoiDung = Depends(get_current_user),
+):
+    phieu = db.get(PhieuXuatKho, item_id)
+    if not phieu:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Phiếu xuất không tồn tại")
+    if phieu.trang_thai != "da_xuat":
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Chỉ xuất bù được cho phiếu đã xuất")
+
+    chi_tiets = db.query(ChiTietXuatKho).filter(
+        ChiTietXuatKho.ma_phieu_xuat == item_id
+    ).all()
+
+    remaining = []
+    for ct in chi_tiets:
+        thuc = (
+            ct.so_luong_thuc_xuat
+            if ct.so_luong_thuc_xuat is not None
+            else ct.so_luong
+        )
+        if thuc < ct.so_luong:
+            remaining.append((ct.ma_thuoc_vtyt, ct.so_luong - thuc))
+
+    if not remaining:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Không còn số lượng cần xuất bù",
+        )
+
+    ngay = phieu.ngay_thang_nam.strftime("%d/%m/%Y") if phieu.ngay_thang_nam else ""
+    phieu_moi = PhieuXuatKho(
+        ma_don_vi_nhan=phieu.ma_don_vi_nhan,
+        ma_quan_nhan_nhan=phieu.ma_quan_nhan_nhan,
+        ho_ten_nguoi_nhan=phieu.ho_ten_nguoi_nhan,
+        trang_thai="da_duyet",
+        nguoi_xuat=current_user.id if hasattr(current_user, "id") else None,
+        nguoi_duyet=phieu.nguoi_duyet,
+        ly_do_xuat=phieu.ly_do_xuat,
+        ghi_chu=f"Xuất bù cho phiếu {phieu.ma_phieu_xuat} {ngay}".strip(),
+    )
+    db.add(phieu_moi)
+    db.flush()
+
+    for ma_thuoc, so_luong in remaining:
+        db.add(
+            ChiTietXuatKho(
+                ma_phieu_xuat=phieu_moi.ma_phieu_xuat,
+                ma_thuoc_vtyt=ma_thuoc,
+                so_luong=so_luong,
+            )
+        )
+
+    db.commit()
+    return {"ma_phieu_xuat": phieu_moi.ma_phieu_xuat}
 
 
 @pre_router.get(

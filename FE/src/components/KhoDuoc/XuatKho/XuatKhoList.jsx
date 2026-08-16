@@ -214,10 +214,18 @@ export default function XuatKhoList() {
         { key: "nguoi_xuat_ho_ten", label: "Người tạo" },
         {
             key: "ngay_thang_nam",
-            label: "Ngày tạo",
+            label: "Ngày đề nghị",
             render: (row) =>
                 row.ngay_thang_nam
                     ? dayjs(row.ngay_thang_nam).format("DD/MM/YYYY HH:mm")
+                    : "—",
+        },
+        {
+            key: "ngay_xuat",
+            label: "Ngày xuất",
+            render: (row) =>
+                row.ngay_xuat
+                    ? dayjs(row.ngay_xuat).format("DD/MM/YYYY HH:mm")
                     : "—",
         },
         { key: "ho_ten_nguoi_nhan", label: "Người nhận" },
@@ -380,6 +388,11 @@ export default function XuatKhoList() {
                 onSaved={() => {
                     fetchData();
                     fetchStats();
+                }}
+                onXuatBuCreated={(maPhieu) => {
+                    fetchData();
+                    fetchStats();
+                    setOpenPhieu({ open: true, id: maPhieu, mode: "view" });
                 }}
             />
 

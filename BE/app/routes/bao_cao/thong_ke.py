@@ -197,9 +197,9 @@ def thong_ke_phieu_xuat(
 ):
     query = db.query(PhieuXuatKho)
     if nam:
-        query = query.filter(func.extract("year", PhieuXuatKho.ngay_thang_nam) == nam)
+        query = query.filter(func.extract("year", PhieuXuatKho.ngay_xuat) == nam)
     if thang:
-        query = query.filter(func.extract("month", PhieuXuatKho.ngay_thang_nam) == thang)
+        query = query.filter(func.extract("month", PhieuXuatKho.ngay_xuat) == thang)
 
     tong = query.count()
     cho_gui = query.filter(PhieuXuatKho.trang_thai == "cho_gui").count()

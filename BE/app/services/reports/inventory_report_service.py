@@ -30,12 +30,12 @@ class InventoryReportService:
             )
 
             xuat = (
-                self.db.query(func.coalesce(func.sum(ChiTietXuatKho.so_luong), 0))
+                self.db.query(func.coalesce(func.sum(ChiTietXuatKho.so_luong_thuc_xuat), 0))
                 .join(PhieuXuatKho, ChiTietXuatKho.ma_phieu_xuat == PhieuXuatKho.ma_phieu_xuat)
                 .filter(
                     ChiTietXuatKho.ma_thuoc_vtyt == t.ma_thuoc_vtyt,
-                    extract("year", PhieuXuatKho.ngay_thang_nam) == nam,
-                    extract("month", PhieuXuatKho.ngay_thang_nam) == thang,
+                    extract("year", PhieuXuatKho.ngay_xuat) == nam,
+                    extract("month", PhieuXuatKho.ngay_xuat) == thang,
                 )
                 .scalar()
                 or 0

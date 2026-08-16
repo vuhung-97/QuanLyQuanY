@@ -40,7 +40,11 @@ class InventoryService:
         return phieu_nhap
 
     @staticmethod
-    def export_stock(db: Session, phieu_xuat_id: str) -> PhieuXuatKho:
+    def export_stock(
+        db: Session,
+        phieu_xuat_id: str,
+        thuc_xuat: dict[str, int] | None = None,
+    ) -> PhieuXuatKho:
         phieu_xuat = db.get(PhieuXuatKho, phieu_xuat_id)
         if not phieu_xuat:
             raise CRUDNotFoundError(f"Phiếu xuất {phieu_xuat_id} không tồn tại")
@@ -53,11 +57,22 @@ class InventoryService:
             thuoc = db.get(ThuocVtyt, ct.ma_thuoc_vtyt)
             if not thuoc:
                 raise CRUDNotFoundError(f"Thuốc {ct.ma_thuoc_vtyt} không tồn tại")
-            if (thuoc.so_luong or 0) < ct.so_luong:
+            thuc = (
+                thuc_xuat.get(ct.ma_thuoc_vtyt)
+                if thuc_xuat and ct.ma_thuoc_vtyt in thuc_xuat
+                else ct.so_luong
+            )
+            if thuc < 0 or thuc > ct.so_luong:
                 raise CRUDBadRequestError(
-                    f"Thuốc {thuoc.ten_thuoc_vtyt} không đủ tồn: {thuoc.so_luong} < {ct.so_luong}"
+                    f"Thuốc {thuoc.ten_thuoc_vtyt}: thực xuất {thuc} không hợp lệ (tối đa {ct.so_luong})"
                 )
-            thuoc.so_luong = (thuoc.so_luong or 0) - ct.so_luong
+            ton_kho = thuoc.so_luong or 0
+            if thuc > ton_kho:
+                raise CRUDBadRequestError(
+                    f"Thuốc {thuoc.ten_thuoc_vtyt} không đủ tồn: {ton_kho} < {thuc}"
+                )
+            thuoc.so_luong = ton_kho - thuc
+            ct.so_luong_thuc_xuat = thuc
 
         db.commit()
         db.refresh(phieu_xuat)

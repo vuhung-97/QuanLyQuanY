@@ -30,6 +30,12 @@ export default function PhieuXuatPrint({ data, paperSize = "A4" }) {
                     <strong>Ngày: </strong>{" "}
                     {dayjs(data.ngayThangNam).format("DD/MM/YYYY")}
                 </p>
+                {data.ngayXuatThuc && (
+                    <p style={{ margin: 0 }}>
+                        <strong>Ngày xuất: </strong>{" "}
+                        {dayjs(data.ngayXuatThuc).format("DD/MM/YYYY")}
+                    </p>
+                )}
             </div>
             <p>
                 <strong>I. Thông tin người nhận</strong>
