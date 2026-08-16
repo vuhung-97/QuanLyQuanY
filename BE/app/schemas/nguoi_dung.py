@@ -29,6 +29,12 @@ class NguoiDungRead(NguoiDungBase):
     ten_vai_tro: str | None = None
 
 
+class DangKyRequest(SchemaBase):
+    ten_dang_nhap: str = Field(max_length=50)
+    mat_khau: str = Field(min_length=8)
+    ma_quan_nhan: str = Field(max_length=10)
+
+
 class CapNhatTaiKhoanRequest(SchemaBase):
     ho_ten: str | None = Field(default=None, max_length=100)
 
