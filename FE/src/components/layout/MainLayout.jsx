@@ -26,11 +26,9 @@ export default function MainLayout({
     initialSidebarOpen = true,
     onSettings,
     onLogout,
-    notificationsCount = 0,
     showSearch = true,
     searchPlaceholder,
     onSearch,
-    onNotificationsClick,
     sidebarSx,
     contentSx,
     footerProps,
@@ -87,8 +85,6 @@ export default function MainLayout({
                     onToggleSidebar={sidebarCollapsible ? toggle : undefined}
                     appName={appName}
                     user={user}
-                    notificationsCount={notificationsCount}
-                    onNotificationsClick={onNotificationsClick}
                     showSearch={showSearch}
                     searchPlaceholder={searchPlaceholder}
                     onSearch={onSearch}

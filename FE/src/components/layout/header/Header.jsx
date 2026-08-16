@@ -6,7 +6,6 @@ import {
     Typography,
     IconButton,
     Avatar,
-    Badge,
     Stack,
     Menu,
     MenuItem,
@@ -14,7 +13,6 @@ import {
 } from "@mui/material";
 import {
     Menu as MenuIcon,
-    NotificationsNone as NotificationsIcon,
     Search as SearchIcon,
     SettingsOutlined as SettingsIcon,
     Logout as LogoutIcon,
@@ -39,8 +37,6 @@ export default function Header({
         <LocalHospitalIcon sx={{ color: "background.paper", fontSize: 60 }} />
     ),
     user = DEFAULT_USER,
-    notificationsCount = 0,
-    onNotificationsClick,
     searchPlaceholder = "Tìm kiếm quân nhân, thuốc...",
     onSearch,
     onSettings,
@@ -128,15 +124,18 @@ export default function Header({
                     spacing={1.5}
                     sx={{ mr: 2, alignItems: "center" }}
                 >
-                    <IconButton
-                        color="inherit"
-                        size="large"
-                        onClick={onNotificationsClick}
-                    >
-                        <Badge badgeContent={notificationsCount} color="error">
-                            <NotificationsIcon />
-                        </Badge>
-                    </IconButton>
+                    {user?.name && (
+                        <Typography
+                            variant="body2"
+                            noWrap
+                            sx={{
+                                display: { xs: "none", md: "block" },
+                                fontWeight: 500,
+                            }}
+                        >
+                            Xin chào {user.name}!
+                        </Typography>
+                    )}
 
                     <IconButton onClick={handleMenuOpen} sx={{ p: 0 }}>
                         <Avatar
