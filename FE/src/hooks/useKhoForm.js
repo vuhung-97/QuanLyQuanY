@@ -132,12 +132,13 @@ export default function useKhoForm({ open, thuocId, mode, onClose, onSaved }) {
                 cap_chat_luong: f.cap_chat_luong || null,
                 mo_ta: f.mo_ta || null,
             };
+            let saved;
             if (mode === "create") {
-                await khoDuocService.createThuocVtyt(payload);
+                saved = await khoDuocService.createThuocVtyt(payload);
             } else {
-                await khoDuocService.updateThuocVtyt(thuocId, payload);
+                saved = await khoDuocService.updateThuocVtyt(thuocId, payload);
             }
-            onSaved?.();
+            onSaved?.(saved?.data);
             handleClose();
         } catch (err) {
             const msg = err?.response?.data?.detail || "Lỗi lưu dữ liệu";

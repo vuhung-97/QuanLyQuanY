@@ -1,40 +1,33 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
-import {
-    Button,
-    Card,
-    CardContent,
-    Chip,
-    Stack,
-} from "@mui/material";
+import { Button, Card, CardContent, Chip, Stack } from "@mui/material";
 import ActionIcon from "@/components/common/ActionIcon.jsx";
 import {
+    Add as AddIcon,
     CheckCircle as CheckCircleIcon,
+    Edit as EditIcon,
     HourglassEmpty as HourglassEmptyIcon,
     Inventory as InventoryIcon,
     Visibility as VisibilityIcon,
 } from "@mui/icons-material";
 import DataTable from "@/components/common/DataTable.jsx";
-import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import FilterModeToggle from "@/components/common/FilterModeToggle.jsx";
 import YearMonthFilter from "@/components/common/YearMonthFilter.jsx";
 import PaginationWidget from "@/components/common/PaginationWidget.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import { khoDuocService } from "@/services/khoDuocService.js";
-import NhapKhoDialog from "./NhapKhoDialog.jsx";
-import IfRole from "@/components/common/IfRole.jsx";
-import { ROLES } from "@/constants/roleConstants.js";
-
-const ROWS_PER_PAGE = 20;
-const EMPTY_STATS = { tong: 0, choNhap: 0, daNhap: 0 };
-
-const STATUS_CHIP = {
-    da_duyet: { label: "Đã duyệt", color: "success" },
-    da_nhap: { label: "Đã nhập", color: "info" },
-};
+import {
+    NHAP_KHO_STATUS_CHIP,
+    NHAP_KHO_ROWS_PER_PAGE,
+    NHAP_KHO_EMPTY_STATS,
+} from "@/constants/khoConstant.js";
+import TaoPhieuNhapDialog from "./TaoPhieuNhapDialog.jsx";
+import dayjs from "dayjs";
 
 export default function NhapKhoList() {
     const location = useLocation();
+    const initialOpenPhieuId = location.state?.openNhapKhoPhieuId || null;
+
     const [isLeft, setIsLeft] = useState(false);
     const [nam, setNam] = useState(null);
     const [thang, setThang] = useState(null);
@@ -42,19 +35,14 @@ export default function NhapKhoList() {
     const [total, setTotal] = useState(0);
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
-    const [stats, setStats] = useState(EMPTY_STATS);
+    const [stats, setStats] = useState(NHAP_KHO_EMPTY_STATS);
     const [statsLoading, setStatsLoading] = useState(false);
-    const [selectedPhieuId, setSelectedPhieuId] = useState(
-        location.state?.openNhapKhoPhieuId || null,
-    );
-    const [openDialog, setOpenDialog] = useState(
-        !!location.state?.openNhapKhoPhieuId,
-    );
-    const [dialogMode, setDialogMode] = useState("create");
-    const [snackbar, setSnackbar] = useState({
-        open: false,
-        message: "",
-        severity: "info",
+
+    const [dialogState, setDialogState] = useState({
+        open: !!initialOpenPhieuId,
+        mode: "create",
+        phieuId: null,
+        maPhieuDuTru: initialOpenPhieuId,
     });
 
     const handleFilterModeChange = useCallback(() => {
@@ -71,25 +59,16 @@ export default function NhapKhoList() {
         setLoading(true);
         try {
             const params = {
-                limit: ROWS_PER_PAGE,
-                offset: (page - 1) * ROWS_PER_PAGE,
+                limit: NHAP_KHO_ROWS_PER_PAGE,
+                offset: (page - 1) * NHAP_KHO_ROWS_PER_PAGE,
+                trang_thai: isLeft ? "da_nhap" : "chua_nhap",
             };
-            if (!isLeft) params.trang_thai = "da_duyet";
             if (nam) params.nam = nam;
             if (thang) params.thang = thang;
-            const res = await khoDuocService.getDanhSachPhieuDuTru(params);
+            const res = await khoDuocService.getDanhSachPhieuNhap(params);
             const body = res.data || {};
-            const allData = body.data || [];
-            const filtered =
-                !isLeft
-                    ? allData
-                    : allData.filter(
-                          (p) =>
-                              p.trang_thai === "da_duyet" ||
-                              p.trang_thai === "da_nhap",
-                      );
-            setRows(filtered);
-            setTotal(body.total ?? filtered.length);
+            setRows(body.data || []);
+            setTotal(body.total ?? (body.data || []).length);
         } catch {
             setRows([]);
             setTotal(0);
@@ -104,15 +83,15 @@ export default function NhapKhoList() {
             const params = {};
             if (nam) params.nam = nam;
             if (thang) params.thang = thang;
-            const res = await khoDuocService.getThongKePhieuDuTru(params);
+            const res = await khoDuocService.getThongKePhieuNhap(params);
             const d = res.data || {};
             setStats({
-                tong: (d.da_duyet || 0) + (d.da_nhap || 0),
-                choNhap: d.da_duyet || 0,
+                tong: d.tong || 0,
+                choNhap: d.cho_nhap || 0,
                 daNhap: d.da_nhap || 0,
             });
         } catch {
-            setStats(EMPTY_STATS);
+            setStats(NHAP_KHO_EMPTY_STATS);
         } finally {
             setStatsLoading(false);
         }
@@ -125,12 +104,6 @@ export default function NhapKhoList() {
     useEffect(() => {
         fetchStats();
     }, [fetchStats]);
-
-    const openNhapKho = (id, mode = "create") => {
-        setSelectedPhieuId(id);
-        setDialogMode(mode);
-        setOpenDialog(true);
-    };
 
     const statItems = useMemo(
         () => [
@@ -154,13 +127,29 @@ export default function NhapKhoList() {
 
     const columns = useMemo(
         () => [
-            { key: "ma_phieu_du_tru", label: "Mã phiếu" },
-            { key: "ngay_lap_phieu", label: "Ngày lập" },
+            {
+                key: "ma_phieu_nhap",
+                label: "Mã phiếu nhập",
+                render: (row) => row.ma_phieu_nhap || "—",
+            },
+            {
+                key: "ma_phieu_du_tru",
+                label: "Mã phiếu dự trù",
+                render: (row) => row.ma_phieu_du_tru || "—",
+            },
+            {
+                key: "ngay_nhap",
+                label: "Ngày lập / nhập",
+                render: (row) =>
+                    row.ngay_nhap
+                        ? dayjs(row.ngay_nhap).format("DD/MM/YYYY")
+                        : "—",
+            },
             {
                 key: "trang_thai",
                 label: "Trạng thái",
                 render: (row) => {
-                    const chip = STATUS_CHIP[row.trang_thai];
+                    const chip = NHAP_KHO_STATUS_CHIP[row.trang_thai];
                     return chip ? (
                         <Chip
                             label={chip.label}
@@ -172,27 +161,72 @@ export default function NhapKhoList() {
                     );
                 },
             },
-            { key: "nguoi_lap", label: "Người lập" },
+            {
+                key: "nguoi_nhap_ho_ten",
+                label: "Người lập / nhập",
+                render: (row) => row.nguoi_nhap_ho_ten || row.nguoi_nhap || "—",
+            },
             {
                 key: "actions",
                 label: "Thao tác",
                 render: (row) =>
                     row.trang_thai === "da_duyet" ? (
-                        <IfRole roles={[ROLES.ADMIN, ROLES.CNQY]}>
-                            <ActionIcon title="Nhập kho" icon={<InventoryIcon />} color="info" onClick={() => openNhapKho(row.ma_phieu_du_tru, "create")} />
-                        </IfRole>
+                        <ActionIcon
+                            title="Nhập kho"
+                            icon={<InventoryIcon />}
+                            color="info"
+                            onClick={() =>
+                                setDialogState({
+                                    open: true,
+                                    mode: "create",
+                                    phieuId: null,
+                                    maPhieuDuTru: row.ma_phieu_du_tru,
+                                })
+                            }
+                        />
                     ) : (
-                        <ActionIcon title="Xem" icon={<VisibilityIcon />} onClick={() => openNhapKho(row.ma_phieu_du_tru, "view")} />
+                        <Stack direction="row" spacing={0.5}>
+                            <ActionIcon
+                                title="Xem"
+                                icon={<VisibilityIcon />}
+                                onClick={() =>
+                                    setDialogState({
+                                        open: true,
+                                        mode: "view",
+                                        phieuId:
+                                            row.ma_phieu_nhap ||
+                                            row.ma_phieu_du_tru,
+                                        maPhieuDuTru: null,
+                                    })
+                                }
+                            />
+                            {row.cho_phep_sua !== false && (
+                                <ActionIcon
+                                    title="Sửa"
+                                    icon={<EditIcon />}
+                                    color="warning"
+                                    onClick={() =>
+                                        setDialogState({
+                                            open: true,
+                                            mode: "edit",
+                                            phieuId:
+                                                row.ma_phieu_nhap ||
+                                                row.ma_phieu_du_tru,
+                                            maPhieuDuTru: null,
+                                        })
+                                    }
+                                />
+                            )}
+                        </Stack>
                     ),
             },
         ],
         [],
     );
 
-    const emptyMessage =
-        !isLeft
-            ? "Không có phiếu dự trù đã duyệt nào chờ nhập kho."
-            : "Không có phiếu dự trù đã duyệt hoặc đã nhập kho.";
+    const emptyMessage = !isLeft
+        ? "Không có phiếu dự trù nào chờ nhập kho."
+        : "Không có phiếu nhập kho nào.";
 
     return (
         <>
@@ -220,8 +254,9 @@ export default function NhapKhoList() {
                                 onChange={handleFilterModeChange}
                                 selectedDate={null}
                                 onDateChange={() => {}}
-                                labelLeft="Tất cả"
+                                labelLeft="Đã nhập"
                                 labelRight="Chưa nhập"
+                                showDatePicker={false}
                             />
                             <YearMonthFilter
                                 nam={nam}
@@ -233,6 +268,20 @@ export default function NhapKhoList() {
                                 onThangChange={handleFilterThangChange}
                             />
                         </Stack>
+                        <Button
+                            variant="contained"
+                            startIcon={<AddIcon />}
+                            onClick={() =>
+                                setDialogState({
+                                    open: true,
+                                    mode: "create",
+                                    phieuId: null,
+                                    maPhieuDuTru: null,
+                                })
+                            }
+                        >
+                            Tạo phiếu nhập
+                        </Button>
                     </Stack>
                     <Stack spacing={2.5}>
                         <DataTable
@@ -242,11 +291,11 @@ export default function NhapKhoList() {
                             minWidth={700}
                             emptyMessage={emptyMessage}
                         />
-                        {total > ROWS_PER_PAGE && (
+                        {total > NHAP_KHO_ROWS_PER_PAGE && (
                             <PaginationWidget
                                 page={page}
                                 totalRecords={total}
-                                rowsPerPage={ROWS_PER_PAGE}
+                                rowsPerPage={NHAP_KHO_ROWS_PER_PAGE}
                                 onChange={setPage}
                             />
                         )}
@@ -254,29 +303,18 @@ export default function NhapKhoList() {
                 </CardContent>
             </Card>
 
-            {selectedPhieuId && (
-                <NhapKhoDialog
-                    open={openDialog}
-                    onClose={() => {
-                        setOpenDialog(false);
-                        setSelectedPhieuId(null);
-                    }}
-                    phieuId={selectedPhieuId}
-                    mode={dialogMode}
-                    onSaved={() => {
-                        fetchData();
-                        fetchStats();
-                    }}
-                />
-            )}
-
-            <FeedbackSnackbar
-                open={snackbar.open}
-                message={snackbar.message}
-                severity={snackbar.severity}
+            <TaoPhieuNhapDialog
+                open={dialogState.open}
+                mode={dialogState.mode}
+                phieuId={dialogState.phieuId}
+                maPhieuDuTru={dialogState.maPhieuDuTru}
                 onClose={() =>
-                    setSnackbar((prev) => ({ ...prev, open: false }))
+                    setDialogState((prev) => ({ ...prev, open: false }))
                 }
+                onSaved={() => {
+                    fetchData();
+                    fetchStats();
+                }}
             />
         </>
     );

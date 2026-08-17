@@ -187,7 +187,7 @@ export default function DienKetQuaXetNghiemDialog({
                         <Stack
                             direction={{ xs: "column", sm: "row" }}
                             spacing={1}
-                            justifyContent="flex-end"
+                            sx={{ justifyContent: "flex-end" }}
                         >
                             <Button
                                 variant="outlined"
@@ -225,8 +225,8 @@ export default function DienKetQuaXetNghiemDialog({
                                 <Stack
                                     direction="row"
                                     spacing={1}
-                                    flexWrap="wrap"
                                     useFlexGap
+                                    sx={{ flexWrap: "wrap" }}
                                 >
                                     <Chip
                                         icon={<CheckCircleIcon />}

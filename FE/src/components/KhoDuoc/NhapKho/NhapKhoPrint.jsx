@@ -26,9 +26,11 @@ export default function NhapKhoPrint({ data, paperSize = "A4" }) {
                 <p style={{ margin: 0 }}>
                     <strong>Mã phiếu nhập:</strong> {data.maPhieuNhap}
                 </p>
-                <p style={{ margin: 0 }}>
-                    <strong>Mã phiếu dự trù:</strong> {data.maPhieuDuTru}
-                </p>
+                {data.maPhieuDuTru ? (
+                    <p style={{ margin: 0 }}>
+                        <strong>Mã phiếu dự trù:</strong> {data.maPhieuDuTru}
+                    </p>
+                ) : null}
                 <p style={{ margin: 0 }}>
                     <strong>Ngày nhập: </strong>
                     {dayjs(data.ngayNhap).format("DD/MM/YYYY")}

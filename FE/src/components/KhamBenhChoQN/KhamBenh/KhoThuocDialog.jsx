@@ -30,6 +30,7 @@ const GroupRow = memo(function GroupRow({
     quantity,
     onToggle,
     onQuantityChange,
+    importMode,
 }) {
     return (
         <TableRow hover selected={selected}>
@@ -58,7 +59,12 @@ const GroupRow = memo(function GroupRow({
                         )
                     }
                     disabled={!selected}
-                    slotProps={{ htmlInput: { min: 1, max: item.so_luong } }}
+                    slotProps={{
+                        htmlInput: {
+                            min: 1,
+                            max: importMode ? undefined : item.so_luong,
+                        },
+                    }}
                     sx={{ width: 90 }}
                     placeholder="SL"
                 />
@@ -72,6 +78,7 @@ export default function KhoThuocDialog({
     onClose,
     onConfirm,
     cachedItems,
+    importMode = false,
 }) {
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -154,13 +161,15 @@ export default function KhoThuocDialog({
         });
     }, []);
 
-    const handleQuantityChange = useCallback((ma, raw, stock) => {
-        const val =
-            raw === ""
-                ? ""
-                : Math.min(stock, Math.max(1, parseInt(raw, 10) || 1));
-        setQuantities((prev) => ({ ...prev, [ma]: val }));
-    }, []);
+    const handleQuantityChange = useCallback(
+        (ma, raw, stock) => {
+            const n = Math.max(1, parseInt(raw, 10) || 1);
+            const val =
+                raw === "" ? "" : importMode ? n : Math.min(stock, n);
+            setQuantities((prev) => ({ ...prev, [ma]: val }));
+        },
+        [importMode],
+    );
 
     const handleConfirm = useCallback(() => {
         const selectedItems = [];
@@ -173,7 +182,7 @@ export default function KhoThuocDialog({
                 errors.push(`${item.ten_thuoc_vtyt}: số lượng phải lớn hơn 0`);
                 continue;
             }
-            if (qty > item.so_luong) {
+            if (qty > item.so_luong && !importMode) {
                 errors.push(
                     `${item.ten_thuoc_vtyt}: số lượng vượt quá tồn kho (${item.so_luong})`,
                 );
@@ -184,7 +193,7 @@ export default function KhoThuocDialog({
                 ten_thuoc_vtyt: item.ten_thuoc_vtyt,
                 don_vi_tinh: item.don_vi_tinh,
                 so_luong: qty,
-                so_luong_max: item.so_luong,
+                so_luong_max: importMode ? null : item.so_luong,
             });
         }
 
@@ -201,7 +210,7 @@ export default function KhoThuocDialog({
         setError("");
         onConfirm(selectedItems);
         onClose();
-    }, [items, selected, quantities, onConfirm, onClose]);
+    }, [items, selected, quantities, onConfirm, onClose, importMode]);
 
     return (
         <Dialog
@@ -269,7 +278,7 @@ export default function KhoThuocDialog({
                                 },
                                 {
                                     key: "sl_lay",
-                                    label: "SL lấy",
+                                    label: importMode ? "SL nhập" : "SL lấy",
                                     sx: { width: 110 },
                                 },
                             ]}
@@ -305,6 +314,7 @@ export default function KhoThuocDialog({
                                             onQuantityChange={
                                                 handleQuantityChange
                                             }
+                                            importMode={importMode}
                                         />
                                     ))}
                                 </Fragment>
@@ -337,7 +347,9 @@ export default function KhoThuocDialog({
                     onClick={handleConfirm}
                     disabled={selectedCount === 0}
                 >
-                    Thêm {selectedCount > 0 ? `(${selectedCount})` : ""} vào đơn
+                    {importMode
+                        ? `Thêm vào phiếu nhập${selectedCount > 0 ? ` (${selectedCount})` : ""}`
+                        : `Thêm ${selectedCount > 0 ? `(${selectedCount})` : ""} vào đơn`}
                 </Button>
             </DialogActions>
         </Dialog>

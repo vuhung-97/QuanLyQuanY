@@ -1,4 +1,5 @@
 from datetime import date
+from decimal import Decimal
 
 from app.schemas.base import SchemaBase
 from pydantic import Field
@@ -34,3 +35,24 @@ class NhapKhoItem(SchemaBase):
 class NhapKhoRequest(SchemaBase):
     items: list[NhapKhoItem]
     ngay_nhap: date | None = None
+
+
+class TaoPhieuNhapItem(SchemaBase):
+    ma_thuoc_vtyt: str = Field(max_length=10)
+    so_luong: int = Field(ge=0)
+    so_lo: str | None = Field(default=None, max_length=100)
+    han_su_dung: date | None = None
+    don_gia: Decimal | None = Field(default=None, ge=0)
+
+
+class TaoPhieuNhapRequest(SchemaBase):
+    ma_phieu_du_tru: str | None = Field(default=None, max_length=10)
+    items: list[TaoPhieuNhapItem] = Field(min_length=1)
+    ngay_nhap: date | None = None
+    ghi_chu: str | None = None
+
+
+class CapNhatPhieuNhapRequest(SchemaBase):
+    items: list[TaoPhieuNhapItem] = Field(min_length=1)
+    ngay_nhap: date | None = None
+    ghi_chu: str | None = None

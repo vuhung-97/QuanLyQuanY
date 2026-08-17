@@ -96,3 +96,19 @@ export const DEFAULT_THRESHOLDS = {
     vat_tu: 30,
     sapHetHanNgay: 90,
 };
+
+export const NHAP_KHO_STATUS_CHIP = {
+    da_duyet: { label: "Chờ nhập", color: "warning" },
+    da_nhap: { label: "Đã nhập", color: "info" },
+};
+
+export const NHAP_KHO_ROWS_PER_PAGE = 20;
+
+export const NHAP_KHO_EMPTY_STATS = { tong: 0, choNhap: 0, daNhap: 0 };
+
+export const NHAP_KHO_TITLES = {
+    view: "Chi tiết nhập kho",
+    edit: "Sửa phiếu nhập kho",
+    createWithDuTru: "Tạo phiếu nhập (theo phiếu dự trù)",
+    create: "Tạo phiếu nhập",
+};

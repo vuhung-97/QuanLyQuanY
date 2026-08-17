@@ -1,3 +1,4 @@
+from collections import defaultdict
 from datetime import date, timedelta
 
 from sqlalchemy.orm import Session
@@ -34,6 +35,78 @@ class InventoryService:
             phieu_du_tru = db.get(PhieuDuTru, phieu_nhap.ma_phieu_du_tru)
             if phieu_du_tru:
                 phieu_du_tru.trang_thai = "da_nhap"
+
+        db.commit()
+        db.refresh(phieu_nhap)
+        return phieu_nhap
+
+    @staticmethod
+    def update_import_stock(
+        db: Session,
+        phieu_nhap_id: str,
+        items: list,
+        ngay_nhap: date | None = None,
+        ghi_chu: str | None = None,
+    ) -> PhieuNhapKho:
+        phieu_nhap = db.get(PhieuNhapKho, phieu_nhap_id)
+        if not phieu_nhap:
+            raise CRUDNotFoundError(f"Phiếu nhập {phieu_nhap_id} không tồn tại")
+
+        old_chi_tiets = (
+            db.query(ChiTietPhieuNhapKho)
+            .filter(ChiTietPhieuNhapKho.ma_phieu_nhap == phieu_nhap_id)
+            .all()
+        )
+
+        old_map = defaultdict(int)
+        for ct in old_chi_tiets:
+            old_map[ct.ma_thuoc_vtyt] += ct.so_luong
+
+        new_map = defaultdict(int)
+        for it in items:
+            ma = it.ma_thuoc_vtyt if hasattr(it, "ma_thuoc_vtyt") else it.get("ma_thuoc_vtyt")
+            sl = it.so_luong if hasattr(it, "so_luong") else it.get("so_luong", 0)
+            new_map[ma] += sl
+
+        all_keys = set(old_map.keys()) | set(new_map.keys())
+        for ma in all_keys:
+            delta = new_map[ma] - old_map[ma]
+            if delta == 0:
+                continue
+            thuoc = db.get(ThuocVtyt, ma)
+            if not thuoc:
+                raise CRUDNotFoundError(f"Thuốc {ma} không tồn tại")
+            ton_hien_tai = thuoc.so_luong or 0
+            if ton_hien_tai + delta < 0:
+                raise CRUDBadRequestError(
+                    f"Thuốc '{thuoc.ten_thuoc_vtyt}' không đủ tồn kho để giảm ({ton_hien_tai} + {delta} < 0)"
+                )
+            thuoc.so_luong = ton_hien_tai + delta
+
+        if ngay_nhap is not None:
+            phieu_nhap.ngay_nhap = ngay_nhap
+        phieu_nhap.ghi_chu = ghi_chu
+
+        for ct in old_chi_tiets:
+            db.delete(ct)
+        db.flush()
+
+        for it in items:
+            ma = it.ma_thuoc_vtyt if hasattr(it, "ma_thuoc_vtyt") else it.get("ma_thuoc_vtyt")
+            sl = it.so_luong if hasattr(it, "so_luong") else it.get("so_luong", 0)
+            so_lo = it.so_lo if hasattr(it, "so_lo") else it.get("so_lo")
+            han_su_dung = it.han_su_dung if hasattr(it, "han_su_dung") else it.get("han_su_dung")
+            don_gia = it.don_gia if hasattr(it, "don_gia") else it.get("don_gia")
+            db.add(
+                ChiTietPhieuNhapKho(
+                    ma_phieu_nhap=phieu_nhap_id,
+                    ma_thuoc_vtyt=ma,
+                    so_luong=sl,
+                    so_lo=so_lo,
+                    han_su_dung=han_su_dung,
+                    don_gia=don_gia,
+                )
+            )
 
         db.commit()
         db.refresh(phieu_nhap)

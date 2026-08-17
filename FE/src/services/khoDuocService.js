@@ -60,12 +60,18 @@ export const khoDuocService = {
     deleteChiTietDuTru: (id) => api.delete(`/chi_tiet_du_tru/${id}`),
 
     listPhieuNhapKho: (params) => api.get("/phieu_nhap_kho", { params }),
+    getDanhSachPhieuNhap: (params) => api.get("/phieu_nhap_kho/danh-sach", { params }),
     getPhieuNhapKho: (id) => api.get(`/phieu_nhap_kho/${id}`),
+    getPhieuNhapDetail: (phieuId) => api.get(`/phieu_nhap_kho/detail/${phieuId}`),
     createPhieuNhapKho: (data) => api.post("/phieu_nhap_kho", data),
     updatePhieuNhapKho: (id, data) => api.patch(`/phieu_nhap_kho/${id}`, data),
     deletePhieuNhapKho: (id) => api.delete(`/phieu_nhap_kho/${id}`),
     getPhieuNhapByPhieuDuTru: (maPhieuDuTru) =>
         api.get(`/phieu_nhap_kho/by-phieu-du-tru/${maPhieuDuTru}`),
+    taoPhieuNhap: (data) => api.post("/phieu_nhap_kho/tao", data),
+    capNhatPhieuNhap: (maPhieuNhap, data) =>
+        api.put(`/phieu_nhap_kho/${maPhieuNhap}/cap-nhat`, data),
+    getThongKePhieuNhap: (params) => api.get("/phieu_nhap_kho/thong-ke", { params }),
 
     listChiTietPhieuNhap: (params) =>
         api.get("/chi_tiet_phieu_nhap_kho", { params }),
