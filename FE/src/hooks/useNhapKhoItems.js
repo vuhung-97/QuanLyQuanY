@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { clearThuocCache } from "@/hooks/useThuocList.jsx";
 
 export default function useNhapKhoItems() {
     const [items, setItems] = useState([]);
 
-    const addItemsFromKho = (selected) => {
+    const addItemsFromKho = useCallback((selected) => {
         setItems((prev) => {
             const next = [...prev];
             for (const s of selected) {
@@ -32,9 +32,9 @@ export default function useNhapKhoItems() {
             }
             return next;
         });
-    };
+    }, []);
 
-    const addThuocMoi = (record) => {
+    const addThuocMoi = useCallback((record) => {
         if (!record?.ma_thuoc_vtyt) return;
         setItems((prev) => {
             if (prev.some((it) => it.ma_thuoc_vtyt === record.ma_thuoc_vtyt)) {
@@ -56,17 +56,17 @@ export default function useNhapKhoItems() {
             ];
         });
         clearThuocCache();
-    };
+    }, []);
 
-    const updateItem = (idx, patch) => {
+    const updateItem = useCallback((idx, patch) => {
         setItems((prev) =>
             prev.map((it, i) => (i === idx ? { ...it, ...patch } : it)),
         );
-    };
+    }, []);
 
-    const removeItem = (idx) => {
+    const removeItem = useCallback((idx) => {
         setItems((prev) => prev.filter((_, i) => i !== idx));
-    };
+    }, []);
 
     const buildItemsPayload = () =>
         items.map((it) => ({

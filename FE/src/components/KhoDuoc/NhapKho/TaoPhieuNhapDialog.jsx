@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import {
     Box,
     Button,
@@ -34,6 +34,112 @@ import {
     triggerPrint,
 } from "@/utils/printUtils.js";
 import useNhapKhoItems from "@/hooks/useNhapKhoItems.js";
+
+const NhapKhoHeader = memo(function NhapKhoHeader({
+    isView,
+    isEdit,
+    nguoiNhap,
+    currentUser,
+    ngayNhap,
+    onNgayNhapChange,
+    ghiChu,
+    onGhiChuCommit,
+}) {
+    const ghiChuFocused = useRef(false);
+    const [ghiChuDraft, setGhiChuDraft] = useState(ghiChu ?? "");
+
+    useEffect(() => {
+        if (!ghiChuFocused.current) setGhiChuDraft(ghiChu ?? "");
+    }, [ghiChu]);
+
+    return (
+        <Stack
+            direction="row"
+            spacing={4}
+            sx={{ flexWrap: "wrap", alignItems: "center" }}
+        >
+            <Stack spacing={0.5}>
+                <Typography
+                    variant="caption"
+                    color="text.secondary"
+                >
+                    Người nhập
+                </Typography>
+                <Stack
+                    direction="row"
+                    spacing={1}
+                    sx={{ alignItems: "center" }}
+                >
+                    <PersonIcon fontSize="small" />
+                    <Typography variant="body2">
+                        {isView || isEdit
+                            ? nguoiNhap || "—"
+                            : currentUser
+                              ? `${currentUser.ho_ten} (${currentUser.role})`
+                              : "—"}
+                    </Typography>
+                </Stack>
+            </Stack>
+            <Stack spacing={0.5}>
+                <Typography
+                    variant="caption"
+                    color="text.secondary"
+                >
+                    Ngày nhập
+                </Typography>
+                {isView ? (
+                    <Typography variant="body2">
+                        {ngayNhap.format("DD/MM/YYYY")}
+                    </Typography>
+                ) : (
+                    <DatePicker
+                        value={ngayNhap}
+                        onChange={onNgayNhapChange}
+                        size="small"
+                    />
+                )}
+            </Stack>
+            {!isView && (
+                <Stack spacing={0.5} sx={{ flexGrow: 1 }}>
+                    <Typography
+                        variant="caption"
+                        color="text.secondary"
+                    >
+                        Ghi chú
+                    </Typography>
+                    <TextField
+                        size="small"
+                        fullWidth
+                        value={ghiChuDraft}
+                        onFocus={() => (ghiChuFocused.current = true)}
+                        onBlur={() => {
+                            ghiChuFocused.current = false;
+                            onGhiChuCommit(ghiChuDraft);
+                        }}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") e.currentTarget.blur();
+                        }}
+                        onChange={(e) => setGhiChuDraft(e.target.value)}
+                        placeholder="Ghi chú (không bắt buộc)"
+                    />
+                </Stack>
+            )}
+            {isView && ghiChu && (
+                <Stack spacing={0.5}>
+                    <Typography
+                        variant="caption"
+                        color="text.secondary"
+                    >
+                        Ghi chú
+                    </Typography>
+                    <Typography variant="body2">
+                        {ghiChu}
+                    </Typography>
+                </Stack>
+            )}
+        </Stack>
+    );
+});
 
 export default function TaoPhieuNhapDialog({
     open,
@@ -326,95 +432,16 @@ export default function TaoPhieuNhapDialog({
                                 }}
                             >
                                 <Stack spacing={2} sx={{ pt: 1 }}>
-                                    <Stack
-                                        direction="row"
-                                        spacing={4}
-                                        sx={{
-                                            flexWrap: "wrap",
-                                            alignItems: "center",
-                                        }}
-                                    >
-                                        <Stack spacing={0.5}>
-                                            <Typography
-                                                variant="caption"
-                                                color="text.secondary"
-                                            >
-                                                Người nhập
-                                            </Typography>
-                                            <Stack
-                                                direction="row"
-                                                spacing={1}
-                                                sx={{ alignItems: "center" }}
-                                            >
-                                                <PersonIcon fontSize="small" />
-                                                <Typography variant="body2">
-                                                    {isView || isEdit
-                                                        ? nguoiNhap || "—"
-                                                        : currentUser
-                                                          ? `${currentUser.ho_ten} (${currentUser.role})`
-                                                          : "—"}
-                                                </Typography>
-                                            </Stack>
-                                        </Stack>
-                                        <Stack spacing={0.5}>
-                                            <Typography
-                                                variant="caption"
-                                                color="text.secondary"
-                                            >
-                                                Ngày nhập
-                                            </Typography>
-                                            {isView ? (
-                                                <Typography variant="body2">
-                                                    {ngayNhap.format(
-                                                        "DD/MM/YYYY",
-                                                    )}
-                                                </Typography>
-                                            ) : (
-                                                <DatePicker
-                                                    value={ngayNhap}
-                                                    onChange={setNgayNhap}
-                                                    size="small"
-                                                />
-                                            )}
-                                        </Stack>
-                                        {!isView && (
-                                            <Stack
-                                                spacing={0.5}
-                                                sx={{ flexGrow: 1 }}
-                                            >
-                                                <Typography
-                                                    variant="caption"
-                                                    color="text.secondary"
-                                                >
-                                                    Ghi chú
-                                                </Typography>
-                                                <TextField
-                                                    size="small"
-                                                    fullWidth
-                                                    value={ghiChu}
-                                                    onChange={(e) =>
-                                                        setGhiChu(
-                                                            e.target.value,
-                                                        )
-                                                    }
-                                                    placeholder="Ghi chú (không bắt buộc)"
-                                                />
-                                            </Stack>
-                                        )}
-                                        {isView && ghiChu && (
-                                            <Stack spacing={0.5}>
-                                                <Typography
-                                                    variant="caption"
-                                                    color="text.secondary"
-                                                >
-                                                    Ghi chú
-                                                </Typography>
-                                                <Typography variant="body2">
-                                                    {ghiChu}
-                                                </Typography>
-                                            </Stack>
-                                        )}
-                                    </Stack>
+                                    <NhapKhoHeader
+                                        isView={isView}
+                                        isEdit={isEdit}
+                                        nguoiNhap={nguoiNhap}
+                                        currentUser={currentUser}
+                                        ngayNhap={ngayNhap}
+                                        onNgayNhapChange={setNgayNhap}
+                                        ghiChu={ghiChu}
+                                        onGhiChuCommit={setGhiChu}
+                                    />
 
                                     {!isView && (
                                         <Stack direction="row" spacing={1.5}>

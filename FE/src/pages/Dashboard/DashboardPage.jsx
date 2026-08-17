@@ -1,3 +1,4 @@
+import { startTransition } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Stack, Typography, Grid } from "@mui/material";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
@@ -49,7 +50,10 @@ export default function DashboardPage() {
 
     const handleCardClick = (key) => {
         const path = NAV_MAP[key];
-        if (path) navigate(path);
+        if (path)
+            startTransition(() => {
+                navigate(path);
+            });
     };
 
     const statItems = [

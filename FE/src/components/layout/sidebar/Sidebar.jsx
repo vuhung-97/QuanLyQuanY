@@ -1,4 +1,5 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
+import { startTransition } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Collapse, Drawer, List, useTheme } from "@mui/material";
 import {
@@ -34,9 +35,14 @@ export default function Sidebar({
 
     const hasActiveChild = (item) => item.children?.some((child) => isActive(child.path));
 
-    const handleItemClick = (item) => {
-        navigate(item.children?.[0]?.path || item.path);
-    };
+    const handleItemClick = useCallback(
+        (item) => {
+            startTransition(() => {
+                navigate(item.children?.[0]?.path || item.path);
+            });
+        },
+        [navigate],
+    );
 
     const paperSx = useMemo(
         () => ({
@@ -85,7 +91,7 @@ export default function Sidebar({
                                 active={parentActive}
                                 expanded={expanded}
                                 hasChildren={item.children?.length > 0}
-                                onClick={() => handleItemClick(item)}
+                                onClick={handleItemClick}
                             />
 
                             {item.children?.length > 0 && (
@@ -97,7 +103,7 @@ export default function Sidebar({
                                             open={open}
                                             depth={1}
                                             active={isActive(child.path)}
-                                            onClick={() => navigate(child.path)}
+                                            onClick={handleItemClick}
                                         />
                                     ))}
                                 </Collapse>

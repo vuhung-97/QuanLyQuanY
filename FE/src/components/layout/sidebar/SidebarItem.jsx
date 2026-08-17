@@ -10,8 +10,9 @@ import {
     ListItemText,
 } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
+import { memo } from "react";
 
-export default function SidebarItem({
+function SidebarItem({
     item,
     open = true,
     active = false,
@@ -106,3 +107,5 @@ export default function SidebarItem({
         </ListItem>
     );
 }
+
+export default memo(SidebarItem);

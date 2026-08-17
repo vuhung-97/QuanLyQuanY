@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { dashboardService } from "@/services/dashboardService.js";
+import { setDeferred } from "@/utils/setDeferred.js";
 
 export default function useDashboardStats() {
     const [stats, setStats] = useState(null);
@@ -8,7 +9,7 @@ export default function useDashboardStats() {
     useEffect(() => {
         dashboardService
             .getTongQuan()
-            .then((res) => setStats(res.data))
+            .then((res) => setDeferred(setStats, res.data))
             .catch(() => {})
             .finally(() => setLoading(false));
     }, []);

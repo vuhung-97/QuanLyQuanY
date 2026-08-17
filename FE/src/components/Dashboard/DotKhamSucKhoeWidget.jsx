@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Typography } from "@mui/material";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
+import { setDeferred } from "@/utils/setDeferred.js";
 import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
 import { getCurrentUser } from "@/services/api.js";
 import { ROLES } from "@/constants/roleConstants.js";
@@ -37,17 +38,17 @@ export default function DotKhamSucKhoeWidget() {
                             new Date(a.thoi_gian_bat_dau),
                     )[0];
                 if (ignore) return;
-                setSchedule(active || null);
-                setMyVaiTro(null);
+                setDeferred(setSchedule, active || null);
+                setDeferred(setMyVaiTro, null);
                 if (active) {
                     setLoading(true);
                     try {
                         const st = await khamSucKhoeService.getScheduleStats(
                             active.ma_lich_kham,
                         );
-                        if (!ignore) setStats(st.data);
+                        if (!ignore) setDeferred(setStats, st.data);
                     } catch {
-                        if (!ignore) setStats(null);
+                        if (!ignore) setDeferred(setStats, null);
                     } finally {
                         if (!ignore) setLoading(false);
                     }
@@ -59,19 +60,22 @@ export default function DotKhamSucKhoeWidget() {
                             .getMyAssignment(active.ma_lich_kham)
                             .then((res) => {
                                 if (!ignore)
-                                    setMyVaiTro(res.data?.ma_vai_tro ?? null);
+                                    setDeferred(
+                                        setMyVaiTro,
+                                        res.data?.ma_vai_tro ?? null,
+                                    );
                             })
                             .catch(() => {
-                                if (!ignore) setMyVaiTro(null);
+                                if (!ignore) setDeferred(setMyVaiTro, null);
                             });
                     }
                 } else {
-                    setStats(null);
+                    setDeferred(setStats, null);
                 }
             } catch {
                 if (!ignore) {
-                    setSchedule(null);
-                    setStats(null);
+                    setDeferred(setSchedule, null);
+                    setDeferred(setStats, null);
                 }
             }
         }

@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { khoDuocService } from "@/services/khoDuocService.js";
+import { setDeferred } from "@/utils/setDeferred.js";
 import { ROWS_PER_PAGE, DEFAULT_THRESHOLDS } from "@/constants/khoConstant.js";
 
 export default function useKhoList(thresholds = DEFAULT_THRESHOLDS) {
@@ -33,14 +34,15 @@ export default function useKhoList(thresholds = DEFAULT_THRESHOLDS) {
                 khoDuocService.fetchAllThuocVtyt(),
                 khoDuocService.getSapHetHan(thresholds.sapHetHanNgay).catch(() => []),
             ]);
-            setAllItems(
+            setDeferred(
+                setAllItems,
                 (data || []).sort((a, b) =>
                     (a.ten_thuoc_vtyt || "").localeCompare(
                         b.ten_thuoc_vtyt || "",
                     ),
                 ),
             );
-            setSapHetHan(Array.isArray(expiring) ? expiring : []);
+            setDeferred(setSapHetHan, Array.isArray(expiring) ? expiring : []);
         } catch {
             setSnackbar({
                 open: true,

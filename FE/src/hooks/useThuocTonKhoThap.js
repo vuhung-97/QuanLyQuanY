@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { khoDuocService } from "@/services/khoDuocService.js";
+import { setDeferred } from "@/utils/setDeferred.js";
 
 export default function useThuocTonKhoThap(thresholds) {
     const [allItems, setAllItems] = useState([]);
@@ -10,10 +11,14 @@ export default function useThuocTonKhoThap(thresholds) {
         khoDuocService
             .fetchAllThuocVtyt()
             .then((data) => {
-                if (!ignore) setAllItems(Array.isArray(data) ? data : []);
+                if (!ignore)
+                    setDeferred(
+                        setAllItems,
+                        Array.isArray(data) ? data : [],
+                    );
             })
             .catch(() => {
-                if (!ignore) setAllItems([]);
+                if (!ignore) setDeferred(setAllItems, []);
             })
             .finally(() => {
                 if (!ignore) setLoading(false);

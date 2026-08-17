@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import api from "@/services/api.js";
+import { setDeferred } from "@/utils/setDeferred.js";
 
 export default function useChartQuanSoKhamChuaBenh() {
     const today = new Date();
@@ -22,7 +23,7 @@ export default function useChartQuanSoKhamChuaBenh() {
         try {
             const params = isLeft ? { mode: "month", nam } : { mode: "day", end_date: endDate };
             const res = await api.get("/bao-cao/quan-so-kham-chua-benh", { params });
-            setData(res.data.data);
+            setDeferred(setData, res.data.data);
         } catch (err) {
             setError(err.response?.data?.detail || "Không thể tải dữ liệu biểu đồ");
         } finally {

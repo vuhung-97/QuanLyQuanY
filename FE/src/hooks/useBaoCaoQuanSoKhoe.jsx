@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { baoCaoService } from "@/services/baoCaoService.js";
+import { setDeferred } from "@/utils/setDeferred.js";
 import { buildTree, flattenTree, aggregateTree } from "@/utils/treeUtils.js";
 import { UNIT_NAME } from "@/components/layout/common/constants.js";
 
@@ -65,10 +66,10 @@ export default function useBaoCaoQuanSoKhoe() {
         setError(null);
         try {
             const res = await baoCaoService.getQuanSoKhoe(thang, nam);
-            setData(res.data);
+            setDeferred(setData, res.data);
         } catch (err) {
             setError(err.response?.data?.detail || "Lỗi tải báo cáo");
-            setData(null);
+            setDeferred(setData, null);
         } finally {
             setLoading(false);
         }

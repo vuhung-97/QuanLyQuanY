@@ -9,6 +9,7 @@ import {
     ResponsiveContainer,
     Legend,
 } from "recharts";
+import { setDeferred } from "@/utils/setDeferred.js";
 import { baoCaoService } from "@/services/baoCaoService.js";
 
 function getPrevMonth(thang, nam) {
@@ -26,8 +27,8 @@ export default function SoSanhThangTruoc({ thang, nam, currentData }) {
         setLoading(true);
         baoCaoService
             .getQuanYThang(prev.thang, prev.nam)
-            .then((res) => setPrevData(res.data))
-            .catch(() => setPrevData(null))
+            .then((res) => setDeferred(setPrevData, res.data))
+            .catch(() => setDeferred(setPrevData, null))
             .finally(() => setLoading(false));
     }, [thang, nam, currentData]);
 

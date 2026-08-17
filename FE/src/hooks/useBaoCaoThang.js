@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { baoCaoService } from "@/services/baoCaoService.js";
+import { setDeferred } from "@/utils/setDeferred.js";
 
 export default function useBaoCaoThang() {
     const now = new Date();
@@ -17,10 +18,10 @@ export default function useBaoCaoThang() {
             const res = thang
                 ? await baoCaoService.getQuanYThang(thang, nam)
                 : await baoCaoService.getQuanYNam(nam);
-            setData(res.data);
+            setDeferred(setData, res.data);
         } catch (err) {
             setError(err.response?.data?.detail || "Lỗi tải báo cáo");
-            setData(null);
+            setDeferred(setData, null);
         } finally {
             setLoading(false);
         }
