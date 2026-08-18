@@ -103,12 +103,15 @@ export default function SidebarProfile({ user, open = true, sx }) {
                     onClick={handleToggle}
                     sx={{
                         display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                         flexShrink: 0,
                         overflow: "hidden",
                         cursor: "pointer",
                         color: theme.palette.common.white,
                         opacity: open ? 1 : 0,
-                        maxWidth: open ? 32 : 0,
+                        width: 44,
+                        maxWidth: open ? 44 : 0,
                         transition: (t) =>
                             t.transitions.create(["opacity", "max-width"], {
                                 easing: t.transitions.easing.easeInOut,
