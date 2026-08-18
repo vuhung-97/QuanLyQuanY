@@ -130,6 +130,7 @@ export default function KhamSucKhoeForm({
         currentPhieu,
         snackbar,
         handleCloseSnackbar,
+        errors,
         tsRef,
         lsRef,
         xnRef,
@@ -214,6 +215,7 @@ export default function KhamSucKhoeForm({
             >
                 <Box
                     component="form"
+                    noValidate
                     onSubmit={handleSubmit}
                     sx={{
                         display: "flex",
@@ -284,6 +286,9 @@ export default function KhamSucKhoeForm({
                                                             index,
                                                         )
                                                     }
+                                                    {...(index === 0 || index === 2
+                                                        ? { errors }
+                                                        : {})}
                                                     {...(gioiTinh !== undefined
                                                         ? { gioiTinh }
                                                         : {})}

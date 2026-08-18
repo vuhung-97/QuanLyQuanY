@@ -80,7 +80,7 @@ const SelectFieldSM = memo(({ name, label, dataRef, readOnly, options }) => {
 
 const XetNghiemTab = memo(
     forwardRef(function XetNghiemTab(
-        { initialData, cardStyle, readOnly = false },
+        { initialData, cardStyle, readOnly = false, errors },
         ref,
     ) {
         const { dataRef } = useFormTab(initialData, ref);
@@ -103,6 +103,7 @@ const XetNghiemTab = memo(
                                     xs={12}
                                     sm={3}
                                     md={3}
+                                    errors={errors}
                                 />
                             ))}
 
@@ -143,6 +144,7 @@ const XetNghiemTab = memo(
                                         xs={12}
                                         sm={4}
                                         md={4}
+                                        errors={errors}
                                     />
                                 );
                             })}

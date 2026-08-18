@@ -13,6 +13,7 @@ import {
     Typography,
 } from "@mui/material";
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
+import NumberField from "@/components/common/NumberField.jsx";
 import useLapBenhAnForm from "../../../hooks/useLapBenhAnForm";
 import PatientInfoCard from "./PatientInfoCard";
 import ChiTietBenhAnFields from "./ChiTietBenhAnFields";
@@ -87,9 +88,8 @@ export default function LapBenhAnForm({
                                             key={f.key}
                                             size={{ xs: 6, md: 3 }}
                                         >
-                                            <TextField
+                                            <NumberField
                                                 label={f.label}
-                                                type="number"
                                                 fullWidth
                                                 size="medium"
                                                 defaultValue={
@@ -100,6 +100,8 @@ export default function LapBenhAnForm({
                                                         : ""
                                                 }
                                                 inputRef={refMap[f.key]}
+                                                error={!!errors[f.key]}
+                                                helperText={errors[f.key]}
                                                 slotProps={{
                                                     htmlInput: { min: 0 },
                                                 }}

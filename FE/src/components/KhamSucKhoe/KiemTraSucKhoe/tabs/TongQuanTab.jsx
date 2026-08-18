@@ -5,10 +5,10 @@ import {
     CardContent,
     Chip,
     Grid,
-    TextField,
     Typography,
     Stack,
 } from "@mui/material";
+import NumberField from "@/components/common/NumberField.jsx";
 import useTongQuanTab from "@/hooks/useTongQuanTab";
 import {
     classifyTheLuc,
@@ -96,7 +96,7 @@ const getBmiStatus = (bmiStr) => {
 };
 
 const MatNumberFieldSM = memo(
-    ({ name, label, dataRef, readOnly, onChangeExtra }) => {
+    ({ name, label, dataRef, readOnly, onChangeExtra, error, helperText }) => {
         const [val, setVal] = useState(() => dataRef.current?.[name] ?? "");
 
         const handleChange = useCallback(
@@ -111,15 +111,16 @@ const MatNumberFieldSM = memo(
 
         return (
             <Grid size={{ xs: 6, sm: 4, md: true }}>
-                <TextField
+                <NumberField
                     name={name}
                     label={label}
-                    type="number"
                     value={val}
                     onChange={handleChange}
                     disabled={readOnly}
                     fullWidth
                     size="small"
+                    error={error}
+                    helperText={helperText}
                     slotProps={{ htmlInput: { min: 1, max: 10, step: 1 } }}
                 />
             </Grid>
@@ -151,7 +152,7 @@ const BmiDisplaySM = memo(({ dataRef, tick }) => {
     );
 });
 
-const MatKhamSection = memo(({ dataRef, readOnly, onMatChange, classTick }) => (
+const MatKhamSection = memo(({ dataRef, readOnly, onMatChange, classTick, errors }) => (
     <Card
         sx={{
             borderRadius: 2,
@@ -184,6 +185,8 @@ const MatKhamSection = memo(({ dataRef, readOnly, onMatChange, classTick }) => (
                         dataRef={dataRef}
                         readOnly={readOnly}
                         onChangeExtra={onMatChange}
+                        error={Boolean(errors?.[f.name])}
+                        helperText={errors?.[f.name]}
                     />
                 ))}
                 <PhanLoaiSelect
@@ -200,7 +203,7 @@ const MatKhamSection = memo(({ dataRef, readOnly, onMatChange, classTick }) => (
 
 const TongQuanTab = memo(
     forwardRef(function TongQuanTab(
-        { initialData, cardStyle, readOnly = false, gioiTinh },
+        { initialData, cardStyle, readOnly = false, gioiTinh, errors },
         ref,
     ) {
         const { dataRef } = useTongQuanTab(initialData, ref);
@@ -287,6 +290,7 @@ const TongQuanTab = memo(
                                             ? onTheLucFieldChange
                                             : undefined
                                     }
+                                    errors={errors}
                                 />
                             ))}
                             <Grid size={{ xs: 12, sm: 4, md: 2 }}>
@@ -338,6 +342,7 @@ const TongQuanTab = memo(
                                     sm={4}
                                     md={3}
                                     onChangeExtra={onSinhTonChange}
+                                    errors={errors}
                                 />
                             ))}
                             <PhanLoaiSelect
@@ -357,6 +362,7 @@ const TongQuanTab = memo(
                     readOnly={readOnly}
                     onMatChange={onMatChange}
                     classTick={classTick}
+                    errors={errors}
                 />
             </Stack>
         );

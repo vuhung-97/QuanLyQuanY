@@ -14,10 +14,10 @@ import {
     DialogContent,
     TableCell,
     TableRow,
-    TextField,
     Typography,
     Stack,
 } from "@mui/material";
+import NumberField from "@/components/common/NumberField.jsx";
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
 import SearchBarDebounced from "@/components/common/SearchBarDebounced.jsx";
 import StatusFilter from "@/components/common/StatusFilter.jsx";
@@ -47,9 +47,8 @@ const GroupRow = memo(function GroupRow({
             <TableCell sx={{ py: 0.5 }}>{item.don_vi_tinh || "--"}</TableCell>
             <TableCell sx={{ py: 0.5 }}>{item.so_luong}</TableCell>
             <TableCell sx={{ py: 0.5 }}>
-                <TextField
+                <NumberField
                     size="small"
-                    type="number"
                     value={selected ? (quantity ?? "") : ""}
                     onChange={(e) =>
                         onQuantityChange(

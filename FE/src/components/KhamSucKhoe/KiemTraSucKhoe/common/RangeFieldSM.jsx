@@ -1,5 +1,6 @@
 import { memo, useCallback, useState } from "react";
-import { Grid, InputAdornment, TextField, Tooltip } from "@mui/material";
+import { Grid, InputAdornment, Tooltip } from "@mui/material";
+import NumberField from "@/components/common/NumberField.jsx";
 import { fieldRanges, isOutOfRange } from "../tabs/fieldRanges.js";
 
 const RangeFieldSM = memo(function RangeFieldSM({
@@ -15,6 +16,7 @@ const RangeFieldSM = memo(function RangeFieldSM({
     sm = 4,
     md = 2,
     onChangeExtra,
+    errors,
 }) {
     const [val, setVal] = useState(() => dataRef.current?.[name] ?? "");
 
@@ -29,6 +31,7 @@ const RangeFieldSM = memo(function RangeFieldSM({
     );
 
     const outOfRange = isOutOfRange(name, val);
+    const fieldError = errors?.[name];
 
     return (
         <Grid size={{ xs, sm, md }}>
@@ -37,16 +40,16 @@ const RangeFieldSM = memo(function RangeFieldSM({
                 arrow
                 placement="right"
             >
-                <TextField
+                <NumberField
                     name={name}
                     label={label}
-                    type="number"
                     value={val}
                     onChange={handleChange}
                     disabled={readOnly}
                     fullWidth
                     size={size}
-                    error={outOfRange}
+                    error={outOfRange || Boolean(fieldError)}
+                    helperText={fieldError}
                     slotProps={{
                         htmlInput: { step, min },
                         input: unit

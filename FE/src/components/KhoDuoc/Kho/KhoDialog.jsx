@@ -23,6 +23,7 @@ import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import NotesOutlinedIcon from "@mui/icons-material/NotesOutlined";
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper.jsx";
 import FormTextField from "@/components/common/FormTextField.jsx";
+import NumberField from "@/components/common/NumberField.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import useKhoForm from "@/hooks/useKhoForm.js";
 import {
@@ -278,13 +279,12 @@ export default function KhoDialog({
                 );
             case "number":
                 return (
-                    <FormTextField
+                    <NumberField
                         name={field.name}
                         initialValue={getValue(field.name)}
                         onUpdateRef={hook.updateField}
                         label={field.label}
                         disabled={isView}
-                        type="number"
                         error={!!error}
                         helperText={
                             error ||

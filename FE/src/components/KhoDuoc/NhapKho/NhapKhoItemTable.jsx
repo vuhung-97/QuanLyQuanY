@@ -10,6 +10,7 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
+import NumberField from "@/components/common/NumberField.jsx";
 import { Delete as DeleteIcon } from "@mui/icons-material";
 import DatePicker from "@/components/common/DatePicker.jsx";
 
@@ -87,8 +88,7 @@ const NhapKhoTableRow = memo(function NhapKhoTableRow({
                         {soLuong}
                     </Typography>
                 ) : (
-                    <TextField
-                        type="number"
+                    <NumberField
                         size="small"
                         value={soLuong}
                         onFocus={() => (soLuongFocused.current = true)}
@@ -116,8 +116,7 @@ const NhapKhoTableRow = memo(function NhapKhoTableRow({
                             : "—"}
                     </Typography>
                 ) : (
-                    <TextField
-                        type="number"
+                    <NumberField
                         size="small"
                         value={donGia}
                         onFocus={() => (donGiaFocused.current = true)}

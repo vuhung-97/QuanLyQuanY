@@ -19,6 +19,7 @@ import {
     Inventory2 as KhoIcon,
 } from "@mui/icons-material";
 import KhoThuocDialog from "@/components/KhamBenhChoQN/KhamBenh/KhoThuocDialog.jsx";
+import NumberField from "@/components/common/NumberField.jsx";
 
 const DVT_OPTIONS = ["Viên", "Lọ", "Chai", "Hộp", "Ống", "Tuýp", "Gói", "Vỉ", "Lít", "Ml", "Kg", "Gam"];
 
@@ -81,9 +82,8 @@ const DuTruRow = memo(function DuTruRow({
                 />
             </TableCell>
             <TableCell sx={{ py: 1 }}>
-                <TextField
+                <NumberField
                     label="SL"
-                    type="number"
                     size="small"
                     value={soLuong}
                     onChange={handleSoLuong}

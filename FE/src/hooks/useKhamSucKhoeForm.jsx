@@ -17,6 +17,32 @@ import {
     computeHighestClassification,
 } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
 
+const TS_NUMBER_FIELDS = {
+    chieu_cao: "Chiều cao",
+    can_nang: "Cân nặng",
+    vong_nguc: "Vòng ngực",
+    vong_bung: "Vòng bụng",
+    mach: "Mạch",
+    huyet_ap_tam_thu: "HA Tâm thu",
+    huyet_ap_tam_truong: "HA Tâm trương",
+    mat_khong_kinh_trai: "Thị lực không kính (Trái)",
+    mat_khong_kinh_phai: "Thị lực không kính (Phải)",
+};
+
+const XN_NUMBER_FIELDS = {
+    hong_cau: "Hồng cầu",
+    bach_cau: "Bạch cầu",
+    tieu_cau: "Tiểu cầu",
+    glucose_mau: "Glucose",
+    ure: "Ure",
+    creatinin: "Creatinin",
+    ast: "AST",
+    alt: "ALT",
+    nuoc_tieu_te_bao: "Tế bào nước tiểu",
+};
+
+const NUMBER_FIELD_LABELS = { ...TS_NUMBER_FIELDS, ...XN_NUMBER_FIELDS };
+
 function getDirty(current, initial) {
     const dirty = {};
     for (const key of Object.keys(current)) {
@@ -49,6 +75,7 @@ export default function useKhamSucKhoeForm({
     const [ngayNhapNgu, setNgayNhapNgu] = useState("");
     const [saving, setSaving] = useState(false);
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "error" });
+    const [errors, setErrors] = useState({});
     const tsRef = useRef(null);
     const lsRef = useRef(null);
     const xnRef = useRef(null);
@@ -76,6 +103,7 @@ export default function useKhamSucKhoeForm({
         let ignore = false;
         setNgayNhapNgu(quanNhan.ngay_nhap_ngu || "");
         setSnackbar({ open: false, message: "", severity: "error" });
+        setErrors({});
         setActiveTab(initialTab ?? allowedTabs[0] ?? 0);
         setLoadingPhieu(false);
 
@@ -148,10 +176,30 @@ export default function useKhamSucKhoeForm({
         e.preventDefault();
         setSaving(true);
         setSnackbar({ open: false, message: "", severity: "error" });
+        setErrors({});
         try {
             if (!initialTS) {
                 setSnackbar({ open: true, message: "Dữ liệu chưa sẵn sàng.", severity: "warning" });
                 setSaving(false);
+                return;
+            }
+
+            const tsCheck = tsRef.current?.getData() ?? initialTS;
+            const xnCheck = xnRef.current?.getData() ?? initialXN;
+            const fieldErrors = {};
+            for (const [field] of Object.entries(NUMBER_FIELD_LABELS)) {
+                const source = field in TS_NUMBER_FIELDS ? tsCheck : xnCheck;
+                const v = source?.[field];
+                if (v === "" || v === undefined || v === null) continue;
+                const num = Number(v);
+                if (Number.isNaN(num) || num < 0) {
+                    fieldErrors[field] = "Phải là số không âm";
+                }
+            }
+            if (Object.keys(fieldErrors).length > 0) {
+                setErrors(fieldErrors);
+                const firstField = Object.keys(fieldErrors)[0];
+                setActiveTab(firstField in TS_NUMBER_FIELDS ? 0 : 2);
                 return;
             }
 
@@ -219,6 +267,7 @@ export default function useKhamSucKhoeForm({
         currentPhieu,
         snackbar,
         handleCloseSnackbar,
+        errors,
         tsRef,
         lsRef,
         xnRef,

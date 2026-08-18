@@ -33,6 +33,7 @@ import KhoPage from "./pages/KhoDuoc/KhoPage.jsx";
 import UserManagementPage from "./pages/Admin/UserManagementPage.jsx";
 // import RolePermissionPage from "./pages/Admin/RolePermissionPage.jsx";
 import AuditLogPage from "./pages/Admin/AuditLogPage.jsx";
+import RolePermissionPage from "./pages/Admin/RolePermissionPage.jsx";
 
 export default function App() {
     return (
@@ -53,9 +54,7 @@ export default function App() {
                         <Route
                             index
                             element={
-                                <RoleRoute
-                                    roles={MENU_ROLE_MAP["tong-quan"]}
-                                >
+                                <RoleRoute roles={MENU_ROLE_MAP["tong-quan"]}>
                                     <DashboardPage />
                                 </RoleRoute>
                             }
@@ -260,10 +259,10 @@ export default function App() {
                                     path="nguoi-dung"
                                     element={<UserManagementPage />}
                                 />
-                                {/* <Route
+                                <Route
                                     path="phan-quyen"
                                     element={<RolePermissionPage />}
-                                /> */}
+                                />
                                 <Route
                                     path="nhat-ky"
                                     element={<AuditLogPage />}

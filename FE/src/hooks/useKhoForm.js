@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { khoDuocService } from "@/services/khoDuocService.js";
 import { INIT_FORM } from "@/constants/khoConstant.js";
+import { getErrorMessage } from "@/utils/apiError.js";
 
 export default function useKhoForm({ open, thuocId, mode, onClose, onSaved }) {
     const formRef = useRef({ ...INIT_FORM });
@@ -103,6 +104,11 @@ export default function useKhoForm({ open, thuocId, mode, onClose, onSaved }) {
             setErrors({ ten_thuoc_vtyt: "Tên thuốc/VTYT không được để trống" });
             return;
         }
+        const soLuong = Number(f.so_luong);
+        if (Number.isNaN(soLuong) || soLuong < 0) {
+            setErrors({ so_luong: "Số lượng tồn không được âm" });
+            return;
+        }
         setSaving(true);
         try {
             const payload = {
@@ -111,7 +117,7 @@ export default function useKhoForm({ open, thuocId, mode, onClose, onSaved }) {
                 don_vi_tinh: f.don_vi_tinh || null,
                 phan_loai: f.phan_loai || null,
                 hoat_chat: f.hoat_chat || null,
-                so_luong: Number(f.so_luong) || 0,
+                so_luong: soLuong,
                 mo_ta: f.mo_ta || null,
             };
             let saved;
@@ -123,8 +129,11 @@ export default function useKhoForm({ open, thuocId, mode, onClose, onSaved }) {
             onSaved?.(saved?.data);
             handleClose();
         } catch (err) {
-            const msg = err?.response?.data?.detail || "Lỗi lưu dữ liệu";
-            setSnackbar({ open: true, message: msg, severity: "error" });
+            setSnackbar({
+                open: true,
+                message: getErrorMessage(err, "Lỗi lưu dữ liệu"),
+                severity: "error",
+            });
         } finally {
             setSaving(false);
         }

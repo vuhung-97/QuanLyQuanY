@@ -9,9 +9,9 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    TextField,
     Typography,
 } from "@mui/material";
+import NumberField from "@/components/common/NumberField.jsx";
 import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
 
 const ChiTietXuatTable = memo(function ChiTietXuatTable({ items, isView, onAdd, onRemove, onQuantityChange, thucXuatEditable = false, onThucXuatChange }) {
@@ -76,8 +76,7 @@ const ChiTietXuatTable = memo(function ChiTietXuatTable({ items, isView, onAdd, 
                                         {isView ? (
                                             item.so_luong
                                         ) : (
-                                            <TextField
-                                                type="number"
+                                            <NumberField
                                                 size="small"
                                                 value={item.so_luong}
                                                 onChange={(e) =>
@@ -104,8 +103,7 @@ const ChiTietXuatTable = memo(function ChiTietXuatTable({ items, isView, onAdd, 
                                     {isView && (
                                         <TableCell align="right">
                                             {thucXuatEditable ? (
-                                                <TextField
-                                                    type="number"
+                                                <NumberField
                                                     size="small"
                                                     value={
                                                         item.so_luong_thuc_xuat ??

@@ -2,6 +2,22 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import api from "../services/api";
 import { noiTruService } from "../services/noiTruService";
 
+const EMPTY_ERRORS = {
+    ma_buong: "",
+    ma_giuong: "",
+    nhiet_do: "",
+    ha_tam_thu: "",
+    ha_tam_truong: "",
+    nhip_tim: "",
+};
+
+const validateVital = (value) => {
+    if (value === "") return "";
+    const num = Number(value);
+    if (Number.isNaN(num) || num < 0) return "Phải là số không âm";
+    return "";
+};
+
 export default function useLapBenhAnForm({ open, onSave: externalSave, benhAn, exam }) {
     const [buongList, setBuongList] = useState([]);
     const [giuongList, setGiuongList] = useState([]);
@@ -13,7 +29,7 @@ export default function useLapBenhAnForm({ open, onSave: externalSave, benhAn, e
     const [maGiuong, setMaGiuong] = useState("");
     const [maNhomBenh, setMaNhomBenh] = useState("");
     const [ngayNhapVien, setNgayNhapVien] = useState(new Date().toISOString());
-    const [errors, setErrors] = useState({ ma_buong: "", ma_giuong: "" });
+    const [errors, setErrors] = useState({ ...EMPTY_ERRORS });
 
     const nhietDoRef = useRef(null);
     const haTamThuRef = useRef(null);
@@ -91,7 +107,7 @@ export default function useLapBenhAnForm({ open, onSave: externalSave, benhAn, e
                 setMaGiuong(benhAn.ma_giuong || "");
                 setMaNhomBenh(benhAn.ma_nhom_benh || "");
                 setNgayNhapVien(benhAn.ngay_nhap_vien || new Date().toISOString());
-                setErrors({ ma_buong: "", ma_giuong: "" });
+                setErrors({ ...EMPTY_ERRORS });
                 if (nhietDoRef.current) nhietDoRef.current.value = defaultValues.nhiet_do || "";
                 if (haTamThuRef.current) haTamThuRef.current.value = defaultValues.ha_tam_thu || "";
                 if (haTamTruongRef.current) haTamTruongRef.current.value = defaultValues.ha_tam_truong || "";
@@ -103,7 +119,7 @@ export default function useLapBenhAnForm({ open, onSave: externalSave, benhAn, e
                 setMaNhomBenh(exam?.ma_nhom_benh || "");
                 setGiuongList([]);
                 setNgayNhapVien(new Date().toISOString());
-                setErrors({ ma_buong: "", ma_giuong: "" });
+                setErrors({ ...EMPTY_ERRORS });
                 [
                     nhietDoRef, haTamThuRef, haTamTruongRef, nhipTimRef,
                     lyDoRef,
@@ -147,11 +163,15 @@ export default function useLapBenhAnForm({ open, onSave: externalSave, benhAn, e
     const getVal = (ref) => ref.current?.value || "";
 
     const handleSave = useCallback(() => {
-        const newErrors = { ma_buong: "", ma_giuong: "" };
+        const newErrors = { ...EMPTY_ERRORS };
         if (!maBuong) newErrors.ma_buong = "Vui lòng chọn buồng";
         if (!maGiuong) newErrors.ma_giuong = "Vui lòng chọn giường";
+        newErrors.nhiet_do = validateVital(getVal(nhietDoRef));
+        newErrors.ha_tam_thu = validateVital(getVal(haTamThuRef));
+        newErrors.ha_tam_truong = validateVital(getVal(haTamTruongRef));
+        newErrors.nhip_tim = validateVital(getVal(nhipTimRef));
         setErrors(newErrors);
-        if (newErrors.ma_buong || newErrors.ma_giuong) return;
+        if (Object.values(newErrors).some(Boolean)) return;
 
         const payload = {
             ma_buong: maBuong,

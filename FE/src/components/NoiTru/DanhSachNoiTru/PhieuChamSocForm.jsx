@@ -6,12 +6,12 @@ import {
     DialogContent,
     Grid,
     Stack,
-    TextField,
     Typography,
 } from "@mui/material";
 import ActionIcon from "@/components/common/ActionIcon.jsx";
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
 import FormTextField from "@/components/common/FormTextField.jsx";
+import NumberField from "@/components/common/NumberField.jsx";
 import { Delete as DeleteIcon, Add as AddIcon } from "@mui/icons-material";
 import KhoThuocDialog from "@/components/KhamBenhChoQN/KhamBenh/KhoThuocDialog.jsx";
 import useThuocList from "@/hooks/useThuocList.jsx";
@@ -52,8 +52,7 @@ const ThuocItemRow = memo(function ThuocItemRow({
             <Typography variant="body2" sx={{ flex: 1 }}>
                 {index + 1}. {item.ten_thuoc_vtyt || item.ma_thuoc_vtyt}
             </Typography>
-            <TextField
-                type="number"
+            <NumberField
                 size="small"
                 value={soLuong}
                 onChange={handleSoLuongChange}

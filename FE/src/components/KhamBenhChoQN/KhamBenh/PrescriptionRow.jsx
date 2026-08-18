@@ -9,6 +9,7 @@ import { Autocomplete, Box, Stack, TextField, Typography } from "@mui/material";
 import { Delete as DeleteIcon } from "@mui/icons-material";
 import ActionIcon from "@/components/common/ActionIcon.jsx";
 import FormTextField from "@/components/common/FormTextField.jsx";
+import NumberField from "@/components/common/NumberField.jsx";
 import {
     THOI_DIEM_OPTIONS,
     CACH_SU_DUNG_OPTIONS,
@@ -41,28 +42,25 @@ const SangTruaCachDungFields = memo(function SangTruaCachDungFields({
     return (
         <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
             <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
-                <TextField
+                <NumberField
                     size="small"
                     label="Sáng"
-                    type="number"
                     value={sang}
                     onChange={onSangChange}
                     sx={{ width: 100 }}
                     slotProps={{ min: 0 }}
                 />
-                <TextField
+                <NumberField
                     size="small"
                     label="Trưa"
-                    type="number"
                     value={trua}
                     onChange={onTruaChange}
                     sx={{ width: 100 }}
                     slotProps={{ min: 0 }}
                 />
-                <TextField
+                <NumberField
                     size="small"
                     label="Tối"
-                    type="number"
                     value={toi}
                     onChange={onToiChange}
                     sx={{ width: 100 }}
@@ -174,14 +172,13 @@ const PrescriptionRow = memo(
                             fullWidth
                         />
                     </Box>
-                    <TextField
+                    <NumberField
                         size="small"
                         label={
                             soLuongMax !== Infinity
                                 ? `SL (tồn: ${soLuongMax})`
                                 : "Số lượng"
                         }
-                        type="number"
                         value={soLuong}
                         onChange={handleSoLuongChange}
                         sx={{ width: 130 }}

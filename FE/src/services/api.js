@@ -1,5 +1,6 @@
 import axios from "axios";
 import { STORAGE_KEYS } from "@/components/layout/common/constants";
+import { getErrorMessage } from "@/utils/apiError.js";
 
 export function decodeJWT(token) {
     try {
@@ -38,8 +39,11 @@ api.interceptors.request.use((config) => {
 
 function normalizeApiError(error) {
     const detail = error.response?.data?.detail;
-    if (detail && typeof detail !== "string") {
-        error.response.data.detail = JSON.stringify(detail);
+    if (detail) {
+        const message = getErrorMessage(error, "");
+        if (message) {
+            error.response.data.detail = message;
+        }
     }
     return error;
 }

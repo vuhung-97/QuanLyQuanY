@@ -10,6 +10,7 @@ import {
     Typography,
 } from "@mui/material";
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
+import NumberField from "@/components/common/NumberField.jsx";
 import { Delete as DeleteIcon } from "@mui/icons-material";
 import ActionIcon from "@/components/common/ActionIcon.jsx";
 
@@ -46,9 +47,8 @@ export default function BuongDialog({
                         error={!!buongFormErrors.ten_buong}
                         helperText={buongFormErrors.ten_buong}
                     />
-                    <TextField
+                    <NumberField
                         label="Sức chứa (số giường tối đa)"
-                        type="number"
                         fullWidth
                         value={buongForm.so_giuong_toi_da}
                         onChange={(e) =>

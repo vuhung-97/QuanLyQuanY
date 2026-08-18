@@ -6,8 +6,8 @@ import {
     DialogContent,
     DialogContentText,
     Stack,
-    TextField,
 } from "@mui/material";
+import NumberField from "@/components/common/NumberField.jsx";
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper.jsx";
 
 export default function ThresholdDialog({
@@ -45,25 +45,22 @@ export default function ThresholdDialog({
                     số lượng tồn dưới mức này.
                 </DialogContentText>
                 <Stack spacing={2.5}>
-                    <TextField
+                    <NumberField
                         label="Ngưỡng tồn kho tối thiểu — Thuốc"
-                        type="number"
                         fullWidth
                         value={thuoc}
                         onChange={(e) => setThuoc(Number(e.target.value))}
                         slotProps={{ htmlInput: { min: 1 } }}
                     />
-                    <TextField
+                    <NumberField
                         label="Ngưỡng tồn kho tối thiểu — VTYT"
-                        type="number"
                         fullWidth
                         value={vatTu}
                         onChange={(e) => setVatTu(Number(e.target.value))}
                         slotProps={{ htmlInput: { min: 1 } }}
                     />
-                    <TextField
+                    <NumberField
                         label="Ngưỡng cảnh báo hết hạn (ngày)"
-                        type="number"
                         fullWidth
                         value={sapHetHanNgay}
                         onChange={(e) => setSapHetHanNgay(Number(e.target.value))}
