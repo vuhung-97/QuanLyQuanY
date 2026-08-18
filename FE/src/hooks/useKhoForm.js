@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import dayjs from "dayjs";
 import { khoDuocService } from "@/services/khoDuocService.js";
 import { INIT_FORM } from "@/constants/khoConstant.js";
 
@@ -32,15 +31,8 @@ export default function useKhoForm({ open, thuocId, mode, onClose, onSaved }) {
                 loai: d.loai || "",
                 don_vi_tinh: d.don_vi_tinh || "",
                 phan_loai: d.phan_loai || "",
-                nha_san_xuat: d.nha_san_xuat || "",
                 hoat_chat: d.hoat_chat || "",
-                don_gia: d.don_gia != null ? String(d.don_gia) : "",
                 so_luong: d.so_luong ?? 0,
-                so_lo_han_dung: d.so_lo_han_dung || "",
-                han_su_dung: d.han_su_dung ? dayjs(d.han_su_dung) : null,
-                nam_san_xuat:
-                    d.nam_san_xuat != null ? String(d.nam_san_xuat) : "",
-                cap_chat_luong: d.cap_chat_luong || "",
                 mo_ta: d.mo_ta || "",
             };
         } catch {
@@ -118,18 +110,8 @@ export default function useKhoForm({ open, thuocId, mode, onClose, onSaved }) {
                 loai: f.loai || null,
                 don_vi_tinh: f.don_vi_tinh || null,
                 phan_loai: f.phan_loai || null,
-                nha_san_xuat: f.nha_san_xuat || null,
                 hoat_chat: f.hoat_chat || null,
-                don_gia: f.don_gia ? Number(f.don_gia) : null,
                 so_luong: Number(f.so_luong) || 0,
-                so_lo_han_dung: f.so_lo_han_dung || null,
-                han_su_dung: f.han_su_dung
-                    ? f.han_su_dung.format("YYYY-MM-DD")
-                    : null,
-                nam_san_xuat: f.nam_san_xuat
-                    ? Number(f.nam_san_xuat)
-                    : null,
-                cap_chat_luong: f.cap_chat_luong || null,
                 mo_ta: f.mo_ta || null,
             };
             let saved;

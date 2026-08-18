@@ -1,6 +1,7 @@
 import { memo, useCallback, useEffect, useState } from "react";
 import {
     Autocomplete,
+    Box,
     Button,
     Dialog,
     DialogActions,
@@ -8,11 +9,20 @@ import {
     Grid,
     MenuItem,
     TextField,
+    ToggleButton,
+    ToggleButtonGroup,
     Typography,
 } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import SaveIcon from "@mui/icons-material/Save";
+import MedicationIcon from "@mui/icons-material/Medication";
+import MedicalServicesIcon from "@mui/icons-material/MedicalServices";
+import Inventory2Icon from "@mui/icons-material/Inventory2";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import NotesOutlinedIcon from "@mui/icons-material/NotesOutlined";
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper.jsx";
 import FormTextField from "@/components/common/FormTextField.jsx";
-import FormDatePicker from "@/components/common/FormDatePicker.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import useKhoForm from "@/hooks/useKhoForm.js";
 import {
@@ -20,6 +30,67 @@ import {
     LOAI_OPTIONS,
     MODE_TITLES,
 } from "@/constants/khoConstant.js";
+
+const SECTIONS = [
+    {
+        key: "basic",
+        label: "Thông tin cơ bản",
+        icon: <InfoOutlinedIcon fontSize="small" />,
+    },
+    {
+        key: "inventory",
+        label: "Tồn kho",
+        icon: <InventoryIcon fontSize="small" />,
+    },
+    {
+        key: "note",
+        label: "Ghi chú",
+        icon: <NotesOutlinedIcon fontSize="small" />,
+    },
+];
+
+const getOptionLabel = (options, value) => {
+    const found = options.find(
+        (opt) => (typeof opt === "object" ? opt.value : opt) === value,
+    );
+    return found ? (typeof found === "object" ? found.label : found) : "";
+};
+
+const SectionHeader = ({ icon, title }) => (
+    <Box
+        sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            mt: 1.5,
+            mb: 2,
+        }}
+    >
+        <Box sx={{ color: "primary.main", display: "flex" }}>{icon}</Box>
+        <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+            {title}
+        </Typography>
+        <Box sx={{ flexGrow: 1, height: 1, bgcolor: "divider" }} />
+    </Box>
+);
+
+const InfoItem = ({ label, value }) => (
+    <Box>
+        <Typography variant="caption" sx={{ color: "text.secondary" }}>
+            {label}
+        </Typography>
+        <Typography
+            variant="body1"
+            sx={{
+                fontWeight: 500,
+                wordBreak: "break-word",
+                whiteSpace: "pre-wrap",
+            }}
+        >
+            {value || "—"}
+        </Typography>
+    </Box>
+);
 
 const AutocompleteFormField = memo(function AutocompleteFormField({
     label,
@@ -135,29 +206,54 @@ export default function KhoDialog({
 
     const hook = useKhoForm({ open, thuocId, mode, onClose, onSaved });
 
+    const getValue = (name) => {
+        const v = hook.getFieldDefault(name);
+        return v ?? "";
+    };
+
     const renderField = (field) => {
         const error = hook.errors[field.name];
-        const helperText = error;
 
         switch (field.type) {
             case "loai":
                 return (
-                    <SelectFormField
-                        label={field.label}
-                        name={field.name}
-                        initialValue={hook.getFieldDefault(field.name)}
-                        onChange={hook.updateField}
-                        disabled={isView}
-                        required={field.required}
-                        options={LOAI_OPTIONS}
-                    />
+                    <ToggleButtonGroup
+                        exclusive
+                        fullWidth
+                        value={getValue("loai")}
+                        onChange={(_, value) => {
+                            if (value !== null) {
+                                hook.updateField("loai", value);
+                            }
+                        }}
+                        size="medium"
+                        sx={{
+                            "& .MuiToggleButton-root": {
+                                py: 1.25,
+                                textTransform: "none",
+                                fontWeight: 600,
+                                gap: 1,
+                            },
+                        }}
+                    >
+                        {LOAI_OPTIONS.map((opt) => (
+                            <ToggleButton key={opt.value} value={opt.value}>
+                                {opt.value === "thuoc" ? (
+                                    <MedicationIcon />
+                                ) : (
+                                    <MedicalServicesIcon />
+                                )}
+                                {opt.label}
+                            </ToggleButton>
+                        ))}
+                    </ToggleButtonGroup>
                 );
             case "donViTinh":
                 return (
                     <AutocompleteFormField
                         label={field.label}
                         name={field.name}
-                        initialValue={hook.getFieldDefault(field.name)}
+                        initialValue={getValue(field.name)}
                         onChange={hook.updateField}
                         disabled={isView}
                         options={hook.donViTinhOptions}
@@ -170,7 +266,7 @@ export default function KhoDialog({
                         key={`phan_loai-${hook.fieldVersion.phan_loai || 0}`}
                         label={field.label}
                         name={field.name}
-                        initialValue={hook.getFieldDefault(field.name)}
+                        initialValue={getValue(field.name)}
                         onChange={hook.updateField}
                         disabled={isView}
                         options={hook.phanLoaiOptions}
@@ -180,27 +276,22 @@ export default function KhoDialog({
                         slotProps={field.slotProps}
                     />
                 );
-            case "date":
-                return (
-                    <FormDatePicker
-                        name={field.name}
-                        label={field.label}
-                        initialValue={hook.getFieldDefault(field.name)}
-                        onUpdateRef={hook.updateField}
-                        size="small"
-                    />
-                );
             case "number":
                 return (
                     <FormTextField
                         name={field.name}
-                        initialValue={hook.getFieldDefault(field.name)}
+                        initialValue={getValue(field.name)}
                         onUpdateRef={hook.updateField}
                         label={field.label}
                         disabled={isView}
                         type="number"
                         error={!!error}
-                        helperText={helperText}
+                        helperText={
+                            error ||
+                            (field.name === "so_luong"
+                                ? "Số lượng tồn kho hiện tại của thuốc / vật tư y tế."
+                                : undefined)
+                        }
                         slotProps={field.slotProps}
                         fullWidth
                         size="small"
@@ -210,7 +301,7 @@ export default function KhoDialog({
                 return (
                     <FormTextField
                         name={field.name}
-                        initialValue={hook.getFieldDefault(field.name)}
+                        initialValue={getValue(field.name)}
                         onUpdateRef={hook.updateField}
                         label={field.label}
                         disabled={isView}
@@ -224,18 +315,87 @@ export default function KhoDialog({
                 return (
                     <FormTextField
                         name={field.name}
-                        initialValue={hook.getFieldDefault(field.name)}
+                        initialValue={getValue(field.name)}
                         onUpdateRef={hook.updateField}
                         label={field.label}
                         disabled={isView}
                         required={field.required}
                         error={!!error}
-                        helperText={helperText}
+                        helperText={error}
                         fullWidth
                         size="small"
                     />
                 );
         }
+    };
+
+    const renderViewValue = (field) => {
+        const raw = getValue(field.name);
+        switch (field.type) {
+            case "loai": {
+                const label = getOptionLabel(LOAI_OPTIONS, raw);
+                return (
+                    <InfoItem
+                        label={field.label}
+                        value={
+                            <span
+                                style={{
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    gap: 6,
+                                }}
+                            >
+                                {raw === "thuoc" ? (
+                                    <MedicationIcon fontSize="small" />
+                                ) : raw === "vat_tu" ? (
+                                    <MedicalServicesIcon fontSize="small" />
+                                ) : null}
+                                {label}
+                            </span>
+                        }
+                    />
+                );
+            }
+            case "phanLoai":
+                return (
+                    <InfoItem
+                        label={field.label}
+                        value={getOptionLabel(hook.phanLoaiOptions, raw)}
+                    />
+                );
+            case "number":
+                return (
+                    <InfoItem
+                        label={field.label}
+                        value={
+                            raw === "" || raw == null
+                                ? ""
+                                : Number(raw).toLocaleString("vi-VN")
+                        }
+                    />
+                );
+            default:
+                return <InfoItem label={field.label} value={raw} />;
+        }
+    };
+
+    const renderSection = (section) => {
+        const fields = DIALOG_FIELDS.filter(
+            (f) => f.section === section.key,
+        );
+        if (fields.length === 0) return null;
+        return (
+            <Box key={section.key}>
+                <SectionHeader icon={section.icon} title={section.label} />
+                <Grid container spacing={2.5}>
+                    {fields.map((field) => (
+                        <Grid key={field.name} size={field.grid}>
+                            {isView ? renderViewValue(field) : renderField(field)}
+                        </Grid>
+                    ))}
+                </Grid>
+            </Box>
+        );
     };
 
     return (
@@ -246,7 +406,31 @@ export default function KhoDialog({
                 fullWidth
                 maxWidth="md"
             >
-                <DialogTitleWrapper>
+                <DialogTitleWrapper
+                    sx={{
+                        position: "relative",
+                        overflow: "hidden",
+                        "&::before": {
+                            content: '""',
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            height: 4,
+                            background:
+                                "linear-gradient(90deg, #0B3B60 0%, #00B4D8 100%)",
+                        },
+                    }}
+                    typographySx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 1,
+                    }}
+                >
+                    <Inventory2Icon
+                        sx={{ fontSize: 24, color: "primary.main" }}
+                    />
                     {MODE_TITLES[mode] || "Thuốc / VTYT"}
                 </DialogTitleWrapper>
 
@@ -256,23 +440,25 @@ export default function KhoDialog({
                             Đang tải...
                         </Typography>
                     ) : (
-                        <Grid container spacing={2.5} sx={{ mt: 0.5 }}>
-                            {DIALOG_FIELDS.map((field) => (
-                                <Grid key={field.name} size={field.grid}>
-                                    {renderField(field)}
-                                </Grid>
-                            ))}
-                        </Grid>
+                        <Box sx={{ pt: 1 }}>
+                            {SECTIONS.map(renderSection)}
+                        </Box>
                     )}
                 </DialogContent>
 
                 {!hook.loading && (
                     <DialogActions sx={{ p: 2 }}>
                         {isView ? (
-                            <Button onClick={hook.handleClose}>Đóng</Button>
+                            <Button
+                                variant="outlined"
+                                onClick={hook.handleClose}
+                            >
+                                Đóng
+                            </Button>
                         ) : (
                             <>
                                 <Button
+                                    variant="outlined"
                                     onClick={hook.handleClose}
                                     disabled={hook.saving}
                                 >
@@ -281,6 +467,9 @@ export default function KhoDialog({
                                 <Button
                                     onClick={hook.handleSave}
                                     variant="contained"
+                                    startIcon={
+                                        isEdit ? <SaveIcon /> : <AddIcon />
+                                    }
                                     disabled={hook.saving}
                                 >
                                     {hook.saving
