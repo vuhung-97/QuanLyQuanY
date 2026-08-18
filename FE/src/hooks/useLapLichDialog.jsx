@@ -4,7 +4,6 @@ import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
 import { getScheduleTimeWindow } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
 import { formatDateTime } from "@/utils/date.js";
 import {
-    applyOverlap,
     detailRangeError,
     detailBoundsError,
 } from "@/utils/scheduleTimeValidation.js";
@@ -375,25 +374,12 @@ export default function useLapLichDialog({
             "Dự trù khám",
         );
 
-        const layMau = {
-            bd: layMauBd,
-            kt: layMauKt,
-            bdF: "thoi_gian_lay_mau_bat_dau",
-            ktF: "thoi_gian_lay_mau_ket_thuc",
-        };
-        const kham = {
-            bd: khamBd,
-            kt: khamKt,
-            bdF: "thoi_gian_bat_dau",
-            ktF: "thoi_gian_ket_thuc",
-        };
-        applyOverlap(
-            (field, msg) => addErr(field, msg),
-            layMau,
-            kham,
-            "Thời gian lấy máu trùng với thời gian khám",
-            "Thời gian khám trùng với thời gian lấy máu",
-        );
+        if (layMauKt && khamBd && khamBd.isBefore(layMauKt)) {
+            const msg = "Thời gian khám phải sau thời gian lấy máu";
+            addErr("thoi_gian_bat_dau", msg);
+            addErr("thoi_gian_ket_thuc", msg);
+            addErr("thoi_gian_lay_mau_ket_thuc", msg);
+        }
 
         for (const [bdF, ktF, bdV, ktV, label] of [
             [
@@ -423,25 +409,12 @@ export default function useLapLichDialog({
             }
         }
 
-        const duTruLM = {
-            bd: duTruLMBd,
-            kt: duTruLMKt,
-            bdF: "thoi_gian_du_tru_lay_mau_bat_dau",
-            ktF: "thoi_gian_du_tru_lay_mau_ket_thuc",
-        };
-        const duTruK = {
-            bd: duTruKBd,
-            kt: duTruKKt,
-            bdF: "thoi_gian_du_tru_kham_bat_dau",
-            ktF: "thoi_gian_du_tru_kham_ket_thuc",
-        };
-        applyOverlap(
-            (field, msg) => addErr(field, msg),
-            duTruLM,
-            duTruK,
-            "Dự trù lấy máu trùng với dự trù khám",
-            "Dự trù khám trùng với dự trù lấy máu",
-        );
+        if (duTruLMKt && duTruKBd && duTruKBd.isBefore(duTruLMKt)) {
+            const msg = "Dự trù khám phải sau thời gian dự trù lấy máu";
+            addErr("thoi_gian_du_tru_kham_bat_dau", msg);
+            addErr("thoi_gian_du_tru_kham_ket_thuc", msg);
+            addErr("thoi_gian_du_tru_lay_mau_ket_thuc", msg);
+        }
 
         return e;
     }, [
@@ -577,8 +550,8 @@ export default function useLapLichDialog({
             showError("Thời gian kết thúc lấy máu phải sau thời gian bắt đầu.");
             return;
         }
-        if (layMauBd < khamKt && khamBd < layMauKt) {
-            showError("Thời gian lấy máu không được trùng với thời gian khám.");
+        if (khamBd < layMauKt) {
+            showError("Thời gian khám phải sau thời gian lấy máu.");
             return;
         }
 
@@ -605,26 +578,16 @@ export default function useLapLichDialog({
             }
         }
 
-        const duTruLMBd = thoiGianDuTruLayMauBatDau
-            ? dayjs(thoiGianDuTruLayMauBatDau)
-            : null;
         const duTruLMKt = thoiGianDuTruLayMauKetThuc
             ? dayjs(thoiGianDuTruLayMauKetThuc)
             : null;
         const duTruKBd = thoiGianDuTruKhamBatDau
             ? dayjs(thoiGianDuTruKhamBatDau)
             : null;
-        const duTruKKt = thoiGianDuTruKhamKetThuc
-            ? dayjs(thoiGianDuTruKhamKetThuc)
-            : null;
 
-        if (duTruLMBd && duTruLMKt && duTruKBd && duTruKKt) {
-            if (duTruLMBd < duTruKKt && duTruKBd < duTruLMKt) {
-                showError(
-                    "Thời gian dự trù lấy máu không được trùng với thời gian dự trù khám.",
-                );
-                return;
-            }
+        if (duTruLMKt && duTruKBd && duTruKBd < duTruLMKt) {
+            showError("Thời gian dự trù khám phải sau thời gian dự trù lấy máu.");
+            return;
         }
 
         if (Object.keys(detailErrors).length > 0) {

@@ -14,14 +14,14 @@ import RangeFieldSM from "../common/RangeFieldSM.jsx";
 import SectionTitle from "@/components/KhamSucKhoe/common/SectionTitle.jsx";
 
 const xetNghiemMauFields = [
-    { name: "hong_cau", label: "Hồng cầu", unit: "T/L" },
-    { name: "bach_cau", label: "Bạch cầu", unit: "G/L" },
-    { name: "tieu_cau", label: "Tiểu cầu", unit: "G/L" },
-    { name: "glucose_mau", label: "Glucose", unit: "mmol/l" },
-    { name: "ure", label: "Ure", unit: "mmol/l" },
-    { name: "creatinin", label: "Creatinin", unit: "umol/l" },
-    { name: "ast", label: "AST", unit: "U/L" },
-    { name: "alt", label: "ALT", unit: "U/L" },
+    { name: "hong_cau", step: 0.01, label: "Hồng cầu", unit: "T/L" },
+    { name: "bach_cau", step: 0.01, label: "Bạch cầu", unit: "G/L" },
+    { name: "tieu_cau", step: 1, label: "Tiểu cầu", unit: "G/L" },
+    { name: "glucose_mau", step: 0.01, label: "Glucose", unit: "mmol/l" },
+    { name: "ure", step: 0.1, label: "Ure", unit: "mmol/l" },
+    { name: "creatinin", step: 0.1, label: "Creatinin", unit: "umol/l" },
+    { name: "ast", step: 0.1, label: "AST", unit: "U/L" },
+    { name: "alt", step: 0.1, label: "ALT", unit: "U/L" },
 ];
 
 const xetNghiemNuocTieuFields = [
@@ -99,7 +99,7 @@ const XetNghiemTab = memo(
                                     dataRef={dataRef}
                                     readOnly={readOnly}
                                     unit={f.unit}
-                                    step={0.1}
+                                    step={f.step}
                                     xs={12}
                                     sm={3}
                                     md={3}

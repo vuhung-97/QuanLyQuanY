@@ -19,7 +19,6 @@ import { ALL_TABS, ROLE_TAB_ACCESS } from "@/constants/khamSucKhoeConstants.js";
 import { getCurrentUser } from "@/services/api.js";
 import { ROLES } from "@/constants/roleConstants.js";
 
-
 export default function useKhamSucKhoeMain() {
     const {
         soldiers,
@@ -68,13 +67,7 @@ export default function useKhamSucKhoeMain() {
     });
 
     const filteredSoldiers = useMemo(
-        () =>
-            filterSoldiers(
-                soldiers,
-                phieuMap,
-                statusFilter,
-                searchText,
-            ),
+        () => filterSoldiers(soldiers, phieuMap, statusFilter, searchText),
         [soldiers, phieuMap, statusFilter, searchText],
     );
 
@@ -106,24 +99,10 @@ export default function useKhamSucKhoeMain() {
             stats
                 ? [
                       {
-                          label: "Đã khám",
-                          value: stats.da_kham ?? 0,
-                          color: "success.main",
-                          bg: "rgba(16, 185, 129, 0.12)",
-                          icon: <CheckCircleIcon />,
-                          filterKey: "da_kham",
-                      },
-                      {
-                          label: "Đang khám",
-                          value: stats.dang_kham ?? 0,
-                          color: "warning.main",
-                          bg: "rgba(245, 158, 11, 0.14)",
-                          icon: <PendingActionsIcon />,
-                          filterKey: "dang_kham",
-                      },
-                      {
                           label: "Chưa lấy máu xét nghiệm",
-                          value: (stats.tong_quan_so ?? 0) - (stats.da_lay_mau ?? 0),
+                          value:
+                              (stats.tong_quan_so ?? 0) -
+                              (stats.da_lay_mau ?? 0),
                           color: "secondary.main",
                           bg: "rgba(0, 180, 216, 0.12)",
                           icon: <ScienceIcon />,
@@ -142,6 +121,22 @@ export default function useKhamSucKhoeMain() {
                           icon: <PersonAddAltIcon />,
                           filterKey: "da_lay_mau",
                       },
+                      {
+                          label: "Đang khám",
+                          value: stats.dang_kham ?? 0,
+                          color: "warning.main",
+                          bg: "rgba(245, 158, 11, 0.14)",
+                          icon: <PendingActionsIcon />,
+                          filterKey: "dang_kham",
+                      },
+                      {
+                          label: "Đã khám",
+                          value: stats.da_kham ?? 0,
+                          color: "success.main",
+                          bg: "rgba(16, 185, 129, 0.12)",
+                          icon: <CheckCircleIcon />,
+                          filterKey: "da_kham",
+                      },
                   ]
                 : [],
         [stats],
@@ -153,7 +148,8 @@ export default function useKhamSucKhoeMain() {
             return;
         }
         let ignore = false;
-        khamSucKhoeService.getMyAssignment(selectedSchedule)
+        khamSucKhoeService
+            .getMyAssignment(selectedSchedule)
             .then((res) => {
                 if (!ignore) setMyAssignment(res.data || null);
             })
@@ -173,7 +169,8 @@ export default function useKhamSucKhoeMain() {
                 setNoRoleNotice(false);
                 return;
             }
-            khamSucKhoeService.getMyAssignment(selectedSchedule)
+            khamSucKhoeService
+                .getMyAssignment(selectedSchedule)
                 .then((res) => {
                     const data = res.data;
                     if (data && data.ma_vai_tro) {
@@ -201,74 +198,99 @@ export default function useKhamSucKhoeMain() {
         (savedPhieu) => {
             if (formDialog.qn) {
                 const qn = formDialog.qn;
-                setPhieuMap((prev) => ({ ...prev, [qn.ma_quan_nhan]: savedPhieu }));
-                setAllPhieuMap((prev) => ({ ...prev, [qn.ma_quan_nhan]: savedPhieu }));
+                setPhieuMap((prev) => ({
+                    ...prev,
+                    [qn.ma_quan_nhan]: savedPhieu,
+                }));
+                setAllPhieuMap((prev) => ({
+                    ...prev,
+                    [qn.ma_quan_nhan]: savedPhieu,
+                }));
             }
-            setFormDialog({ open: false, qn: null, phieu: null, activeTab: undefined });
+            setFormDialog({
+                open: false,
+                qn: null,
+                phieu: null,
+                activeTab: undefined,
+            });
             refreshStats();
         },
         [formDialog.qn, setPhieuMap, setAllPhieuMap, refreshStats],
     );
 
-    const handlePrint = useCallback(async (type = "chua_hoan_thanh") => {
-        if (!selectedSchedule) return;
-        try {
-            const [allSoldiers, pList] = await Promise.all([
-                fetchAllPages(`/quan_nhan/lich-kham/${selectedSchedule}`),
-                fetchAllPages(`/phieu_kham_suc_khoe/lich-kham/${selectedSchedule}`),
-            ]);
-            const allPhieuMap = (
-                Array.isArray(pList) ? pList : []
-            ).reduce((acc, p) => {
-                acc[p.ma_quan_nhan] = p;
-                return acc;
-            }, {});
-            const nam = selectedScheduleObj?.thoi_gian_bat_dau
-                ? new Date(selectedScheduleObj.thoi_gian_bat_dau).getFullYear()
-                : "";
-            const isChuaLayMau = type === "chua_lay_mau";
-            const filtered = allSoldiers
-                .filter((qn) => {
-                    const p = allPhieuMap[qn.ma_quan_nhan];
-                    if (isChuaLayMau) return !p || p.trang_thai === "chua_lay_mau";
-                    return !p || p.trang_thai !== "da_kham";
-                })
-                .sort((a, b) => {
-                    const uA = a.ma_don_vi || "";
-                    const uB = b.ma_don_vi || "";
-                    if (uA < uB) return -1;
-                    if (uA > uB) return 1;
-                    return (a.ho_ten || "").localeCompare(b.ho_ten || "", "vi");
+    const handlePrint = useCallback(
+        async (type = "chua_hoan_thanh") => {
+            if (!selectedSchedule) return;
+            try {
+                const [allSoldiers, pList] = await Promise.all([
+                    fetchAllPages(`/quan_nhan/lich-kham/${selectedSchedule}`),
+                    fetchAllPages(
+                        `/phieu_kham_suc_khoe/lich-kham/${selectedSchedule}`,
+                    ),
+                ]);
+                const allPhieuMap = (Array.isArray(pList) ? pList : []).reduce(
+                    (acc, p) => {
+                        acc[p.ma_quan_nhan] = p;
+                        return acc;
+                    },
+                    {},
+                );
+                const nam = selectedScheduleObj?.thoi_gian_bat_dau
+                    ? new Date(
+                          selectedScheduleObj.thoi_gian_bat_dau,
+                      ).getFullYear()
+                    : "";
+                const isChuaLayMau = type === "chua_lay_mau";
+                const filtered = allSoldiers
+                    .filter((qn) => {
+                        const p = allPhieuMap[qn.ma_quan_nhan];
+                        if (isChuaLayMau)
+                            return !p || p.trang_thai === "chua_lay_mau";
+                        return !p || p.trang_thai !== "da_kham";
+                    })
+                    .sort((a, b) => {
+                        const uA = a.ma_don_vi || "";
+                        const uB = b.ma_don_vi || "";
+                        if (uA < uB) return -1;
+                        if (uA > uB) return 1;
+                        return (a.ho_ten || "").localeCompare(
+                            b.ho_ten || "",
+                            "vi",
+                        );
+                    });
+                setPrintDialog({
+                    open: true,
+                    data: {
+                        soldiers: filtered,
+                        phieuMap: allPhieuMap,
+                        type,
+                        nam,
+                        unitLookup: allUnitLookup,
+                    },
                 });
-            setPrintDialog({
-                open: true,
-                data: {
-                    soldiers: filtered,
-                    phieuMap: allPhieuMap,
-                    type,
-                    nam,
-                    unitLookup: allUnitLookup,
-                },
-            });
-        } catch {}
-    }, [selectedSchedule, allUnitLookup, selectedScheduleObj]);
+            } catch {}
+        },
+        [selectedSchedule, allUnitLookup, selectedScheduleObj],
+    );
 
     const closePrintDialog = useCallback(() => {
         setPrintDialog({ open: false, data: null });
     }, []);
 
-    const handleEdit = useCallback((qn) => {
-        document.activeElement?.blur();
-        const canEdit =
-            isKhamWindow || (isXetNghiem && scheduleActive);
-        setFormDialog({
-            open: true,
-            qn,
-            phieu: null,
-            readOnly: isAdmin ? false : !canEdit,
-            activeTab: undefined,
-        });
-    }, [isKhamWindow, isXetNghiem, scheduleActive, isAdmin]);
+    const handleEdit = useCallback(
+        (qn) => {
+            document.activeElement?.blur();
+            const canEdit = isKhamWindow || (isXetNghiem && scheduleActive);
+            setFormDialog({
+                open: true,
+                qn,
+                phieu: null,
+                readOnly: isAdmin ? false : !canEdit,
+                activeTab: undefined,
+            });
+        },
+        [isKhamWindow, isXetNghiem, scheduleActive, isAdmin],
+    );
 
     const handleViewHistory = useCallback((qn) => {
         setHistoryDialog({ open: true, qn });
@@ -276,13 +298,23 @@ export default function useKhamSucKhoeMain() {
 
     const handleViewPhieu = useCallback(
         (phieu) => {
-            setFormDialog({ open: true, qn: historyDialog.qn, phieu, activeTab: undefined });
+            setFormDialog({
+                open: true,
+                qn: historyDialog.qn,
+                phieu,
+                activeTab: undefined,
+            });
             setHistoryDialog({ open: false, qn: null });
         },
         [historyDialog.qn],
     );
     const closeFormDialog = useCallback(() => {
-        setFormDialog({ open: false, qn: null, phieu: null, activeTab: undefined });
+        setFormDialog({
+            open: false,
+            qn: null,
+            phieu: null,
+            activeTab: undefined,
+        });
     }, []);
     const closeHistoryDialog = useCallback(() => {
         setHistoryDialog({ open: false, qn: null });
@@ -295,11 +327,12 @@ export default function useKhamSucKhoeMain() {
                 allPhieuMap[item.ma_quan_nhan] ||
                 phieuMap[item.ma_quan_nhan] ||
                 null;
-            const qn =
-                soldiers.find((s) => s.ma_quan_nhan === item.ma_quan_nhan) || {
-                    ma_quan_nhan: item.ma_quan_nhan,
-                    ho_ten: item.ho_ten,
-                };
+            const qn = soldiers.find(
+                (s) => s.ma_quan_nhan === item.ma_quan_nhan,
+            ) || {
+                ma_quan_nhan: item.ma_quan_nhan,
+                ho_ten: item.ho_ten,
+            };
             setFormDialog({
                 open: true,
                 qn,
@@ -311,45 +344,78 @@ export default function useKhamSucKhoeMain() {
         [allPhieuMap, phieuMap, soldiers],
     );
 
-    const handleGenerateBloodCode = useCallback(async (qn) => {
-        if (!isLayMauWindow) {
-            throw new Error("Ngoài thời gian lấy máu, không thể tạo mã lấy máu.");
-        }
-        try {
-            const nam = selectedScheduleObj
-                ? new Date(selectedScheduleObj.thoi_gian_bat_dau).getFullYear()
-                : null;
-            const res = await khamSucKhoeService.taoMaLayMau({
-                ma_quan_nhan: qn.ma_quan_nhan,
-                ma_lich_kham: selectedSchedule,
-                nam,
-            });
-            const saved = res.data;
-            setPhieuMap((prev) => ({ ...prev, [qn.ma_quan_nhan]: saved }));
-            setAllPhieuMap((prev) => ({ ...prev, [qn.ma_quan_nhan]: saved }));
-        } catch (err) {
-            const detail = err?.response?.data?.detail;
-            throw new Error(detail || "Không thể tạo mã lấy máu.");
-        }
-    }, [selectedSchedule, selectedScheduleObj, setPhieuMap, setAllPhieuMap, isLayMauWindow]);
+    const handleGenerateBloodCode = useCallback(
+        async (qn) => {
+            if (!isLayMauWindow) {
+                throw new Error(
+                    "Ngoài thời gian lấy máu, không thể tạo mã lấy máu.",
+                );
+            }
+            try {
+                const nam = selectedScheduleObj
+                    ? new Date(
+                          selectedScheduleObj.thoi_gian_bat_dau,
+                      ).getFullYear()
+                    : null;
+                const res = await khamSucKhoeService.taoMaLayMau({
+                    ma_quan_nhan: qn.ma_quan_nhan,
+                    ma_lich_kham: selectedSchedule,
+                    nam,
+                });
+                const saved = res.data;
+                setPhieuMap((prev) => ({ ...prev, [qn.ma_quan_nhan]: saved }));
+                setAllPhieuMap((prev) => ({
+                    ...prev,
+                    [qn.ma_quan_nhan]: saved,
+                }));
+                refreshStats();
+            } catch (err) {
+                const detail = err?.response?.data?.detail;
+                throw new Error(detail || "Không thể tạo mã lấy máu.");
+            }
+        },
+        [
+            selectedSchedule,
+            selectedScheduleObj,
+            setPhieuMap,
+            setAllPhieuMap,
+            isLayMauWindow,
+            refreshStats,
+        ],
+    );
 
-    const handleConfirmBloodDraw = useCallback(async (qn) => {
-        if (!isLayMauWindow) {
-            throw new Error("Ngoài thời gian lấy máu, không thể xác nhận lấy máu.");
-        }
-        try {
-            const res = await khamSucKhoeService.xacNhanLayMau({
-                ma_quan_nhan: qn.ma_quan_nhan,
-                ma_lich_kham: selectedSchedule,
-            });
-            const saved = res.data;
-            setPhieuMap((prev) => ({ ...prev, [qn.ma_quan_nhan]: saved }));
-            setAllPhieuMap((prev) => ({ ...prev, [qn.ma_quan_nhan]: saved }));
-        } catch (err) {
-            const detail = err?.response?.data?.detail;
-            throw new Error(detail || "Không thể xác nhận lấy máu.");
-        }
-    }, [selectedSchedule, setPhieuMap, setAllPhieuMap, isLayMauWindow]);
+    const handleConfirmBloodDraw = useCallback(
+        async (qn) => {
+            if (!isLayMauWindow) {
+                throw new Error(
+                    "Ngoài thời gian lấy máu, không thể xác nhận lấy máu.",
+                );
+            }
+            try {
+                const res = await khamSucKhoeService.xacNhanLayMau({
+                    ma_quan_nhan: qn.ma_quan_nhan,
+                    ma_lich_kham: selectedSchedule,
+                });
+                const saved = res.data;
+                setPhieuMap((prev) => ({ ...prev, [qn.ma_quan_nhan]: saved }));
+                setAllPhieuMap((prev) => ({
+                    ...prev,
+                    [qn.ma_quan_nhan]: saved,
+                }));
+                refreshStats();
+            } catch (err) {
+                const detail = err?.response?.data?.detail;
+                throw new Error(detail || "Không thể xác nhận lấy máu.");
+            }
+        },
+        [
+            selectedSchedule,
+            setPhieuMap,
+            setAllPhieuMap,
+            isLayMauWindow,
+            refreshStats,
+        ],
+    );
 
     const handleOcrTrichXuat = useCallback(
         async (file) => {
