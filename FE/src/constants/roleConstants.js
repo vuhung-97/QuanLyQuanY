@@ -33,24 +33,19 @@ export const MENU_ROLE_MAP = {
     "noi-tru": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
     "danh-sach-noi-tru": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
     "lap-benh-an": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
-    "quan-ly-phong-giuong": [
-        "ROLE_ADMIN",
-        "ROLE_CNQY",
-        "ROLE_BACSI",
-        "ROLE_YSI",
-    ],
+    "quan-ly-phong-giuong": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_YSI"],
 
     "kham-benh": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
     "kham-benh-cho-quan-nhan": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI"],
     "cap-thuoc": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
     "chuyen-tuyen": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
-    "danh-muc-benh": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
+    "danh-muc-benh": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI"],
 
-    "kho-duoc": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
-    kho: ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
-    "du-tru": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
-    "nhap-kho": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
-    "xuat-kho": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
+    "kho-duoc": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_YSI"],
+    kho: ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_YSI"],
+    "du-tru": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_YSI"],
+    "nhap-kho": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_YSI"],
+    "xuat-kho": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_YSI"],
 
     "bao-cao": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI", "ROLE_QN"],
 
