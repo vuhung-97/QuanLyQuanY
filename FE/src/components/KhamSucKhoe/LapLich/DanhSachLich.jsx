@@ -19,6 +19,7 @@ import {
     DoDisturb as DoDisturbIcon,
     CheckCircle as CheckCircleIcon,
     Edit as EditIcon,
+    Print as PrintIcon,
     RestartAlt as RestartAltIcon,
     Send as SendIcon,
     Update as UpdateIcon,
@@ -62,6 +63,7 @@ function ScheduleTableRow({
     onSubmit,
     onView,
     onHoan,
+    onPrint,
     isSelected,
     onSelectRow,
 }) {
@@ -132,6 +134,12 @@ function ScheduleTableRow({
                                 icon={<VisibilityIcon />}
                                 color="info"
                                 onClick={() => onView(row)}
+                            />
+                            <ActionIcon
+                                title="In lịch khám"
+                                icon={<PrintIcon />}
+                                color="success"
+                                onClick={() => onPrint?.(row)}
                             />
                         </IfRole>
                         {currentStatus !== "Đã kết thúc" && (
@@ -227,6 +235,7 @@ export default function DanhSachLich({
     onSubmit,
     onView,
     onHoan,
+    onPrint,
     activeLichId,
     onSelectRow,
     onResetDefault,
@@ -358,6 +367,7 @@ export default function DanhSachLich({
                                 onSubmit={onSubmit}
                                 onView={onView}
                                 onHoan={onHoan}
+                                onPrint={onPrint}
                                 isSelected={activeLichId === row.ma_lich_kham}
                                 onSelectRow={onSelectRow}
                             />

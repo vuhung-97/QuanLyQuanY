@@ -9,6 +9,7 @@ import useLichKhamData from "@/hooks/useLichKhamData";
 import { getScheduleStatus } from "@/components/KhamSucKhoe/KhamSucKhoeUtils.js";
 import DanhSachLich from "@/components/KhamSucKhoe/LapLich/DanhSachLich.jsx";
 import LapLichDialog from "@/components/KhamSucKhoe/LapLich/LapLichDialog.jsx";
+import LichKhamPrintDialog from "@/components/KhamSucKhoe/LapLich/LichKhamPrintDialog.jsx";
 import TongQuanDonVi from "@/components/KhamSucKhoe/LapLich/TongQuanDonVi.jsx";
 import PhanCongNhiemVu from "@/components/KhamSucKhoe/LapLich/PhanCongNhiemVu.jsx";
 import ThoiGianKham from "@/components/KhamSucKhoe/LapLich/ThoiGianKham.jsx";
@@ -51,6 +52,11 @@ export default function LapLichPage() {
     const [hoanDialog, setHoanDialog] = useState({
         open: false,
         schedule: null,
+    });
+    const [printDialog, setPrintDialog] = useState({
+        open: false,
+        schedule: null,
+        chiTietList: [],
     });
     const [activeLichId, setActiveLichId] = useState(null);
 
@@ -169,6 +175,14 @@ export default function LapLichPage() {
         setActiveLichId(maLichKham);
     };
 
+    const handlePrint = (schedule) => {
+        setPrintDialog({
+            open: true,
+            schedule,
+            chiTietList: chiTietMap[schedule.ma_lich_kham] || [],
+        });
+    };
+
     return (
         <Stack spacing={3}>
             <Stack
@@ -237,6 +251,7 @@ export default function LapLichPage() {
                 onSubmit={handleSubmit}
                 onView={handleView}
                 onHoan={handleHoan}
+                onPrint={handlePrint}
                 activeLichId={activeLichId}
                 onSelectRow={handleSelectRow}
                 onResetDefault={handleResetDefault}
@@ -330,6 +345,20 @@ export default function LapLichPage() {
                 onClose={() =>
                     setHoanDialog({ open: false, schedule: null })
                 }
+            />
+
+            <LichKhamPrintDialog
+                open={printDialog.open}
+                onClose={() =>
+                    setPrintDialog({
+                        open: false,
+                        schedule: null,
+                        chiTietList: [],
+                    })
+                }
+                schedule={printDialog.schedule}
+                chiTietList={printDialog.chiTietList}
+                unitOptions={unitOptions}
             />
         </Stack>
     );
