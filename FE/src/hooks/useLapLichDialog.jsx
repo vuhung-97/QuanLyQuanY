@@ -331,6 +331,22 @@ export default function useLapLichDialog({
             }
         };
 
+        const checkPair = (bdF, ktF, bd, kt) => {
+            if (Boolean(bd) !== Boolean(kt)) {
+                const msg = "Cần điền đầy đủ thời gian bắt đầu và kết thúc";
+                addErr(bdF, msg);
+                addErr(ktF, msg);
+            }
+        };
+
+        checkPair("thoi_gian_bat_dau", "thoi_gian_ket_thuc", thoiGianBatDau, thoiGianKetThuc);
+        checkPair(
+            "thoi_gian_lay_mau_bat_dau",
+            "thoi_gian_lay_mau_ket_thuc",
+            thoiGianLayMauBatDau,
+            thoiGianLayMauKetThuc,
+        );
+
         checkRange(
             "thoi_gian_bat_dau",
             "thoi_gian_ket_thuc",
@@ -540,6 +556,18 @@ export default function useLapLichDialog({
             );
             return;
         }
+        if (!thoiGianDuTruLayMauBatDau || !thoiGianDuTruLayMauKetThuc) {
+            showError(
+                "Vui lòng điền đầy đủ thời gian dự trù lấy máu (bắt đầu, kết thúc).",
+            );
+            return;
+        }
+        if (!thoiGianDuTruKhamBatDau || !thoiGianDuTruKhamKetThuc) {
+            showError(
+                "Vui lòng điền đầy đủ thời gian dự trù khám (bắt đầu, kết thúc).",
+            );
+            return;
+        }
 
         const khamBd = dayjs(thoiGianBatDau);
         const khamKt = dayjs(thoiGianKetThuc);
@@ -614,7 +642,6 @@ export default function useLapLichDialog({
             return;
         }
 
-        const duTruThieu = duTruConfig().some((dt) => !dt.bd || !dt.kt);
         const chuaChonHetDonVi =
             Object.keys(selectedUnits).length < unitOptions.length;
 
@@ -650,7 +677,6 @@ export default function useLapLichDialog({
                 `- Thời gian trùng với lịch ${o.ma_lich_kham} (${fmt})`,
             );
         }
-        if (duTruThieu) lines.push("- Chưa điền đầy đủ thời gian dự trù");
         if (chuaChonHetDonVi) {
             const missing = unitOptions
                 .filter((u) => !selectedUnits[u.ma_don_vi])
@@ -790,6 +816,31 @@ export default function useLapLichDialog({
         setConfirmOpen(false);
     }, []);
 
+    const step1Complete = Boolean(
+        thoiGianBatDau &&
+            thoiGianKetThuc &&
+            thoiGianLayMauBatDau &&
+            thoiGianLayMauKetThuc &&
+            thoiGianDuTruLayMauBatDau &&
+            thoiGianDuTruLayMauKetThuc &&
+            thoiGianDuTruKhamBatDau &&
+            thoiGianDuTruKhamKetThuc,
+    );
+
+    const step2Complete = useMemo(() => {
+        const assignedRoles = Object.values(assignments);
+        return vaiTroList.every((vt) => assignedRoles.includes(vt.ma_vai_tro));
+    }, [assignments, vaiTroList]);
+
+    const canSave = useMemo(
+        () =>
+            step1Complete &&
+            step2Complete &&
+            buildDetails().length > 0 &&
+            Object.keys(detailErrors).length === 0,
+        [step1Complete, step2Complete, buildDetails, detailErrors],
+    );
+
     return {
         thoiGianBatDau,
         setThoiGianBatDau,
@@ -828,5 +879,8 @@ export default function useLapLichDialog({
         timeErrors,
         detailErrors,
         handleAutoDistribute,
+        step1Complete,
+        step2Complete,
+        canSave,
     };
 }

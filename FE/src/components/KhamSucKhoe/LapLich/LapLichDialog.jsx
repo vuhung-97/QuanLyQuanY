@@ -1,4 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
+import { keyframes } from "@emotion/react";
+import {
+    AccessTime as AccessTimeIcon,
+    ArrowForward as ArrowForwardIcon,
+    CalendarMonth as CalendarMonthIcon,
+    Check as CheckIcon,
+    Group as GroupIcon,
+} from "@mui/icons-material";
 import {
     Box,
     Button,
@@ -10,7 +18,11 @@ import {
     MenuItem,
     Select,
     Stack,
-    Divider,
+    Step,
+    StepButton,
+    StepConnector,
+    StepLabel,
+    Stepper,
     TextField,
     Typography,
 } from "@mui/material";
@@ -21,6 +33,39 @@ import useLapLichDialog from "@/hooks/useLapLichDialog";
 import DataTable from "@/components/common/DataTable.jsx";
 import ChonNgayGio from "./ChonNgayGio.jsx";
 import { ROLE_LABELS, roleOrder } from "@/constants/khamSucKhoeConstants.js";
+
+const pulse = keyframes`
+    0% { box-shadow: 0 0 0 0 rgba(25, 118, 210, 0.4); }
+    70% { box-shadow: 0 0 0 12px rgba(25, 118, 210, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(25, 118, 210, 0); }
+`;
+
+function CustomStepIcon({ active, completed, icon }) {
+    const style = {
+        width: 32,
+        height: 32,
+        borderRadius: "50%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: "0.95rem",
+        fontWeight: 700,
+        ...(completed
+            ? { backgroundColor: "#10B981", color: "#fff" }
+            : active
+              ? {
+                    backgroundColor: "#1976D2",
+                    color: "#fff",
+                    animation: `${pulse} 1.8s infinite`,
+                }
+              : { backgroundColor: "#E2E8F0", color: "#64748B" }),
+    };
+    return (
+        <div style={style}>
+            {completed ? <CheckIcon sx={{ fontSize: 18 }} /> : icon}
+        </div>
+    );
+}
 
 function DiaDiemCell({ maDonVi, value, onChange, disabled }) {
     const [local, setLocal] = useState(value || "");
@@ -107,6 +152,9 @@ export default function LapLichDialog({
         timeErrors,
         detailErrors,
         handleAutoDistribute,
+        step1Complete,
+        step2Complete,
+        canSave,
     } = useLapLichDialog({
         open,
         schedule,
@@ -116,6 +164,34 @@ export default function LapLichDialog({
         unitOptions,
         schedules,
     });
+
+    const [activeStep, setActiveStep] = useState(0);
+
+    useEffect(() => {
+        if (open) setActiveStep(0);
+    }, [open]);
+
+    const steps = [
+        { label: "Thời gian", icon: <AccessTimeIcon /> },
+        { label: "Phân công nhiệm vụ", icon: <GroupIcon /> },
+        { label: "Xếp lịch cho đơn vị", icon: <CalendarMonthIcon /> },
+    ];
+
+    const isStepUnlocked = (idx) => {
+        if (readOnly) return true;
+        if (idx <= 0) return true;
+        if (idx === 1) return step1Complete;
+        return step1Complete && step2Complete;
+    };
+
+    const isNextUnlocked = (idx) =>
+        !readOnly && idx === activeStep + 1 && isStepUnlocked(idx);
+
+    const isStepDone = (idx) => {
+        if (idx === 0) return step1Complete;
+        if (idx === 1) return step2Complete;
+        return canSave;
+    };
 
     const sortedUsers = useMemo(
         () =>
@@ -388,8 +464,82 @@ render: (r) => {
                               ? "Sửa lịch khám sức khỏe định kỳ"
                               : "Tạo lịch khám sức khỏe định kỳ"}
                     </DialogTitleWrapper>
-                    <DialogContent dividers sx={{ overflow: "auto" }}>
-                        <Stack spacing={1.5} sx={{ pt: 1 }}>
+                        <DialogContent dividers sx={{ overflow: "auto" }}>
+                            <Stepper
+                                activeStep={activeStep}
+                                alternativeLabel
+                                nonLinear
+                                connector={
+                                    <StepConnector
+                                        sx={{
+                                            "& .MuiStepConnector-line": {
+                                                borderTopWidth: 2,
+                                                borderRadius: 1,
+                                            },
+                                            "&.MuiStepConnector-active .MuiStepConnector-line":
+                                                { borderColor: "#1976D2" },
+                                            "&.MuiStepConnector-completed .MuiStepConnector-line":
+                                                { borderColor: "#10B981" },
+                                        }}
+                                    />
+                                }
+                            >
+                                {steps.map((s, idx) => (
+                                    <Step key={s.label} completed={isStepDone(idx)}>
+                                        <StepButton
+                                            onClick={() => setActiveStep(idx)}
+                                            disabled={!isStepUnlocked(idx)}
+                                            sx={
+                                                isNextUnlocked(idx)
+                                                    ? {
+                                                          borderRadius: 2,
+                                                          backgroundColor:
+                                                              "rgba(25, 118, 210, 0.08)",
+                                                          animation: `${pulse} 1.8s infinite`,
+                                                      }
+                                                    : undefined
+                                            }
+                                        >
+                                            <StepLabel
+                                                icon={s.icon}
+                                                slots={{
+                                                    stepIcon: CustomStepIcon,
+                                                }}
+                                                optional={
+                                                    isNextUnlocked(idx) ? (
+                                                        <Typography
+                                                            variant="caption"
+                                                            sx={{
+                                                                color: "primary.main",
+                                                                fontWeight: 600,
+                                                                display: "flex",
+                                                                alignItems:
+                                                                    "center",
+                                                                justifyContent:
+                                                                    "center",
+                                                                gap: 0.5,
+                                                            }}
+                                                        >
+                                                            Sẵn sàng
+                                                            <ArrowForwardIcon
+                                                                sx={{
+                                                                    fontSize: 12,
+                                                                }}
+                                                            />
+                                                        </Typography>
+                                                    ) : undefined
+                                                }
+                                            >
+                                                {s.label}
+                                            </StepLabel>
+                                        </StepButton>
+                                    </Step>
+                                ))}
+                            </Stepper>
+
+                            <Box sx={{ mt: 3 }}>
+                            {activeStep === 0 && (
+                            <Stack spacing={1.5} sx={{ pt: 1 }}>
                             <Typography variant="h4">
                                 Thông tin chung
                             </Typography>
@@ -550,9 +700,21 @@ render: (r) => {
                                 </Box>
                             </Stack>
 
-                            <Divider sx={{ my: 2 }} />
+                            {!readOnly && !step1Complete && (
+                                <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                >
+                                    Điền đầy đủ thời gian chính và dự trù để
+                                    tiếp tục.
+                                </Typography>
+                            )}
+                            </Stack>
+                            )}
 
-                            <Typography variant="h4" sx={{ mt: 2 }}>
+                            {activeStep === 1 && (
+                            <Stack spacing={1.5} sx={{ pt: 1 }}>
+                            <Typography variant="h4">
                                 Phân công nhiệm vụ
                             </Typography>
                             <DataTable
@@ -561,8 +723,19 @@ render: (r) => {
                                 getRowKey={(r) => r.id}
                                 minWidth={undefined}
                             />
+                            {!readOnly && !step2Complete && (
+                                <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                >
+                                    Phân công đủ tất cả vai trò để tiếp tục.
+                                </Typography>
+                            )}
+                            </Stack>
+                            )}
 
-                            <Divider sx={{ my: 2 }} />
+                            {activeStep === 2 && (
+                            <Stack spacing={1.5} sx={{ pt: 1 }}>
 
                             <Stack
                                 direction="row"
@@ -596,13 +769,15 @@ render: (r) => {
                                 getRowKey={(r) => r.ma_don_vi}
                                 minWidth={1400}
                             />
-                        </Stack>
-                    </DialogContent>
+                            </Stack>
+                            )}
+                            </Box>
+                        </DialogContent>
                     <DialogActions sx={{ p: 2 }}>
                         <Button onClick={onClose}>
                             {readOnly ? "Đóng" : "Hủy"}
                         </Button>
-                        {!readOnly && (
+                        {!readOnly && canSave && (
                             <Button
                                 type="submit"
                                 variant="contained"
