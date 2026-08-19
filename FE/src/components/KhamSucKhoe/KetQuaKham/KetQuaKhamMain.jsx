@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Stack, Typography } from "@mui/material";
 import {
     Groups as GroupsIcon,
@@ -11,11 +12,13 @@ import KetQuaKhamLamSangBenh from "./KetQuaKhamLamSangBenh.jsx";
 import KetQuaKhamTheLuc from "./KetQuaKhamTheLuc.jsx";
 import KetQuaKhamBenhTat from "./KetQuaKhamBenhTat.jsx";
 import KetQuaKhamSection5 from "./KetQuaKhamSection5.jsx";
+import KetQuaKhamPrintDialog from "./KetQuaKhamPrintDialog.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import LoadingAlert from "@/components/common/LoadingAlert.jsx";
 import useKetQuaKham from "@/hooks/useKetQuaKham.jsx";
 
 export default function KetQuaKhamMain() {
+    const [printOpen, setPrintOpen] = useState(false);
     const {
         nam, setNam,
         schedules,
@@ -35,7 +38,12 @@ export default function KetQuaKhamMain() {
         soldiers,
         phieuMap,
         allUnitLookup,
+        donViData,
     } = useKetQuaKham();
+
+    const selectedScheduleObj = schedules.find(
+        (s) => s.ma_lich_kham === scheduleId,
+    );
 
     const tongQuanItems = stats
         ? [
@@ -80,6 +88,8 @@ export default function KetQuaKhamMain() {
                 selectedSchedule={scheduleId}
                 onChange={setSelectedSchedule}
                 loading={loading}
+                onPrint={() => setPrintOpen(true)}
+                dataAvailable={!!stats}
             />
 
             <LoadingAlert
@@ -123,6 +133,21 @@ export default function KetQuaKhamMain() {
                         allUnitLookup={allUnitLookup}
                     />
                 </>
+            )}
+
+            {stats && (
+                <KetQuaKhamPrintDialog
+                    open={printOpen}
+                    onClose={() => setPrintOpen(false)}
+                    data={{
+                        schedule: selectedScheduleObj,
+                        stats,
+                        phanBoPhanLoai,
+                        lamSangBatThuong,
+                        benhTat,
+                        donViData,
+                    }}
+                />
             )}
         </Stack>
     );

@@ -1,10 +1,12 @@
 import {
+    Button,
     FormControl,
     InputLabel,
     MenuItem,
     Select,
     Stack,
 } from "@mui/material";
+import { Print as PrintIcon } from "@mui/icons-material";
 import { formatDate } from "@/utils/date.js";
 
 export default function KetQuaKhamFilter({
@@ -15,6 +17,8 @@ export default function KetQuaKhamFilter({
     selectedSchedule,
     onChange,
     loading,
+    onPrint,
+    dataAvailable = false,
 }) {
     return (
         <Stack
@@ -56,6 +60,14 @@ export default function KetQuaKhamFilter({
                     ))}
                 </Select>
             </FormControl>
+            <Button
+                variant="outlined"
+                startIcon={<PrintIcon />}
+                onClick={onPrint}
+                disabled={!dataAvailable || loading}
+            >
+                In báo cáo
+            </Button>
         </Stack>
     );
 }
