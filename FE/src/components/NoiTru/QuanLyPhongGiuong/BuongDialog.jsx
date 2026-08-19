@@ -57,6 +57,7 @@ export default function BuongDialog({
                                 so_giuong_toi_da: Number(e.target.value),
                             }))
                         }
+                        min={1}
                         slotProps={{ htmlInput: { min: 1 } }}
                     />
 

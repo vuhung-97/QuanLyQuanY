@@ -57,6 +57,7 @@ const ThuocItemRow = memo(function ThuocItemRow({
                 value={soLuong}
                 onChange={handleSoLuongChange}
                 disabled={readOnly}
+                min={1}
                 slotProps={{
                     htmlInput: {
                         min: 1,

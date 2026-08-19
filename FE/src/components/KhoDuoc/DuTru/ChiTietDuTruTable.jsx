@@ -87,6 +87,7 @@ const DuTruRow = memo(function DuTruRow({
                     size="small"
                     value={soLuong}
                     onChange={handleSoLuong}
+                    min={1}
                     slotProps={{ htmlInput: { min: 1 } }}
                     disabled={isView}
                     sx={{ width: 100 }}

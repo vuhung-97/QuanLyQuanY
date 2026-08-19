@@ -1,6 +1,7 @@
 import { Button, Chip, Stack, Tab, Tabs } from "@mui/material"
 import { Backup as BackupIcon, History as HistoryIcon } from "@mui/icons-material"
 import SearchBarDebounced from "@/components/common/SearchBarDebounced"
+import StatusFilter from "@/components/common/StatusFilter"
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar"
 import PaginationWidget from "@/components/common/PaginationWidget"
 import AdminPageHeader from "@/components/admin/AdminPageHeader"
@@ -10,15 +11,18 @@ import DangNhapTab from "@/components/admin/AuditLog/DangNhapTab"
 import ThaoTacTab from "@/components/admin/AuditLog/ThaoTacTab"
 import BackupTab from "@/components/admin/AuditLog/BackupTab"
 import { adminService } from "@/services/adminService"
-import useAdminAuditLogs, { AUDIT_TABS, ROWS_PER_PAGE } from "@/hooks/useAdminAuditLogs"
+import useAdminAuditLogs, {
+    AUDIT_TABS, ROWS_PER_PAGE,
+    LOGIN_STATUS_OPTIONS, ACTION_STATUS_OPTIONS,
+} from "@/hooks/useAdminAuditLogs"
 
 export default function AuditLogPage() {
     const {
         tab, loading, error, success, setError, setSuccess,
         detail, setDetail, page, setPage,
-        totalRecords, searchTerm, backupFiles, creatingBackup,
+        totalRecords, searchTerm, statusFilter, backupFiles, creatingBackup,
         activeTab,
-        handleSearch, handleTabChange,
+        handleSearch, handleStatusFilter, handleTabChange,
         handleDownload, handleCreateBackup, rows,
     } = useAdminAuditLogs()
 
@@ -50,8 +54,28 @@ export default function AuditLogPage() {
                 <Stack direction={{ xs: "column", md: "row" }} spacing={2}
                     sx={{ mb: 2, justifyContent: "space-between" }}>
                     <SearchBarDebounced onSearch={handleSearch} placeholder="Tìm ID, họ tên, hành động, bảng, IP..." />
-                    <PaginationWidget page={page} totalRecords={totalRecords}
-                        rowsPerPage={ROWS_PER_PAGE} onChange={setPage} />
+                    <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
+                        {tab === "login" && (
+                            <StatusFilter
+                                value={statusFilter}
+                                onChange={handleStatusFilter}
+                                options={LOGIN_STATUS_OPTIONS}
+                                label="Trạng thái"
+                                allLabel="Tất cả"
+                            />
+                        )}
+                        {tab === "action" && (
+                            <StatusFilter
+                                value={statusFilter}
+                                onChange={handleStatusFilter}
+                                options={ACTION_STATUS_OPTIONS}
+                                label="Hành động"
+                                allLabel="Tất cả"
+                            />
+                        )}
+                        <PaginationWidget page={page} totalRecords={totalRecords}
+                            rowsPerPage={ROWS_PER_PAGE} onChange={setPage} />
+                    </Stack>
                 </Stack>
 
                 {tab === "login" && <DangNhapTab rows={rows} loading={loading} />}

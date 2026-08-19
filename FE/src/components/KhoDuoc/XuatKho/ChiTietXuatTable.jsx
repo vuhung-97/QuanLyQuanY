@@ -85,6 +85,8 @@ const ChiTietXuatTable = memo(function ChiTietXuatTable({ items, isView, onAdd, 
                                                         e.target.value,
                                                     )
                                                 }
+                                                min={1}
+                                                max={item.so_luong_max ?? 999999}
                                                 slotProps={{
                                                     htmlInput: {
                                                         min: 1,
@@ -115,6 +117,12 @@ const ChiTietXuatTable = memo(function ChiTietXuatTable({ items, isView, onAdd, 
                                                             e.target.value,
                                                         )
                                                     }
+                                                    min={0}
+                                                    max={Math.min(
+                                                        item.so_luong,
+                                                        item.so_luong_max ??
+                                                            item.so_luong,
+                                                    )}
                                                     slotProps={{
                                                         htmlInput: {
                                                             min: 0,

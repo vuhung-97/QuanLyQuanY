@@ -102,6 +102,7 @@ export default function LapBenhAnForm({
                                                 inputRef={refMap[f.key]}
                                                 error={!!errors[f.key]}
                                                 helperText={errors[f.key]}
+                                                min={0}
                                                 slotProps={{
                                                     htmlInput: { min: 0 },
                                                 }}

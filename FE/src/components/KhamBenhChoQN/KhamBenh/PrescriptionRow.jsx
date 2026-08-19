@@ -48,7 +48,7 @@ const SangTruaCachDungFields = memo(function SangTruaCachDungFields({
                     value={sang}
                     onChange={onSangChange}
                     sx={{ width: 100 }}
-                    slotProps={{ min: 0 }}
+                    min={0}
                 />
                 <NumberField
                     size="small"
@@ -56,7 +56,7 @@ const SangTruaCachDungFields = memo(function SangTruaCachDungFields({
                     value={trua}
                     onChange={onTruaChange}
                     sx={{ width: 100 }}
-                    slotProps={{ min: 0 }}
+                    min={0}
                 />
                 <NumberField
                     size="small"
@@ -64,7 +64,7 @@ const SangTruaCachDungFields = memo(function SangTruaCachDungFields({
                     value={toi}
                     onChange={onToiChange}
                     sx={{ width: 100 }}
-                    slotProps={{ min: 0 }}
+                    min={0}
                 />
             </Stack>
             <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
@@ -182,6 +182,8 @@ const PrescriptionRow = memo(
                         value={soLuong}
                         onChange={handleSoLuongChange}
                         sx={{ width: 130 }}
+                        min={1}
+                        max={soLuongMax !== Infinity ? soLuongMax : undefined}
                         slotProps={{ htmlInput: { min: 1, max: soLuongMax } }}
                     />
                     {donViTinh && (

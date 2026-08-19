@@ -95,6 +95,7 @@ const NhapKhoTableRow = memo(function NhapKhoTableRow({
                         onBlur={() => commitBlur("soLuong")}
                         onKeyDown={(e) => commitEnter(e, "soLuong")}
                         onChange={(e) => setSoLuong(e.target.value)}
+                        min={0}
                         slotProps={{
                             htmlInput: {
                                 min: 0,
@@ -123,6 +124,7 @@ const NhapKhoTableRow = memo(function NhapKhoTableRow({
                         onBlur={() => commitBlur("donGia")}
                         onKeyDown={(e) => commitEnter(e, "donGia")}
                         onChange={(e) => setDonGia(e.target.value)}
+                        min={0}
                         slotProps={{
                             htmlInput: {
                                 min: 0,

@@ -121,6 +121,8 @@ const MatNumberFieldSM = memo(
                     size="small"
                     error={error}
                     helperText={helperText}
+                    min={1}
+                    max={10}
                     slotProps={{ htmlInput: { min: 1, max: 10, step: 1 } }}
                 />
             </Grid>

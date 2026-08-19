@@ -58,6 +58,8 @@ const GroupRow = memo(function GroupRow({
                         )
                     }
                     disabled={!selected}
+                    min={1}
+                    max={importMode ? undefined : item.so_luong}
                     slotProps={{
                         htmlInput: {
                             min: 1,

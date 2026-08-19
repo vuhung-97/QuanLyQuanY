@@ -50,6 +50,7 @@ export default function ThresholdDialog({
                         fullWidth
                         value={thuoc}
                         onChange={(e) => setThuoc(Number(e.target.value))}
+                        min={1}
                         slotProps={{ htmlInput: { min: 1 } }}
                     />
                     <NumberField
@@ -57,6 +58,7 @@ export default function ThresholdDialog({
                         fullWidth
                         value={vatTu}
                         onChange={(e) => setVatTu(Number(e.target.value))}
+                        min={1}
                         slotProps={{ htmlInput: { min: 1 } }}
                     />
                     <NumberField
@@ -64,6 +66,7 @@ export default function ThresholdDialog({
                         fullWidth
                         value={sapHetHanNgay}
                         onChange={(e) => setSapHetHanNgay(Number(e.target.value))}
+                        min={1}
                         slotProps={{ htmlInput: { min: 1 } }}
                     />
                 </Stack>

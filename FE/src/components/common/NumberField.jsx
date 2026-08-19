@@ -1,5 +1,20 @@
-import { memo, useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { TextField } from "@mui/material";
+
+const DEFAULT_MIN_MESSAGE = "Không điền giá trị âm";
+
+function validateRange(value, min, max, minMessage, maxMessage) {
+    if (value === "" || value === undefined || value === null) return "";
+    const num = Number(value);
+    if (Number.isNaN(num)) return "";
+    if (min != null && num < min) {
+        return minMessage ?? DEFAULT_MIN_MESSAGE;
+    }
+    if (max != null && num > max) {
+        return maxMessage ?? `Giá trị không được lớn hơn ${max}`;
+    }
+    return "";
+}
 
 const NumberField = memo(function NumberField({
     name,
@@ -9,6 +24,12 @@ const NumberField = memo(function NumberField({
     onChange,
     defaultValue,
     inputRef,
+    min = 0,
+    max,
+    minMessage,
+    maxMessage,
+    error: externalError,
+    helperText: externalHelperText,
     ...props
 }) {
     const isControlled = onChange !== undefined;
@@ -45,6 +66,18 @@ const NumberField = memo(function NumberField({
         inputValue = internal;
     }
 
+    const validationError = useMemo(
+        () =>
+            min != null || max != null
+                ? validateRange(inputValue, min, max, minMessage, maxMessage)
+                : "",
+        [inputValue, min, max, minMessage, maxMessage],
+    );
+
+    const hasValidationError = !!validationError;
+    const showError = externalError || hasValidationError;
+    const showHelperText = hasValidationError ? validationError : externalHelperText;
+
     return (
         <TextField
             {...props}
@@ -54,6 +87,8 @@ const NumberField = memo(function NumberField({
             defaultValue={isUncontrolled ? defaultValue : undefined}
             inputRef={isUncontrolled ? inputRef : undefined}
             onChange={handleChange}
+            error={showError ? true : undefined}
+            helperText={showHelperText || undefined}
         />
     );
 });

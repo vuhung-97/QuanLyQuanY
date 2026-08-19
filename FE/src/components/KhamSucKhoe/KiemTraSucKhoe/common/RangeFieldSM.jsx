@@ -50,6 +50,7 @@ const RangeFieldSM = memo(function RangeFieldSM({
                     size={size}
                     error={outOfRange || Boolean(fieldError)}
                     helperText={fieldError}
+                    min={Number(min)}
                     slotProps={{
                         htmlInput: { step, min },
                         input: unit

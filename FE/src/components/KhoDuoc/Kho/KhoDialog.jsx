@@ -292,6 +292,8 @@ export default function KhoDialog({
                                 ? "Số lượng tồn kho hiện tại của thuốc / vật tư y tế."
                                 : undefined)
                         }
+                        min={field.slotProps?.htmlInput?.min}
+                        max={field.slotProps?.htmlInput?.max}
                         slotProps={field.slotProps}
                         fullWidth
                         size="small"

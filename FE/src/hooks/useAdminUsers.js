@@ -9,6 +9,7 @@ export default function useAdminUsers() {
     const [error, setError] = useState("")
     const [success, setSuccess] = useState("")
     const [query, setQuery] = useState("")
+    const [roleFilter, setRoleFilter] = useState("")
     const [openDialog, setOpenDialog] = useState(false)
     const [editingUser, setEditingUser] = useState(null)
     const [deleteTarget, setDeleteTarget] = useState(null)
@@ -41,14 +42,20 @@ export default function useAdminUsers() {
     }, [])
 
     const filteredUsers = useMemo(() => {
+        let result = users
+        if (roleFilter) {
+            result = result.filter((user) => user.id_vai_tro === roleFilter)
+        }
         const keyword = query.trim().toLowerCase()
-        if (!keyword) return users
-        return users.filter((user) =>
-            [user.id, user.ten_dang_nhap, user.ho_ten, user.id_vai_tro, user.ten_vai_tro]
-                .filter(Boolean)
-                .some((value) => String(value).toLowerCase().includes(keyword))
-        )
-    }, [users, query])
+        if (keyword) {
+            result = result.filter((user) =>
+                [user.id, user.ten_dang_nhap, user.ho_ten, user.id_vai_tro, user.ten_vai_tro]
+                    .filter(Boolean)
+                    .some((value) => String(value).toLowerCase().includes(keyword))
+            )
+        }
+        return result
+    }, [users, query, roleFilter])
 
     const activeCount = useMemo(() => users.filter((user) => user.trang_thai).length, [users])
 
@@ -97,6 +104,7 @@ export default function useAdminUsers() {
         users, roles, loading, error, success,
         setError, setSuccess,
         query, setQuery,
+        roleFilter, setRoleFilter,
         filteredUsers, activeCount,
         openDialog, setOpenDialog,
         editingUser, deleteTarget, deleting,
