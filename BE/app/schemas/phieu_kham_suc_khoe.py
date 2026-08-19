@@ -11,7 +11,7 @@ class PhieuKhamSucKhoeBase(SchemaBase):
     nam: int | None = None
     tong_quan: dict | None = None
     kham_lam_sang: dict | None = None
-    xet_nghiem: dict | None = None
+    xet_nghiem: list | dict | None = None
     chan_doan_hinh_anh: dict | None = None
     ket_luan: dict | None = None
     trang_thai: str | None = None
@@ -28,7 +28,7 @@ class PhieuKhamSucKhoeUpdate(SchemaBase):
     nam: int | None = None
     tong_quan: dict | str | None = None
     kham_lam_sang: dict | str | None = None
-    xet_nghiem: dict | str | None = None
+    xet_nghiem: list | dict | str | None = None
     chan_doan_hinh_anh: dict | str | None = None
     ket_luan: dict | str | None = None
     trang_thai: str | None = None

@@ -6,23 +6,44 @@ from pathlib import Path
 import pymupdf
 
 from .config import (
-    ANH_XA_CHI_SO,
-    ANH_XA_GOP,
-    CAC_CHI_SO_NHI_PHAN,
     CAC_COT,
-    GIA_TRI_MAC_DINH,
+    CHI_SO_COT_BANG,
     MA_MAU_MAC_DINH,
     NGO_LENH_CUNG_DONG,
     REGEX_MA_MAU,
     REGEX_SO_PHIEU,
-    TU_KHOA_KET_QUA_HOP_LE,
-    TU_KHOA_LOAI_BO,
-    chuan_hoa_ten,
+    TU_KHOA_BAT_DAU_BANG,
+    TU_KHOA_KET_THUC_BANG,
 )
 from .downloader import tai_pdf_tu_url
 from .models import MauXetNghiem
 
+
+def gop_ket_qua(ket_qua_hien_tai, ket_qua_moi):
+    """Gộp hai danh sách dòng kết quả, khử trùng theo cột ``yeu_cau``.
+
+    Dòng cùng chỉ số (chuẩn hóa: bỏ hoa/thường, khoảng trắng thừa) chỉ giữ
+    bản xuất hiện sau cùng; thứ tự giữ theo lần xuất hiện đầu tiên. Các chỉ
+    số khác nhau từ nhiều trang/file đều được giữ lại.
+    """
+    ket_qua_gop: dict[str, dict] = {}
+    for dong in list(ket_qua_hien_tai or []) + list(ket_qua_moi or []):
+        if not isinstance(dong, dict):
+            continue
+        yeu_cau = (dong.get("yeu_cau") or "").strip().lower()
+        ket_qua_gop[yeu_cau] = dong
+    return list(ket_qua_gop.values())
+
 logger = logging.getLogger(__name__)
+
+# Mảnh chữ tiêu đề dính đầu cell (một chữ cái in hoa đứng lẻ trước nội dung)
+_MAU_CHU_COT = re.compile(
+    r"^[A-ZÀÁẢÃẠĂẮẰẲẤẦẨẪẬÂĐÈÉẸẺẼÊẾỀỂỄỆÌÍỊĨÓỌÕÔỐỒỔỖỘƠỚỜỞỠỢÙÚỤŨƯỨỪỬỮỰỲÝỴỶỸỶỲỴ] (?=\S)"
+)
+# Cell chỉ còn đúng một chữ cái (mảnh rác của tiêu đề)
+_MAU_CHU_DON = re.compile(
+    r"^[A-ZÀÁẢÃẠĂẮẰẲẤẦẨẪẬÂĐÈÉẸẺẼÊẾỀỂỄỆÌÍỊĨÓỌÕÔỐỒỔỖỘƠỚỜỞỠỢÙÚỤŨƯỨỪỬỮỰỲÝỴỶỸỶỲỴ]$"
+)
 
 
 class ExtractorPDF:
@@ -31,7 +52,7 @@ class ExtractorPDF:
     def trich_xuat_ket_qua(self, duong_dan_pdf: str | Path) -> list[dict]:
         """Trích xuất danh sách kết quả xét nghiệm, trả về list dict trực tiếp.
 
-        Mỗi phần tử có cấu trúc ``{"ma_so_mau": str, "ket_qua": dict[str, str]}``.
+        Mỗi phần tử có cấu trúc ``{"ma_so_mau": str, "ket_qua": list[dict]}``.
         File tạm (nếu là URL) sẽ được dọn dẹp sau khi xử lý.
         """
         pdf_path, la_file_tam = self._chuan_bi_tai_lieu(duong_dan_pdf)
@@ -81,8 +102,9 @@ class ExtractorPDF:
     def _gom_theo_ma_so_mau(self, cac_trang: list[MauXetNghiem]) -> list[MauXetNghiem]:
         """Gộp các trang có cùng mã số mẫu thành một bản ghi duy nhất.
 
-        Bỏ qua các trang không xác định được mã số mẫu. Khi trùng chỉ số giữa các
-        trang cùng mã, trang xuất hiện sau sẽ ghi đè giá trị cũ.
+        Bỏ qua các trang không xác định được mã số mẫu. Các dòng của các trang
+        cùng mã được gộp lại theo thứ tự xuất hiện, khử trùng theo chỉ số
+        (giữ bản sau cùng nếu cùng chỉ số nhưng giá trị khác nhau).
         """
         cac_mau_gop: dict[str, MauXetNghiem] = {}
         for trang in cac_trang:
@@ -93,7 +115,9 @@ class ExtractorPDF:
             if mau_hien_tai is None:
                 cac_mau_gop[trang.ma_so_mau] = trang
             else:
-                mau_hien_tai.ket_qua.update(trang.ket_qua)
+                mau_hien_tai.ket_qua = gop_ket_qua(
+                    mau_hien_tai.ket_qua, trang.ket_qua
+                )
         return list(cac_mau_gop.values())
 
     def _trich_xuat_mot_trang(self, trang: pymupdf.Page) -> MauXetNghiem:
@@ -101,24 +125,92 @@ class ExtractorPDF:
         van_ban_trang = trang.get_text()
         ma_so_mau = self._lay_ma_so_mau(van_ban_trang)
 
-        cac_tu = trang.get_text("words")
-        cac_dong = self._gom_tu_thanh_dong(cac_tu)
+        # Ưu tiên đọc theo cell của bảng (lưới khung): mỗi ô là một cell,
+        # chữ xuống dòng trong cùng cell được gộp lại thành một chuỗi.
+        cac_dong_bang = self._trich_xuat_bang_theo_cell(trang)
 
-        # Trích xuất danh sách các cặp (tên_chỉ_số, kết_quả) dạng thô từ bảng
-        cac_dong_tho = []
-        for y_toa_do in sorted(cac_dong.keys()):
-            cac_tu_dong = sorted(cac_dong[y_toa_do], key=lambda item: item[0])
-            dong_phan_tich = self._phan_tich_dong_chi_so(cac_tu_dong)
-            if dong_phan_tich:
-                cac_dong_tho.append(dong_phan_tich)
+        if not cac_dong_bang:
+            # Fallback: không nhận diện được lưới bảng → đọc theo dòng từ.
+            cac_tu = trang.get_text("words")
+            cac_dong = self._gom_tu_thanh_dong(cac_tu)
 
-        # Thực hiện so khớp ánh xạ sang các key phẳng và loại bỏ key thiếu
-        dict_chi_so_phang = self._anh_xa_chi_so_phang(cac_dong_tho)
+            cac_dong_ket_qua = []
+            for y_toa_do in sorted(cac_dong.keys()):
+                cac_tu_dong = sorted(cac_dong[y_toa_do], key=lambda item: item[0])
+                cac_dong_ket_qua.append((y_toa_do, self._tao_dong_ket_qua(cac_tu_dong)))
+
+            cac_dong_bang = self._loc_phan_vung_bang(cac_dong_ket_qua)
 
         return MauXetNghiem(
             ma_so_mau=ma_so_mau,
-            ket_qua=dict_chi_so_phang
+            ket_qua=self._loc_cac_dong_du_lieu(cac_dong_bang)
         )
+
+    def _trich_xuat_bang_theo_cell(self, trang: pymupdf.Page) -> list[dict]:
+        """Đọc bảng theo cell dựa trên lưới khung do PyMuPDF nhận diện.
+
+        Mỗi hàng bảng thành một dict 7 cột theo CHI_SO_COT_BANG. Nội dung
+        nhiều dòng trong cùng một cell được gộp lại thành chuỗi.
+        """
+        try:
+            cac_bang = trang.find_tables().tables
+        except Exception:
+            return []
+
+        cac_dong = []
+        for bang in cac_bang:
+            for dong in bang.extract() or []:
+                dung_luong = {cot.ten_cot: "" for cot in CAC_COT}
+                for i, cot in enumerate(CAC_COT):
+                    chi_so = CHI_SO_COT_BANG[i]
+                    if chi_so < len(dong) and dong[chi_so]:
+                        dung_luong[cot.ten_cot] = self._lam_sach_cell(
+                            " ".join(str(dong[chi_so]).split())
+                        )
+                cac_dong.append(dung_luong)
+        return cac_dong
+
+    @staticmethod
+    def _lam_sach_cell(noi_dung: str) -> str:
+        """Bỏ mảnh chữ tiêu đề (một chữ cái lẻ) dính vào đầu cell."""
+        noi_dung = noi_dung.strip()
+        while _MAU_CHU_COT.search(noi_dung):
+            noi_dung = _MAU_CHU_COT.sub("", noi_dung, count=1).strip()
+        if _MAU_CHU_DON.search(noi_dung):
+            return ""
+        return noi_dung
+
+    def _loc_cac_dong_du_lieu(self, cac_dong: list[dict]) -> list[dict]:
+        """Chỉ giữ các dòng dữ liệu thật của bảng.
+
+        Bỏ khối tiêu đề phía trên (dòng tiêu đề cột, nhãn nhóm như "Huyết học",
+        tiêu đề phụ "Tổng phân tích..."), dòng trống và khối chân trang.
+        """
+        vi_tri_bat_dau = None
+        for chi_so, dong in enumerate(cac_dong):
+            yeu_cau = (dong.get("yeu_cau") or "").strip().lower()
+            ket_qua = (dong.get("ket_qua") or "").strip()
+            if not yeu_cau or not ket_qua:
+                continue
+            if any(tu_khoa in yeu_cau for tu_khoa in TU_KHOA_BAT_DAU_BANG):
+                continue
+            if "tổng phân tích" in yeu_cau:
+                continue
+            vi_tri_bat_dau = chi_so
+            break
+
+        if vi_tri_bat_dau is None:
+            vi_tri_bat_dau = 0
+
+        cac_dong_loc = []
+        for dong in cac_dong[vi_tri_bat_dau:]:
+            if not any((dong.get(cot.ten_cot) or "").strip() for cot in CAC_COT):
+                continue
+            chuoi_dong = " ".join(dong.values()).lower()
+            if any(tu_khoa in chuoi_dong for tu_khoa in TU_KHOA_KET_THUC_BANG):
+                break
+            cac_dong_loc.append(dong)
+        return cac_dong_loc
 
     def _lay_ma_so_mau(self, van_ban: str) -> str:
         """Tìm mã số mẫu xét nghiệm bằng các mẫu Regex định nghĩa sẵn."""
@@ -147,30 +239,45 @@ class ExtractorPDF:
                 cac_dong[y_tam] = [(x0, x1, van_ban)]
         return cac_dong
 
-    def _phan_tich_dong_chi_so(self, cac_tu_dong: list[tuple[float, float, str]]) -> tuple[str, str] | None:
-        """Phân bổ từ vào các cột tương ứng và kiểm duyệt tính hợp lệ."""
+    def _tao_dong_ket_qua(self, cac_tu_dong: list[tuple[float, float, str]]) -> dict[str, str]:
+        """Phân bổ từ vào các cột và trả về nguyên một dòng dữ liệu bảng.
+
+        Không thực hiện lọc nội dung: giữ mọi dòng có từ, các cột không có
+        nội dung sẽ có giá trị chuỗi rỗng.
+        """
         du_lieu_cot = self._phan_bo_tu_vao_cot(cac_tu_dong)
-        ten_chi_so = du_lieu_cot["ten_chi_so"]
-        ket_qua = du_lieu_cot["ket_qua"]
+        return {cot.ten_cot: du_lieu_cot[cot.ten_cot] for cot in CAC_COT}
 
-        if not (ten_chi_so and ket_qua):
-            return None
+    def _loc_phan_vung_bang(
+        self, cac_dong: list[tuple[int, dict[str, str]]]
+    ) -> list[dict[str, str]]:
+        """Giới hạn về vùng nội dung bảng: bỏ meta phía trên và chân trang.
 
-        if not self._la_ket_qua_hop_le(ket_qua):
-            return None
+        Vùng bảng bắt đầu từ dòng tiêu đề (chứa từ khóa "yêu cầu xét nghiệm")
+        và kết thúc trước dòng đầu tiên chứa từ khóa chân trang. Nếu không tìm
+        thấy mốc bắt đầu, giữ nguyên toàn bộ các dòng.
+        """
+        vi_tri_bat_dau = None
+        for chi_so, (_, dong) in enumerate(cac_dong):
+            if any(
+                tu_khoa in dong["yeu_cau"].lower()
+                for tu_khoa in TU_KHOA_BAT_DAU_BANG
+            ):
+                vi_tri_bat_dau = chi_so
+                break
 
-        # Nối chuỗi toàn bộ dòng để kiểm tra loại bỏ các hàng hành chính
-        don_vi = du_lieu_cot["don_vi"]
-        khoang_tham_chieu = du_lieu_cot["khoang_tham_chieu"]
-        chuoi_toan_dong = f"{ten_chi_so} {ket_qua} {don_vi} {khoang_tham_chieu}".lower()
+        if vi_tri_bat_dau is None:
+            return [dong for _, dong in cac_dong]
 
-        if any(tu_khoa in chuoi_toan_dong for tu_khoa in TU_KHOA_LOAI_BO):
-            return None
+        vi_tri_ket_thuc = len(cac_dong)
+        for chi_so in range(vi_tri_bat_dau + 1, len(cac_dong)):
+            _, dong = cac_dong[chi_so]
+            chuoi_dong = " ".join(dong.values()).lower()
+            if any(tu_khoa in chuoi_dong for tu_khoa in TU_KHOA_KET_THUC_BANG):
+                vi_tri_ket_thuc = chi_so
+                break
 
-        if ten_chi_so.isdigit() and len(ten_chi_so) <= 2:
-            return None
-
-        return ten_chi_so, ket_qua
+        return [dong for _, dong in cac_dong[vi_tri_bat_dau:vi_tri_ket_thuc]]
 
     def _phan_bo_tu_vao_cot(self, cac_tu_dong: list[tuple[float, float, str]]) -> dict[str, str]:
         """Tự động phân bổ các từ vào cột dựa trên định cấu hình tọa độ X."""
@@ -184,79 +291,3 @@ class ExtractorPDF:
                     break
 
         return {ten_cot: " ".join(phong_bo).strip() for ten_cot, phong_bo in tam_luu.items()}
-
-    def _la_ket_qua_hop_le(self, ket_qua: str) -> bool:
-        """Xác thực kết quả là số hoặc chứa từ khóa chỉ định y khoa."""
-        if re.search(r"\d", ket_qua):
-            return True
-        return any(tu_khoa in ket_qua.lower() for tu_khoa in TU_KHOA_KET_QUA_HOP_LE)
-
-    def _anh_xa_chi_so_phang(self, cac_dong_tho: list[tuple[str, str]]) -> dict[str, str]:
-        """Ánh xạ các tên chỉ số xét nghiệm thô sang key phẳng chuẩn hóa, bỏ key thiếu."""
-        dict_phang = {}
-        cac_gia_tri_gop: dict[str, list[str]] = {}
-
-        for ten_raw, ket_qua in cac_dong_tho:
-            ten_chuan = chuan_hoa_ten(ten_raw)
-
-            # Gom các dòng thuộc chỉ số tổng hợp (vd tế bào nước tiểu) trước
-            for key_muc_tieu, danh_sach_patterns in ANH_XA_GOP:
-                if any(pat in ten_chuan for pat in danh_sach_patterns):
-                    cac_gia_tri_gop.setdefault(key_muc_tieu, []).append(ket_qua)
-                    break
-            else:
-                # Quét danh sách cấu hình để tìm key khớp đầu tiên
-                for key_muc_tieu, danh_sach_patterns in ANH_XA_CHI_SO:
-                    # Tránh ghi đè nếu key đó đã được lấy từ trước trong trang
-                    if key_muc_tieu in dict_phang:
-                        continue
-                    # Khớp nếu bất kỳ pattern nào là chuỗi con của tên chuẩn hóa
-                    if any(pat in ten_chuan for pat in danh_sach_patterns):
-                        dict_phang[key_muc_tieu] = ket_qua
-                        break
-
-        # Tính giá trị tổng hợp cho các chỉ số gộp nhiều dòng
-        for key_muc_tieu, cac_gia_tri in cac_gia_tri_gop.items():
-            gia_tri_gop = self._cong_gia_tri_te_bao(cac_gia_tri)
-            if gia_tri_gop is not None:
-                dict_phang[key_muc_tieu] = gia_tri_gop
-
-        # Chuẩn hóa các chỉ số nhị phân (glucose/protein nước tiểu) về Âm/Dương tính
-        for key_nhi_phan in CAC_CHI_SO_NHI_PHAN:
-            if key_nhi_phan in dict_phang:
-                dict_phang[key_nhi_phan] = self._chuan_hoa_am_duong(dict_phang[key_nhi_phan])
-
-        return dict_phang
-
-    def _chuan_hoa_am_duong(self, ket_qua: str) -> str:
-        """Chuẩn hóa giá trị về 'Dương tính' nếu chứa 'dương' hoặc có số, ngược lại 'Âm tính'."""
-        if "dương" in ket_qua.lower():
-            return "Dương tính"
-        if re.search(r"\d", ket_qua):
-            return "Dương tính"
-        return "Âm tính"
-
-    def _cong_gia_tri_te_bao(self, cac_gia_tri: list[str]) -> str | None:
-        """Cộng các giá trị tế bào nước tiểu; 'Âm tính' coi như 0, không có dòng thì None."""
-        if not cac_gia_tri:
-            return None
-
-        tong = 0.0
-        for gia_tri in cac_gia_tri:
-            gia_tri_so = self._ep_gia_tri_so(gia_tri)
-            if gia_tri_so is not None:
-                tong += gia_tri_so
-
-        # Kết quả nguyên thì bỏ phần thập phân, ngược lại giữ tối đa 1 số lẻ
-        if tong.is_integer():
-            return str(int(tong))
-        return f"{tong:.1f}".rstrip('0').rstrip('.')
-
-    def _ep_gia_tri_so(self, gia_tri: str) -> float | None:
-        """Chuyển giá trị chữ sang số; 'Âm tính' coi như 0, không chuyển được thì None."""
-        if "âm tính" in gia_tri.lower() or "không" in gia_tri.lower():
-            return 0.0
-        try:
-            return float(gia_tri)
-        except ValueError:
-            return None

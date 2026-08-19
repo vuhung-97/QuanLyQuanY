@@ -1,164 +1,160 @@
-import { forwardRef, memo, useCallback, useState } from "react";
+import { forwardRef, memo } from "react";
 import {
+    Box,
     Card,
     CardContent,
-    Grid,
-    MenuItem,
-    TextField,
+    Paper,
+    Stack,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
     Typography,
 } from "@mui/material";
 import useFormTab from "@/hooks/useFormTab";
-import { fieldRanges, isOutOfRange } from "./fieldRanges";
+import { DEFAULT_PHAN_LOAI } from "@/constants/khamSucKhoeConstants.js";
 import PhanLoaiSelect from "../common/PhanLoaiSelect.jsx";
-import RangeFieldSM from "../common/RangeFieldSM.jsx";
 import SectionTitle from "@/components/KhamSucKhoe/common/SectionTitle.jsx";
 
-const xetNghiemMauFields = [
-    { name: "hong_cau", step: 0.01, label: "Hồng cầu", unit: "T/L" },
-    { name: "bach_cau", step: 0.01, label: "Bạch cầu", unit: "G/L" },
-    { name: "tieu_cau", step: 1, label: "Tiểu cầu", unit: "G/L" },
-    { name: "glucose_mau", step: 0.01, label: "Glucose", unit: "mmol/l" },
-    { name: "ure", step: 0.1, label: "Ure", unit: "mmol/l" },
-    { name: "creatinin", step: 0.1, label: "Creatinin", unit: "umol/l" },
-    { name: "ast", step: 0.1, label: "AST", unit: "U/L" },
-    { name: "alt", step: 0.1, label: "ALT", unit: "U/L" },
+const XN_TABLE_COLUMNS = [
+    { key: "yeu_cau", label: "Yêu cầu xét nghiệm" },
+    { key: "ket_qua", label: "Kết quả" },
+    { key: "don_vi", label: "Đơn vị" },
+    { key: "ghi_chu", label: "Ghi chú" },
+    { key: "khoang_tham_chieu", label: "Khoảng tham chiếu" },
+    { key: "qtkt", label: "QTKT" },
+    { key: "may_xet_nghiem", label: "Máy xét nghiệm" },
 ];
 
-const xetNghiemNuocTieuFields = [
-    {
-        name: "nuoc_tieu_glucose",
-        label: "Glucose nước tiểu",
-        type: "select",
-        options: ["Âm tính", "Dương tính"],
-    },
-    {
-        name: "nuoc_tieu_protein",
-        label: "Protein nước tiểu",
-        type: "select",
-        options: ["Âm tính", "Dương tính"],
-    },
-    { name: "nuoc_tieu_te_bao", label: "Tế bào nước tiểu" },
-];
+function trangThaiGhiChu(ghiChu) {
+    const g = (ghiChu || "").toLowerCase();
+    if (g.includes("tăng")) return "tang";
+    if (g.includes("giảm")) return "giam";
+    return null;
+}
 
-const SelectFieldSM = memo(({ name, label, dataRef, readOnly, options }) => {
-    const [val, setVal] = useState(() => dataRef.current?.[name] ?? "");
-
-    const handleChange = useCallback(
-        (e) => {
-            const v = e.target.value;
-            setVal(v);
-            dataRef.current[name] = v;
-        },
-        [name, dataRef],
-    );
-
-    const outOfRange = isOutOfRange(name, val);
+const BangXetNghiem = memo(function BangXetNghiem({ rows }) {
+    if (!rows || rows.length === 0) {
+        return (
+            <Typography color="text.secondary" sx={{ py: 3 }}>
+                Chưa có kết quả xét nghiệm.
+            </Typography>
+        );
+    }
 
     return (
-        <Grid size={{ xs: 12, sm: 4 }}>
-            <TextField
-                select
-                name={name}
-                label={label}
-                value={val}
-                onChange={handleChange}
-                fullWidth
-                size="medium"
-                error={outOfRange}
-                disabled={readOnly}
+        <>
+            <TableContainer
+                component={Paper}
+                variant="outlined"
+                sx={{ borderRadius: 2 }}
             >
-                <MenuItem value="">-- Chọn --</MenuItem>
-                {options.map((opt) => (
-                    <MenuItem key={opt} value={opt}>
-                        {opt}
-                    </MenuItem>
-                ))}
-            </TextField>
-        </Grid>
+                <Table size="small" stickyHeader>
+                    <TableHead>
+                        <TableRow>
+                            {XN_TABLE_COLUMNS.map((col) => (
+                                <TableCell
+                                    key={col.key}
+                                    sx={{ fontWeight: 700 }}
+                                >
+                                    {col.label}
+                                </TableCell>
+                            ))}
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {rows.map((row, idx) => {
+                            const trangThai = trangThaiGhiChu(row.ghi_chu);
+                            const mau =
+                                trangThai === "tang"
+                                    ? "error"
+                                    : trangThai === "giam"
+                                      ? "info"
+                                      : null;
+                            return (
+                                <TableRow
+                                    key={idx}
+                                    hover
+                                    sx={
+                                        mau
+                                            ? {
+                                                  backgroundColor: (theme) =>
+                                                      `${theme.palette[mau].main}18`,
+                                              }
+                                            : undefined
+                                    }
+                                >
+                                    {XN_TABLE_COLUMNS.map((col) => (
+                                        <TableCell
+                                            key={col.key}
+                                            sx={
+                                                col.key === "ket_qua" && mau
+                                                    ? {
+                                                          color: (theme) =>
+                                                              theme.palette[mau]
+                                                                  .main,
+                                                          fontWeight: 700,
+                                                      }
+                                                    : undefined
+                                            }
+                                        >
+                                            {row[col.key] || ""}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            );
+                        })}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+            <Stack direction="row" spacing={2} sx={{ mt: 1 }}>
+                <Box
+                    component="span"
+                    sx={{ color: "error.main", fontWeight: 700 }}
+                >
+                    ● Tăng
+                </Box>
+                <Box
+                    component="span"
+                    sx={{ color: "info.main", fontWeight: 700 }}
+                >
+                    ● Giảm
+                </Box>
+            </Stack>
+        </>
     );
 });
 
 const XetNghiemTab = memo(
     forwardRef(function XetNghiemTab(
-        { initialData, cardStyle, readOnly = false, errors },
+        { initialData, cardStyle, readOnly = false, phanLoai },
         ref,
     ) {
         const { dataRef } = useFormTab(initialData, ref);
 
+        if (dataRef.current.phan_loai === undefined) {
+            dataRef.current.phan_loai = phanLoai || DEFAULT_PHAN_LOAI;
+        }
+
+        const rows = Array.isArray(initialData) ? initialData : [];
+
         return (
-            <>
-                <Card sx={cardStyle}>
-                    <CardContent>
-                        <SectionTitle>Xét nghiệm máu</SectionTitle>
-                        <Grid container spacing={2}>
-                            {xetNghiemMauFields.map((f) => (
-                                <RangeFieldSM
-                                    key={f.name}
-                                    name={f.name}
-                                    label={f.label}
-                                    dataRef={dataRef}
-                                    readOnly={readOnly}
-                                    unit={f.unit}
-                                    step={f.step}
-                                    xs={12}
-                                    sm={3}
-                                    md={3}
-                                    errors={errors}
-                                />
-                            ))}
-
-                            <PhanLoaiSelect
-                                name="xn_mau_loai"
-                                label="Phân loại xét nghiệm máu"
-                                dataRef={dataRef}
-                                readOnly={readOnly}
-                            />
-                        </Grid>
-                    </CardContent>
-                </Card>
-
-                <Card sx={{ ...cardStyle, mt: 2 }}>
-                    <CardContent>
-                        <SectionTitle>Xét nghiệm nước tiểu</SectionTitle>
-                        <Grid container spacing={2}>
-                            {xetNghiemNuocTieuFields.map((f) => {
-                                if (f.type === "select") {
-                                    return (
-                                        <SelectFieldSM
-                                            key={f.name}
-                                            name={f.name}
-                                            label={f.label}
-                                            dataRef={dataRef}
-                                            readOnly={readOnly}
-                                            options={f.options}
-                                        />
-                                    );
-                                }
-                                return (
-                                    <RangeFieldSM
-                                        key={f.name}
-                                        name={f.name}
-                                        label={f.label}
-                                        dataRef={dataRef}
-                                        readOnly={readOnly}
-                                        xs={12}
-                                        sm={4}
-                                        md={4}
-                                        errors={errors}
-                                    />
-                                );
-                            })}
-
-                            <PhanLoaiSelect
-                                name="xn_nuoc_tieu_loai"
-                                label="Phân loại xét nghiệm nước tiểu"
-                                dataRef={dataRef}
-                                readOnly={readOnly}
-                            />
-                        </Grid>
-                    </CardContent>
-                </Card>
-            </>
+            <Card sx={cardStyle}>
+                <CardContent>
+                    <BangXetNghiem rows={rows} />
+                    <Box sx={{ mt: 2, maxWidth: 400 }}>
+                        <PhanLoaiSelect
+                            name="phan_loai"
+                            label="Phân loại kết quả xét nghiệm"
+                            dataRef={dataRef}
+                            readOnly={readOnly}
+                            gridProps={false}
+                        />
+                    </Box>
+                </CardContent>
+            </Card>
         );
     }),
 );

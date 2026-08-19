@@ -3,15 +3,16 @@ import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
 import {
     DEFAULT_TS,
     DEFAULT_LS,
-    DEFAULT_XN,
     DEFAULT_CDHA,
     DEFAULT_KL,
+    DEFAULT_PHAN_LOAI,
     ALL_TABS,
 } from "@/constants/khamSucKhoeConstants.js";
 import {
     parseTienSu,
     parseLamSang,
     parseXetNghiem,
+    parseXetNghiemPhanLoai,
     parseChanDoanHinhAnh,
     parseKetLuan,
     computeHighestClassification,
@@ -29,19 +30,7 @@ const TS_NUMBER_FIELDS = {
     mat_khong_kinh_phai: "Thị lực không kính (Phải)",
 };
 
-const XN_NUMBER_FIELDS = {
-    hong_cau: "Hồng cầu",
-    bach_cau: "Bạch cầu",
-    tieu_cau: "Tiểu cầu",
-    glucose_mau: "Glucose",
-    ure: "Ure",
-    creatinin: "Creatinin",
-    ast: "AST",
-    alt: "ALT",
-    nuoc_tieu_te_bao: "Tế bào nước tiểu",
-};
-
-const NUMBER_FIELD_LABELS = { ...TS_NUMBER_FIELDS, ...XN_NUMBER_FIELDS };
+const NUMBER_FIELD_LABELS = TS_NUMBER_FIELDS;
 
 function getDirty(current, initial) {
     const dirty = {};
@@ -84,6 +73,9 @@ export default function useKhamSucKhoeForm({
     const [initialTS, setInitialTS] = useState(null);
     const [initialLS, setInitialLS] = useState(null);
     const [initialXN, setInitialXN] = useState(null);
+    const [initialXNPhanLoai, setInitialXNPhanLoai] = useState(
+        DEFAULT_PHAN_LOAI,
+    );
     const [initialCDHA, setInitialCDHA] = useState(null);
     const [initialKL, setInitialKL] = useState(null);
     const [klVersion, setKlVersion] = useState(0);
@@ -113,6 +105,7 @@ export default function useKhamSucKhoeForm({
                 setInitialTS(parseTienSu(p.tong_quan));
                 setInitialLS(parseLamSang(p.kham_lam_sang));
                 setInitialXN(parseXetNghiem(p.xet_nghiem));
+                setInitialXNPhanLoai(parseXetNghiemPhanLoai(p.xet_nghiem));
                 setInitialCDHA(
                     parseChanDoanHinhAnh(p.chan_doan_hinh_anh),
                 );
@@ -120,7 +113,8 @@ export default function useKhamSucKhoeForm({
             } else {
                 setInitialTS({ ...DEFAULT_TS });
                 setInitialLS({ ...DEFAULT_LS });
-                setInitialXN({ ...DEFAULT_XN });
+                setInitialXN([]);
+                setInitialXNPhanLoai(DEFAULT_PHAN_LOAI);
                 setInitialCDHA({ ...DEFAULT_CDHA });
                 setInitialKL({ ...DEFAULT_KL });
             }
@@ -185,11 +179,9 @@ export default function useKhamSucKhoeForm({
             }
 
             const tsCheck = tsRef.current?.getData() ?? initialTS;
-            const xnCheck = xnRef.current?.getData() ?? initialXN;
             const fieldErrors = {};
             for (const [field] of Object.entries(NUMBER_FIELD_LABELS)) {
-                const source = field in TS_NUMBER_FIELDS ? tsCheck : xnCheck;
-                const v = source?.[field];
+                const v = tsCheck?.[field];
                 if (v === "" || v === undefined || v === null) continue;
                 const num = Number(v);
                 if (Number.isNaN(num) || num < 0) {
@@ -198,15 +190,22 @@ export default function useKhamSucKhoeForm({
             }
             if (Object.keys(fieldErrors).length > 0) {
                 setErrors(fieldErrors);
-                const firstField = Object.keys(fieldErrors)[0];
-                setActiveTab(firstField in TS_NUMBER_FIELDS ? 0 : 2);
+                setActiveTab(0);
                 return;
             }
 
-            // Chỉ gửi field thay đổi (dirty) từ tab được edit
+            // Chỉ gửi field thay đổi (dirty) từ tab được edit.
+            // Riêng xét nghiệm: là kết quả mới (list) → gửi nguyên vẹn dạng
+            // wrapper { ket_qua, phan_loai } để không làm mất dữ liệu OCR.
             const ts = buildSection(canEdit(0), tsRef, initialTS);
             const ls = buildSection(canEdit(1), lsRef, initialLS);
-            const xn = buildSection(canEdit(2), xnRef, initialXN);
+            const xn = {
+                ket_qua: Array.isArray(initialXN) ? initialXN : [],
+                phan_loai:
+                    xnRef.current?.getData()?.phan_loai ||
+                    initialXNPhanLoai ||
+                    DEFAULT_PHAN_LOAI,
+            };
             const cdha = buildSection(canEdit(3), cdhaRef, initialCDHA);
             const kl = buildSection(canEdit(4), klRef, initialKL);
 
@@ -276,6 +275,7 @@ export default function useKhamSucKhoeForm({
         initialTS,
         initialLS,
         initialXN,
+        initialXNPhanLoai,
         initialCDHA,
         initialKL,
         klVersion,

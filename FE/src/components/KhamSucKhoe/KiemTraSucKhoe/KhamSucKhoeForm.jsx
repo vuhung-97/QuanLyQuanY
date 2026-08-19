@@ -139,6 +139,7 @@ export default function KhamSucKhoeForm({
         initialTS,
         initialLS,
         initialXN,
+        initialXNPhanLoai,
         initialCDHA,
         initialKL,
         klVersion,
@@ -180,7 +181,13 @@ export default function KhamSucKhoeForm({
             gioiTinh: quanNhan?.gioi_tinh,
         },
         { index: 1, Component: LamSangTab, tabRef: lsRef, initialData: initialLS },
-        { index: 2, Component: XetNghiemTab, tabRef: xnRef, initialData: initialXN },
+        {
+            index: 2,
+            Component: XetNghiemTab,
+            tabRef: xnRef,
+            initialData: initialXN,
+            phanLoai: initialXNPhanLoai,
+        },
         {
             index: 3,
             Component: ChanDoanHinhAnhTab,
@@ -267,6 +274,7 @@ export default function KhamSucKhoeForm({
                                         initialData,
                                         gioiTinh,
                                         innerKey,
+                                        phanLoai,
                                         nam: cdhaNam,
                                     }) =>
                                         allowedTabs.includes(index) && (
@@ -286,11 +294,12 @@ export default function KhamSucKhoeForm({
                                                             index,
                                                         )
                                                     }
-                                                    {...(index === 0 || index === 2
-                                                        ? { errors }
-                                                        : {})}
+                                                    {...(index === 0 ? { errors } : {})}
                                                     {...(gioiTinh !== undefined
                                                         ? { gioiTinh }
+                                                        : {})}
+                                                    {...(phanLoai !== undefined
+                                                        ? { phanLoai }
                                                         : {})}
                                                     {...(cdhaNam !== undefined
                                                         ? { nam: cdhaNam }

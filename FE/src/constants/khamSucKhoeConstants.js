@@ -92,22 +92,6 @@ export const DEFAULT_LS = {
     khac: "",
 };
 
-export const DEFAULT_XN = {
-    hong_cau: "",
-    bach_cau: "",
-    tieu_cau: "",
-    glucose_mau: "",
-    ure: "",
-    creatinin: "",
-    ast: "",
-    alt: "",
-    xn_mau_loai: DEFAULT_PHAN_LOAI,
-    nuoc_tieu_glucose: "",
-    nuoc_tieu_protein: "",
-    nuoc_tieu_te_bao: "",
-    xn_nuoc_tieu_loai: DEFAULT_PHAN_LOAI,
-};
-
 export const DEFAULT_CDHA = {
     dien_tim: "",
     dien_tim_loai: DEFAULT_PHAN_LOAI,

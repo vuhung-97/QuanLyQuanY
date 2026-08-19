@@ -17,7 +17,7 @@ from app.routes.kham_benh.phieu_kham_suc_khoe import (
     _require_xet_nghiem,
 )
 from app.schemas.phieu_kham_suc_khoe import PhieuKhamSucKhoeUpdate
-from app.services.medical_extractor import ExtractorPDF
+from app.services.medical_extractor import ExtractorPDF, gop_ket_qua
 
 router = APIRouter(prefix="/xet_nghiem_ocr", tags=["xet_nghiem_ocr"])
 
@@ -90,7 +90,7 @@ def dien_ket_qua(
 
         for mau in cac_mau:
             ma_so_mau = mau["ma_so_mau"]
-            ket_qua = mau["ket_qua"] or {}
+            ket_qua = mau["ket_qua"] or []
             phieu = phieu_theo_ma_lay_mau.get(ma_so_mau)
 
             if phieu is None:
@@ -101,10 +101,31 @@ def dien_ket_qua(
                 chua_lay_mau.append(ma_so_mau)
                 continue
 
+            # Giữ phân loại đã chọn và gộp (khử trùng) với kết quả mới.
+            du_lieu_hien_tai = phieu.xet_nghiem
+            rows_hien_tai = None
+            phan_loai = None
+            if isinstance(du_lieu_hien_tai, dict) and isinstance(
+                du_lieu_hien_tai.get("ket_qua"), list
+            ):
+                rows_hien_tai = du_lieu_hien_tai["ket_qua"]
+                phan_loai = du_lieu_hien_tai.get("phan_loai")
+            elif isinstance(du_lieu_hien_tai, list):
+                rows_hien_tai = du_lieu_hien_tai
+
+            rows_hop_nhat = (
+                gop_ket_qua(rows_hien_tai, ket_qua)
+                if rows_hien_tai
+                else ket_qua
+            )
+            ket_qua_luu: dict = {"ket_qua": rows_hop_nhat}
+            if phan_loai:
+                ket_qua_luu["phan_loai"] = phan_loai
+
             phieu_da_cap_nhat = phieu_kham_suc_khoe_crud.update(
                 db,
                 phieu.ma_phieu_kham,
-                PhieuKhamSucKhoeUpdate(xet_nghiem=ket_qua),
+                PhieuKhamSucKhoeUpdate(xet_nghiem=ket_qua_luu),
                 nguoi_dung_id=current_user.id,
             )
             da_cap_nhat.append(
@@ -114,7 +135,7 @@ def dien_ket_qua(
                     ho_ten=danh_sach_ho_ten.get(
                         phieu_da_cap_nhat.ma_quan_nhan, ""
                     ),
-                    so_chi_so=len(ket_qua),
+                    so_chi_so=len(rows_hop_nhat),
                 )
             )
 

@@ -1,5 +1,5 @@
 import {
-    DEFAULT_TS, DEFAULT_LS, DEFAULT_XN, DEFAULT_CDHA, DEFAULT_KL,
+    DEFAULT_TS, DEFAULT_LS, DEFAULT_CDHA, DEFAULT_KL,
     DEFAULT_PHAN_LOAI, TRANG_THAI_LABEL,
 } from "@/constants/khamSucKhoeConstants.js";
 
@@ -152,8 +152,38 @@ function parseWithDefault(data, defaultObj) {
 export const parseTienSu = (str) =>
     parseWithDefault(str, DEFAULT_TS);
 export const parseLamSang = (str) => parseWithDefault(str, DEFAULT_LS);
-export const parseXetNghiem = (str) =>
-    parseWithDefault(str, DEFAULT_XN);
+export const parseXetNghiem = (str) => {
+    if (str) {
+        try {
+            const parsed = typeof str === "string" ? JSON.parse(str) : str;
+            if (Array.isArray(parsed)) return parsed;
+            if (
+                parsed &&
+                typeof parsed === "object" &&
+                Array.isArray(parsed.ket_qua)
+            ) {
+                return parsed.ket_qua;
+            }
+        } catch {}
+    }
+    return [];
+};
+export const parseXetNghiemPhanLoai = (str) => {
+    if (str) {
+        try {
+            const parsed = typeof str === "string" ? JSON.parse(str) : str;
+            if (
+                parsed &&
+                typeof parsed === "object" &&
+                typeof parsed.phan_loai === "string" &&
+                parsed.phan_loai
+            ) {
+                return parsed.phan_loai;
+            }
+        } catch {}
+    }
+    return DEFAULT_PHAN_LOAI;
+};
 export const parseChanDoanHinhAnh = (str) =>
     parseWithDefault(str, DEFAULT_CDHA);
 export const parseKetLuan = (str) =>

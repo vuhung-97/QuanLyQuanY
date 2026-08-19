@@ -11,55 +11,39 @@ class CotXetNghiem:
     khoang_x: tuple[float, float]
 
 
-# Định nghĩa các cột của bảng kết quả xét nghiệm
+# Định nghĩa các cột giữ lại của bảng kết quả xét nghiệm.
+# Bảng PDF gồm 8 cột: STT | Yêu cầu xét nghiệm | Kết quả xét nghiệm | Đơn vị |
+# Ghi chú | Khoảng tham chiếu | QTKT | Máy xét nghiệm. Cột STT bị bỏ.
+# Khoảng X chỉ dùng cho đường đọc fallback (không có lưới bảng).
 CAC_COT = (
-    CotXetNghiem("ten_chi_so", (45.0, 220.0)),
+    CotXetNghiem("yeu_cau", (45.0, 220.0)),
     CotXetNghiem("ket_qua", (225.0, 275.0)),
     CotXetNghiem("don_vi", (280.0, 325.0)),
-    CotXetNghiem("khoang_tham_chieu", (350.0, 480.0)),
+    CotXetNghiem("ghi_chu", (335.0, 360.0)),
+    CotXetNghiem("khoang_tham_chieu", (360.0, 462.0)),
+    CotXetNghiem("qtkt", (462.0, 512.0)),
+    CotXetNghiem("may_xet_nghiem", (512.0, 590.0)),
 )
+
+# Ánh xạ chỉ số cột của bảng PDF (0 = STT, bị bỏ) sang thứ tự CAC_COT.
+# Dùng cho đường đọc theo cell (find_tables) vì thứ tự cột nhất quán ở
+# các phiếu: STT | Yêu cầu | Kết quả | Đơn vị | Ghi chú | Khoảng tham chiếu | QTKT | Máy.
+CHI_SO_COT_BANG = (1, 2, 3, 4, 5, 6, 7)
 
 # Ngưỡng lệch tọa độ Y tối đa để tính cùng dòng (pixel)
 NGO_LENH_CUNG_DONG = 3
 
-# Các từ khóa kết quả hợp lệ dạng chữ
-TU_KHOA_KET_QUA_HOP_LE = (
-    "âm tính",
-    "dương tính",
-    "vết",
-    "đục",
-    "trong",
-    "vàng",
-    "hồng",
-    "đỏ",
-    "neg",
-    "pos",
-    "normal",
-    "trace",
-    "clear",
-    "n/a",
-    "không",
-)
+# Từ khóa đánh dấu dòng tiêu đề bảng: từ dòng này (theo chiều từ trên xuống)
+# trở đi là vùng nội dung bảng, bỏ qua khối thông tin bệnh nhân phía trên.
+TU_KHOA_BAT_DAU_BANG = ("yêu cầu xét nghiệm",)
 
-# Các từ khóa hành chính hoặc tiêu đề cần loại bỏ khỏi bảng kết quả
-TU_KHOA_LOAI_BO = (
-    "yêu cầu",
-    "chỉ số",
-    "bệnh nhân",
-    "bác sĩ",
-    "ngày",
-    "địa chỉ",
-    "mã số",
-    "số phiếu",
-    "chất lượng",
-    "phiếu kết quả",
-    "tối khẩn",
-    "chẩn đoán",
-    "loại bệnh phẩm",
-    "thời gian",
-    "đối tượng",
-    "khoa xét nghiệm",
-    "đơn vị y tế",
+# Từ khóa đánh dấu bắt đầu khối chân trang (chữ ký / ghi chú dưới bảng):
+# các dòng từ đây trở đi bị bỏ qua.
+TU_KHOA_KET_THUC_BANG = (
+    "trả kết quả",
+    "người xem xét",
+    "phụ trách",
+    "kết quả in đậm",
 )
 
 # Các biểu thức chính quy để trích xuất Mã số mẫu / Số phiếu
@@ -67,47 +51,4 @@ REGEX_MA_MAU = r"(Mã số mẫu|Mã số mấu|Mã s mu|Mã mẫu)[:\s\n]+([A-Z
 REGEX_SO_PHIEU = r"(Số phiếu|Số phiu|SID)[:\s\n]+([A-Z0-9\-]+)"
 
 # Giá trị mặc định cho dữ liệu trống
-GIA_TRI_MAC_DINH = "N/A"
 MA_MAU_MAC_DINH = "Không xác định"
-KHOA_FILE_TAM = "downloaded_temp"
-KHOA_URL_PDF = "url_pdf"
-
-# Định nghĩa bảng ánh xạ từ chỉ số xét nghiệm sang key JSON phẳng
-ANH_XA_CHI_SO = (
-    ("alt",                ("do hoat do alt", "alt gpt", "alt")),
-    ("ast",                ("do hoat do ast", "ast got", "ast")),
-    ("ure",                ("dinh luong ure", "ure [mau]", "ure")),
-    ("bach_cau",           ("so luong bach cau",)),
-    ("hong_cau",           ("so luong hong cau",)),
-    ("tieu_cau",           ("so luong tieu cau",)),
-    ("creatinin",          ("dinh luong creatinin",)),
-    ("glucose_mau",        ("glucose [mau]", "dinh luong glucose")),
-    ("nuoc_tieu_glucose",  ("glucose (glu)",)),
-    ("nuoc_tieu_protein",  ("protein (pro)",)),
-)
-
-# Các chỉ số tính gộp từ nhiều dòng: key -> (các pattern dòng con)
-ANH_XA_GOP = (
-    ("nuoc_tieu_te_bao", ("bach cau (leu)",)),
-)
-
-# Các chỉ số nước tiểu chỉ nhận giá trị Âm tính / Dương tính
-CAC_CHI_SO_NHI_PHAN = ("nuoc_tieu_glucose", "nuoc_tieu_protein")
-
-import unicodedata
-import re
-
-def chuan_hoa_ten(ten: str) -> str:
-    """Chuẩn hóa tên chỉ số để so khớp: chuyển chữ thường, bỏ dấu tiếng Việt, giữ chữ và số."""
-    if not ten:
-        return ""
-    # Chuyển về dạng NFD để tách các ký tự dấu ra khỏi chữ cái gốc
-    ten_nfd = unicodedata.normalize('NFD', ten.lower())
-    # Loại bỏ các ký tự dấu (combining marks)
-    ten_khong_dau = "".join(c for c in ten_nfd if not unicodedata.combining(c))
-    # Thay đổi chữ 'đ' thành 'd' vì NFD không phân rã được ký tự này
-    ten_khong_dau = ten_khong_dau.replace('đ', 'd')
-    # Thay thế các ký tự không phải chữ và số thành khoảng trắng, sau đó rút gọn khoảng trắng thừa
-    ten_sach = re.sub(r'[^a-z0-9\s\[\]\(\)]', ' ', ten_khong_dau)
-    return " ".join(ten_sach.split())
-
