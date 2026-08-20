@@ -121,9 +121,6 @@ export default function DanhSachPhieuKhamFilterBar({
                                 <MenuItem onClick={() => { onExport("chua_hoan_thanh"); setAnchorEl(null); }}>
                                     DS chưa hoàn thành
                                 </MenuItem>
-                                <MenuItem onClick={() => { onExport("chua_lay_mau"); setAnchorEl(null); }}>
-                                    DS chưa lấy máu
-                                </MenuItem>
                             </Menu>
                         </>
                     )}

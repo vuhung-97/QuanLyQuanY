@@ -251,10 +251,16 @@ export default function LichKhamPrint({ schedule, chiTietList, unitOptions }) {
                 }}
             >
                 {/* Nơi nhận (Bên trái) */}
-                <div style={{ fontSize: "12pt", lineHeight: 1.5 }}>
-                    <div style={{ fontWeight: "bold" }}>Nơi nhận:</div>
-                    <div>- Các cơ quan, đơn vị;</div>
-                    <div>- Lưu: {chiTiet.length} bản.</div>
+                <div style={{ fontSize: "11pt", lineHeight: 1.5 }}>
+                    <div style={{ fontWeight: "bold", fontStyle: "italic" }}>
+                        Nơi nhận:
+                    </div>
+                    <div style={{ fontStyle: "italic" }}>
+                        - Các cơ quan, đơn vị;
+                    </div>
+                    <div style={{ fontStyle: "italic" }}>
+                        - Lưu: {chiTiet.length} bản.
+                    </div>
                 </div>
 
                 {/* Chữ ký (Bên phải) */}

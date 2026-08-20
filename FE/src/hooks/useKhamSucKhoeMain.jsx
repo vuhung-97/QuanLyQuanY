@@ -218,8 +218,7 @@ export default function useKhamSucKhoeMain() {
         [formDialog.qn, setPhieuMap, setAllPhieuMap, refreshStats],
     );
 
-    const handlePrint = useCallback(
-        async (type = "chua_hoan_thanh") => {
+    const handlePrint = useCallback(async () => {
             if (!selectedSchedule) return;
             try {
                 const [allSoldiers, pList] = await Promise.all([
@@ -240,12 +239,9 @@ export default function useKhamSucKhoeMain() {
                           selectedScheduleObj.thoi_gian_bat_dau,
                       ).getFullYear()
                     : "";
-                const isChuaLayMau = type === "chua_lay_mau";
                 const filtered = allSoldiers
                     .filter((qn) => {
                         const p = allPhieuMap[qn.ma_quan_nhan];
-                        if (isChuaLayMau)
-                            return !p || p.trang_thai === "chua_lay_mau";
                         return !p || p.trang_thai !== "da_kham";
                     })
                     .sort((a, b) => {
@@ -258,14 +254,27 @@ export default function useKhamSucKhoeMain() {
                             "vi",
                         );
                     });
+                const totalQuanSo = allSoldiers.length;
+                const daKhamCount = allSoldiers.filter(
+                    (qn) =>
+                        allPhieuMap[qn.ma_quan_nhan]?.trang_thai === "da_kham",
+                ).length;
+                const chuaKhamCount = totalQuanSo - daKhamCount;
+                const donViCount = new Set(
+                    filtered.map((qn) => qn.ma_don_vi),
+                ).size;
                 setPrintDialog({
                     open: true,
                     data: {
                         soldiers: filtered,
                         phieuMap: allPhieuMap,
-                        type,
+                        type: "chua_hoan_thanh",
                         nam,
                         unitLookup: allUnitLookup,
+                        totalQuanSo,
+                        daKhamCount,
+                        chuaKhamCount,
+                        donViCount,
                     },
                 });
             } catch {}
