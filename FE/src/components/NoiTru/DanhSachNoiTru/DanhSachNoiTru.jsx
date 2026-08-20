@@ -52,8 +52,25 @@ const columns = [
     },
     {
         key: "ngay_nhap_vien",
-        label: "Ngày nhập viện",
+        label: "Ngày vào",
         render: (row) => formatDate(row.ngay_nhap_vien),
+    },
+    {
+        key: "ngay_ra_vien",
+        label: "Ngày ra",
+        render: (row) => {
+            if (row.ngay_ra_vien) return formatDate(row.ngay_ra_vien);
+            if (!row.tong_ket_benh_an) return "--";
+            try {
+                const parsed =
+                    typeof row.tong_ket_benh_an === "string"
+                        ? JSON.parse(row.tong_ket_benh_an)
+                        : row.tong_ket_benh_an;
+                return parsed?.ngay_ra ? formatDate(parsed.ngay_ra) : "--";
+            } catch {
+                return "--";
+            }
+        },
     },
     {
         key: "chan_doan",
@@ -91,12 +108,27 @@ const columns = [
         label: "Thao tác",
         render: (row, _idx, { onChiTiet, onRaVien, onPrint }) => (
             <Stack direction="row" spacing={0.5}>
-                <ActionIcon title="Chi tiết" icon={<VisibilityIcon />} color="info" onClick={() => onChiTiet(row.ma_benh_an)} />
+                <ActionIcon
+                    title="Chi tiết"
+                    icon={<VisibilityIcon />}
+                    color="info"
+                    onClick={() => onChiTiet(row.ma_benh_an)}
+                />
                 {row.trang_thai === "đang_điều_trị" && (
-                    <ActionIcon title="Ra viện" icon={<ExitToAppIcon />} color="error" onClick={() => onRaVien(row.ma_benh_an)} />
+                    <ActionIcon
+                        title="Ra viện"
+                        icon={<ExitToAppIcon />}
+                        color="error"
+                        onClick={() => onRaVien(row.ma_benh_an)}
+                    />
                 )}
                 {row.trang_thai === "đã_ra_viện" && (
-                    <ActionIcon title="In giấy ra bệnh xá" icon={<PrintIcon />} color="primary" onClick={() => onPrint(row.ma_benh_an)} />
+                    <ActionIcon
+                        title="In giấy ra bệnh xá"
+                        icon={<PrintIcon />}
+                        color="primary"
+                        onClick={() => onPrint(row.ma_benh_an)}
+                    />
                 )}
             </Stack>
         ),
@@ -134,7 +166,10 @@ export default function DanhSachNoiTru() {
         offset,
     } = useDanhSachNoiTru();
 
-    const [printDialog, setPrintDialog] = useState({ open: false, benhAnId: null });
+    const [printDialog, setPrintDialog] = useState({
+        open: false,
+        benhAnId: null,
+    });
 
     const handleOpenPrint = useCallback((benhAnId) => {
         setPrintDialog({ open: true, benhAnId });
