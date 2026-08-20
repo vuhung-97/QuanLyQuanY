@@ -9,8 +9,8 @@ const paperSizes = {
     },
 };
 
-const styles = (className, padding, fontFamily, pageSize, fontSize) => `
-.${className} { display: none; }
+const styles = (className, padding, fontFamily, pageSize, fontSize, preview) => `
+.${className} { ${preview ? "display: block;" : "display: none;"} }
 @page { margin: ${padding}; size: ${pageSize}; }
 @media print {
     html, body { height: auto; overflow: visible; margin: 0; padding: 0; }
@@ -23,6 +23,17 @@ const styles = (className, padding, fontFamily, pageSize, fontSize) => `
     .${className} th { font-weight: bold; text-align: center; }
     .${className} td.so-luong { text-align: center; }
 }
+@media screen {
+    .${className} {
+        background: #fff;
+        padding: ${padding};
+        margin: 0 auto;
+        max-width: 21cm;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+    }
+}
 `;
 
 export default function PrintOverlay({
@@ -32,6 +43,7 @@ export default function PrintOverlay({
     fontFamily = "'Times New Roman', Times, serif",
     children,
     fontSize = "13pt",
+    preview = false,
 }) {
     const config = paperSizes[paperSize] || paperSizes.A4;
     const padding = customPadding || config.padding;
@@ -45,6 +57,7 @@ export default function PrintOverlay({
                     fontFamily,
                     config.pageSize,
                     fontSize,
+                    preview,
                 )}
             </style>
             <div className={className}>{children}</div>

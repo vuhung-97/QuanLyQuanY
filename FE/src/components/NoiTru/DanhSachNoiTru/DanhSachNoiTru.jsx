@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
     Box,
     Button,
@@ -15,6 +15,7 @@ import {
     Refresh as RefreshIcon,
     Visibility as VisibilityIcon,
     ExitToApp as ExitToAppIcon,
+    Print as PrintIcon,
 } from "@mui/icons-material";
 import ActionIcon from "@/components/common/ActionIcon.jsx";
 import FilterModeToggle from "@/components/common/FilterModeToggle.jsx";
@@ -28,6 +29,7 @@ import SearchBarDebounced from "@/components/common/SearchBarDebounced.jsx";
 import StatCardGrid from "@/components/common/StatCardGrid.jsx";
 import ChiTietBenhAn from "./ChiTietBenhAn.jsx";
 import RaVienDialog from "./RaVienDialog.jsx";
+import RaBenhXaDialog from "./RaBenhXaDialog.jsx";
 import { BENH_AN_STATUS_MAP } from "@/constants/noiTruConstants.js";
 import { formatDate } from "@/utils/date.js";
 
@@ -87,11 +89,14 @@ const columns = [
     {
         key: "thao_tac",
         label: "Thao tác",
-        render: (row, _idx, { onChiTiet, onRaVien }) => (
+        render: (row, _idx, { onChiTiet, onRaVien, onPrint }) => (
             <Stack direction="row" spacing={0.5}>
                 <ActionIcon title="Chi tiết" icon={<VisibilityIcon />} color="info" onClick={() => onChiTiet(row.ma_benh_an)} />
                 {row.trang_thai === "đang_điều_trị" && (
                     <ActionIcon title="Ra viện" icon={<ExitToAppIcon />} color="error" onClick={() => onRaVien(row.ma_benh_an)} />
+                )}
+                {row.trang_thai === "đã_ra_viện" && (
+                    <ActionIcon title="In giấy ra bệnh xá" icon={<PrintIcon />} color="primary" onClick={() => onPrint(row.ma_benh_an)} />
                 )}
             </Stack>
         ),
@@ -128,6 +133,16 @@ export default function DanhSachNoiTru() {
         ROWS_PER_PAGE,
         offset,
     } = useDanhSachNoiTru();
+
+    const [printDialog, setPrintDialog] = useState({ open: false, benhAnId: null });
+
+    const handleOpenPrint = useCallback((benhAnId) => {
+        setPrintDialog({ open: true, benhAnId });
+    }, []);
+
+    const handleClosePrint = useCallback(() => {
+        setPrintDialog({ open: false, benhAnId: null });
+    }, []);
 
     const statItems = useMemo(() => {
         const items = [
@@ -214,6 +229,7 @@ export default function DanhSachNoiTru() {
                         rowExtra={{
                             onChiTiet: handleOpenChiTiet,
                             onRaVien: handleRaVienClick,
+                            onPrint: handleOpenPrint,
                             offset,
                         }}
                     />
@@ -244,6 +260,12 @@ export default function DanhSachNoiTru() {
                 saving={false}
                 onConfirm={handleRaVienConfirm}
                 onClose={handleRaVienCancel}
+            />
+
+            <RaBenhXaDialog
+                open={printDialog.open}
+                benhAnId={printDialog.benhAnId}
+                onClose={handleClosePrint}
             />
 
             <FeedbackSnackbar

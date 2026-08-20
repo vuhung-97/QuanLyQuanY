@@ -1,11 +1,5 @@
 import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
-import {
-    alpha,
-    Box,
-    Chip,
-    Stack,
-    Typography,
-} from "@mui/material";
+import { alpha, Box, Chip, Stack, Typography } from "@mui/material";
 import { UNIT_NAME } from "@/components/layout/common/constants.js";
 
 export default function LoginHero() {
@@ -61,7 +55,7 @@ export default function LoginHero() {
                                 fontSize: 24,
                             }}
                         >
-                            {`-- ${UNIT_NAME} --`}
+                            Vùng I Hải quân
                         </Typography>
                     </Box>
                 </Stack>
@@ -69,7 +63,7 @@ export default function LoginHero() {
 
             <Stack spacing={3} sx={{ position: "relative", maxWidth: 760 }}>
                 <Chip
-                    label="Quản lý nghiệp vụ Quân y"
+                    label={`-- ${UNIT_NAME} --`}
                     sx={{
                         alignSelf: "flex-start",
                         color: "white",
@@ -86,8 +80,7 @@ export default function LoginHero() {
                         lineHeight: 1.05,
                     }}
                 >
-                    Hệ thống quản lý khám, chữa bệnh tập trung dành cho cán
-                    bộ, chiến sĩ đơn vị.
+                    HỆ THỐNG QUẢN LÝ QUÂN Y LỮ ĐOÀN HẢI QUÂN.
                 </Typography>
                 <Typography
                     sx={{
@@ -96,16 +89,12 @@ export default function LoginHero() {
                         fontSize: 24,
                     }}
                 >
-                    Giao diện trực quan, tinh gọn, giúp cán bộ quân y thao
-                    tác nhanh chóng, chính xác trong mọi ca trực.
+                    Giao diện trực quan, tinh gọn, giúp cán bộ quân y thao tác
+                    nhanh chóng, chính xác trong mọi ca trực.
                 </Typography>
             </Stack>
 
-            <Stack
-                direction="row"
-                spacing={2}
-                sx={{ position: "relative" }}
-            >
+            <Stack direction="row" spacing={2} sx={{ position: "relative" }}>
                 {[
                     "Bảo mật quân sự",
                     "Theo dõi tồn kho",
