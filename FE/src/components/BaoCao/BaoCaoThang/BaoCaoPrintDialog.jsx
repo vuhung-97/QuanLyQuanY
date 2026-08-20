@@ -7,6 +7,7 @@ export default function BaoCaoPrintDialog({ open, onClose, data }) {
             open={open}
             onClose={onClose}
             title="In báo cáo"
+            documentTitle={`Bao_cao_thong_ke_quan_y_${data?.thang ? `thang_${data.thang}_` : ""}nam_${data?.nam ?? "YYYY"}`}
             screenClass="bao-cao-thang-print"
         >
             <BaoCaoThangPrint data={data} />

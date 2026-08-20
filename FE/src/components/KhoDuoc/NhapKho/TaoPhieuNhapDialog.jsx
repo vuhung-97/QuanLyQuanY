@@ -32,6 +32,7 @@ import {
     PRINT_STYLES,
     PRINT_DIALOG_CONTENT_SX,
     triggerPrint,
+    toFileDate,
 } from "@/utils/printUtils.js";
 import useNhapKhoItems from "@/hooks/useNhapKhoItems.js";
 
@@ -348,6 +349,10 @@ export default function TaoPhieuNhapDialog({
                 ten_thuoc_vtyt: ct.ten_thuoc_vtyt,
                 don_vi_tinh: ct.don_vi_tinh,
                 so_luong: ct.soLuong,
+                so_lo: ct.soLo || "",
+                han_su_dung: ct.hanSuDung || null,
+                don_gia: Number(ct.donGia) || 0,
+                thanh_tien: (Number(ct.soLuong) || 0) * (Number(ct.donGia) || 0),
             })),
         };
     }, [isView, maPhieuNhap, maPhieuDuTru, ngayNhap, nguoiNhap, items]);
@@ -368,7 +373,11 @@ export default function TaoPhieuNhapDialog({
             <Button
                 variant="contained"
                 startIcon={<PrintIcon />}
-                onClick={triggerPrint}
+                onClick={() =>
+                    triggerPrint(
+                        `Phieu_nhap_kho_${maPhieuNhap || phieuId || ""}_${toFileDate(ngayNhap)}`,
+                    )
+                }
             >
                 In phiếu
             </Button>

@@ -23,6 +23,7 @@ import {
     PRINT_STYLES,
     PRINT_DIALOG_CONTENT_SX,
     triggerPrint,
+    toFileDate,
 } from "@/utils/printUtils.js";
 
 export default function ChuyenTuyenForm({
@@ -251,7 +252,11 @@ export default function ChuyenTuyenForm({
                         <Button onClick={onClose}>Hủy</Button>
                         <Button
                             variant="outlined"
-                            onClick={triggerPrint}
+                            onClick={() =>
+                                triggerPrint(
+                                    `Giay_gioi_thieu_${selectedExam?.ho_ten || ""}_${toFileDate(ngayDi)}`,
+                                )
+                            }
                             disabled={!selectedExam}
                         >
                             In giấy giới thiệu

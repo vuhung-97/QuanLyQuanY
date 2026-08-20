@@ -33,11 +33,18 @@ export default function LichKhamPrintDialog({
         };
     }, [open, schedule]);
 
+    const namHienThi =
+        schedule?.nam ||
+        (schedule?.thoi_gian_bat_dau
+            ? new Date(schedule.thoi_gian_bat_dau).getFullYear()
+            : new Date().getFullYear());
+
     return (
         <PrintDialog
             open={open}
             onClose={onClose}
             title="In lịch khám sức khỏe định kỳ"
+            documentTitle={`Lich_kham_suc_khoe_nam_${namHienThi}`}
             maxWidth="lg"
             screenClass="lich-kham-print-overlay"
         >

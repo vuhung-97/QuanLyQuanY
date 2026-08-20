@@ -12,7 +12,7 @@ import { Person as PersonIcon, Print as PrintIcon } from "@mui/icons-material";
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import PhieuDuTruPrint from "./PhieuDuTruPrint.jsx";
-import { PRINT_STYLES, PRINT_DIALOG_CONTENT_SX, triggerPrint } from "@/utils/printUtils.js";
+import { PRINT_STYLES, PRINT_DIALOG_CONTENT_SX, triggerPrint, toFileDate } from "@/utils/printUtils.js";
 import ChiTietDuTruTable from "./ChiTietDuTruTable.jsx";
 import DatePicker from "@/components/common/DatePicker.jsx";
 import usePhieuDuTru from "@/hooks/usePhieuDuTru.js";
@@ -184,7 +184,11 @@ export default function PhieuDuTruDialog({
                                     <Button
                                         variant="contained"
                                         startIcon={<PrintIcon />}
-                                        onClick={triggerPrint}
+                                        onClick={() =>
+                                            triggerPrint(
+                                                `Phieu_du_tru_${phieuId || ""}_${toFileDate(ngayLap)}`,
+                                            )
+                                        }
                                     >
                                         In phiếu
                                     </Button>

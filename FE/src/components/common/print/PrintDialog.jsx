@@ -3,7 +3,7 @@ import { Print as PrintIcon } from "@mui/icons-material";
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper.jsx";
 import { PRINT_STYLES, PRINT_DIALOG_CONTENT_SX, triggerPrint } from "@/utils/printUtils.js";
 
-export default function PrintDialog({ open, onClose, title, children, maxWidth = "md", screenClass }) {
+export default function PrintDialog({ open, onClose, title, documentTitle, children, maxWidth = "md", screenClass }) {
     return (
         <>
             {screenClass && (
@@ -31,7 +31,7 @@ export default function PrintDialog({ open, onClose, title, children, maxWidth =
                         <Button
                             variant="contained"
                             startIcon={<PrintIcon />}
-                            onClick={triggerPrint}
+                            onClick={() => triggerPrint(documentTitle || title)}
                         >
                             In
                         </Button>

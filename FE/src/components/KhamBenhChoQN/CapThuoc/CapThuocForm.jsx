@@ -12,7 +12,7 @@ import PatientInfoCard from "@/components/common/PatientInfoCard.jsx";
 import DonThuocTable from "@/components/common/DonThuoc.jsx";
 import { parseDonThuocToRows } from "@/utils/khamBenhUtils.js";
 import DonThuocPrint from "./DonThuocPrint.jsx";
-import { PRINT_STYLES, PRINT_DIALOG_CONTENT_SX, triggerPrint } from "@/utils/printUtils.js";
+import { PRINT_STYLES, PRINT_DIALOG_CONTENT_SX, triggerPrint, toFileDate } from "@/utils/printUtils.js";
 import { PATIENT_FIELDS_CAP_THUOC } from "@/components/KhamBenhChoQN/constants.js";
 
 export default function CapThuocForm({
@@ -162,7 +162,11 @@ export default function CapThuocForm({
                     <Button onClick={onClose}>Hủy</Button>
                     <Button
                         variant="outlined"
-                        onClick={triggerPrint}
+                        onClick={() =>
+                            triggerPrint(
+                                `Don_thuoc_${selectedExam?.ho_ten || ""}_${toFileDate(selectedExam?.ngay_kham)}`,
+                            )
+                        }
                         disabled={!selectedExam}
                     >
                         In đơn thuốc

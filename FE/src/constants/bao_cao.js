@@ -21,6 +21,24 @@ export const THUOC_NHAP_COLUMNS = [
     { key: "don_vi_tinh", label: "ĐVT" },
     { key: "phan_loai", label: "Phân loại" },
     { key: "so_luong", label: "Số lượng", align: "right" },
+    {
+        key: "don_gia",
+        label: "Đơn giá",
+        align: "right",
+        render: (row) =>
+            row.don_gia != null
+                ? Number(row.don_gia).toLocaleString("vi-VN")
+                : "--",
+    },
+    {
+        key: "thanh_tien",
+        label: "Tổng cộng",
+        align: "right",
+        render: (row) =>
+            row.thanh_tien != null
+                ? Number(row.thanh_tien).toLocaleString("vi-VN")
+                : "--",
+    },
 ];
 
 export const QUAN_SO_KHOE_COLUMNS = [

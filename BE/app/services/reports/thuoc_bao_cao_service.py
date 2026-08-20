@@ -28,29 +28,37 @@ class ThuocBaoCaoService:
                 ThuocVtyt.ten_thuoc_vtyt,
                 ThuocVtyt.don_vi_tinh,
                 ThuocVtyt.phan_loai,
+                ChiTietPhieuNhapKho.don_gia,
                 func.coalesce(func.sum(ChiTietPhieuNhapKho.so_luong), 0).label("tong_luong"),
             )
             .join(ChiTietPhieuNhapKho, ThuocVtyt.ma_thuoc_vtyt == ChiTietPhieuNhapKho.ma_thuoc_vtyt)
             .join(PhieuNhapKho, ChiTietPhieuNhapKho.ma_phieu_nhap == PhieuNhapKho.ma_phieu_nhap)
             .filter(*nk_filters)
-            .group_by(ThuocVtyt.ma_thuoc_vtyt, ThuocVtyt.ten_thuoc_vtyt, ThuocVtyt.don_vi_tinh, ThuocVtyt.phan_loai)
+            .group_by(
+                ThuocVtyt.ma_thuoc_vtyt,
+                ThuocVtyt.ten_thuoc_vtyt,
+                ThuocVtyt.don_vi_tinh,
+                ThuocVtyt.phan_loai,
+                ChiTietPhieuNhapKho.don_gia,
+            )
             .all()
         )
 
-        merged: dict[str, dict] = {}
+        result = []
         for r in nhap_kho_records:
-            key = r.ma_thuoc_vtyt
-            if key not in merged:
-                merged[key] = {
-                    "ma_thuoc": r.ma_thuoc_vtyt,
-                    "ten_thuoc": r.ten_thuoc_vtyt,
-                    "don_vi_tinh": r.don_vi_tinh or "",
-                    "phan_loai": r.phan_loai or "",
-                    "so_luong": 0,
-                }
-            merged[key]["so_luong"] += r.tong_luong
+            don_gia = float(r.don_gia) if r.don_gia is not None else 0.0
+            so_luong = r.tong_luong or 0
+            result.append({
+                "ma_thuoc": r.ma_thuoc_vtyt,
+                "ten_thuoc": r.ten_thuoc_vtyt,
+                "don_vi_tinh": r.don_vi_tinh or "",
+                "phan_loai": r.phan_loai or "",
+                "so_luong": so_luong,
+                "don_gia": don_gia,
+                "thanh_tien": round(so_luong * don_gia, 2),
+            })
 
-        return sorted(merged.values(), key=lambda x: x["so_luong"], reverse=True)
+        return sorted(result, key=lambda x: (x["ten_thuoc"], x["don_gia"]))
 
     def thuoc_da_su_dung(self, thang: int | None, nam: int) -> list[dict]:
         # --- Từ đơn thuốc (chỉ tính đã cấp) ---

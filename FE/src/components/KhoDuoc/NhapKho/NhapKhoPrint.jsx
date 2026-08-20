@@ -49,8 +49,12 @@ export default function NhapKhoPrint({ data, paperSize = "A4" }) {
                     <tr>
                         <th style={{ width: 50 }}>STT</th>
                         <th>Tên thuốc / VTYT</th>
-                        <th style={{ width: 80 }}>ĐVT</th>
-                        <th style={{ width: 100 }}>Số lượng</th>
+                        <th style={{ width: 70 }}>ĐVT</th>
+                        <th style={{ width: 90 }}>Số lô</th>
+                        <th style={{ width: 90 }}>Hạn dùng</th>
+                        <th style={{ width: 80 }}>Số lượng</th>
+                        <th style={{ width: 110 }}>Đơn giá (x1000đ)</th>
+                        <th style={{ width: 130 }}>Thành tiền (x1000đ)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -61,9 +65,58 @@ export default function NhapKhoPrint({ data, paperSize = "A4" }) {
                             <td style={{ textAlign: "center" }}>
                                 {item.don_vi_tinh || "—"}
                             </td>
+                            <td style={{ textAlign: "center" }}>
+                                {item.so_lo || "—"}
+                            </td>
+                            <td style={{ textAlign: "center" }}>
+                                {item.han_su_dung
+                                    ? dayjs(item.han_su_dung).format(
+                                          "DD/MM/YYYY",
+                                      )
+                                    : "—"}
+                            </td>
                             <td className="so-luong">{item.so_luong}</td>
+                            <td style={{ textAlign: "right" }}>
+                                {item.don_gia
+                                    ? (
+                                          Number(item.don_gia) / 1000
+                                      ).toLocaleString("vi-VN")
+                                    : "—"}
+                            </td>
+                            <td style={{ textAlign: "right" }}>
+                                {(
+                                    Number(item.thanh_tien || 0) / 1000
+                                ).toLocaleString("vi-VN")}
+                            </td>
                         </tr>
                     ))}
+                    <tr>
+                        <td
+                            colSpan={7}
+                            style={{
+                                textAlign: "right",
+                                fontWeight: "bold",
+                                padding: "3pt 3pt",
+                            }}
+                        >
+                            TỔNG CỘNG
+                        </td>
+                        <td
+                            style={{
+                                textAlign: "right",
+                                fontWeight: "bold",
+                                padding: "3pt 3pt",
+                            }}
+                        >
+                            {(
+                                data.items.reduce(
+                                    (sum, item) =>
+                                        sum + (Number(item.thanh_tien) || 0),
+                                    0,
+                                ) / 1000
+                            ).toLocaleString("vi-VN")}
+                        </td>
+                    </tr>
                 </tbody>
             </table>
 

@@ -13,7 +13,7 @@ import ChonQuanNhanDialog from "@/components/common/ChonQuanNhanDialog.jsx";
 import KhoThuocDialog from "@/components/KhamBenhChoQN/KhamBenh/KhoThuocDialog.jsx";
 import { useCallback, useMemo } from "react";
 import usePhieuXuat from "@/hooks/usePhieuXuat.js";
-import { PRINT_STYLES, PRINT_DIALOG_CONTENT_SX, triggerPrint } from "@/utils/printUtils.js";
+import { PRINT_STYLES, PRINT_DIALOG_CONTENT_SX, triggerPrint, toFileDate } from "@/utils/printUtils.js";
 import PhieuXuatForm from "./PhieuXuatForm.jsx";
 import ChiTietXuatTable from "./ChiTietXuatTable.jsx";
 import PhieuXuatPrint from "./PhieuXuatPrint.jsx";
@@ -185,7 +185,11 @@ export default function PhieuXuatDialog({
                                             <Button
                                                 variant="outlined"
                                                 startIcon={<PrintIcon />}
-                                                onClick={triggerPrint}
+                                                onClick={() =>
+                                                    triggerPrint(
+                                                        `Phieu_xuat_kho_${phieuId || ""}_${toFileDate(ngayXuat)}`,
+                                                    )
+                                                }
                                                 disabled={saving}
                                             >
                                                 In phiếu
@@ -210,7 +214,11 @@ export default function PhieuXuatDialog({
                                         <Button
                                             variant="outlined"
                                             startIcon={<PrintIcon />}
-                                            onClick={triggerPrint}
+                                            onClick={() =>
+                                                triggerPrint(
+                                                    `Phieu_xuat_kho_${phieuId || ""}_${toFileDate(ngayXuat)}`,
+                                                )
+                                            }
                                             disabled={saving}
                                         >
                                             In phiếu

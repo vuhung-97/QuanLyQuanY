@@ -56,6 +56,14 @@ export default function BaoCaoThangPrint({ data, paperSize = "A4" }) {
     const prevThang = thang > 1 ? thang - 1 : 12;
     const prevNam = thang > 1 ? nam : nam - 1;
 
+    const formatNum = (v) =>
+        v != null ? Number(v).toLocaleString("vi-VN") : "--";
+
+    const tongChiNhap = (thuoc_da_nhap || []).reduce(
+        (sum, item) => sum + (item.thanh_tien || 0),
+        0,
+    );
+
     return (
         <PrintOverlay
             className="bao-cao-thang-print"
@@ -183,27 +191,51 @@ export default function BaoCaoThangPrint({ data, paperSize = "A4" }) {
 
             <p style={sectionStyle}>VI. THUỐC / VTYT ĐÃ NHẬP</p>
             <Table
-                headers={["STT", "Tên thuốc", "ĐVT", "Phân loại", "Số lượng"]}
+                headers={[
+                    "STT",
+                    "Tên thuốc",
+                    "ĐVT",
+                    "Phân loại",
+                    "Số lượng",
+                    "Đơn giá",
+                    "Tổng cộng",
+                ]}
             >
                 {!thuoc_da_nhap || thuoc_da_nhap.length === 0 ? (
                     <tr>
                         <td
-                            colSpan={5}
+                            colSpan={7}
                             style={{ ...tableCellCenter, fontStyle: "italic" }}
                         >
                             Không có dữ liệu
                         </td>
                     </tr>
                 ) : (
-                    thuoc_da_nhap.map((item, i) => (
-                        <tr key={i}>
-                            <td style={tableCellCenter}>{i + 1}</td>
-                            <td style={tableCellStyle}>{item.ten_thuoc}</td>
-                            <td style={tableCellCenter}>{item.don_vi_tinh}</td>
-                            <td style={tableCellCenter}>{item.phan_loai}</td>
-                            <td style={tableCellRight}>{item.so_luong}</td>
+                    <>
+                        <tr style={{ fontWeight: "bold" }}>
+                            <td style={tableCellCenter} colSpan={6}>
+                                TỔNG CHI
+                            </td>
+                            <td style={tableCellRight}>
+                                {formatNum(tongChiNhap)}
+                            </td>
                         </tr>
-                    ))
+                        {thuoc_da_nhap.map((item, i) => (
+                            <tr key={i}>
+                                <td style={tableCellCenter}>{i + 1}</td>
+                                <td style={tableCellStyle}>{item.ten_thuoc}</td>
+                                <td style={tableCellCenter}>{item.don_vi_tinh}</td>
+                                <td style={tableCellCenter}>{item.phan_loai}</td>
+                                <td style={tableCellRight}>{item.so_luong}</td>
+                                <td style={tableCellRight}>
+                                    {formatNum(item.don_gia)}
+                                </td>
+                                <td style={tableCellRight}>
+                                    {formatNum(item.thanh_tien)}
+                                </td>
+                            </tr>
+                        ))}
+                    </>
                 )}
             </Table>
 

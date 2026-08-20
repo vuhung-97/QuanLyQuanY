@@ -14,6 +14,7 @@ import {
     PRINT_STYLES,
     PRINT_DIALOG_CONTENT_SX,
     triggerPrint,
+    toFileDate,
 } from "@/utils/printUtils.js";
 import RaBenhXaPrint from "./RaBenhXaPrint.jsx";
 
@@ -94,7 +95,11 @@ export default function RaBenhXaDialog({ open, benhAnId, onClose }) {
                         <Button onClick={onClose}>Hủy</Button>
                         <Button
                             variant="outlined"
-                            onClick={triggerPrint}
+                            onClick={() =>
+                                triggerPrint(
+                                    `Giay_ra_benh_xa_${printData.hoTen || ""}_${toFileDate(tongKet?.ngay_ra)}`,
+                                )
+                            }
                             disabled={!benhAn}
                         >
                             In giấy

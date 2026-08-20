@@ -224,6 +224,7 @@ export default function KhamSucKhoeMain() {
                 open={printDialog.open}
                 onClose={closePrintDialog}
                 title="In danh sách"
+                documentTitle={`Danh_sach_kham_suc_khoe_nam_${printDialog.data?.nam ?? "YYYY"}`}
                 screenClass="kham-suc-khoe-print"
             >
                 {printDialog.data && (
