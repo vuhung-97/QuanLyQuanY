@@ -1,6 +1,4 @@
 import PrintOverlay from "@/components/common/print/PrintOverlay.jsx";
-import PrintHeaderDonVi from "@/components/common/print/PrintHeaderDonVi.jsx";
-import PrintSignature from "@/components/common/print/PrintSignature.jsx";
 import { formatDateTime } from "@/utils/date.js";
 
 const tableHeadStyle = {
@@ -13,25 +11,26 @@ const tableCellStyle = { border: "1px solid #000", padding: "3pt 3pt" };
 const tableCellCenter = { ...tableCellStyle, textAlign: "center" };
 const tableCellRight = { ...tableCellStyle, textAlign: "right" };
 
-const sectionStyle = {
-    fontWeight: "bold",
-    fontSize: "14pt",
-    margin: "12pt 0 6pt 0",
-};
-
-function Table({ headers, children }) {
+function Table({ headers, widths, children }) {
     return (
         <table
             style={{
                 width: "100%",
                 borderCollapse: "collapse",
                 marginTop: "6pt",
+                tableLayout: "fixed",
             }}
         >
             <thead>
                 <tr>
                     {headers.map((h, i) => (
-                        <th key={i} style={tableHeadStyle}>
+                        <th
+                            key={i}
+                            style={{
+                                ...tableHeadStyle,
+                                width: widths?.[i],
+                            }}
+                        >
                             {h}
                         </th>
                     ))}
@@ -49,16 +48,9 @@ function formatRange(batDau, ketThuc) {
     return `${s} - ${e}`;
 }
 
-export default function LichKhamPrint({
-    schedule,
-    chiTietList,
-    unitOptions,
-    assignments,
-}) {
+export default function LichKhamPrint({ schedule, chiTietList, unitOptions }) {
     const unitMap = new Map((unitOptions ?? []).map((u) => [u.ma_don_vi, u]));
-
     const chiTiet = Array.isArray(chiTietList) ? chiTietList : [];
-    const phanCong = Array.isArray(assignments) ? assignments : [];
 
     const namHienThi =
         schedule?.nam ||
@@ -78,9 +70,52 @@ export default function LichKhamPrint({
             paperSize="A4"
             fontSize="14pt"
         >
-            <PrintHeaderDonVi />
+            {/* Header: Left (Đơn vị) & Right (Quốc hiệu tiêu ngữ) */}
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                    marginBottom: "12pt",
+                }}
+            >
+                <div style={{ textAlign: "center" }}>
+                    <div
+                        style={{
+                            textTransform: "uppercase",
+                        }}
+                    >
+                        LỮ ĐOÀN 170
+                    </div>
+                    <div
+                        style={{
+                            textTransform: "uppercase",
+                            fontWeight: "bold",
+                        }}
+                    >
+                        PHÒNG HC-KT
+                    </div>
+                </div>
+                <div style={{ textAlign: "center" }}>
+                    <div
+                        style={{
+                            textTransform: "uppercase",
+                            fontWeight: "bold",
+                        }}
+                    >
+                        CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM
+                    </div>
+                    <div style={{ fontWeight: "bold" }}>
+                        Độc lập - Tự do - Hạnh phúc
+                    </div>
+                    <div style={{ fontStyle: "italic", marginTop: "2pt" }}>
+                        ..., Ngày ... tháng ... năm ....
+                    </div>
+                </div>
+            </div>
 
-            <div style={{ margin: "12pt 0", textAlign: "center" }}>
+            {/* Dòng trống & Tiêu đề báo cáo */}
+            <div style={{ margin: "16pt 0 12pt 0", textAlign: "center" }}>
                 <p
                     style={{
                         fontSize: "16pt",
@@ -89,81 +124,25 @@ export default function LichKhamPrint({
                         margin: 0,
                     }}
                 >
-                    LỊCH KHÁM SỨC KHỎE ĐỊNH KỲ NĂM {namHienThi}
+                    THÔNG BÁO LỊCH KHÁM SỨC KHỎE ĐỊNH KỲ NĂM {namHienThi}
                 </p>
             </div>
 
-            {/* I. THÔNG TIN CHUNG */}
-            <p style={sectionStyle}>I. THÔNG TIN CHUNG</p>
-            <Table headers={["Chỉ tiêu thời gian", "Thời gian"]}>
-                <tr>
-                    <td style={tableCellStyle}>Thời gian lấy máu</td>
-                    <td style={tableCellStyle}>
-                        {formatRange(
-                            schedule?.thoi_gian_lay_mau_bat_dau,
-                            schedule?.thoi_gian_lay_mau_ket_thuc,
-                        )}
-                    </td>
-                </tr>
-                <tr>
-                    <td style={tableCellStyle}>Thời gian khám</td>
-                    <td style={tableCellStyle}>
-                        {formatRange(
-                            schedule?.thoi_gian_bat_dau,
-                            schedule?.thoi_gian_ket_thuc,
-                        )}
-                    </td>
-                </tr>
-                <tr>
-                    <td style={tableCellStyle}>Dự trù lấy máu</td>
-                    <td style={tableCellStyle}>
-                        {formatRange(
-                            schedule?.thoi_gian_du_tru_lay_mau_bat_dau,
-                            schedule?.thoi_gian_du_tru_lay_mau_ket_thuc,
-                        )}
-                    </td>
-                </tr>
-                <tr>
-                    <td style={tableCellStyle}>Dự trù khám</td>
-                    <td style={tableCellStyle}>
-                        {formatRange(
-                            schedule?.thoi_gian_du_tru_kham_bat_dau,
-                            schedule?.thoi_gian_du_tru_kham_ket_thuc,
-                        )}
-                    </td>
-                </tr>
-            </Table>
+            {/* Nội dung dẫn nhập */}
+            <div style={{ lineHeight: 1.6, marginBottom: "12pt" }}>
+                <div style={{ textIndent: "24pt" }}>
+                    Căn cứ kế hoạch khám sức khỏe năm {namHienThi} của đơn vị;
+                </div>
+                <div style={{ textIndent: "24pt" }}>
+                    Nhằm đảm bảo công tác theo dõi, quản lý và nâng cao chất
+                    lượng sức khỏe cho cán bộ, chiến sĩ,
+                </div>
+                <div style={{ textIndent: "24pt" }}>
+                    Quân y thông báo lịch khám sức khỏe như sau:
+                </div>
+            </div>
 
-            {/* II. PHÂN CÔNG NHIỆM VỤ */}
-            {phanCong.length > 0 && (
-                <>
-                    <p style={sectionStyle}>II. PHÂN CÔNG NHIỆM VỤ</p>
-                    <Table headers={["STT", "Họ và tên", "Vai trò"]}>
-                        {phanCong.map((a, idx) => (
-                            <tr key={a.id || idx}>
-                                <td style={tableCellCenter}>{idx + 1}</td>
-                                <td style={tableCellStyle}>
-                                    {a.chuc_vu
-                                        ? `${a.chuc_vu} ${a.ten_nguoi_dung}`
-                                        : a.ten_nguoi_dung ||
-                                          a.id_nguoi_dung ||
-                                          "--"}
-                                </td>
-                                <td style={tableCellStyle}>
-                                    {a.ten_vai_tro || a.ma_vai_tro || "--"}
-                                </td>
-                            </tr>
-                        ))}
-                    </Table>
-                </>
-            )}
-
-            {/* III. LỊCH KHÁM CÁC ĐƠN VỊ */}
-            <p style={sectionStyle}>
-                {phanCong.length > 0
-                    ? "III. LỊCH KHÁM CÁC ĐƠN VỊ"
-                    : "II. LỊCH KHÁM CÁC ĐƠN VỊ"}
-            </p>
+            {/* Bảng lịch khám */}
             <Table
                 headers={[
                     "STT",
@@ -172,6 +151,7 @@ export default function LichKhamPrint({
                     "Thời gian chi tiết",
                     "Địa điểm",
                 ]}
+                widths={["7%", "15%", "7%", "61%", "10%"]}
             >
                 {chiTiet.length === 0 ? (
                     <tr>
@@ -241,13 +221,54 @@ export default function LichKhamPrint({
                 )}
             </Table>
 
-            <PrintSignature
-                justify="space-between"
-                items={[
-                    { label: "NGƯỜI LẬP LỊCH" },
-                    { label: "CHỈ HUY ĐƠN VỊ", date: true },
-                ]}
-            />
+            {/* Nội dung yêu cầu các đơn vị */}
+            <div style={{ marginTop: "12pt", lineHeight: 1.6 }}>
+                <div style={{ fontWeight: "bold", textIndent: "24pt" }}>
+                    Yêu cầu các đơn vị:
+                </div>
+                <div style={{ textIndent: "24pt" }}>
+                    - Cắt cử cán bộ, chiến sĩ tham gia đúng thời gian quy định,
+                </div>
+                <div style={{ textIndent: "24pt" }}>
+                    - Chuẩn bị đầy đủ giấy tờ: Thẻ bảo hiểm y tế, Chứng minh thư
+                    sĩ quan,
+                </div>
+                <div style={{ textIndent: "24pt" }}>
+                    - Phối hợp quân y đảm bảo công tác khám diễn ra thuận lợi,
+                </div>
+                <div style={{ textIndent: "24pt" }}>
+                    - Mọi chi tiết liên hệ: ......
+                </div>
+            </div>
+
+            {/* Chân trang / Chữ ký */}
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                    marginTop: "20pt",
+                }}
+            >
+                {/* Nơi nhận (Bên trái) */}
+                <div style={{ fontSize: "12pt", lineHeight: 1.5 }}>
+                    <div style={{ fontWeight: "bold" }}>Nơi nhận:</div>
+                    <div>- Các cơ quan, đơn vị;</div>
+                    <div>- Lưu: {chiTiet.length} bản.</div>
+                </div>
+
+                {/* Chữ ký (Bên phải) */}
+                <div style={{ textAlign: "center", minWidth: "200px" }}>
+                    <div
+                        style={{
+                            fontWeight: "bold",
+                            textTransform: "uppercase",
+                        }}
+                    >
+                        CHỦ NHIỆM QUÂN Y
+                    </div>
+                </div>
+            </div>
         </PrintOverlay>
     );
 }
