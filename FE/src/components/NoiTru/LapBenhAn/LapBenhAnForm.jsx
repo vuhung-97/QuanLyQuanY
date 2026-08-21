@@ -49,7 +49,8 @@ export default function LapBenhAnForm({
         setMaGiuong,
         setMaNhomBenh,
         errors,
-        refMap,
+        vitalValues,
+        onVitalChange,
         lyDoRef,
         chiTietRef,
         handleSave,
@@ -92,14 +93,8 @@ export default function LapBenhAnForm({
                                                 label={f.label}
                                                 fullWidth
                                                 size="medium"
-                                                defaultValue={
-                                                    isEdit
-                                                        ? defaultValues[
-                                                              f.key
-                                                          ] || ""
-                                                        : ""
-                                                }
-                                                inputRef={refMap[f.key]}
+                                                value={vitalValues[f.key]}
+                                                onChange={(e) => onVitalChange(f.key, e.target.value)}
                                                 error={!!errors[f.key]}
                                                 helperText={errors[f.key]}
                                                 min={0}

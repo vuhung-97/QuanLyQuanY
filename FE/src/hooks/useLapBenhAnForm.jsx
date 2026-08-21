@@ -30,19 +30,19 @@ export default function useLapBenhAnForm({ open, onSave: externalSave, benhAn, e
     const [maNhomBenh, setMaNhomBenh] = useState("");
     const [ngayNhapVien, setNgayNhapVien] = useState(new Date().toISOString());
     const [errors, setErrors] = useState({ ...EMPTY_ERRORS });
+    const [nhietDo, setNhietDo] = useState("");
+    const [haTamThu, setHaTamThu] = useState("");
+    const [haTamTruong, setHaTamTruong] = useState("");
+    const [nhipTim, setNhipTim] = useState("");
 
-    const nhietDoRef = useRef(null);
-    const haTamThuRef = useRef(null);
-    const haTamTruongRef = useRef(null);
-    const nhipTimRef = useRef(null);
     const lyDoRef = useRef(null);
     const chiTietRef = useRef(null);
 
-    const refMap = {
-        nhiet_do: nhietDoRef,
-        ha_tam_thu: haTamThuRef,
-        ha_tam_truong: haTamTruongRef,
-        nhip_tim: nhipTimRef,
+    const vitalSetters = {
+        nhiet_do: setNhietDo,
+        ha_tam_thu: setHaTamThu,
+        ha_tam_truong: setHaTamTruong,
+        nhip_tim: setNhipTim,
     };
 
     const isEdit = !!benhAn;
@@ -108,10 +108,10 @@ export default function useLapBenhAnForm({ open, onSave: externalSave, benhAn, e
                 setMaNhomBenh(benhAn.ma_nhom_benh || "");
                 setNgayNhapVien(benhAn.ngay_nhap_vien || new Date().toISOString());
                 setErrors({ ...EMPTY_ERRORS });
-                if (nhietDoRef.current) nhietDoRef.current.value = defaultValues.nhiet_do || "";
-                if (haTamThuRef.current) haTamThuRef.current.value = defaultValues.ha_tam_thu || "";
-                if (haTamTruongRef.current) haTamTruongRef.current.value = defaultValues.ha_tam_truong || "";
-                if (nhipTimRef.current) nhipTimRef.current.value = defaultValues.nhip_tim || "";
+                setNhietDo(defaultValues.nhiet_do || "");
+                setHaTamThu(defaultValues.ha_tam_thu || "");
+                setHaTamTruong(defaultValues.ha_tam_truong || "");
+                setNhipTim(defaultValues.nhip_tim || "");
                 if (lyDoRef.current) lyDoRef.current.value = defaultValues.ly_do_nhap_vien || "";
             } else {
                 setMaBuong("");
@@ -120,12 +120,11 @@ export default function useLapBenhAnForm({ open, onSave: externalSave, benhAn, e
                 setGiuongList([]);
                 setNgayNhapVien(new Date().toISOString());
                 setErrors({ ...EMPTY_ERRORS });
-                [
-                    nhietDoRef, haTamThuRef, haTamTruongRef, nhipTimRef,
-                    lyDoRef,
-                ].forEach((ref) => {
-                    if (ref.current) ref.current.value = "";
-                });
+                setNhietDo("");
+                setHaTamThu("");
+                setHaTamTruong("");
+                setNhipTim("");
+                if (lyDoRef.current) lyDoRef.current.value = "";
             }
         }
         }, [open, exam]);
@@ -160,16 +159,21 @@ export default function useLapBenhAnForm({ open, onSave: externalSave, benhAn, e
         }
     }, [maBuong, isEdit, benhAn?.ma_giuong, benhAn?.ten_giuong, benhAn?.ma_buong]);
 
+    const onVitalChange = useCallback((name, value) => {
+        vitalSetters[name]?.(value);
+        setErrors((prev) => ({ ...prev, [name]: validateVital(value) }));
+    }, []);
+
     const getVal = (ref) => ref.current?.value || "";
 
     const handleSave = useCallback(() => {
         const newErrors = { ...EMPTY_ERRORS };
         if (!maBuong) newErrors.ma_buong = "Vui lòng chọn buồng";
         if (!maGiuong) newErrors.ma_giuong = "Vui lòng chọn giường";
-        newErrors.nhiet_do = validateVital(getVal(nhietDoRef));
-        newErrors.ha_tam_thu = validateVital(getVal(haTamThuRef));
-        newErrors.ha_tam_truong = validateVital(getVal(haTamTruongRef));
-        newErrors.nhip_tim = validateVital(getVal(nhipTimRef));
+        newErrors.nhiet_do = validateVital(nhietDo);
+        newErrors.ha_tam_thu = validateVital(haTamThu);
+        newErrors.ha_tam_truong = validateVital(haTamTruong);
+        newErrors.nhip_tim = validateVital(nhipTim);
         setErrors(newErrors);
         if (Object.values(newErrors).some(Boolean)) return;
 
@@ -181,10 +185,10 @@ export default function useLapBenhAnForm({ open, onSave: externalSave, benhAn, e
             doi_tuong: "",
             quan_ly_nguoi_benh: "",
             chi_tiet_benh_an: JSON.stringify({
-                nhiet_do: getVal(nhietDoRef),
-                ha_tam_thu: getVal(haTamThuRef),
-                ha_tam_truong: getVal(haTamTruongRef),
-                nhip_tim: getVal(nhipTimRef),
+                nhiet_do: nhietDo,
+                ha_tam_thu: haTamThu,
+                ha_tam_truong: haTamTruong,
+                nhip_tim: nhipTim,
                 ...(chiTietRef.current?.getValues() || {}),
             }),
             ly_do: getVal(lyDoRef),
@@ -193,7 +197,7 @@ export default function useLapBenhAnForm({ open, onSave: externalSave, benhAn, e
             payload.ngay_nhap_vien = ngayNhapVien;
         }
         externalSave(payload);
-    }, [maBuong, maGiuong, maNhomBenh, ngayNhapVien, isEdit, externalSave]);
+    }, [maBuong, maGiuong, maNhomBenh, ngayNhapVien, nhietDo, haTamThu, haTamTruong, nhipTim, isEdit, externalSave]);
 
     const selectedBuong = buongList.find((b) => b.ma_buong === maBuong) || null;
     const selectedGiuong = giuongList.find((g) => g.ma_giuong === maGiuong) || null;
@@ -216,7 +220,8 @@ export default function useLapBenhAnForm({ open, onSave: externalSave, benhAn, e
         setMaGiuong,
         setMaNhomBenh,
         errors,
-        refMap,
+        vitalValues: { nhiet_do: nhietDo, ha_tam_thu: haTamThu, ha_tam_truong: haTamTruong, nhip_tim: nhipTim },
+        onVitalChange,
         lyDoRef,
         chiTietRef,
         handleSave,
