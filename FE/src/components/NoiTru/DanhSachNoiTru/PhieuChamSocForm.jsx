@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import ActionIcon from "@/components/common/ActionIcon.jsx";
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
+import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import FormTextField from "@/components/common/FormTextField.jsx";
 import NumberField from "@/components/common/NumberField.jsx";
 import { Delete as DeleteIcon, Add as AddIcon } from "@mui/icons-material";
@@ -99,6 +100,7 @@ export default function PhieuChamSocForm({
     const keysRef = useRef(keys);
     keysRef.current = keys;
     const [openThemThuoc, setOpenThemThuoc] = useState(false);
+    const [warningMsg, setWarningMsg] = useState("");
     const { getCache } = useThuocList();
 
     useEffect(() => {
@@ -164,6 +166,14 @@ export default function PhieuChamSocForm({
     }, []);
 
     const handleSave = useCallback(() => {
+        if (!formRef.current.theo_doi_dien_bien?.trim()) {
+            setWarningMsg("Vui lòng nhập diễn biến.");
+            return;
+        }
+        if (!formRef.current.thuc_hien_y_lenh?.trim()) {
+            setWarningMsg("Vui lòng nhập y lệnh đã thực hiện.");
+            return;
+        }
         onSave({
             ...formRef.current,
             thoi_gian: new Date(formRef.current.thoi_gian).toISOString(),
@@ -331,6 +341,12 @@ export default function PhieuChamSocForm({
                 onClose={() => setOpenThemThuoc(false)}
                 onConfirm={handleThemThuocConfirm}
                 cachedItems={getCache()}
+            />
+            <FeedbackSnackbar
+                open={!!warningMsg}
+                message={warningMsg}
+                severity="warning"
+                onClose={() => setWarningMsg("")}
             />
         </>
     );

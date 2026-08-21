@@ -19,7 +19,7 @@ from app.database.vai_tro import VaiTro
 from app.database.session import get_db
 from app.database.thuoc_vtyt import ThuocVtyt
 from app.routes.base import create_crud_router
-from app.schemas.kham_benh import KhamBenhRead
+from app.schemas.kham_benh import KhamBenhRead, ChuyenTuyenRequest, HoanTatKhamRequest
 from app.services.medical_examination import MedicalExaminationService
 
 
@@ -185,9 +185,9 @@ def nhan_thuoc(id: str, db: Session = Depends(get_db), current_user = Depends(ge
     "/{id}/chuyen-tuyen",
     dependencies=[Depends(require_permissions("kham_benh:update"))],
 )
-def chuyen_tuyen(id: str, data: dict, db: Session = Depends(get_db)):
+def chuyen_tuyen(id: str, data: ChuyenTuyenRequest, db: Session = Depends(get_db)):
     service = MedicalExaminationService(db)
-    return service.refer_patient(id, data)
+    return service.refer_patient(id, data.model_dump(exclude_unset=True))
 
 
 @pre_router.post(
@@ -204,9 +204,9 @@ def nhap_vien(id: str, db: Session = Depends(get_db), current_user = Depends(get
     dependencies=[Depends(require_permissions("kham_benh:update"))],
     response_model=KhamBenhRead,
 )
-def hoan_tat_kham(id: str, data: dict, db: Session = Depends(get_db)):
+def hoan_tat_kham(id: str, data: HoanTatKhamRequest, db: Session = Depends(get_db)):
     service = MedicalExaminationService(db)
-    return service.complete_examination(id, data)
+    return service.complete_examination(id, data.model_dump(exclude_unset=True))
 
 
 @pre_router.get(

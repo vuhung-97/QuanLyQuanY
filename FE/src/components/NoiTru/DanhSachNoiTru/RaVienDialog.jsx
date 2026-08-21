@@ -10,6 +10,7 @@ import {
     Typography,
 } from "@mui/material";
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper";
+import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import NormalToggleField from "@/components/common/NormalToggleField";
 
 const KET_QUA_OPTIONS = [
@@ -34,6 +35,7 @@ export default function RaVienDialog({
         huong_dieu_tri: "",
         ngay_ra: new Date().toISOString().slice(0, 10),
     });
+    const [warningMsg, setWarningMsg] = useState("");
 
     useEffect(() => {
         if (open) {
@@ -53,6 +55,18 @@ export default function RaVienDialog({
     }, []);
 
     const handleConfirm = useCallback(() => {
+        if (!formState.ket_qua_dieu_tri) {
+            setWarningMsg("Vui lòng chọn kết quả điều trị.");
+            return;
+        }
+        if (!formState.chan_doan_ra_vien.trim()) {
+            setWarningMsg("Vui lòng nhập chẩn đoán lúc ra viện.");
+            return;
+        }
+        if (!formState.tinh_trang_nb.trim()) {
+            setWarningMsg("Vui lòng nhập tình trạng người bệnh.");
+            return;
+        }
         const payload = {
             tong_ket_benh_an: JSON.stringify({
                 ket_qua_dieu_tri: formState.ket_qua_dieu_tri,
@@ -66,92 +80,102 @@ export default function RaVienDialog({
     }, [formState, onConfirm]);
 
     return (
-        <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-            <DialogTitleWrapper>
-                Ra viện cho: {benhAn?.ho_ten || benhAn?.ma_benh_an || ""}
-            </DialogTitleWrapper>
-            <DialogContent dividers>
-                <Grid container spacing={2}>
-                    <Grid size={{ xs: 12 }}>
-                        <TextField
-                            label="Kết quả điều trị"
-                            select
-                            fullWidth
-                            size="medium"
-                            value={formState.ket_qua_dieu_tri}
-                            onChange={updateField}
-                            name="ket_qua_dieu_tri"
-                            slotProps={{ input: { sx: { fontSize: "1rem" } } }}
-                        >
-                            {KET_QUA_OPTIONS.map((opt) => (
-                                <MenuItem key={opt.value} value={opt.value}>
-                                    {opt.label}
-                                </MenuItem>
-                            ))}
-                        </TextField>
+        <>
+            <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+                <DialogTitleWrapper>
+                    Ra viện cho: {benhAn?.ho_ten || benhAn?.ma_benh_an || ""}
+                </DialogTitleWrapper>
+                <DialogContent dividers>
+                    <Grid container spacing={2}>
+                        <Grid size={{ xs: 12 }}>
+                            <TextField
+                                label="Kết quả điều trị"
+                                select
+                                fullWidth
+                                size="medium"
+                                value={formState.ket_qua_dieu_tri}
+                                onChange={updateField}
+                                name="ket_qua_dieu_tri"
+                                slotProps={{
+                                    input: { sx: { fontSize: "1rem" } },
+                                }}
+                            >
+                                {KET_QUA_OPTIONS.map((opt) => (
+                                    <MenuItem key={opt.value} value={opt.value}>
+                                        {opt.label}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                        </Grid>
+                        <Grid size={{ xs: 12 }}>
+                            <NormalToggleField
+                                label="Chẩn đoán lúc ra viện"
+                                name="chan_doan_ra_vien"
+                                value={formState.chan_doan_ra_vien}
+                                onChange={updateField}
+                                multiline
+                                minRows={4}
+                            />
+                        </Grid>
+                        <Grid size={{ xs: 12 }}>
+                            <NormalToggleField
+                                label="Tình trạng người bệnh khi ra viện"
+                                name="tinh_trang_nb"
+                                value={formState.tinh_trang_nb}
+                                onChange={updateField}
+                                multiline
+                                minRows={4}
+                            />
+                        </Grid>
+                        <Grid size={{ xs: 12 }}>
+                            <NormalToggleField
+                                label="Hướng điều trị và các chế độ tiếp theo"
+                                name="huong_dieu_tri"
+                                value={formState.huong_dieu_tri}
+                                onChange={updateField}
+                                multiline
+                                normalText="Không có"
+                                minRows={4}
+                            />
+                        </Grid>
+                        <Grid size={{ xs: 12 }}>
+                            <TextField
+                                label="Ngày ra"
+                                type="date"
+                                fullWidth
+                                size="medium"
+                                value={formState.ngay_ra}
+                                onChange={updateField}
+                                name="ngay_ra"
+                                slotProps={{
+                                    inputLabel: { shrink: true },
+                                    input: { sx: { fontSize: "1rem" } },
+                                }}
+                            />
+                        </Grid>
                     </Grid>
-                    <Grid size={{ xs: 12 }}>
-                        <NormalToggleField
-                            label="Chẩn đoán lúc ra viện"
-                            name="chan_doan_ra_vien"
-                            value={formState.chan_doan_ra_vien}
-                            onChange={updateField}
-                            multiline
-                            minRows={4}
-                        />
-                    </Grid>
-                    <Grid size={{ xs: 12 }}>
-                        <NormalToggleField
-                            label="Tình trạng người bệnh khi ra viện"
-                            name="tinh_trang_nb"
-                            value={formState.tinh_trang_nb}
-                            onChange={updateField}
-                            multiline
-                            minRows={4}
-                        />
-                    </Grid>
-                    <Grid size={{ xs: 12 }}>
-                        <NormalToggleField
-                            label="Hướng điều trị và các chế độ tiếp theo"
-                            name="huong_dieu_tri"
-                            value={formState.huong_dieu_tri}
-                            onChange={updateField}
-                            multiline
-                            normalText="Không có"
-                            minRows={4}
-                        />
-                    </Grid>
-                    <Grid size={{ xs: 12 }}>
-                        <TextField
-                            label="Ngày ra"
-                            type="date"
-                            fullWidth
-                            size="medium"
-                            value={formState.ngay_ra}
-                            onChange={updateField}
-                            name="ngay_ra"
-                            slotProps={{
-                                inputLabel: { shrink: true },
-                                input: { sx: { fontSize: "1rem" } },
-                            }}
-                        />
-                    </Grid>
-                </Grid>
-            </DialogContent>
-            <DialogActions sx={{ px: 3, py: 2 }}>
-                <Button onClick={onClose} sx={{ textTransform: "none" }}>
-                    Hủy
-                </Button>
-                <Button
-                    variant="contained"
-                    color="error"
-                    onClick={handleConfirm}
-                    disabled={saving}
-                    sx={{ textTransform: "none" }}
-                >
-                    {saving ? "Đang xử lý..." : "Xác nhận ra viện"}
-                </Button>
-            </DialogActions>
-        </Dialog>
+                </DialogContent>
+                <DialogActions sx={{ px: 3, py: 2 }}>
+                    <Button onClick={onClose} sx={{ textTransform: "none" }}>
+                        Hủy
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="error"
+                        onClick={handleConfirm}
+                        disabled={saving}
+                        sx={{ textTransform: "none" }}
+                    >
+                        {saving ? "Đang xử lý..." : "Xác nhận ra viện"}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <FeedbackSnackbar
+                open={!!warningMsg}
+                message={warningMsg}
+                severity="warning"
+                onClose={() => setWarningMsg("")}
+            />
+        </>
     );
 }

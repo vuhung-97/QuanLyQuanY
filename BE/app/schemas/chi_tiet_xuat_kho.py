@@ -3,8 +3,8 @@ from pydantic import Field
 
 
 class ChiTietXuatKhoBase(SchemaBase):
-    so_luong: int
-    so_luong_thuc_xuat: int | None = None
+    so_luong: int = Field(ge=0)
+    so_luong_thuc_xuat: int | None = Field(default=None, ge=0)
 
 
 class ChiTietXuatKhoCreate(ChiTietXuatKhoBase):
@@ -13,8 +13,8 @@ class ChiTietXuatKhoCreate(ChiTietXuatKhoBase):
 
 
 class ChiTietXuatKhoUpdate(SchemaBase):
-    so_luong: int | None = None
-    so_luong_thuc_xuat: int | None = None
+    so_luong: int | None = Field(default=None, ge=0)
+    so_luong_thuc_xuat: int | None = Field(default=None, ge=0)
 
 
 class ChiTietXuatKhoRead(ChiTietXuatKhoBase):

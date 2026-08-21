@@ -46,6 +46,7 @@ export default function BuongDialog({
                         }
                         error={!!buongFormErrors.ten_buong}
                         helperText={buongFormErrors.ten_buong}
+                        slotProps={{ maxLength: 100 }}
                     />
                     <NumberField
                         label="Sức chứa (số giường tối đa)"
@@ -119,6 +120,7 @@ export default function BuongDialog({
                                     setTenGiuongMoi(e.target.value)
                                 }
                                 sx={{ flex: 1 }}
+                                slotProps={{ maxLength: 100 }}
                             />
                             <Button
                                 variant="contained"

@@ -20,3 +20,7 @@ class GiuongUpdate(SchemaBase):
 
 class GiuongRead(GiuongBase):
     ma_giuong: str = Field(max_length=10)
+
+
+class ChuyenGiuongRequest(SchemaBase):
+    ma_giuong_moi: str = Field(max_length=10)

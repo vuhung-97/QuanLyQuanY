@@ -3,7 +3,7 @@ from pydantic import Field
 
 
 class ChiTietPhieuChamSocBase(SchemaBase):
-    so_luong: int = 1
+    so_luong: int = Field(default=1, ge=0)
 
 
 class ChiTietPhieuChamSocCreate(ChiTietPhieuChamSocBase):
@@ -12,7 +12,7 @@ class ChiTietPhieuChamSocCreate(ChiTietPhieuChamSocBase):
 
 
 class ChiTietPhieuChamSocUpdate(SchemaBase):
-    so_luong: int | None = None
+    so_luong: int | None = Field(default=None, ge=0)
 
 
 class ChiTietPhieuChamSocRead(ChiTietPhieuChamSocBase):

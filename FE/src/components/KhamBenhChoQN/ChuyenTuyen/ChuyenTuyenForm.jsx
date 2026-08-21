@@ -65,6 +65,7 @@ export default function ChuyenTuyenForm({
                 name: "tenBenhVien",
                 initialValue: tenBenhVien,
                 label: "Đơn vị chuyển đến",
+                maxLength: 255,
             },
             {
                 type: "text",
@@ -73,8 +74,14 @@ export default function ChuyenTuyenForm({
                 label: "Ý kiến đề nghị",
                 multiline: true,
                 minRows: 2,
+                maxLength: 5000,
             },
-            { type: "date", name: "ngayDi", initialValue: ngayDi, label: "Ngày đi" },
+            {
+                type: "date",
+                name: "ngayDi",
+                initialValue: ngayDi,
+                label: "Ngày đi",
+            },
             {
                 type: "date",
                 name: "thoiGianDen",
@@ -88,6 +95,7 @@ export default function ChuyenTuyenForm({
                 label: "Chẩn đoán của Y sinh",
                 multiline: true,
                 minRows: 2,
+                maxLength: 5000,
             },
             {
                 type: "text",
@@ -96,9 +104,15 @@ export default function ChuyenTuyenForm({
                 label: "Quyết định của y sinh",
                 multiline: true,
                 minRows: 2,
+                maxLength: 5000,
             },
             { type: "heading", label: "Sau khi quân nhân về" },
-            { type: "date", name: "ngayVe", initialValue: ngayVe, label: "Ngày về" },
+            {
+                type: "date",
+                name: "ngayVe",
+                initialValue: ngayVe,
+                label: "Ngày về",
+            },
             {
                 type: "text",
                 name: "chanDoanLucVe",
@@ -106,6 +120,7 @@ export default function ChuyenTuyenForm({
                 label: "Chẩn đoán lúc về",
                 multiline: true,
                 minRows: 2,
+                maxLength: 5000,
             },
             {
                 type: "text",
@@ -114,9 +129,20 @@ export default function ChuyenTuyenForm({
                 label: "Kết quả hướng điều trị",
                 multiline: true,
                 minRows: 2,
+                maxLength: 5000,
             },
         ];
-    }, [tenBenhVien, yKienDeNghi, ngayDi, thoiGianDen, chanDoan, quyetDinhYSinh, ngayVe, chanDoanLucVe, ketQuaDieuTri]);
+    }, [
+        tenBenhVien,
+        yKienDeNghi,
+        ngayDi,
+        thoiGianDen,
+        chanDoan,
+        quyetDinhYSinh,
+        ngayVe,
+        chanDoanLucVe,
+        ketQuaDieuTri,
+    ]);
 
     const renderField = (cfg) => {
         if (cfg.type === "heading") {
@@ -155,6 +181,9 @@ export default function ChuyenTuyenForm({
                 minRows={cfg.minRows}
                 fullWidth
                 size="small"
+                slotProps={
+                    cfg.maxLength ? { maxLength: cfg.maxLength } : undefined
+                }
             />
         );
     };

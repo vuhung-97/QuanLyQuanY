@@ -8,10 +8,10 @@ class KhamBenhBase(SchemaBase):
     ma_quan_nhan: str | None = Field(default=None, max_length=10)
     trang_thai: str | None = "chờ"
     ngay_kham: datetime | None = None
-    trieu_chung: str | None = None
-    phuong_phap_dieu_tri: str | None = None
+    trieu_chung: str | None = Field(default=None, max_length=5000)
+    phuong_phap_dieu_tri: str | None = Field(default=None, max_length=5000)
     kham_lan: int | None = None
-    chan_doan: str | None = None
+    chan_doan: str | None = Field(default=None, max_length=5000)
     ma_nhom_benh: str | None = Field(default=None, max_length=10)
 
 
@@ -22,10 +22,10 @@ class KhamBenhCreate(KhamBenhBase):
 class KhamBenhUpdate(SchemaBase):
     ma_quan_nhan: str | None = None
     trang_thai: str | None = None
-    trieu_chung: str | None = None
-    phuong_phap_dieu_tri: str | None = None
+    trieu_chung: str | None = Field(default=None, max_length=5000)
+    phuong_phap_dieu_tri: str | None = Field(default=None, max_length=5000)
     kham_lan: int | None = None
-    chan_doan: str | None = None
+    chan_doan: str | None = Field(default=None, max_length=5000)
     ma_nhom_benh: str | None = None
 
 
@@ -40,3 +40,23 @@ class KhamBenhRead(KhamBenhBase):
     id_nguoi_dung: str | None = None
     ten_nguoi_kham: str | None = None
     vai_tro_nguoi_kham: str | None = None
+
+
+class ChuyenTuyenRequest(SchemaBase):
+    ma_kham_benh: str | None = None
+    ten_benh_vien: str | None = Field(default=None, max_length=255)
+    can_benh: str | None = Field(default=None, max_length=5000)
+    y_kien_de_nghi: str | None = Field(default=None, max_length=5000)
+    thoi_gian_den_benh_vien: str | None = None
+    chan_doan: str | None = Field(default=None, max_length=5000)
+    quyet_dinh_y_sinh: str | None = Field(default=None, max_length=5000)
+    ngay_di: str | None = None
+
+
+class HoanTatKhamRequest(SchemaBase):
+    trieu_chung: str | None = Field(default=None, max_length=5000)
+    phuong_phap_dieu_tri: str | None = Field(default=None, max_length=5000)
+    chan_doan: str | None = Field(default=None, max_length=5000)
+    ma_nhom_benh: str | None = Field(default=None, max_length=10)
+    trang_thai: str | None = Field(default=None, max_length=50)
+    prescription_items: list[dict] | None = None

@@ -18,7 +18,7 @@ from app.routes.base import _run_crud, create_crud_router
 from app.database.buong import Buong
 from app.database.dm_nhom_benh import DmNhomBenh
 from app.database.giuong import Giuong
-from app.schemas.benh_an import BenhAnCreate, BenhAnReadDetail, BenhAnUpdate
+from app.schemas.benh_an import BenhAnCreate, BenhAnReadDetail, BenhAnUpdate, BenhAnCreateRequest, RaVienRequest
 from app.services.medical_examination import MedicalExaminationService
 
 
@@ -30,17 +30,18 @@ pre_router = APIRouter()
     dependencies=[Depends(require_permissions("benh_an:create"))],
     status_code=201,
 )
-def create_benh_an(data: dict, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
-    ma_kham_benh = data.get("ma_kham_benh")
-    data["ma_nguoi_dung"] = current_user.id
+def create_benh_an(data: BenhAnCreateRequest, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
+    d = data.model_dump(exclude_unset=True)
+    d["ma_nguoi_dung"] = current_user.id
+    ma_kham_benh = d.get("ma_kham_benh")
     if ma_kham_benh:
         service = MedicalExaminationService(db)
         try:
-            ba = service.create_benh_an(ma_kham_benh, data, nguoi_dung_id=current_user.id)
+            ba = service.create_benh_an(ma_kham_benh, d, nguoi_dung_id=current_user.id)
         except ValueError as e:
             raise HTTPException(status_code=400, detail=str(e))
         return {c.key: getattr(ba, c.key) for c in inspect(BenhAn).columns}
-    payload = BenhAnCreate(**data)
+    payload = BenhAnCreate(**d)
     ba = benh_an_crud.create(db, payload, nguoi_dung_id=current_user.id)
     return {c.key: getattr(ba, c.key) for c in inspect(BenhAn).columns}
 
@@ -131,10 +132,10 @@ def get_benh_an_by_kham_benh(ma_kham_benh: str, db: Session = Depends(get_db)):
     "/{id}/ra-vien",
     dependencies=[Depends(require_permissions("benh_an:update"))],
 )
-def ra_vien(id: str, data: dict, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
+def ra_vien(id: str, data: RaVienRequest, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
     service = MedicalExaminationService(db)
     try:
-        ba = service.discharge_patient(id, data, nguoi_dung_id=current_user.id)
+        ba = service.discharge_patient(id, data.model_dump(exclude_unset=True), nguoi_dung_id=current_user.id)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     return {c.key: getattr(ba, c.key) for c in inspect(BenhAn).columns}

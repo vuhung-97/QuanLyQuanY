@@ -6,7 +6,7 @@ from pydantic import Field
 
 
 class ChiTietPhieuNhapKhoBase(SchemaBase):
-    so_luong: int
+    so_luong: int = Field(ge=0)
     so_lo: str | None = Field(default=None, max_length=100)
     han_su_dung: date | None = None
     don_gia: Decimal | None = Field(default=None, ge=0)
@@ -18,7 +18,7 @@ class ChiTietPhieuNhapKhoCreate(ChiTietPhieuNhapKhoBase):
 
 
 class ChiTietPhieuNhapKhoUpdate(SchemaBase):
-    so_luong: int | None = None
+    so_luong: int | None = Field(default=None, ge=0)
     so_lo: str | None = Field(default=None, max_length=100)
     han_su_dung: date | None = None
     don_gia: Decimal | None = Field(default=None, ge=0)

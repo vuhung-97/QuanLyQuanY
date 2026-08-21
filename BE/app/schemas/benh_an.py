@@ -12,14 +12,14 @@ class BenhAnBase(SchemaBase):
     trang_thai: str | None = None
     ngay_nhap_vien: date | None = None
     doi_tuong: str | None = Field(default=None, max_length=100)
-    ly_do_nhap_vien: str | None = Field(default=None, max_length=100)
+    ly_do_nhap_vien: str | None = Field(default=None, max_length=500)
     ma_nguoi_dung: str | None = None
-    quan_ly_nguoi_benh: str | None = None
-    chan_doan: str | None = None
-    tinh_trang_ra_vien: str | None = None
-    chi_tiet_benh_an: str | None = None
+    quan_ly_nguoi_benh: str | None = Field(default=None, max_length=5000)
+    chan_doan: str | None = Field(default=None, max_length=5000)
+    tinh_trang_ra_vien: str | None = Field(default=None, max_length=5000)
+    chi_tiet_benh_an: str | None = Field(default=None, max_length=10000)
     ma_nhom_benh: str | None = Field(default=None, max_length=10)
-    tong_ket_benh_an: str | None = None
+    tong_ket_benh_an: str | None = Field(default=None, max_length=10000)
 
 
 class BenhAnCreate(BenhAnBase):
@@ -64,3 +64,21 @@ class BenhAnReadDetail(BenhAnRead):
     ngay_sinh: date | None = None
     gioi_tinh: bool | None = None
     trieu_chung: str | None = None
+
+
+class BenhAnCreateRequest(SchemaBase):
+    ma_kham_benh: str | None = None
+    ma_buong: str | None = Field(default=None, max_length=10)
+    ma_giuong: str | None = Field(default=None, max_length=10)
+    ngay_nhap_vien: str | None = None
+    doi_tuong: str | None = Field(default=None, max_length=100)
+    ly_do_nhap_vien: str | None = Field(default=None, max_length=500)
+    quan_ly_nguoi_benh: str | None = Field(default=None, max_length=5000)
+    chan_doan: str | None = Field(default=None, max_length=5000)
+    ma_nhom_benh: str | None = Field(default=None, max_length=10)
+    chi_tiet_benh_an: str | None = Field(default=None, max_length=10000)
+
+
+class RaVienRequest(SchemaBase):
+    chi_tiet_benh_an: str | None = Field(default=None, max_length=10000)
+    tong_ket_benh_an: str | None = Field(default=None, max_length=10000)

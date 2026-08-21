@@ -4,7 +4,7 @@ from pydantic import Field, model_validator
 
 class ChiTietDonThuocBase(SchemaBase):
     so_luong: int = Field(default=1, ge=0)
-    huong_dieu_tri: str | None = None
+    huong_dieu_tri: str | None = Field(default=None, max_length=1000)
 
     @model_validator(mode='after')
     def validate_thuoc_vtyt_relationship(self):
@@ -18,7 +18,7 @@ class ChiTietDonThuocCreate(ChiTietDonThuocBase):
 
 class ChiTietDonThuocUpdate(SchemaBase):
     so_luong: int | None = Field(default=None, ge=0)
-    huong_dieu_tri: str | None = None
+    huong_dieu_tri: str | None = Field(default=None, max_length=1000)
 
     @model_validator(mode='after')
     def validate_thuoc_vtyt_relationship(self):

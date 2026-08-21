@@ -10,7 +10,7 @@ from app.database.giuong import Giuong
 from app.database.quan_nhan import QuanNhan
 from app.database.session import get_db
 from app.routes.base import _run_crud
-from app.schemas.giuong import GiuongCreate, GiuongUpdate
+from app.schemas.giuong import GiuongCreate, GiuongUpdate, ChuyenGiuongRequest
 
 
 router = APIRouter(prefix="/giuong", tags=["giuong"])
@@ -147,11 +147,11 @@ def list_giuong_quan_ly(
 )
 def chuyen_giuong(
     item_id: str,
-    data: dict,
+    data: ChuyenGiuongRequest,
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
-    ma_giuong_moi = data.get("ma_giuong_moi")
+    ma_giuong_moi = data.ma_giuong_moi
     if not ma_giuong_moi:
         raise HTTPException(400, detail="Thiếu ma_giuong_moi")
 
