@@ -88,6 +88,14 @@ export default function useKhoForm({ open, thuocId, mode, onClose, onSaved }) {
             }));
         }
 
+        // DatePicker đọc giá trị qua ref -> cần re-render để hiển thị giá trị mới
+        if (name === "han_su_dung") {
+            setFieldVersion((prev) => ({
+                ...prev,
+                han_su_dung: (prev.han_su_dung || 0) + 1,
+            }));
+        }
+
         if (errorsRef.current[name]) {
             setErrors((prev) => {
                 const next = { ...prev };
@@ -109,8 +117,14 @@ export default function useKhoForm({ open, thuocId, mode, onClose, onSaved }) {
             return;
         }
         const soLuong = Number(f.so_luong);
-        if (Number.isNaN(soLuong) || soLuong < 0) {
-            setErrors({ so_luong: "Số lượng tồn không được âm" });
+        if (!Number.isFinite(soLuong) || !Number.isInteger(soLuong) || soLuong < 0) {
+            setErrors({ so_luong: "Số lượng tồn phải là số nguyên không âm" });
+            return;
+        }
+        const donGia =
+            f.don_gia != null && f.don_gia !== "" ? Number(f.don_gia) : null;
+        if (donGia != null && (!Number.isFinite(donGia) || donGia < 0)) {
+            setErrors({ don_gia: "Đơn giá phải là số không âm" });
             return;
         }
         setSaving(true);
@@ -124,7 +138,7 @@ export default function useKhoForm({ open, thuocId, mode, onClose, onSaved }) {
                 so_luong: soLuong,
                 han_su_dung: f.han_su_dung ? f.han_su_dung.format("YYYY-MM-DD") : null,
                 so_lo_han_dung: f.so_lo_han_dung?.trim() || null,
-                don_gia: f.don_gia != null ? Number(f.don_gia) : null,
+                don_gia: donGia != null ? Math.round(donGia) : null,
                 mo_ta: f.mo_ta || null,
             };
             let saved;

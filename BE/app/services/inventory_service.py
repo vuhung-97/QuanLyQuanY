@@ -62,6 +62,12 @@ def _create_thuoc_from_goc(
     return thuoc
 
 
+def _normalize_don_gia(don_gia) -> int | None:
+    if don_gia is None:
+        return None
+    return int(don_gia)
+
+
 class InventoryService:
 
     @staticmethod
@@ -74,13 +80,32 @@ class InventoryService:
             ChiTietPhieuNhapKho.ma_phieu_nhap == phieu_nhap_id
         ).all()
 
+        # Gộp các dòng resolve về cùng một thuốc để tránh trùng PK
+        # (ma_phieu_nhap, ma_thuoc_vtyt)
+        resolved: dict[tuple, tuple[ChiTietPhieuNhapKho, ThuocVtyt]] = {}
+        to_delete: list[ChiTietPhieuNhapKho] = []
         for ct in chi_tiets:
             thuoc_goc = db.get(ThuocVtyt, ct.ma_thuoc_vtyt)
             if not thuoc_goc:
                 raise CRUDNotFoundError(f"Thuốc {ct.ma_thuoc_vtyt} không tồn tại")
-            thuoc = _resolve_thuoc(db, thuoc_goc, ct.han_su_dung, ct.so_lo, ct.don_gia)
+            don_gia = _normalize_don_gia(ct.don_gia)
+            key = (thuoc_goc.ten_thuoc_vtyt, ct.han_su_dung, ct.so_lo, don_gia)
+            if key in resolved:
+                first_ct, _ = resolved[key]
+                first_ct.so_luong += ct.so_luong
+                to_delete.append(ct)
+            else:
+                resolved[key] = (ct, thuoc_goc)
+        for ct in to_delete:
+            db.delete(ct)
+        db.flush()
+
+        for ct, thuoc_goc in resolved.values():
+            don_gia = _normalize_don_gia(ct.don_gia)
+            ct.don_gia = don_gia
+            thuoc = _resolve_thuoc(db, thuoc_goc, ct.han_su_dung, ct.so_lo, don_gia)
             if thuoc is None:
-                thuoc = _create_thuoc_from_goc(db, thuoc_goc, ct.han_su_dung, ct.so_lo, ct.don_gia)
+                thuoc = _create_thuoc_from_goc(db, thuoc_goc, ct.han_su_dung, ct.so_lo, don_gia)
             ct.ma_thuoc_vtyt = thuoc.ma_thuoc_vtyt
             thuoc.so_luong = (thuoc.so_luong or 0) + ct.so_luong
 
@@ -124,16 +149,39 @@ class InventoryService:
             db.delete(ct)
         db.flush()
 
+        # Gộp các item resolve về cùng một thuốc để tránh trùng PK
+        merged_items: dict[tuple, dict] = {}
         for it in items:
             ma = it.ma_thuoc_vtyt if hasattr(it, "ma_thuoc_vtyt") else it.get("ma_thuoc_vtyt")
             sl = it.so_luong if hasattr(it, "so_luong") else it.get("so_luong", 0)
             so_lo = it.so_lo if hasattr(it, "so_lo") else it.get("so_lo")
             han_su_dung = it.han_su_dung if hasattr(it, "han_su_dung") else it.get("han_su_dung")
-            don_gia = it.don_gia if hasattr(it, "don_gia") else it.get("don_gia")
+            don_gia = _normalize_don_gia(
+                it.don_gia if hasattr(it, "don_gia") else it.get("don_gia")
+            )
 
             thuoc_goc = db.get(ThuocVtyt, ma)
             if not thuoc_goc:
                 raise CRUDNotFoundError(f"Thuốc {ma} không tồn tại")
+
+            key = (thuoc_goc.ten_thuoc_vtyt, han_su_dung, so_lo, don_gia)
+            if key in merged_items:
+                merged_items[key]["sl"] += sl
+                continue
+            merged_items[key] = {
+                "goc": thuoc_goc,
+                "sl": sl,
+                "so_lo": so_lo,
+                "han_su_dung": han_su_dung,
+                "don_gia": don_gia,
+            }
+
+        for entry in merged_items.values():
+            thuoc_goc = entry["goc"]
+            sl = entry["sl"]
+            so_lo = entry["so_lo"]
+            han_su_dung = entry["han_su_dung"]
+            don_gia = entry["don_gia"]
 
             thuoc = _resolve_thuoc(db, thuoc_goc, han_su_dung, so_lo, don_gia)
             if thuoc is None:
@@ -164,6 +212,7 @@ class InventoryService:
         db: Session,
         phieu_xuat_id: str,
         thuc_xuat: dict[str, int] | None = None,
+        auto_commit: bool = True,
     ) -> PhieuXuatKho:
         phieu_xuat = db.get(PhieuXuatKho, phieu_xuat_id)
         if not phieu_xuat:
@@ -194,8 +243,9 @@ class InventoryService:
             thuoc.so_luong = ton_kho - thuc
             ct.so_luong_thuc_xuat = thuc
 
-        db.commit()
-        db.refresh(phieu_xuat)
+        if auto_commit:
+            db.commit()
+            db.refresh(phieu_xuat)
         return phieu_xuat
 
     @staticmethod

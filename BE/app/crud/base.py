@@ -80,9 +80,10 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         if nguoi_dung_id and hasattr(self.model, "id_nguoi_dung"):
             row.id_nguoi_dung = nguoi_dung_id
         db.add(row)
+        db.flush()
+        self._log(db, "CREATE", nguoi_dung_id, du_lieu_moi=self._row_to_dict(row))
         self._commit(db)
         db.refresh(row)
-        self._log(db, "CREATE", nguoi_dung_id, du_lieu_moi=self._row_to_dict(row))
         return row
 
     def update(self, db: Session, item_id: str, payload: UpdateSchemaType, nguoi_dung_id: str | None = None, **extra_values: Any) -> ModelType:
@@ -95,17 +96,19 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         for field, value in extra_values.items():
             setattr(row, field, value)
         self._validate_updated_row(db, row, type(payload))
+        db.flush()
+        self._log(db, "UPDATE", nguoi_dung_id, du_lieu_cu=old, du_lieu_moi=self._row_to_dict(row))
         self._commit(db)
         db.refresh(row)
-        self._log(db, "UPDATE", nguoi_dung_id, du_lieu_cu=old, du_lieu_moi=self._row_to_dict(row))
         return row
 
     def delete(self, db: Session, item_id: str, nguoi_dung_id: str | None = None) -> None:
         row = self.get(db, item_id)
         old = self._row_to_dict(row)
         db.delete(row)
-        self._commit(db)
+        db.flush()
         self._log(db, "DELETE", nguoi_dung_id, du_lieu_cu=old)
+        self._commit(db)
 
     def _row_to_dict(self, row: ModelType) -> dict:
         skip = {"mat_khau_hash"}
@@ -134,7 +137,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             du_lieu_moi=du_lieu_moi,
         )
         db.add(log)
-        db.commit()
+        db.flush()
 
     def _primary_key_columns(self) -> list[str]:
         return [column.key for column in inspect(self.model).primary_key]

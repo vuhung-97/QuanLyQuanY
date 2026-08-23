@@ -74,14 +74,14 @@ export default function useNhapKhoItems() {
             so_luong:
                 it.soLuong === "" || it.soLuong == null
                     ? 0
-                    : Number(it.soLuong),
+                    : Math.round(Number(it.soLuong)),
             so_lo: it.soLo?.trim() || null,
             han_su_dung: it.hanSuDung
                 ? it.hanSuDung.format("YYYY-MM-DD")
                 : null,
             don_gia:
                 it.donGia !== "" && it.donGia != null
-                    ? Number(it.donGia)
+                    ? Math.round(Number(it.donGia))
                     : null,
         }));
 
@@ -91,8 +91,8 @@ export default function useNhapKhoItems() {
         }
         for (const it of items) {
             const qty = it.soLuong === "" || it.soLuong == null ? 0 : Number(it.soLuong);
-            if (qty < 0) {
-                return `Số lượng của "${it.ten_thuoc_vtyt}" không được âm.`;
+            if (!Number.isFinite(qty) || !Number.isInteger(qty) || qty < 0) {
+                return `Số lượng của "${it.ten_thuoc_vtyt}" phải là số nguyên không âm.`;
             }
         }
         return null;

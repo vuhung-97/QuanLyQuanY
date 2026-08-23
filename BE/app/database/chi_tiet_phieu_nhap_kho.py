@@ -1,7 +1,6 @@
 from datetime import date
-from decimal import Decimal
 
-from sqlalchemy import Date, ForeignKey, Integer, Numeric, String
+from sqlalchemy import Date, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database.base import Base
@@ -15,4 +14,4 @@ class ChiTietPhieuNhapKho(Base):
     so_luong: Mapped[int] = mapped_column(Integer)
     so_lo: Mapped[str | None] = mapped_column(String(100), nullable=True)
     han_su_dung: Mapped[date | None] = mapped_column(Date, nullable=True)
-    don_gia: Mapped[Decimal | None] = mapped_column(Numeric(15, 2), nullable=True)
+    don_gia: Mapped[int | None] = mapped_column(Integer, nullable=True)

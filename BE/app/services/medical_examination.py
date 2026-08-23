@@ -1,4 +1,5 @@
 from datetime import date, datetime, timezone
+from decimal import Decimal
 
 from sqlalchemy import inspect
 from sqlalchemy.orm import Session
@@ -22,6 +23,8 @@ class MedicalExaminationService:
     def _serialize(val):
         if isinstance(val, (datetime, date)):
             return val.isoformat()
+        if isinstance(val, Decimal):
+            return float(val)
         return val
 
     def _log(self, hanh_dong: str, nguoi_dung_id: str | None, ten_bang: str, du_lieu_cu: dict | None = None, du_lieu_moi: dict | None = None):

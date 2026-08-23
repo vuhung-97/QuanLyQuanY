@@ -169,9 +169,11 @@ def xuat_kho(
 
     try:
         InventoryService.export_stock(
-            db, item_id, thuc_xuat=body.thuc_xuat if body else None
+            db, item_id, thuc_xuat=body.thuc_xuat if body else None,
+            auto_commit=False,
         )
     except CRUDError as e:
+        db.rollback()
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
     if body is not None and "ma_quan_nhan_nhan" in body.model_fields_set:

@@ -6,7 +6,13 @@ export default function DatePicker({ value, onChange, size = "large", label }) {
         <DesktopDatePicker
             label={label}
             value={value}
-            onChange={(v) => v && onChange(v)}
+            onChange={(newValue) => {
+                if (newValue == null) {
+                    onChange(null);
+                } else if (newValue.isValid?.()) {
+                    onChange(newValue);
+                }
+            }}
             format="DD/MM/YYYY"
             slotProps={{
                 textField: {

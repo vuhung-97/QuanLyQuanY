@@ -1,5 +1,4 @@
 from datetime import date
-from decimal import Decimal
 
 from app.schemas.base import SchemaBase
 from pydantic import Field
@@ -42,7 +41,7 @@ class TaoPhieuNhapItem(SchemaBase):
     so_luong: int = Field(ge=0)
     so_lo: str | None = Field(default=None, max_length=100)
     han_su_dung: date | None = None
-    don_gia: Decimal | None = Field(default=None, ge=0)
+    don_gia: int | None = Field(default=None, ge=0)
 
 
 class TaoPhieuNhapRequest(SchemaBase):

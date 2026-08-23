@@ -172,9 +172,15 @@ export default function useKhoList(thresholds = DEFAULT_THRESHOLDS) {
                 message: "Xoá thành công",
                 severity: "success",
             });
-            setAllItems((prev) =>
-                prev.filter((i) => i.ma_thuoc_vtyt !== confirm.id),
-            );
+            setAllItems((prev) => {
+                const next = prev.filter((i) => i.ma_thuoc_vtyt !== confirm.id);
+                const newTotalPages = Math.max(
+                    1,
+                    Math.ceil(next.length / ROWS_PER_PAGE),
+                );
+                setPage((p) => Math.min(p, newTotalPages));
+                return next;
+            });
             setConfirm({ open: false, id: null });
         } catch (err) {
             const msg = err?.response?.data?.detail || "Lỗi xoá dữ liệu";
