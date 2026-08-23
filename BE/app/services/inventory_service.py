@@ -1,4 +1,3 @@
-from collections import defaultdict
 from datetime import date, timedelta
 
 from sqlalchemy.orm import Session
@@ -11,6 +10,56 @@ from app.database.phieu_du_tru import PhieuDuTru
 from app.database.phieu_nhap_kho import PhieuNhapKho
 from app.database.phieu_xuat_kho import PhieuXuatKho
 from app.database.thuoc_vtyt import ThuocVtyt
+
+
+def _resolve_thuoc(
+    db: Session,
+    thuoc_goc: ThuocVtyt,
+    han_su_dung,
+    so_lo,
+    don_gia,
+) -> ThuocVtyt | None:
+    query = db.query(ThuocVtyt).filter(
+        ThuocVtyt.ten_thuoc_vtyt == thuoc_goc.ten_thuoc_vtyt,
+    )
+    if han_su_dung is None:
+        query = query.filter(ThuocVtyt.han_su_dung.is_(None))
+    else:
+        query = query.filter(ThuocVtyt.han_su_dung == han_su_dung)
+    if so_lo is None:
+        query = query.filter(ThuocVtyt.so_lo_han_dung.is_(None))
+    else:
+        query = query.filter(ThuocVtyt.so_lo_han_dung == so_lo)
+    if don_gia is None:
+        query = query.filter(ThuocVtyt.don_gia.is_(None))
+    else:
+        query = query.filter(ThuocVtyt.don_gia == don_gia)
+    return query.first()
+
+
+def _create_thuoc_from_goc(
+    db: Session,
+    thuoc_goc: ThuocVtyt,
+    han_su_dung,
+    so_lo,
+    don_gia,
+) -> ThuocVtyt:
+    thuoc = ThuocVtyt(
+        ten_thuoc_vtyt=thuoc_goc.ten_thuoc_vtyt,
+        don_vi_tinh=thuoc_goc.don_vi_tinh,
+        phan_loai=thuoc_goc.phan_loai,
+        hoat_chat=thuoc_goc.hoat_chat,
+        loai=thuoc_goc.loai,
+        mo_ta=thuoc_goc.mo_ta,
+        nha_san_xuat=thuoc_goc.nha_san_xuat,
+        han_su_dung=han_su_dung,
+        so_lo_han_dung=so_lo,
+        don_gia=don_gia,
+        so_luong=0,
+    )
+    db.add(thuoc)
+    db.flush()
+    return thuoc
 
 
 class InventoryService:
@@ -26,9 +75,13 @@ class InventoryService:
         ).all()
 
         for ct in chi_tiets:
-            thuoc = db.get(ThuocVtyt, ct.ma_thuoc_vtyt)
-            if not thuoc:
+            thuoc_goc = db.get(ThuocVtyt, ct.ma_thuoc_vtyt)
+            if not thuoc_goc:
                 raise CRUDNotFoundError(f"Thuốc {ct.ma_thuoc_vtyt} không tồn tại")
+            thuoc = _resolve_thuoc(db, thuoc_goc, ct.han_su_dung, ct.so_lo, ct.don_gia)
+            if thuoc is None:
+                thuoc = _create_thuoc_from_goc(db, thuoc_goc, ct.han_su_dung, ct.so_lo, ct.don_gia)
+            ct.ma_thuoc_vtyt = thuoc.ma_thuoc_vtyt
             thuoc.so_luong = (thuoc.so_luong or 0) + ct.so_luong
 
         if phieu_nhap.ma_phieu_du_tru:
@@ -58,34 +111,14 @@ class InventoryService:
             .all()
         )
 
-        old_map = defaultdict(int)
         for ct in old_chi_tiets:
-            old_map[ct.ma_thuoc_vtyt] += ct.so_luong
-
-        new_map = defaultdict(int)
-        for it in items:
-            ma = it.ma_thuoc_vtyt if hasattr(it, "ma_thuoc_vtyt") else it.get("ma_thuoc_vtyt")
-            sl = it.so_luong if hasattr(it, "so_luong") else it.get("so_luong", 0)
-            new_map[ma] += sl
-
-        all_keys = set(old_map.keys()) | set(new_map.keys())
-        for ma in all_keys:
-            delta = new_map[ma] - old_map[ma]
-            if delta == 0:
-                continue
-            thuoc = db.get(ThuocVtyt, ma)
-            if not thuoc:
-                raise CRUDNotFoundError(f"Thuốc {ma} không tồn tại")
-            ton_hien_tai = thuoc.so_luong or 0
-            if ton_hien_tai + delta < 0:
-                raise CRUDBadRequestError(
-                    f"Thuốc '{thuoc.ten_thuoc_vtyt}' không đủ tồn kho để giảm ({ton_hien_tai} + {delta} < 0)"
-                )
-            thuoc.so_luong = ton_hien_tai + delta
-
-        if ngay_nhap is not None:
-            phieu_nhap.ngay_nhap = ngay_nhap
-        phieu_nhap.ghi_chu = ghi_chu
+            thuoc = db.get(ThuocVtyt, ct.ma_thuoc_vtyt)
+            if thuoc:
+                thuoc.so_luong = (thuoc.so_luong or 0) - ct.so_luong
+                if (thuoc.so_luong or 0) < 0:
+                    raise CRUDBadRequestError(
+                        f"Thuốc '{thuoc.ten_thuoc_vtyt}' không đủ tồn kho để giảm"
+                    )
 
         for ct in old_chi_tiets:
             db.delete(ct)
@@ -97,16 +130,30 @@ class InventoryService:
             so_lo = it.so_lo if hasattr(it, "so_lo") else it.get("so_lo")
             han_su_dung = it.han_su_dung if hasattr(it, "han_su_dung") else it.get("han_su_dung")
             don_gia = it.don_gia if hasattr(it, "don_gia") else it.get("don_gia")
+
+            thuoc_goc = db.get(ThuocVtyt, ma)
+            if not thuoc_goc:
+                raise CRUDNotFoundError(f"Thuốc {ma} không tồn tại")
+
+            thuoc = _resolve_thuoc(db, thuoc_goc, han_su_dung, so_lo, don_gia)
+            if thuoc is None:
+                thuoc = _create_thuoc_from_goc(db, thuoc_goc, han_su_dung, so_lo, don_gia)
+
             db.add(
                 ChiTietPhieuNhapKho(
                     ma_phieu_nhap=phieu_nhap_id,
-                    ma_thuoc_vtyt=ma,
+                    ma_thuoc_vtyt=thuoc.ma_thuoc_vtyt,
                     so_luong=sl,
                     so_lo=so_lo,
                     han_su_dung=han_su_dung,
                     don_gia=don_gia,
                 )
             )
+            thuoc.so_luong = (thuoc.so_luong or 0) + sl
+
+        if ngay_nhap is not None:
+            phieu_nhap.ngay_nhap = ngay_nhap
+        phieu_nhap.ghi_chu = ghi_chu
 
         db.commit()
         db.refresh(phieu_nhap)
