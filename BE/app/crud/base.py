@@ -1,5 +1,6 @@
 import csv
 from datetime import date, datetime, timezone
+from decimal import Decimal
 from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel, ValidationError
@@ -115,6 +116,8 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             value = getattr(row, c.key)
             if isinstance(value, (date, datetime)):
                 value = value.isoformat()
+            elif isinstance(value, Decimal):
+                value = float(value)
             result[c.key] = value
         return result
 

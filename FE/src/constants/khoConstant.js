@@ -10,6 +10,9 @@ export const INIT_FORM = {
     phan_loai: "",
     hoat_chat: "",
     so_luong: 0,
+    han_su_dung: null,
+    so_lo_han_dung: "",
+    don_gia: null,
     mo_ta: "",
 };
 
@@ -64,6 +67,27 @@ export const DIALOG_FIELDS = [
         grid: { xs: 12, sm: 6 },
         type: "number",
         slotProps: { htmlInput: { min: 0 } },
+        section: "inventory",
+    },
+    {
+        name: "han_su_dung",
+        label: "Hạn sử dụng",
+        grid: { xs: 12, sm: 6 },
+        type: "date",
+        section: "inventory",
+    },
+    {
+        name: "so_lo_han_dung",
+        label: "Số lô",
+        grid: { xs: 12, sm: 6 },
+        section: "inventory",
+    },
+    {
+        name: "don_gia",
+        label: "Đơn giá",
+        grid: { xs: 12, sm: 6 },
+        type: "number",
+        slotProps: { htmlInput: { min: 0, step: 1000 } },
         section: "inventory",
     },
     {

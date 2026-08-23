@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import dayjs from "dayjs";
 import { khoDuocService } from "@/services/khoDuocService.js";
 import { INIT_FORM } from "@/constants/khoConstant.js";
 import { getErrorMessage } from "@/utils/apiError.js";
@@ -34,6 +35,9 @@ export default function useKhoForm({ open, thuocId, mode, onClose, onSaved }) {
                 phan_loai: d.phan_loai || "",
                 hoat_chat: d.hoat_chat || "",
                 so_luong: d.so_luong ?? 0,
+                han_su_dung: d.han_su_dung ? dayjs(d.han_su_dung) : null,
+                so_lo_han_dung: d.so_lo_han_dung || "",
+                don_gia: d.don_gia ?? null,
                 mo_ta: d.mo_ta || "",
             };
         } catch {
@@ -118,6 +122,9 @@ export default function useKhoForm({ open, thuocId, mode, onClose, onSaved }) {
                 phan_loai: f.phan_loai || null,
                 hoat_chat: f.hoat_chat || null,
                 so_luong: soLuong,
+                han_su_dung: f.han_su_dung ? f.han_su_dung.format("YYYY-MM-DD") : null,
+                so_lo_han_dung: f.so_lo_han_dung?.trim() || null,
+                don_gia: f.don_gia != null ? Number(f.don_gia) : null,
                 mo_ta: f.mo_ta || null,
             };
             let saved;

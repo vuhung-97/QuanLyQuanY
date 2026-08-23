@@ -24,6 +24,7 @@ import NotesOutlinedIcon from "@mui/icons-material/NotesOutlined";
 import DialogTitleWrapper from "@/components/common/DialogTitleWrapper.jsx";
 import FormTextField from "@/components/common/FormTextField.jsx";
 import NumberField from "@/components/common/NumberField.jsx";
+import DatePicker from "@/components/common/DatePicker.jsx";
 import FeedbackSnackbar from "@/components/common/FeedbackSnackbar.jsx";
 import useKhoForm from "@/hooks/useKhoForm.js";
 import {
@@ -299,6 +300,15 @@ export default function KhoDialog({
                         size="small"
                     />
                 );
+            case "date":
+                return (
+                    <DatePicker
+                        label={field.label}
+                        value={getValue(field.name) || null}
+                        onChange={(v) => hook.updateField(field.name, v)}
+                        size="small"
+                    />
+                );
             case "textarea":
                 return (
                     <FormTextField
@@ -376,15 +386,26 @@ export default function KhoDialog({
                         }
                     />
                 );
+            case "date":
+                return (
+                    <InfoItem
+                        label={field.label}
+                        value={
+                            raw
+                                ? typeof raw.format === "function"
+                                    ? raw.format("DD/MM/YYYY")
+                                    : raw
+                                : "—"
+                        }
+                    />
+                );
             default:
                 return <InfoItem label={field.label} value={raw} />;
         }
     };
 
     const renderSection = (section) => {
-        const fields = DIALOG_FIELDS.filter(
-            (f) => f.section === section.key,
-        );
+        const fields = DIALOG_FIELDS.filter((f) => f.section === section.key);
         if (fields.length === 0) return null;
         return (
             <Box key={section.key}>
@@ -392,7 +413,9 @@ export default function KhoDialog({
                 <Grid container spacing={2.5}>
                     {fields.map((field) => (
                         <Grid key={field.name} size={field.grid}>
-                            {isView ? renderViewValue(field) : renderField(field)}
+                            {isView
+                                ? renderViewValue(field)
+                                : renderField(field)}
                         </Grid>
                     ))}
                 </Grid>
@@ -442,9 +465,7 @@ export default function KhoDialog({
                             Đang tải...
                         </Typography>
                     ) : (
-                        <Box sx={{ pt: 1 }}>
-                            {SECTIONS.map(renderSection)}
-                        </Box>
+                        <Box sx={{ pt: 1 }}>{SECTIONS.map(renderSection)}</Box>
                     )}
                 </DialogContent>
 

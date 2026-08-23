@@ -40,7 +40,6 @@ const STAT_ICONS = {
 };
 
 const columns = [
-    { key: "ma_thuoc_vtyt", label: "Mã" },
     {
         key: "loai",
         label: "Loại",
@@ -80,6 +79,16 @@ const columns = [
         },
     },
     { key: "phan_loai", label: "Phân loại" },
+    { key: "so_lo_han_dung", label: "Số lô" },
+    {
+        key: "don_gia",
+        label: "Đơn giá",
+        align: "right",
+        render: (row) => {
+            if (row.don_gia == null) return "—";
+            return Math.round(Number(row.don_gia)).toLocaleString("vi-VN") + "đ";
+        },
+    },
     {
         key: "han_su_dung",
         label: "Hạn sử dụng",
