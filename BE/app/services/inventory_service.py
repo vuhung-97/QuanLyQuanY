@@ -170,5 +170,4 @@ class InventoryService:
         return db.query(ThuocVtyt).filter(
             ThuocVtyt.han_su_dung.isnot(None),
             ThuocVtyt.han_su_dung <= expiry_limit,
-            ThuocVtyt.han_su_dung >= today,
         ).all()

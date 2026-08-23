@@ -36,7 +36,7 @@ export const khoDuocService = {
     getTonKho: (search) =>
         api.get("/thuoc_vtyt/ton-kho", { params: search ? { search } : {} }),
     getSapHetHan: (days) =>
-        api.get("/thuoc_vtyt/sap-het-han", { params: days ? { days } : {} }),
+        api.get("/thuoc_vtyt/sap-het-han", { params: days ? { days } : {} }).then(r => r.data),
     dieuChinhTon: (id, soLuongMoi) =>
         api.patch(`/thuoc_vtyt/${id}/dieu-chinh-ton`, null, {
             params: { so_luong_moi: soLuongMoi },
