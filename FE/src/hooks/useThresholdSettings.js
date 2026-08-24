@@ -1,39 +1,43 @@
 import { useState, useCallback, useEffect } from "react";
-import {
-    STORAGE_KEY_THRESHOLDS,
-    DEFAULT_THRESHOLDS,
-} from "@/constants/khoConstant.js";
+import { DEFAULT_THRESHOLDS } from "@/constants/khoConstant.js";
+import { khoDuocService } from "@/services/khoDuocService.js";
 
 export default function useThresholdSettings() {
-    const [thresholds, setThresholds] = useState(() => {
+    const [thresholds, setThresholds] = useState({ ...DEFAULT_THRESHOLDS });
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        let cancelled = false;
+        khoDuocService
+            .getThresholds()
+            .then((res) => {
+                if (!cancelled && res.data) {
+                    setThresholds({
+                        thuoc: res.data.thuoc ?? DEFAULT_THRESHOLDS.thuoc,
+                        vat_tu: res.data.vat_tu ?? DEFAULT_THRESHOLDS.vat_tu,
+                        sapHetHanNgay:
+                            res.data.sapHetHanNgay ??
+                            DEFAULT_THRESHOLDS.sapHetHanNgay,
+                    });
+                }
+            })
+            .catch(() => {})
+            .finally(() => {
+                if (!cancelled) setLoading(false);
+            });
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    const updateThresholds = useCallback(async (key, value) => {
+        setThresholds((prev) => ({ ...prev, [key]: value }));
         try {
-            const stored = localStorage.getItem(STORAGE_KEY_THRESHOLDS);
-            if (stored) {
-                const parsed = JSON.parse(stored);
-                return {
-                    thuoc: parsed.thuoc ?? DEFAULT_THRESHOLDS.thuoc,
-                    vat_tu: parsed.vat_tu ?? DEFAULT_THRESHOLDS.vat_tu,
-                    sapHetHanNgay:
-                        parsed.sapHetHanNgay ??
-                        DEFAULT_THRESHOLDS.sapHetHanNgay,
-                };
-            }
+            await khoDuocService.updateThresholds({ [key]: value });
         } catch {
             /* ignore */
         }
-        return { ...DEFAULT_THRESHOLDS };
-    });
-
-    useEffect(() => {
-        localStorage.setItem(
-            STORAGE_KEY_THRESHOLDS,
-            JSON.stringify(thresholds),
-        );
-    }, [thresholds]);
-
-    const updateThresholds = useCallback((key, value) => {
-        setThresholds((prev) => ({ ...prev, [key]: value }));
     }, []);
 
-    return { thresholds, updateThresholds };
+    return { thresholds, updateThresholds, loading };
 }

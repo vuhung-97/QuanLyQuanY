@@ -3,6 +3,10 @@ import {
     Button,
     Card,
     CardContent,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
     Stack,
     Typography,
 } from "@mui/material";
@@ -191,6 +195,30 @@ export default function KhoList() {
                                     }))}
                                     label="Phân loại"
                                 />
+                                <FormControl size="small" sx={{ minWidth: 160 }}>
+                                    <InputLabel id="sort-kho-label">
+                                        Sắp xếp
+                                    </InputLabel>
+                                    <Select
+                                        labelId="sort-kho-label"
+                                        value={hook.sortBy}
+                                        label="Sắp xếp"
+                                        onChange={(e) =>
+                                            hook.handleSortByChange(e.target.value)
+                                        }
+                                    >
+                                        <MenuItem value="">Mặc định</MenuItem>
+                                        <MenuItem value="ton_kho">
+                                            Theo tồn kho
+                                        </MenuItem>
+                                        <MenuItem value="don_gia">
+                                            Theo đơn giá
+                                        </MenuItem>
+                                        <MenuItem value="han_su_dung">
+                                            Theo hạn sử dụng
+                                        </MenuItem>
+                                    </Select>
+                                </FormControl>
                             </Stack>
                             <Stack direction="row" spacing={1}>
                                 <Button

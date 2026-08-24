@@ -102,6 +102,9 @@ export const khoDuocService = {
     getThongKePhieuDuTru: (params) => api.get("/thong-ke/phieu-du-tru", { params }),
     getThongKePhieuXuat: (params) => api.get("/thong-ke/phieu-xuat", { params }),
 
+    getThresholds: () => api.get("/he_thong/thresholds"),
+    updateThresholds: (data) => api.put("/he_thong/thresholds", data),
+
     listDonVi: (params) => api.get("/don_vi", { params }),
     listQuanNhan: (params) => api.get("/quan_nhan", { params }),
 };

@@ -10,6 +10,7 @@ export default function useKhoList(thresholds = DEFAULT_THRESHOLDS) {
     const [loading, setLoading] = useState(false);
     const [sapHetHan, setSapHetHan] = useState([]);
     const [search, setSearch] = useState("");
+    const [sortBy, setSortBy] = useState("");
     const [phanLoaiFilter, setPhanLoaiFilter] = useState("");
     const [filterMode, setFilterMode] = useState(
         () => searchParams.get("filter") || "all",
@@ -90,8 +91,15 @@ export default function useKhoList(thresholds = DEFAULT_THRESHOLDS) {
         } else if (filterMode === "expiring") {
             items = items.filter((i) => sapHetHanMaSet.has(i.ma_thuoc_vtyt));
         }
-        return items;
-    }, [allItems, search, phanLoaiFilter, filterMode, sapHetHanMaSet, thresholds.thuoc, thresholds.vat_tu]);
+        const sortFns = {
+            "": (a, b) => (a.ten_thuoc_vtyt || "").localeCompare(b.ten_thuoc_vtyt || ""),
+            "ten": (a, b) => (a.ten_thuoc_vtyt || "").localeCompare(b.ten_thuoc_vtyt || ""),
+            "ton_kho": (a, b) => (a.so_luong ?? 0) - (b.so_luong ?? 0),
+            "don_gia": (a, b) => (a.don_gia ?? 0) - (b.don_gia ?? 0),
+            "han_su_dung": (a, b) => new Date(a.han_su_dung || 0) - new Date(b.han_su_dung || 0),
+        };
+        return [...items].sort(sortFns[sortBy] || sortFns[""]);
+    }, [allItems, search, phanLoaiFilter, filterMode, sapHetHanMaSet, sortBy, thresholds.thuoc, thresholds.vat_tu]);
 
     const totalPages = Math.ceil(filteredItems.length / ROWS_PER_PAGE);
 
@@ -142,6 +150,11 @@ export default function useKhoList(thresholds = DEFAULT_THRESHOLDS) {
 
     const handlePhanLoaiChange = useCallback((e) => {
         setPhanLoaiFilter(e.target.value);
+        setPage(1);
+    }, []);
+
+    const handleSortByChange = useCallback((value) => {
+        setSortBy(value);
         setPage(1);
     }, []);
 
@@ -201,6 +214,7 @@ export default function useKhoList(thresholds = DEFAULT_THRESHOLDS) {
         allItems,
         loading,
         search,
+        sortBy,
         phanLoaiFilter,
         filterMode,
         page,
@@ -220,6 +234,7 @@ export default function useKhoList(thresholds = DEFAULT_THRESHOLDS) {
         setConfirm,
         setSnackbar,
         handleSearchChange,
+        handleSortByChange,
         handlePhanLoaiChange,
         handleCardClick,
         handleView,
