@@ -32,6 +32,8 @@ import RaVienDialog from "./RaVienDialog.jsx";
 import RaBenhXaDialog from "./RaBenhXaDialog.jsx";
 import { BENH_AN_STATUS_MAP } from "@/constants/noiTruConstants.js";
 import { formatDate } from "@/utils/date.js";
+import IfRole from "@/components/common/IfRole.jsx";
+import { ROLES } from "@/constants/roleConstants.js";
 
 const columns = [
     {
@@ -115,12 +117,14 @@ const columns = [
                     onClick={() => onChiTiet(row.ma_benh_an)}
                 />
                 {row.trang_thai === "đang_điều_trị" && (
-                    <ActionIcon
-                        title="Ra viện"
-                        icon={<ExitToAppIcon />}
-                        color="error"
-                        onClick={() => onRaVien(row.ma_benh_an)}
-                    />
+                    <IfRole roles={[ROLES.ADMIN, ROLES.CNQY]}>
+                        <ActionIcon
+                            title="Ra viện"
+                            icon={<ExitToAppIcon />}
+                            color="error"
+                            onClick={() => onRaVien(row.ma_benh_an)}
+                        />
+                    </IfRole>
                 )}
                 {row.trang_thai === "đã_ra_viện" && (
                     <ActionIcon

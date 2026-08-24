@@ -202,7 +202,7 @@ export default function LapLichPage() {
                         và phân bổ lịch khám.
                     </Typography>
                 </Box>
-                <IfRole roles={[ROLES.ADMIN, ROLES.CNQY, ROLES.BACSI, ROLES.YSI]}>
+                <IfRole roles={[ROLES.ADMIN, ROLES.CNQY, ROLES.YSI]}>
                     <Button
                         variant="contained"
                         startIcon={<AddIcon />}

@@ -111,7 +111,11 @@ function ScheduleTableRow({
                     />
                     <Chip
                         size="small"
-                        label={STATUS_UI[row.trang_thai]?.label || row.trang_thai || "—"}
+                        label={
+                            STATUS_UI[row.trang_thai]?.label ||
+                            row.trang_thai ||
+                            "—"
+                        }
                         color={STATUS_UI[row.trang_thai]?.color || "default"}
                         variant={STATUS_UI[row.trang_thai]?.variant || "filled"}
                         sx={{ fontWeight: 600 }}
@@ -135,6 +139,8 @@ function ScheduleTableRow({
                                 color="info"
                                 onClick={() => onView(row)}
                             />
+                        </IfRole>
+                        <IfRole roles={[ROLES.ADMIN, ROLES.CNQY, ROLES.YSI]}>
                             <ActionIcon
                                 title="In lịch khám"
                                 icon={<PrintIcon />}
@@ -171,26 +177,54 @@ function ScheduleTableRow({
                     </Stack>
                 ) : row.trang_thai === "cho_gui" ? (
                     <IfRole
-                        roles={[
-                            ROLES.ADMIN,
-                            ROLES.CNQY,
-                            ROLES.BACSI,
-                            ROLES.YSI,
-                        ]}
+                        roles={[ROLES.ADMIN, ROLES.CNQY, ROLES.YSI]}
                     >
                         <Stack direction="row" spacing={0.5}>
-                            <ActionIcon title="Sửa" icon={<EditIcon />} onClick={() => onEdit(row)} />
-                            <ActionIcon title="Gửi duyệt" icon={<SendIcon />} onClick={() => onSubmit(row)} />
-                            <ActionIcon title="Xóa" icon={<DeleteIcon />} color="error" onClick={() => onDelete(row)} />
+                            <ActionIcon
+                                title="Sửa"
+                                icon={<EditIcon />}
+                                onClick={() => onEdit(row)}
+                            />
+                            <ActionIcon
+                                title="Gửi duyệt"
+                                icon={<SendIcon />}
+                                onClick={() => onSubmit(row)}
+                            />
+                            <ActionIcon
+                                title="Xóa"
+                                icon={<DeleteIcon />}
+                                color="error"
+                                onClick={() => onDelete(row)}
+                            />
                         </Stack>
                     </IfRole>
                 ) : row.trang_thai === "cho_duyet" ? (
                     <Stack direction="row" spacing={0.5}>
-                        <ActionIcon title="Xem" icon={<VisibilityIcon />} color="info" onClick={() => onView(row)} />
+                        <ActionIcon
+                            title="Xem"
+                            icon={<VisibilityIcon />}
+                            color="info"
+                            onClick={() => onView(row)}
+                        />
                         <IfRole roles={[ROLES.ADMIN, ROLES.CNQY]}>
-                            <ActionIcon title="Duyệt" icon={<CheckCircleIcon />} color="success" onClick={() => onApprove?.(row)} />
-                            <ActionIcon title="Không duyệt" icon={<DoDisturbIcon />} color="error" onClick={() => onReject?.(row)} />
-                            <ActionIcon title="Xóa" icon={<DeleteIcon />} color="error" onClick={() => onDelete(row)} />
+                            <ActionIcon
+                                title="Duyệt"
+                                icon={<CheckCircleIcon />}
+                                color="success"
+                                onClick={() => onApprove?.(row)}
+                            />
+                            <ActionIcon
+                                title="Không duyệt"
+                                icon={<DoDisturbIcon />}
+                                color="error"
+                                onClick={() => onReject?.(row)}
+                            />
+                            <ActionIcon
+                                title="Xóa"
+                                icon={<DeleteIcon />}
+                                color="error"
+                                onClick={() => onDelete(row)}
+                            />
                         </IfRole>
                     </Stack>
                 ) : row.trang_thai === "tu_choi" ? (
@@ -201,14 +235,7 @@ function ScheduleTableRow({
                             color="info"
                             onClick={() => onView(row)}
                         />
-                        <IfRole
-                            roles={[
-                                ROLES.ADMIN,
-                                ROLES.CNQY,
-                                ROLES.BACSI,
-                                ROLES.YSI,
-                            ]}
-                        >
+                        <IfRole roles={[ROLES.ADMIN, ROLES.CNQY]}>
                             <ActionIcon
                                 title="Xóa"
                                 icon={<DeleteIcon />}
@@ -313,7 +340,11 @@ export default function DanhSachLich({
                             )}
                         </Typography>
                     </Box>
-                    <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+                    <Stack
+                        direction="row"
+                        spacing={1}
+                        sx={{ alignItems: "center" }}
+                    >
                         {onResetDefault && activeLichId && (
                             <Button
                                 variant="outlined"
