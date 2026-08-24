@@ -70,7 +70,8 @@ export default function useDanhSachKhamBenh() {
                 count("đã_khám") +
                 count("chờ_nhận_thuốc") +
                 count("đã_nhận_thuốc"),
-            chuyenTuyen: count("chuyển_tuyến") + count("nhập_viện"),
+            nhapVien: count("nhập_viện"),
+            chuyenTuyen: count("chuyển_tuyến"),
         };
     }, [examinations]);
 

@@ -156,18 +156,18 @@ export default function DanhSachKhamBenh() {
                 bg: "#FEF3C7",
             },
             {
-                label: "Đang khám",
-                value: statusCounts.dangKham,
-                icon: <MedicalServicesIcon />,
-                color: "#0B3B60",
-                bg: "#DBEAFE",
-            },
-            {
                 label: "Đã xong",
                 value: statusCounts.daXong,
                 icon: <DownloadIcon />,
                 color: "#10B981",
                 bg: "#D1FAE5",
+            },
+            {
+                label: "Nhập viện",
+                value: statusCounts.nhapVien,
+                icon: <MedicalServicesIcon />,
+                color: "#0B3B60",
+                bg: "#DBEAFE",
             },
             {
                 label: "Chuyển tuyến",
