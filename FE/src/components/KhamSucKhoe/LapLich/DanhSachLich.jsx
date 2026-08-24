@@ -176,9 +176,7 @@ function ScheduleTableRow({
                         </IfRole>
                     </Stack>
                 ) : row.trang_thai === "cho_gui" ? (
-                    <IfRole
-                        roles={[ROLES.ADMIN, ROLES.CNQY, ROLES.YSI]}
-                    >
+                    <IfRole roles={[ROLES.ADMIN, ROLES.CNQY]}>
                         <Stack direction="row" spacing={0.5}>
                             <ActionIcon
                                 title="Sửa"

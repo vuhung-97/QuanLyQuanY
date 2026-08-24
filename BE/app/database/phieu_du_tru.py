@@ -15,4 +15,4 @@ class PhieuDuTru(Base):
     ghi_chu: Mapped[str | None] = mapped_column(Text, nullable=True)
     trang_thai: Mapped[str | None] = mapped_column(String(50), nullable=True)
     ma_don_vi: Mapped[str | None] = mapped_column(String(10), ForeignKey("don_vi.ma_don_vi", ondelete="SET NULL"), nullable=True)
-    nguoi_lap: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    nguoi_lap: Mapped[str | None] = mapped_column(String(20), nullable=True)

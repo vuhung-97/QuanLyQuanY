@@ -2,7 +2,10 @@ import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Alert, Box, Button, Stack, Typography } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
-import { CheckCircle as CheckCircleIcon, DoDisturb as DoDisturbIcon } from "@mui/icons-material";
+import {
+    CheckCircle as CheckCircleIcon,
+    DoDisturb as DoDisturbIcon,
+} from "@mui/icons-material";
 import { Update as UpdateIcon } from "@mui/icons-material";
 import { khamSucKhoeService } from "@/services/khamSucKhoeService.js";
 import useLichKhamData from "@/hooks/useLichKhamData";
@@ -119,7 +122,9 @@ export default function LapLichPage() {
             await khamSucKhoeService.approveSchedule(schedule.ma_lich_kham);
             loadSchedules();
         } catch (err) {
-            setError(err.response?.data?.detail || "Không thể duyệt lịch khám.");
+            setError(
+                err.response?.data?.detail || "Không thể duyệt lịch khám.",
+            );
         }
     };
 
@@ -128,7 +133,9 @@ export default function LapLichPage() {
             await khamSucKhoeService.submitSchedule(schedule.ma_lich_kham);
             loadSchedules();
         } catch (err) {
-            setError(err.response?.data?.detail || "Không thể gửi duyệt lịch khám.");
+            setError(
+                err.response?.data?.detail || "Không thể gửi duyệt lịch khám.",
+            );
         }
     };
 
@@ -137,7 +144,9 @@ export default function LapLichPage() {
             await khamSucKhoeService.rejectSchedule(schedule.ma_lich_kham);
             loadSchedules();
         } catch (err) {
-            setError(err.response?.data?.detail || "Không thể từ chối lịch khám.");
+            setError(
+                err.response?.data?.detail || "Không thể từ chối lịch khám.",
+            );
         }
     };
 
@@ -202,7 +211,7 @@ export default function LapLichPage() {
                         và phân bổ lịch khám.
                     </Typography>
                 </Box>
-                <IfRole roles={[ROLES.ADMIN, ROLES.CNQY, ROLES.YSI]}>
+                <IfRole roles={[ROLES.ADMIN, ROLES.CNQY]}>
                     <Button
                         variant="contained"
                         startIcon={<AddIcon />}
@@ -279,7 +288,12 @@ export default function LapLichPage() {
             <LapLichDialog
                 open={dialog.open}
                 onClose={() =>
-                    setDialog({ open: false, schedule: null, chiTietList: [], readOnly: false })
+                    setDialog({
+                        open: false,
+                        schedule: null,
+                        chiTietList: [],
+                        readOnly: false,
+                    })
                 }
                 onSaved={handleDialogSaved}
                 schedule={dialog.schedule}
@@ -330,7 +344,11 @@ export default function LapLichPage() {
                 }
                 onConfirm={handleActionConfirm}
                 onClose={() =>
-                    setConfirmAction({ open: false, type: null, schedule: null })
+                    setConfirmAction({
+                        open: false,
+                        type: null,
+                        schedule: null,
+                    })
                 }
             />
 
@@ -342,9 +360,7 @@ export default function LapLichPage() {
                 confirmColor="warning"
                 confirmIcon={<UpdateIcon />}
                 onConfirm={handleHoanConfirm}
-                onClose={() =>
-                    setHoanDialog({ open: false, schedule: null })
-                }
+                onClose={() => setHoanDialog({ open: false, schedule: null })}
             />
 
             <LichKhamPrintDialog

@@ -7,7 +7,7 @@ from pydantic import Field
 class PhieuNhapKhoBase(SchemaBase):
     ma_phieu_du_tru: str | None = Field(default=None, max_length=10)
     ngay_nhap: date | None = None
-    nguoi_nhap: str | None = Field(default=None, max_length=10)
+    nguoi_nhap: str | None = Field(default=None, max_length=20)
     ghi_chu: str | None = Field(default=None, max_length=1000)
 
 
@@ -18,7 +18,7 @@ class PhieuNhapKhoCreate(PhieuNhapKhoBase):
 class PhieuNhapKhoUpdate(SchemaBase):
     ma_phieu_du_tru: str | None = Field(default=None, max_length=10)
     ngay_nhap: date | None = None
-    nguoi_nhap: str | None = Field(default=None, max_length=10)
+    nguoi_nhap: str | None = Field(default=None, max_length=20)
     ghi_chu: str | None = Field(default=None, max_length=1000)
 
 
