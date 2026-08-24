@@ -2,6 +2,13 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 
 import { adminService } from "@/services/adminService"
 
+const SORT_MAP = {
+    "": { sort_by: "ten_dang_nhap", sort_desc: false },
+    "ho_ten": { sort_by: "ho_ten", sort_desc: false },
+    "id_vai_tro": { sort_by: "id_vai_tro", sort_desc: false },
+    "id_quan_nhan": { sort_by: "id_quan_nhan", sort_desc: false },
+}
+
 export default function useAdminUsers() {
     const [users, setUsers] = useState([])
     const [roles, setRoles] = useState([])
@@ -9,6 +16,7 @@ export default function useAdminUsers() {
     const [error, setError] = useState("")
     const [success, setSuccess] = useState("")
     const [query, setQuery] = useState("")
+    const [sortBy, setSortBy] = useState("")
     const [roleFilter, setRoleFilter] = useState("")
     const [openDialog, setOpenDialog] = useState(false)
     const [editingUser, setEditingUser] = useState(null)
@@ -21,8 +29,9 @@ export default function useAdminUsers() {
             setLoading(true)
             setError("")
             try {
+                const sortParams = SORT_MAP[sortBy] || SORT_MAP[""]
                 const [usersRes, rolesRes] = await Promise.all([
-                    adminService.getUserList(),
+                    adminService.getUserList(sortParams),
                     adminService.getRoleList(),
                 ])
                 if (!ignore) {
@@ -39,7 +48,7 @@ export default function useAdminUsers() {
         }
         loadData()
         return () => { ignore = true }
-    }, [])
+    }, [sortBy])
 
     const filteredUsers = useMemo(() => {
         let result = users
@@ -62,6 +71,10 @@ export default function useAdminUsers() {
     const handleOpenCreate = useCallback(() => {
         setEditingUser(null)
         setOpenDialog(true)
+    }, [])
+
+    const handleSortByChange = useCallback((value) => {
+        setSortBy(value)
     }, [])
 
     const handleOpenEdit = useCallback((user) => {
@@ -104,6 +117,7 @@ export default function useAdminUsers() {
         users, roles, loading, error, success,
         setError, setSuccess,
         query, setQuery,
+        sortBy, handleSortByChange,
         roleFilter, setRoleFilter,
         filteredUsers, activeCount,
         openDialog, setOpenDialog,

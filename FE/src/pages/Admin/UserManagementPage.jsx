@@ -3,7 +3,11 @@ import {
     Button,
     Card,
     CardContent,
+    FormControl,
     Grid,
+    InputLabel,
+    MenuItem,
+    Select,
     Stack,
     Typography,
 } from "@mui/material";
@@ -29,6 +33,8 @@ export default function UserManagementPage() {
         setError,
         setSuccess,
         setQuery,
+        sortBy,
+        handleSortByChange,
         roleFilter,
         setRoleFilter,
         filteredUsers,
@@ -120,6 +126,28 @@ export default function UserManagementPage() {
                             label="Vai trò"
                             allLabel="Tất cả"
                         />
+                        <FormControl size="small" sx={{ minWidth: 160 }}>
+                            <InputLabel id="sort-user-label">
+                                Sắp xếp
+                            </InputLabel>
+                            <Select
+                                labelId="sort-user-label"
+                                value={sortBy}
+                                label="Sắp xếp"
+                                onChange={(e) =>
+                                    handleSortByChange(e.target.value)
+                                }
+                            >
+                                <MenuItem value="">Tên đăng nhập</MenuItem>
+                                <MenuItem value="ho_ten">Họ tên</MenuItem>
+                                <MenuItem value="id_vai_tro">
+                                    Vai trò
+                                </MenuItem>
+                                <MenuItem value="id_quan_nhan">
+                                    Mã quân nhân
+                                </MenuItem>
+                            </Select>
+                        </FormControl>
                         <SearchBarDebounced
                             onSearch={setQuery}
                             placeholder="Tìm tài khoản, họ tên, vai trò"
