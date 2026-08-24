@@ -5,6 +5,10 @@ import {
     Card,
     CardContent,
     Chip,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
     Stack,
     Typography,
 } from "@mui/material";
@@ -50,7 +54,10 @@ const columns = [
     {
         key: "phong",
         label: "Phòng/Giường",
-        render: (row) => `${row.ten_buong || "--"} / ${row.ten_giuong || "--"}`,
+        render: (row) =>
+            row.trang_thai === "đã_ra_viện"
+                ? "--"
+                : `${row.ten_buong || "--"} / ${row.ten_giuong || "--"}`,
     },
     {
         key: "ngay_nhap_vien",
@@ -163,6 +170,8 @@ export default function DanhSachNoiTru() {
         handleFilterNamChange,
         filterThang,
         handleFilterThangChange,
+        sortBy,
+        handleSortByChange,
         page,
         setPage,
         totalRecords,
@@ -246,6 +255,31 @@ export default function DanhSachNoiTru() {
                                 thang={filterThang}
                                 onThangChange={handleFilterThangChange}
                             />
+                            <FormControl size="small" sx={{ minWidth: 160 }}>
+                                <InputLabel id="sort-filter-label">
+                                    Sắp xếp
+                                </InputLabel>
+                                <Select
+                                    labelId="sort-filter-label"
+                                    value={sortBy}
+                                    label="Sắp xếp"
+                                    onChange={(e) =>
+                                        handleSortByChange(e.target.value)
+                                    }
+                                >
+                                    <MenuItem value="">Mặc định</MenuItem>
+                                    <MenuItem value="ten">Theo tên</MenuItem>
+                                    <MenuItem value="ngay_vao">
+                                        Theo ngày vào
+                                    </MenuItem>
+                                    <MenuItem value="ngay_ra">
+                                        Theo ngày ra
+                                    </MenuItem>
+                                    <MenuItem value="trang_thai">
+                                        Theo trạng thái
+                                    </MenuItem>
+                                </Select>
+                            </FormControl>
                         </Stack>
                         <Button
                             variant="outlined"

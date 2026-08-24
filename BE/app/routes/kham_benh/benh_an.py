@@ -85,14 +85,24 @@ def get_danh_sach_noi_tru(
     nam: int | None = Query(default=None),
     thang: int | None = Query(default=None, ge=1, le=12),
     ma_quan_nhan: str | None = Query(default=None, description="Mã quân nhân"),
+    sap_xep: str | None = Query(default=None, description="Sắp xếp: ten, ngay_vao, ngay_ra, trang_thai"),
     db: Session = Depends(get_db),
 ):
+    default_order = [Buong.ten_buong.asc().nullslast(), QuanNhan.ho_ten.asc(), BenhAn.ngay_nhap_vien.desc().nullslast()]
+    sort_map = {
+        "ten": [QuanNhan.ho_ten.asc()],
+        "ngay_vao": [BenhAn.ngay_nhap_vien.desc().nullslast()],
+        "ngay_ra": [BenhAn.ngay_nhap_vien.desc().nullslast()],
+        "trang_thai": [BenhAn.trang_thai.asc(), QuanNhan.ho_ten.asc()],
+    }
+    order = sort_map.get(sap_xep, default_order)
+
     base_query = (
         db.query(BenhAn, QuanNhan.ho_ten, QuanNhan.cap_bac, QuanNhan.chuc_vu, QuanNhan.ngay_sinh, Buong.ten_buong, Giuong.ten_giuong)
         .join(QuanNhan, BenhAn.ma_quan_nhan == QuanNhan.ma_quan_nhan)
         .join(Buong, BenhAn.ma_buong == Buong.ma_buong, isouter=True)
         .join(Giuong, BenhAn.ma_giuong == Giuong.ma_giuong, isouter=True)
-        .order_by(Buong.ten_buong.asc().nullslast(), QuanNhan.ho_ten.asc(), BenhAn.ngay_nhap_vien.desc().nullslast())
+        .order_by(*order)
     )
     if trang_thai:
         base_query = base_query.filter(BenhAn.trang_thai == trang_thai)

@@ -12,6 +12,7 @@ export default function useDanhSachNoiTru() {
     const currentYear = new Date().getFullYear();
     const [filterNam, setFilterNam] = useState(null);
     const [filterThang, setFilterThang] = useState(null);
+    const [sortBy, setSortBy] = useState("");
     const [page, setPage] = useState(1);
     const [totalRecords, setTotalRecords] = useState(0);
 
@@ -41,6 +42,11 @@ export default function useDanhSachNoiTru() {
         setPage(1);
     }, []);
 
+    const handleSortByChange = useCallback((value) => {
+        setSortBy(value);
+        setPage(1);
+    }, []);
+
     const loadData = useCallback(async () => {
         setRefreshing(true);
         try {
@@ -50,6 +56,7 @@ export default function useDanhSachNoiTru() {
                     trang_thai, limit: ROWS_PER_PAGE, offset,
                     nam: filterNam || undefined,
                     thang: filterThang || undefined,
+                    sap_xep: sortBy || undefined,
                 }),
                 noiTruService.getDanhSachNhapVien({ limit: 1, offset: 0 }),
             ]);
@@ -66,7 +73,7 @@ export default function useDanhSachNoiTru() {
             setRefreshing(false);
             setInitialLoading(false);
         }
-    }, [isLeft, offset, filterNam, filterThang]);
+    }, [isLeft, offset, filterNam, filterThang, sortBy]);
 
     useEffect(() => { loadData(); }, [loadData]);
 
@@ -151,6 +158,8 @@ export default function useDanhSachNoiTru() {
         filterThang,
         setFilterThang,
         handleFilterThangChange,
+        sortBy,
+        handleSortByChange,
         page,
         setPage,
         totalRecords,
