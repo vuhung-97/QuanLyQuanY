@@ -6,11 +6,10 @@ import Sidebar from "./sidebar/Sidebar.jsx";
 import Footer from "./footer/Footer.jsx";
 import { useSidebarState } from "./common/hooks.js";
 import AccountSettingsDialog from "./accountSetting/AccountSettingsDialog.jsx";
-import { getCurrentUser } from "@/services/api.js";
+import { clearAuth, getCurrentUser } from "@/services/api.js";
 import { defaultMenuItems, adminMenuItems, filterMenuByRole } from "./common/menuConfig.jsx";
 import {
     DEFAULT_USER,
-    STORAGE_KEYS,
     APP_NAME,
     ROLE_NAME_MAP,
 } from "./common/constants.js";
@@ -64,9 +63,7 @@ export default function MainLayout({
             onLogout();
             return;
         }
-        try {
-            localStorage.removeItem(STORAGE_KEYS.token);
-        } catch {}
+        clearAuth();
         navigate("/login");
     };
 

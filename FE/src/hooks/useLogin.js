@@ -27,7 +27,7 @@ export default function useLogin() {
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
             });
             const token = res.data.access_token;
-            localStorage.setItem(STORAGE_KEYS.token, token);
+            sessionStorage.setItem(STORAGE_KEYS.token, token);
 
             if (formData.get("remember") === "on") {
                 localStorage.setItem(
