@@ -23,31 +23,31 @@ export const ROLE_NAME_MAP = {
 };
 
 export const MENU_ROLE_MAP = {
-    "tong-quan": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
+    "tong-quan": ["ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
 
-    "kham-dinh-ky": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
-    "lap-lich": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
-    "kham-suc-khoe": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
-    "ket-qua-kham": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
+    "kham-dinh-ky": ["ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
+    "lap-lich": ["ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
+    "kham-suc-khoe": ["ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
+    "ket-qua-kham": ["ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
 
-    "noi-tru": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
-    "danh-sach-noi-tru": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
-    "lap-benh-an": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
-    "quan-ly-phong-giuong": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_YSI"],
+    "noi-tru": ["ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
+    "danh-sach-noi-tru": ["ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
+    "lap-benh-an": ["ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
+    "quan-ly-phong-giuong": ["ROLE_CNQY", "ROLE_YSI"],
 
-    "kham-benh": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
-    "kham-benh-cho-quan-nhan": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI"],
-    "cap-thuoc": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
-    "chuyen-tuyen": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
-    "danh-muc-benh": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI"],
+    "kham-benh": ["ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
+    "kham-benh-cho-quan-nhan": ["ROLE_CNQY", "ROLE_BACSI"],
+    "cap-thuoc": ["ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
+    "chuyen-tuyen": ["ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI"],
+    "danh-muc-benh": ["ROLE_CNQY", "ROLE_BACSI"],
 
-    "kho-duoc": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_YSI"],
-    kho: ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_YSI"],
-    "du-tru": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_YSI"],
-    "nhap-kho": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_YSI"],
-    "xuat-kho": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_YSI"],
+    "kho-duoc": ["ROLE_CNQY", "ROLE_YSI"],
+    kho: ["ROLE_CNQY", "ROLE_YSI"],
+    "du-tru": ["ROLE_CNQY", "ROLE_YSI"],
+    "nhap-kho": ["ROLE_CNQY", "ROLE_YSI"],
+    "xuat-kho": ["ROLE_CNQY", "ROLE_YSI"],
 
-    "bao-cao": ["ROLE_ADMIN", "ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI", "ROLE_QN"],
+    "bao-cao": ["ROLE_CNQY", "ROLE_BACSI", "ROLE_YSI", "ROLE_QN"],
 
     "quan-tri": ["ROLE_ADMIN"],
     "tai-khoan": ["ROLE_ADMIN"],

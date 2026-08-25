@@ -14,7 +14,8 @@ import DashboardPage from "./pages/Dashboard/DashboardPage.jsx";
 import ProtectedRoute from "./components//common/ProtectedRoute.jsx";
 import AdminRoute from "./components/common/AdminRoute.jsx";
 import RoleRoute from "./components/common/RoleRoute.jsx";
-import { MENU_ROLE_MAP } from "./constants/roleConstants.js";
+import { MENU_ROLE_MAP, ROLES } from "./constants/roleConstants.js";
+import { getCurrentUser } from "./services/api.js";
 import LapLichPage from "./pages/KhamSucKhoe/LapLichPage.jsx";
 import KhamSucKhoePage from "./pages/KhamSucKhoe/KhamSucKhoePage.jsx";
 import KetQuaKhamPage from "./pages/KhamSucKhoe/KetQuaKhamPage.jsx";
@@ -35,6 +36,22 @@ import UserManagementPage from "./pages/Admin/UserManagementPage.jsx";
 import AuditLogPage from "./pages/Admin/AuditLogPage.jsx";
 import RolePermissionPage from "./pages/Admin/RolePermissionPage.jsx";
 
+function HomeRoute() {
+    const payload = getCurrentUser();
+    if (!payload) return <Navigate to="/login" replace />;
+    if (MENU_ROLE_MAP["quan-tri"].includes(payload.role)) {
+        return <Navigate to="/admin" replace />;
+    }
+    if (payload.role === ROLES.QN) {
+        return <Navigate to="/bao-cao" replace />;
+    }
+    return (
+        <RoleRoute roles={MENU_ROLE_MAP["tong-quan"]}>
+            <DashboardPage />
+        </RoleRoute>
+    );
+}
+
 export default function App() {
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="vi">
@@ -53,11 +70,7 @@ export default function App() {
                     >
                         <Route
                             index
-                            element={
-                                <RoleRoute roles={MENU_ROLE_MAP["tong-quan"]}>
-                                    <DashboardPage />
-                                </RoleRoute>
-                            }
+                            element={<HomeRoute />}
                         />
 
                         <Route path="kham-dinh-ky">
@@ -239,7 +252,14 @@ export default function App() {
                             />
                         </Route>
 
-                        <Route path="bao-cao" element={<BaoCaoPage />} />
+                        <Route
+                            path="bao-cao"
+                            element={
+                                <RoleRoute roles={MENU_ROLE_MAP["bao-cao"]}>
+                                    <BaoCaoPage />
+                                </RoleRoute>
+                            }
+                        />
 
                         <Route
                             element={
