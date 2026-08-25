@@ -44,25 +44,35 @@ export function getScheduleStatus(row) {
 }
 
 function isInWindow(batDau, ketThuc, now) {
-    if (!batDau || !ketThuc) return true;
+    if (!batDau || !ketThuc) return false;
     const t = now.getTime();
     return new Date(batDau).getTime() <= t && t <= new Date(ketThuc).getTime();
 }
 
 export function isInLayMauWindow(row, now = new Date()) {
-    return isInWindow(
-        minOf(row?.thoi_gian_lay_mau_bat_dau, row?.thoi_gian_du_tru_lay_mau_bat_dau),
-        maxOf(row?.thoi_gian_lay_mau_ket_thuc, row?.thoi_gian_du_tru_lay_mau_ket_thuc),
-        now,
-    );
+    if (!row) return true;
+    const hasMain = Boolean(row.thoi_gian_lay_mau_bat_dau && row.thoi_gian_lay_mau_ket_thuc);
+    const hasBackup = Boolean(row.thoi_gian_du_tru_lay_mau_bat_dau && row.thoi_gian_du_tru_lay_mau_ket_thuc);
+
+    if (!hasMain && !hasBackup) return true;
+
+    const inMain = hasMain && isInWindow(row.thoi_gian_lay_mau_bat_dau, row.thoi_gian_lay_mau_ket_thuc, now);
+    const inBackup = hasBackup && isInWindow(row.thoi_gian_du_tru_lay_mau_bat_dau, row.thoi_gian_du_tru_lay_mau_ket_thuc, now);
+
+    return inMain || inBackup;
 }
 
 export function isInKhamWindow(row, now = new Date()) {
-    return isInWindow(
-        minOf(row?.thoi_gian_bat_dau, row?.thoi_gian_du_tru_kham_bat_dau),
-        maxOf(row?.thoi_gian_ket_thuc, row?.thoi_gian_du_tru_kham_ket_thuc),
-        now,
-    );
+    if (!row) return true;
+    const hasMain = Boolean(row.thoi_gian_bat_dau && row.thoi_gian_ket_thuc);
+    const hasBackup = Boolean(row.thoi_gian_du_tru_kham_bat_dau && row.thoi_gian_du_tru_kham_ket_thuc);
+
+    if (!hasMain && !hasBackup) return true;
+
+    const inMain = hasMain && isInWindow(row.thoi_gian_bat_dau, row.thoi_gian_ket_thuc, now);
+    const inBackup = hasBackup && isInWindow(row.thoi_gian_du_tru_kham_bat_dau, row.thoi_gian_du_tru_kham_ket_thuc, now);
+
+    return inMain || inBackup;
 }
 
 export function isScheduleActive(row, now = new Date()) {

@@ -59,13 +59,13 @@ def _require_xet_nghiem(current_user: NguoiDung, db: Session, ma_lich_kham: str)
 _WINDOW_LABEL = {
     "lay_mau": (
         "thời gian lấy máu",
-        ("thoi_gian_lay_mau_bat_dau", "thoi_gian_du_tru_lay_mau_bat_dau"),
-        ("thoi_gian_lay_mau_ket_thuc", "thoi_gian_du_tru_lay_mau_ket_thuc"),
+        ("thoi_gian_lay_mau_bat_dau", "thoi_gian_lay_mau_ket_thuc"),
+        ("thoi_gian_du_tru_lay_mau_bat_dau", "thoi_gian_du_tru_lay_mau_ket_thuc"),
     ),
     "kham": (
         "thời gian khám",
-        ("thoi_gian_bat_dau", "thoi_gian_du_tru_kham_bat_dau"),
-        ("thoi_gian_ket_thuc", "thoi_gian_du_tru_kham_ket_thuc"),
+        ("thoi_gian_bat_dau", "thoi_gian_ket_thuc"),
+        ("thoi_gian_du_tru_kham_bat_dau", "thoi_gian_du_tru_kham_ket_thuc"),
     ),
 }
 
@@ -83,18 +83,29 @@ def _require_window(db: Session, ma_lich_kham: str, loai: str, current_user: Ngu
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Không tìm thấy lịch khám.",
         )
-    label, bd_attrs, kt_attrs = _WINDOW_LABEL[loai]
-    bat_dau_list = [getattr(lich, attr) for attr in bd_attrs if getattr(lich, attr) is not None]
-    ket_thuc_list = [getattr(lich, attr) for attr in kt_attrs if getattr(lich, attr) is not None]
-    if not bat_dau_list or not ket_thuc_list:
+    label, (main_bd_attr, main_kt_attr), (dt_bd_attr, dt_kt_attr) = _WINDOW_LABEL[loai]
+    main_bd = getattr(lich, main_bd_attr, None)
+    main_kt = getattr(lich, main_kt_attr, None)
+    dt_bd = getattr(lich, dt_bd_attr, None)
+    dt_kt = getattr(lich, dt_kt_attr, None)
+
+    if not (main_bd and main_kt) and not (dt_bd and dt_kt):
         return
-    bat_dau = min(bat_dau_list)
-    ket_thuc = max(ket_thuc_list)
+
     now = datetime.now()
-    if not (bat_dau <= now <= ket_thuc):
+    in_main = (main_bd <= now <= main_kt) if (main_bd and main_kt) else False
+    in_dt = (dt_bd <= now <= dt_kt) if (dt_bd and dt_kt) else False
+
+    if not (in_main or in_dt):
+        msg_parts = []
+        if main_bd and main_kt:
+            msg_parts.append(f"{main_bd:%H:%M ngày %d/%m/%Y} – {main_kt:%H:%M ngày %d/%m/%Y}")
+        if dt_bd and dt_kt:
+            msg_parts.append(f"dự trù {dt_bd:%H:%M ngày %d/%m/%Y} – {dt_kt:%H:%M ngày %d/%m/%Y}")
+        time_str = " hoặc ".join(msg_parts)
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail=f"Chỉ được thao tác trong {label} {bat_dau:%H:%M ngày %d/%m/%Y} – {ket_thuc:%H:%M ngày %d/%m/%Y}.",
+            detail=f"Chỉ được thao tác trong {label}: {time_str}.",
         )
 
 
