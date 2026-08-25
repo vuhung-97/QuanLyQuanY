@@ -100,7 +100,7 @@ export default function KetQuaKhamPrint({ data, paperSize = "A4" }) {
                     ["2", "Đã khám", stats.da_kham],
                     ["3", "Đang khám", stats.dang_kham],
                     ["4", "Đã lấy máu", stats.da_lay_mau],
-                    ["5", "Chưa lấy máu", stats.con_lai],
+                    ["5", "Chưa khám", stats.con_lai],
                 ].map(([stt, label, value], i) => (
                     <tr key={i}>
                         <td style={tableCellCenter}>{stt}</td>
@@ -164,7 +164,7 @@ export default function KetQuaKhamPrint({ data, paperSize = "A4" }) {
                     "Quân số",
                     "Đã khám",
                     "Đang khám",
-                    "Chưa lấy máu",
+                    "Chưa khám",
                     "Tỉ lệ đã khám (%)",
                 ]}
             >
