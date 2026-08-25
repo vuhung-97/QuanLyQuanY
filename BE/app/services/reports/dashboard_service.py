@@ -105,7 +105,7 @@ class DashboardService:
 
         phieu_du_tru_chua_duyet = (
             self.db.query(func.count(PhieuDuTru.ma_phieu_du_tru))
-            .filter(PhieuDuTru.trang_thai == "cho_duyet")
+            .filter(PhieuDuTru.trang_thai.in_(["chua_duyet", "cho_duyet"]))
             .scalar()
             or 0
         )
