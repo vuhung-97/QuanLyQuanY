@@ -23,6 +23,19 @@ import SearchBarDebounced from "@/components/common/SearchBarDebounced.jsx";
 import StatusFilter from "@/components/common/StatusFilter.jsx";
 import DataTable from "@/components/common/DataTable.jsx";
 import useThuocList from "@/hooks/useThuocList.jsx";
+import useThresholdSettings from "@/hooks/useThresholdSettings.js";
+import dayjs from "dayjs";
+
+function getHanSuDungStatus(hanSuDung, sapHetHanNgay) {
+    if (!hanSuDung) return null;
+    const hsd = dayjs(hanSuDung);
+    if (!hsd.isValid()) return null;
+    const today = dayjs();
+    if (hsd.isBefore(today, "day")) return "expired";
+    if (hsd.isBefore(today.add(sapHetHanNgay, "day"), "day"))
+        return "expiring";
+    return null;
+}
 
 const GroupRow = memo(function GroupRow({
     item,
@@ -31,9 +44,19 @@ const GroupRow = memo(function GroupRow({
     onToggle,
     onQuantityChange,
     importMode,
+    sapHetHanNgay,
 }) {
+    const hanStatus = getHanSuDungStatus(item.han_su_dung, sapHetHanNgay);
     return (
-        <TableRow hover selected={selected}>
+        <TableRow
+            hover
+            selected={selected}
+            sx={
+                hanStatus
+                    ? { bgcolor: "rgba(211, 47, 47, 0.08)" }
+                    : undefined
+            }
+        >
             <TableCell sx={{ py: 0.5 }}>
                 <Checkbox
                     checked={selected}
@@ -46,6 +69,20 @@ const GroupRow = memo(function GroupRow({
             </TableCell>
             <TableCell sx={{ py: 0.5 }}>{item.don_vi_tinh || "--"}</TableCell>
             <TableCell sx={{ py: 0.5 }}>{item.so_luong}</TableCell>
+            <TableCell sx={{ py: 0.5 }}>
+                {item.so_lo_han_dung || "--"}
+            </TableCell>
+            <TableCell
+                sx={{
+                    py: 0.5,
+                    fontWeight: hanStatus ? 600 : 400,
+                    color: hanStatus ? "error.main" : "text.primary",
+                }}
+            >
+                {item.han_su_dung
+                    ? dayjs(item.han_su_dung).format("DD/MM/YYYY")
+                    : "--"}
+            </TableCell>
             <TableCell sx={{ py: 0.5 }}>
                 <NumberField
                     size="small"
@@ -89,6 +126,7 @@ export default function KhoThuocDialog({
     const [quantities, setQuantities] = useState({});
     const [error, setError] = useState("");
     const { fetchAll } = useThuocList();
+    const { thresholds } = useThresholdSettings();
 
     useEffect(() => {
         if (!open) return;
@@ -217,7 +255,7 @@ export default function KhoThuocDialog({
         <Dialog
             open={open}
             onClose={onClose}
-            maxWidth="md"
+            maxWidth="lg"
             fullWidth
             slotProps={{ paper: { sx: { height: "80vh" } } }}
         >
@@ -278,6 +316,16 @@ export default function KhoThuocDialog({
                                     sx: { width: 70 },
                                 },
                                 {
+                                    key: "so_lo_han_dung",
+                                    label: "Số lô",
+                                    sx: { width: 110 },
+                                },
+                                {
+                                    key: "han_su_dung",
+                                    label: "Hạn sử dụng",
+                                    sx: { width: 110 },
+                                },
+                                {
                                     key: "sl_lay",
                                     label: importMode ? "SL nhập" : "SL lấy",
                                     sx: { width: 110 },
@@ -288,7 +336,7 @@ export default function KhoThuocDialog({
                                 <Fragment key={group}>
                                     <TableRow>
                                         <TableCell
-                                            colSpan={5}
+                                            colSpan={7}
                                             sx={{
                                                 py: 0.5,
                                                 color: "primary.main",
@@ -316,6 +364,9 @@ export default function KhoThuocDialog({
                                                 handleQuantityChange
                                             }
                                             importMode={importMode}
+                                            sapHetHanNgay={
+                                                thresholds.sapHetHanNgay
+                                            }
                                         />
                                     ))}
                                 </Fragment>
