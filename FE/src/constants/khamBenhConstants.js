@@ -5,9 +5,9 @@ export const STATUS_MAP = {
     đã_nhận_thuốc: { label: "Đã nhận thuốc", color: "success" },
     đã_khám: { label: "Đã xong", color: "success" },
     chuyển_tuyến: { label: "Chuyển tuyến", color: "error" },
-    nhập_viện: { label: "Nhập viện", color: "secondary" },
+    nhập_viện: { label: "Nhập bệnh xá", color: "secondary" },
     không_duyệt_chuyển_tuyến: { label: "Không duyệt chuyển tuyến", color: "default" },
-    không_duyệt_nhập_viện: { label: "Không duyệt nhập viện", color: "default" },
+    không_duyệt_nhập_viện: { label: "Không duyệt nhập bệnh xá", color: "default" },
 };
 
 export const THOI_DIEM_OPTIONS = [

@@ -163,7 +163,7 @@ export default function DanhSachKhamBenh() {
                 bg: "#D1FAE5",
             },
             {
-                label: "Nhập viện",
+                label: "Nhập bệnh xá",
                 value: statusCounts.nhapVien,
                 icon: <MedicalServicesIcon />,
                 color: "#0B3B60",
