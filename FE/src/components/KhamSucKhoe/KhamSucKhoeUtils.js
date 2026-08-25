@@ -327,15 +327,6 @@ export function classifySinhTon(data) {
 
 /* ─── Mắt helpers ─── */
 
-function diemMatPhai(phai) {
-    if (isNaN(phai) || phai <= 0) return 1;
-    if (phai >= 10) return 1;
-    if (phai >= 9) return 3;
-    if (phai >= 8) return 4;
-    if (phai >= 6) return 5;
-    return 6;
-}
-
 function diemMatTong(tong) {
     if (isNaN(tong) || tong <= 0) return 1;
     if (tong >= 19) return 1;
@@ -350,7 +341,7 @@ export function classifyMat(data) {
     const phai = parseFloat(data?.mat_khong_kinh_phai);
     const trai = parseFloat(data?.mat_khong_kinh_trai);
     const tong = (isNaN(phai) ? 0 : phai) + (isNaN(trai) ? 0 : trai);
-    return `Loại ${Math.max(diemMatPhai(phai), diemMatTong(tong))}`;
+    return `Loại ${diemMatTong(tong)}`;
 }
 
 export function computeHighestClassification(ts, ls, xn, cdha) {
