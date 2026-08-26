@@ -204,7 +204,9 @@ export default function TaoPhieuNhapDialog({
                         data.ngay_nhap ? dayjs(data.ngay_nhap) : dayjs(),
                     );
 
-                    let duTruMap = {};
+                    const norm = (s) => (s || "").trim().toLowerCase().replace(/\s+/g, " ");
+                    const duTruById = {};
+                    const duTruByName = {};
                     if (pdtId) {
                         try {
                             const dtRes = await khoDuocService.getChiTietByPhieuDuTru(pdtId);
@@ -212,7 +214,8 @@ export default function TaoPhieuNhapDialog({
                                 ? dtRes.data
                                 : dtRes.data?.items || dtRes.data?.data || [];
                             dtData.forEach((ct) => {
-                                duTruMap[ct.ma_thuoc_vtyt] = ct.so_luong;
+                                duTruById[ct.ma_thuoc_vtyt] = ct.so_luong;
+                                duTruByName[norm(ct.ten_thuoc_vtyt)] = ct.so_luong;
                             });
                         } catch {
                             // ignore errors loading du tru map
@@ -223,7 +226,10 @@ export default function TaoPhieuNhapDialog({
                         ma_thuoc_vtyt: ct.ma_thuoc_vtyt,
                         ten_thuoc_vtyt: ct.ten_thuoc_vtyt || "",
                         don_vi_tinh: ct.don_vi_tinh || "",
-                        soLuongDuTru: duTruMap[ct.ma_thuoc_vtyt] ?? null,
+                        soLuongDuTru:
+                            duTruById[ct.ma_thuoc_vtyt] ??
+                            duTruByName[norm(ct.ten_thuoc_vtyt)] ??
+                            null,
                         soLuong: ct.so_luong,
                         donGia:
                             ct.don_gia != null ? String(ct.don_gia) : "",

@@ -160,21 +160,38 @@ export default function usePhieuDuTru({ open, phieuId = null, mode = "create", o
                 });
                 return;
             }
-            itemsRef.current = lowStock.map((i) => {
-                const qty = i.so_luong ?? 0;
-                const isThuoc = i.loai !== "vat_tu";
+
+            const norm = (s) => (s || "").trim().toLowerCase().replace(/\s+/g, " ");
+            const groups = new Map();
+            for (const item of lowStock) {
+                const key = `${norm(item.ten_thuoc_vtyt)}|${norm(item.don_vi_tinh)}`;
+                if (groups.has(key)) {
+                    groups.get(key).totalQty += item.so_luong ?? 0;
+                } else {
+                    groups.set(key, {
+                        tenThuoc: item.ten_thuoc_vtyt || "",
+                        donViTinh: item.don_vi_tinh || "",
+                        totalQty: item.so_luong ?? 0,
+                        representative: item,
+                    });
+                }
+            }
+
+            itemsRef.current = [];
+            for (const [, g] of groups) {
+                const isThuoc = g.representative.loai !== "vat_tu";
                 const limit = isThuoc ? thresholds.thuoc : thresholds.vat_tu;
-                return {
-                    tenThuoc: i.ten_thuoc_vtyt || "",
-                    donViTinh: i.don_vi_tinh || "",
-                    soLuong: Math.max(1, limit - qty),
-                    maThuocVtyt: i.ma_thuoc_vtyt,
-                };
-            });
+                itemsRef.current.push({
+                    tenThuoc: g.tenThuoc,
+                    donViTinh: g.donViTinh,
+                    soLuong: Math.max(1, limit - g.totalQty),
+                    maThuocVtyt: g.representative.ma_thuoc_vtyt,
+                });
+            }
             setKeys(itemsRef.current.map(() => nextKey()));
             setSnackbar({
                 open: true,
-                message: `Đã tạo tự động ${lowStock.length} dòng thuốc / VTYT tồn kho thấp.`,
+                message: `Đã tạo tự động ${groups.size} dòng thuốc / VTYT tồn kho thấp.`,
                 severity: "success",
             });
         } catch {
