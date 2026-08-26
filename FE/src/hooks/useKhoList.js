@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
+import dayjs from "dayjs";
 import { khoDuocService } from "@/services/khoDuocService.js";
 import { setDeferred } from "@/utils/setDeferred.js";
 import { ROWS_PER_PAGE, DEFAULT_THRESHOLDS } from "@/constants/khoConstant.js";
@@ -8,7 +9,6 @@ export default function useKhoList(thresholds = DEFAULT_THRESHOLDS) {
     const [searchParams] = useSearchParams();
     const [allItems, setAllItems] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [sapHetHan, setSapHetHan] = useState([]);
     const [search, setSearch] = useState("");
     const [sortBy, setSortBy] = useState("");
     const [phanLoaiFilter, setPhanLoaiFilter] = useState("");
@@ -31,10 +31,7 @@ export default function useKhoList(thresholds = DEFAULT_THRESHOLDS) {
     const fetchData = useCallback(async () => {
         setLoading(true);
         try {
-            const [data, expiring] = await Promise.all([
-                khoDuocService.fetchAllThuocVtyt(),
-                khoDuocService.getSapHetHan(thresholds.sapHetHanNgay).catch(() => []),
-            ]);
+            const data = await khoDuocService.fetchAllThuocVtyt();
             setDeferred(
                 setAllItems,
                 (data || []).sort((a, b) =>
@@ -43,7 +40,6 @@ export default function useKhoList(thresholds = DEFAULT_THRESHOLDS) {
                     ),
                 ),
             );
-            setDeferred(setSapHetHan, Array.isArray(expiring) ? expiring : []);
         } catch {
             setSnackbar({
                 open: true,
@@ -53,7 +49,7 @@ export default function useKhoList(thresholds = DEFAULT_THRESHOLDS) {
         } finally {
             setLoading(false);
         }
-    }, [thresholds.sapHetHanNgay]);
+    }, []);
 
     useEffect(() => {
         fetchData();
@@ -64,10 +60,23 @@ export default function useKhoList(thresholds = DEFAULT_THRESHOLDS) {
         return [...s].sort();
     }, [allItems]);
 
-    const sapHetHanMaSet = useMemo(
-        () => new Set(sapHetHan.map((i) => i.ma_thuoc_vtyt)),
-        [sapHetHan],
-    );
+    const { hetHanSet, sapHetHanMaSet } = useMemo(() => {
+        const today = dayjs();
+        const limit = today.add(thresholds.sapHetHanNgay, "day");
+        const expired = new Set();
+        const expiring = new Set();
+        for (const i of allItems) {
+            if (!i.han_su_dung) continue;
+            const hsd = dayjs(i.han_su_dung);
+            if (!hsd.isValid()) continue;
+            if (hsd.isBefore(today, "day")) {
+                expired.add(i.ma_thuoc_vtyt);
+            } else if (hsd.isBefore(limit, "day")) {
+                expiring.add(i.ma_thuoc_vtyt);
+            }
+        }
+        return { hetHanSet: expired, sapHetHanMaSet: expiring };
+    }, [allItems, thresholds.sapHetHanNgay]);
 
     const filteredItems = useMemo(() => {
         let items = allItems;
@@ -90,6 +99,8 @@ export default function useKhoList(thresholds = DEFAULT_THRESHOLDS) {
             });
         } else if (filterMode === "expiring") {
             items = items.filter((i) => sapHetHanMaSet.has(i.ma_thuoc_vtyt));
+        } else if (filterMode === "expired") {
+            items = items.filter((i) => hetHanSet.has(i.ma_thuoc_vtyt));
         }
         const sortFns = {
             "": (a, b) => (a.ten_thuoc_vtyt || "").localeCompare(b.ten_thuoc_vtyt || ""),
@@ -99,7 +110,7 @@ export default function useKhoList(thresholds = DEFAULT_THRESHOLDS) {
             "han_su_dung": (a, b) => new Date(a.han_su_dung || 0) - new Date(b.han_su_dung || 0),
         };
         return [...items].sort(sortFns[sortBy] || sortFns[""]);
-    }, [allItems, search, phanLoaiFilter, filterMode, sapHetHanMaSet, sortBy, thresholds.thuoc, thresholds.vat_tu]);
+    }, [allItems, search, phanLoaiFilter, filterMode, hetHanSet, sapHetHanMaSet, sortBy, thresholds.thuoc, thresholds.vat_tu]);
 
     const totalPages = Math.ceil(filteredItems.length / ROWS_PER_PAGE);
 
@@ -134,14 +145,31 @@ export default function useKhoList(thresholds = DEFAULT_THRESHOLDS) {
             },
             {
                 label: `Sắp hết hạn (${thresholds.sapHetHanNgay} ngày)`,
-                value: sapHetHan.length,
+                value: sapHetHanMaSet.size,
+                icon: "warning",
+                color: "#F59E0B",
+                bg: "#FEF3C7",
+                filterKey: "expiring",
+            },
+            {
+                label: "Đã hết hạn",
+                value: hetHanSet.size,
                 icon: "error",
                 color: "#DC2626",
                 bg: "#FEE2E2",
-                filterKey: "expiring",
+                filterKey: "expired",
             },
-        ];
-    }, [allItems, sapHetHan, thresholds.thuoc, thresholds.vat_tu, thresholds.sapHetHanNgay]);
+        ].filter((s) => s.value > 0);
+    }, [allItems, sapHetHanMaSet, thresholds.thuoc, thresholds.vat_tu, thresholds.sapHetHanNgay]);
+
+    useEffect(() => {
+        if (
+            filterMode !== "all" &&
+            !statItems.some((s) => s.filterKey === filterMode)
+        ) {
+            setFilterMode("all");
+        }
+    }, [filterMode, statItems]);
 
     const handleSearchChange = useCallback((v) => {
         setSearch(v);
@@ -226,6 +254,7 @@ export default function useKhoList(thresholds = DEFAULT_THRESHOLDS) {
         paginatedItems,
         totalPages,
         statItems,
+        hetHanSet,
         sapHetHanMaSet,
         rowExtra,
         fetchData,

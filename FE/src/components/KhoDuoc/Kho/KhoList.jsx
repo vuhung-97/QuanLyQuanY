@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import {
     Button,
     Card,
@@ -70,7 +70,7 @@ const columns = [
                     sx={{
                         fontWeight: 600,
                         color:
-                            qty <= 5
+                            qty === 0
                                 ? "error.main"
                                 : lowStock
                                   ? "warning.main"
@@ -97,19 +97,23 @@ const columns = [
         key: "han_su_dung",
         label: "Hạn sử dụng",
         render: (row, _idx, extra) => {
+            if (!row.han_su_dung) return "—";
+            const isExpired = extra?.hetHanSet?.has(row.ma_thuoc_vtyt);
             const isExpiring = extra?.sapHetHanMaSet?.has(row.ma_thuoc_vtyt);
-            return row.han_su_dung ? (
+            return (
                 <Typography
                     variant="body2"
                     sx={{
                         fontWeight: isExpiring ? 600 : 400,
-                        color: isExpiring ? "error.main" : "text.primary",
+                        color: isExpired
+                            ? "error.main"
+                            : isExpiring
+                              ? "warning.main"
+                              : "text.primary",
                     }}
                 >
                     {dayjs(row.han_su_dung).format("DD/MM/YYYY")}
                 </Typography>
-            ) : (
-                "—"
             );
         },
     },
@@ -149,9 +153,25 @@ export default function KhoList() {
 
     const rowExtra = {
         ...hook.rowExtra,
+        hetHanSet: hook.hetHanSet,
         sapHetHanMaSet: hook.sapHetHanMaSet,
         thresholds,
     };
+
+    const rowSx = useCallback(
+        (row) => {
+            const expired = rowExtra.hetHanSet.has(row.ma_thuoc_vtyt);
+            const outOfStock = (row.so_luong ?? 0) === 0;
+            return expired || outOfStock
+                ? {
+                      backgroundColor: "rgba(239, 68, 68, 0.12)",
+                      "& td": { backgroundColor: "inherit" },
+                      "&:hover td": { backgroundColor: "inherit" },
+                  }
+                : undefined;
+        },
+        [rowExtra],
+    );
 
     return (
         <>
@@ -252,6 +272,7 @@ export default function KhoList() {
                             minWidth={800}
                             emptyMessage="Không có thuốc / vật tư y tế nào."
                             rowExtra={rowExtra}
+                            rowSx={rowSx}
                         />
 
                         {hook.totalPages > 1 && (
