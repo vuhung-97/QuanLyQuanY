@@ -299,6 +299,18 @@ export default function DanhSachNoiTru() {
                         rows={filtered}
                         loading={initialLoading || refreshing}
                         emptyMessage="Không có bệnh án nội trú nào."
+                        rowSx={(row) =>
+                            row.trang_thai === "đang_điều_trị" &&
+                            !row.da_co_cham_soc_hom_nay
+                                ? {
+                                      backgroundColor: "#FEF3C7",
+                                      "& td": { backgroundColor: "inherit" },
+                                      "&:hover td": {
+                                          backgroundColor: "inherit",
+                                      },
+                                  }
+                                : undefined
+                        }
                         rowExtra={{
                             onChiTiet: handleOpenChiTiet,
                             onRaVien: handleRaVienClick,

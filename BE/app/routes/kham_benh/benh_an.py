@@ -1,3 +1,5 @@
+from datetime import date, datetime, time
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import extract, inspect
 from sqlalchemy.orm import Session
@@ -114,6 +116,21 @@ def get_danh_sach_noi_tru(
         base_query = base_query.filter(BenhAn.ma_quan_nhan == ma_quan_nhan)
     total = base_query.count()
     records = base_query.offset(offset).limit(limit).all()
+
+    ma_benh_an_list = [ba.ma_benh_an for ba, *_ in records if ba.trang_thai == "đang_điều_trị"]
+    cham_soc_hom_nay = set()
+    if ma_benh_an_list:
+        dau_ngay = datetime.combine(date.today(), time.min)
+        rows = (
+            db.query(PhieuChamSoc.ma_benh_an)
+            .filter(
+                PhieuChamSoc.ma_benh_an.in_(ma_benh_an_list),
+                PhieuChamSoc.thoi_gian >= dau_ngay,
+            )
+            .all()
+        )
+        cham_soc_hom_nay = {ma for ma, in rows}
+
     result = []
     for ba, ho_ten, cap_bac, chuc_vu, ngay_sinh, ten_buong, ten_giuong in records:
         d = {c.key: getattr(ba, c.key) for c in inspect(BenhAn).columns}
@@ -123,6 +140,7 @@ def get_danh_sach_noi_tru(
         d["ngay_sinh"] = str(ngay_sinh) if ngay_sinh else None
         d["ten_buong"] = ten_buong
         d["ten_giuong"] = ten_giuong
+        d["da_co_cham_soc_hom_nay"] = ba.ma_benh_an in cham_soc_hom_nay
         result.append(d)
     return {"data": result, "total": total}
 

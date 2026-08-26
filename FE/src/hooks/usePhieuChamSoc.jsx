@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { noiTruService } from "@/services/noiTruService.js";
 import { clearThuocCache } from "./useThuocList.jsx";
 
-export default function usePhieuChamSoc(maBenhAn) {
+export default function usePhieuChamSoc(maBenhAn, { onSaved } = {}) {
     const [records, setRecords] = useState([]);
     const [loading, setLoading] = useState(false);
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
@@ -52,6 +52,7 @@ export default function usePhieuChamSoc(maBenhAn) {
             setOpenForm(false);
             setEditingRecord(null);
             await loadData();
+            onSaved?.();
         } catch (err) {
             setSnackbar({
                 open: true,
@@ -59,7 +60,7 @@ export default function usePhieuChamSoc(maBenhAn) {
                 severity: "error",
             });
         }
-    }, [editingRecord, maBenhAn, loadData]);
+    }, [editingRecord, maBenhAn, loadData, onSaved]);
 
     return {
         records,

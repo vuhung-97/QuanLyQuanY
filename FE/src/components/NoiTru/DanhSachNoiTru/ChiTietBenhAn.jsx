@@ -44,7 +44,7 @@ export default function ChiTietBenhAn({
         handleOpenForm,
         handleCloseForm,
         handleSave,
-    } = usePhieuChamSoc(open ? benhAnId : null);
+    } = usePhieuChamSoc(open ? benhAnId : null, { onSaved });
 
     useEffect(() => {
         if (!open || !benhAnId) return;
