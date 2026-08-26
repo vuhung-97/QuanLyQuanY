@@ -96,7 +96,11 @@ export default function useKhamSucKhoeForm({
         setNgayNhapNgu(quanNhan.ngay_nhap_ngu || "");
         setSnackbar({ open: false, message: "", severity: "error" });
         setErrors({});
-        setActiveTab(initialTab ?? allowedTabs[0] ?? 0);
+        setActiveTab(
+            initialTab != null && allowedTabs.includes(initialTab)
+                ? initialTab
+                : (allowedTabs[0] ?? 0),
+        );
         setLoadingPhieu(false);
 
         const applyPhieuData = (p) => {
@@ -150,7 +154,11 @@ export default function useKhamSucKhoeForm({
     }, [open, quanNhan, maLichKham, existingPhieu, initialTab, allowedTabs]);
 
     useEffect(() => {
-        setActiveTab(initialTab ?? allowedTabs[0] ?? 0);
+        setActiveTab(
+            initialTab != null && allowedTabs.includes(initialTab)
+                ? initialTab
+                : (allowedTabs[0] ?? 0),
+        );
     }, [allowedTabs, initialTab]);
 
     useEffect(() => {

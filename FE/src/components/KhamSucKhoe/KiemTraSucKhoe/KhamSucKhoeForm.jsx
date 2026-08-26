@@ -56,10 +56,12 @@ function FormTabBar({ activeTab, onTabChange, allowedTabs }) {
     const filtered = tabConfigs.filter((_, i) => allowedTabs.includes(i));
     const handleChange = (_, filteredIdx) =>
         onTabChange(_, allowedTabs[filteredIdx]);
+    const idx = allowedTabs.indexOf(activeTab);
+    const value = idx === -1 ? 0 : idx;
     return (
         <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}>
             <Tabs
-                value={allowedTabs.indexOf(activeTab)}
+                value={value}
                 onChange={handleChange}
                 variant="fullWidth"
                 sx={(theme) => ({
