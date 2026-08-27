@@ -62,7 +62,8 @@ function PhanLoaiTable({ phanBoPhanLoai, soldiers, phieuMap, maLichKham, nam, al
         return soldiers
             .filter((s) => {
                 const phieu = phieuMap[s.ma_quan_nhan];
-                return phieu?.ket_luan?.phan_loai_suc_khoe === selectedLoai;
+                return phieu?.trang_thai === "da_kham" &&
+                    phieu?.ket_luan?.phan_loai_suc_khoe === selectedLoai;
             })
             .map((s, idx) => ({
                 ...s,

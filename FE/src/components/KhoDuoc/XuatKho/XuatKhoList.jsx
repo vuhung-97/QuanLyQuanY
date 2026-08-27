@@ -438,7 +438,9 @@ export default function XuatKhoList() {
                                 />
                             </Stack>
 
-                            <IfRole roles={[ROLES.ADMIN, ROLES.CNQY]}>
+                            <IfRole
+                                roles={[ROLES.ADMIN, ROLES.CNQY, ROLES.YSI]}
+                            >
                                 <Button
                                     variant="contained"
                                     startIcon={<AddIcon />}
