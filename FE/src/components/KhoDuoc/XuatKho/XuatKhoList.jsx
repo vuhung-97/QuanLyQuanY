@@ -12,6 +12,7 @@ import {
     Inventory as InventoryIcon,
     Send as SendIcon,
     ReceiptLong as ReceiptLongIcon,
+    Refresh as RefreshIcon,
     Visibility as VisibilityIcon,
 } from "@mui/icons-material";
 import dayjs from "dayjs";
@@ -400,17 +401,16 @@ export default function XuatKhoList() {
                     <Stack spacing={2.5}>
                         <Stack
                             direction="row"
-                            spacing={2}
                             sx={{
                                 justifyContent: "space-between",
                                 alignItems: "center",
                                 flexWrap: "wrap",
+                                gap: 2,
                             }}
                         >
                             <Stack
                                 direction="row"
-                                spacing={1.5}
-                                sx={{ alignItems: "center" }}
+                                sx={{ alignItems: "center", flexWrap: "wrap", gap: 1.5 }}
                             >
                                 <SearchBarDebounced
                                     onSearch={(v) => {
@@ -438,23 +438,35 @@ export default function XuatKhoList() {
                                 />
                             </Stack>
 
-                            <IfRole
-                                roles={[ROLES.ADMIN, ROLES.CNQY, ROLES.YSI]}
-                            >
-                                <Button
-                                    variant="contained"
-                                    startIcon={<AddIcon />}
-                                    onClick={() =>
-                                        setOpenPhieu({
-                                            open: true,
-                                            id: null,
-                                            mode: "create",
-                                        })
-                                    }
+                            <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1 }}>
+                                <IfRole
+                                    roles={[ROLES.ADMIN, ROLES.CNQY, ROLES.YSI]}
                                 >
-                                    Tạo phiếu xuất
+                                    <Button
+                                        variant="contained"
+                                        startIcon={<AddIcon />}
+                                        onClick={() =>
+                                            setOpenPhieu({
+                                                open: true,
+                                                id: null,
+                                                mode: "create",
+                                            })
+                                        }
+                                    >
+                                        Tạo phiếu xuất
+                                    </Button>
+                                </IfRole>
+                                <Button
+                                    variant="outlined"
+                                    startIcon={<RefreshIcon />}
+                                    onClick={() => {
+                                        fetchData();
+                                        fetchStats();
+                                    }}
+                                >
+                                    Refresh
                                 </Button>
-                            </IfRole>
+                            </Stack>
                         </Stack>
 
                         <DataTable

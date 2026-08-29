@@ -457,6 +457,7 @@ export default function useKhamSucKhoeMain() {
         soldiers,
         phieuMap,
         stats,
+        refreshStats,
         loading,
         allUnitLookup,
         units,

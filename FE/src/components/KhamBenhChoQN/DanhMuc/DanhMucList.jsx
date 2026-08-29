@@ -148,13 +148,6 @@ export default function DanhMucList({ config }) {
                                 placeholder="Tìm kiếm..."
                             />
                             <Button
-                                variant="outlined"
-                                startIcon={<RefreshIcon />}
-                                onClick={handleRefresh}
-                            >
-                                Refresh
-                            </Button>
-                            <Button
                                 variant="contained"
                                 startIcon={<AddIcon />}
                                 onClick={() =>
@@ -166,6 +159,13 @@ export default function DanhMucList({ config }) {
                                 }
                             >
                                 {config.addLabel}
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                startIcon={<RefreshIcon />}
+                                onClick={handleRefresh}
+                            >
+                                Refresh
                             </Button>
                         </Stack>
 

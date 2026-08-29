@@ -1,5 +1,6 @@
 import PrintOverlay from "@/components/common/print/PrintOverlay.jsx";
 import { formatDateTime } from "@/utils/date.js";
+import { UNIT_NAME } from "@/components/layout/common/constants.js";
 
 const tableHeadStyle = {
     fontWeight: "bold",
@@ -85,7 +86,7 @@ export default function LichKhamPrint({ schedule, chiTietList, unitOptions }) {
                             textTransform: "uppercase",
                         }}
                     >
-                        LỮ ĐOÀN 170
+                        {UNIT_NAME.toUpperCase()}
                     </div>
                     <div
                         style={{

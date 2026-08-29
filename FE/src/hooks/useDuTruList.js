@@ -140,6 +140,7 @@ export default function useDuTruList() {
         setSnackbar,
         setConfirm,
         fetchData,
+        fetchStats,
         handleAction,
         handleView,
         handleEdit,

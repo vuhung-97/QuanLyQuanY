@@ -13,6 +13,7 @@ import {
     CheckCircle as CheckCircleIcon,
     HourglassEmpty as HourglassEmptyIcon,
     Inventory as InventoryIcon,
+    Refresh as RefreshIcon,
     Send as SendIcon,
 } from "@mui/icons-material";
 import dayjs from "dayjs";
@@ -94,7 +95,10 @@ function DuTruListFilterBar({
     onThangChange,
 }) {
     return (
-        <Stack direction="row" spacing={1.5} sx={{ alignItems: "center" }}>
+        <Stack
+            direction="row"
+            sx={{ alignItems: "center", flexWrap: "wrap", gap: 1.5 }}
+        >
             <StatusFilter
                 value={trangThai}
                 onChange={onTrangThaiChange}
@@ -133,6 +137,7 @@ export default function DuTruList() {
         setSnackbar,
         setConfirm,
         fetchData,
+        fetchStats,
         handleAction,
         handleView,
         handleEdit,
@@ -190,11 +195,11 @@ export default function DuTruList() {
                     <Stack spacing={2.5}>
                         <Stack
                             direction="row"
-                            spacing={2}
                             sx={{
                                 justifyContent: "space-between",
                                 alignItems: "center",
                                 flexWrap: "wrap",
+                                gap: 2,
                             }}
                         >
                             <DuTruListFilterBar
@@ -214,19 +219,31 @@ export default function DuTruList() {
                                     setPage(1);
                                 }}
                             />
-                            <Button
-                                variant="contained"
-                                startIcon={<AddIcon />}
-                                onClick={() =>
-                                    setOpenPhieu({
-                                        open: true,
-                                        id: null,
-                                        mode: "create",
-                                    })
-                                }
-                            >
-                                Tạo phiếu dự trù
-                            </Button>
+                            <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1 }}>
+                                <Button
+                                    variant="contained"
+                                    startIcon={<AddIcon />}
+                                    onClick={() =>
+                                        setOpenPhieu({
+                                            open: true,
+                                            id: null,
+                                            mode: "create",
+                                        })
+                                    }
+                                >
+                                    Tạo phiếu dự trù
+                                </Button>
+                                <Button
+                                    variant="outlined"
+                                    startIcon={<RefreshIcon />}
+                                    onClick={() => {
+                                        fetchData();
+                                        fetchStats();
+                                    }}
+                                >
+                                    Refresh
+                                </Button>
+                            </Stack>
                         </Stack>
 
                         <DataTable

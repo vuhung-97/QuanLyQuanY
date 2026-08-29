@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, Card, CardContent, Menu, MenuItem, Stack, TextField } from "@mui/material";
-import { Print as PrintIcon, UploadFile as UploadFileIcon } from "@mui/icons-material";
+import { Print as PrintIcon, Refresh as RefreshIcon, UploadFile as UploadFileIcon } from "@mui/icons-material";
 import FilterModeToggle from "@/components/common/FilterModeToggle.jsx";
 import { formatDate } from "@/utils/date.js";
 
@@ -17,6 +17,7 @@ export default function DanhSachPhieuKhamFilterBar({
     onExport,
     ocrEnabled,
     onOpenOcr,
+    onRefresh,
 }) {
     const [anchorEl, setAnchorEl] = useState(null);
     return (
@@ -124,6 +125,15 @@ export default function DanhSachPhieuKhamFilterBar({
                             </Menu>
                         </>
                     )}
+                    <Button
+                        variant="outlined"
+                        size="small"
+                        startIcon={<RefreshIcon />}
+                        onClick={onRefresh}
+                        sx={{ whiteSpace: "nowrap" }}
+                    >
+                        Refresh
+                    </Button>
                 </Stack>
             </CardContent>
         </Card>

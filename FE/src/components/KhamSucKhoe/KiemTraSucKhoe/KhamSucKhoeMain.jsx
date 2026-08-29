@@ -73,6 +73,7 @@ export default function KhamSucKhoeMain() {
         handleConfirmBloodDraw,
         handleOcrTrichXuat,
         handleSearchChange,
+        refreshStats,
     } = useKhamSucKhoeMain();
 
     const onGenerateBloodCode = async (qn) => {
@@ -138,6 +139,7 @@ export default function KhamSucKhoeMain() {
                 onExport={handlePrint}
                 ocrEnabled={isXetNghiem}
                 onOpenOcr={() => setOcrDialogOpen(true)}
+                onRefresh={refreshStats}
             />
 
             {stats && (

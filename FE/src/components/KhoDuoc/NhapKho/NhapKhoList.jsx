@@ -8,6 +8,7 @@ import {
     Edit as EditIcon,
     HourglassEmpty as HourglassEmptyIcon,
     Inventory as InventoryIcon,
+    Refresh as RefreshIcon,
     Visibility as VisibilityIcon,
 } from "@mui/icons-material";
 import DataTable from "@/components/common/DataTable.jsx";
@@ -236,18 +237,17 @@ export default function NhapKhoList() {
                 <CardContent>
                     <Stack
                         direction="row"
-                        spacing={2}
                         sx={{
                             mb: 2,
                             justifyContent: "space-between",
                             alignItems: "center",
                             flexWrap: "wrap",
+                            gap: 2,
                         }}
                     >
                         <Stack
                             direction="row"
-                            spacing={1.5}
-                            sx={{ alignItems: "center" }}
+                            sx={{ alignItems: "center", flexWrap: "wrap", gap: 1.5 }}
                         >
                             <FilterModeToggle
                                 isLeft={isLeft}
@@ -268,20 +268,32 @@ export default function NhapKhoList() {
                                 onThangChange={handleFilterThangChange}
                             />
                         </Stack>
-                        <Button
-                            variant="contained"
-                            startIcon={<AddIcon />}
-                            onClick={() =>
-                                setDialogState({
-                                    open: true,
-                                    mode: "create",
-                                    phieuId: null,
-                                    maPhieuDuTru: null,
-                                })
-                            }
-                        >
-                            Tạo phiếu nhập
-                        </Button>
+                        <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1 }}>
+                            <Button
+                                variant="contained"
+                                startIcon={<AddIcon />}
+                                onClick={() =>
+                                    setDialogState({
+                                        open: true,
+                                        mode: "create",
+                                        phieuId: null,
+                                        maPhieuDuTru: null,
+                                    })
+                                }
+                            >
+                                Tạo phiếu nhập
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                startIcon={<RefreshIcon />}
+                                onClick={() => {
+                                    fetchData();
+                                    fetchStats();
+                                }}
+                            >
+                                Refresh
+                            </Button>
+                        </Stack>
                     </Stack>
                     <Stack spacing={2.5}>
                         <DataTable

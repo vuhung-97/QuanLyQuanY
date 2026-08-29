@@ -17,6 +17,7 @@ import {
     Edit as EditIcon,
     Error as ErrorIcon,
     Inventory2 as Inventory2Icon,
+    Refresh as RefreshIcon,
     Settings as SettingsIcon,
     Visibility as VisibilityIcon,
     WarningAmber as WarningAmberIcon,
@@ -186,17 +187,16 @@ export default function KhoList() {
                     <Stack spacing={2.5}>
                         <Stack
                             direction="row"
-                            spacing={2}
                             sx={{
                                 justifyContent: "space-between",
                                 alignItems: "center",
                                 flexWrap: "wrap",
+                                gap: 2,
                             }}
                         >
                             <Stack
                                 direction="row"
-                                spacing={1.5}
-                                sx={{ alignItems: "center" }}
+                                sx={{ alignItems: "center", flexWrap: "wrap", gap: 1.5 }}
                             >
                                 <SearchBarDebounced
                                     onSearch={hook.handleSearchChange}
@@ -240,12 +240,11 @@ export default function KhoList() {
                                     </Select>
                                 </FormControl>
                             </Stack>
-                            <Stack direction="row" spacing={1}>
+                            <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1 }}>
                                 <Button
                                     variant="outlined"
                                     startIcon={<SettingsIcon />}
                                     onClick={() => setThresholdDialogOpen(true)}
-                                    sx={{ mr: 1 }}
                                 >
                                     Giới hạn tồn kho
                                 </Button>
@@ -261,6 +260,13 @@ export default function KhoList() {
                                     }
                                 >
                                     Thêm thuốc / VTYT
+                                </Button>
+                                <Button
+                                    variant="outlined"
+                                    startIcon={<RefreshIcon />}
+                                    onClick={hook.fetchData}
+                                >
+                                    Refresh
                                 </Button>
                             </Stack>
                         </Stack>
